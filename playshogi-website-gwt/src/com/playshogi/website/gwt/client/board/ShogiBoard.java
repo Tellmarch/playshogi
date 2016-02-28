@@ -6,6 +6,7 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.playshogi.library.shogi.models.Piece;
 
 public class ShogiBoard implements EntryPoint {
 
@@ -17,9 +18,7 @@ public class ShogiBoard implements EntryPoint {
 		// Put some values in the grid cells.
 		for (int row = 0; row < 5; ++row) {
 			for (int col = 0; col < 5; ++col) {
-				final Image image = new Image();
-				image.setUrl(
-						"https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/Chess_bdt45.svg/50px-Chess_bdt45.svg.png");
+				final Image image = PieceGraphics.getPieceImage(Piece.GOTE_BISHOP);
 
 				image.addClickHandler(new ClickHandler() {
 					@Override

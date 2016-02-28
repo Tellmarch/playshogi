@@ -18,11 +18,11 @@ public class ShogiBoardState {
 	}
 
 	public Piece getPieceAt(final Square square) {
-		return board[square.getColumn()][square.getRow()];
+		return board[square.getColumn() - 1][square.getRow() - 1];
 	}
 
 	public void setPieceAt(final Square square, final Piece piece) {
-		board[square.getColumn()][square.getRow()] = piece;
+		board[square.getColumn() - 1][square.getRow() - 1] = piece;
 	}
 
 	public int getWidth() {
