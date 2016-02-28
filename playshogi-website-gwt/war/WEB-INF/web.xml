@@ -11,9 +11,19 @@
     <servlet-class>com.playshogi.website.gwt.server.GreetingServiceImpl</servlet-class>
   </servlet>
   
+  <servlet>
+    <servlet-name>positionSharing</servlet-name>
+    <servlet-class>com.playshogi.website.gwt.server.PositionSharingServiceImpl</servlet-class>
+  </servlet>
+  
   <servlet-mapping>
     <servlet-name>greetServlet</servlet-name>
     <url-pattern>/playshogi_website_gwt/greet</url-pattern>
+  </servlet-mapping>
+  
+  <servlet-mapping>
+    <servlet-name>positionSharing</servlet-name>
+    <url-pattern>/playshogi_website_gwt/positionSharing</url-pattern>
   </servlet-mapping>
   
   <!-- Default page to serve -->
