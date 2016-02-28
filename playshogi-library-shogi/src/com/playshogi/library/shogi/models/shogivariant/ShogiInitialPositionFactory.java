@@ -42,8 +42,8 @@ public class ShogiInitialPositionFactory implements InitialPositionFactory {
 		shogiBoardState.setPieceAt(new Square(8, 9), Piece.SENTE_KNIGHT);
 		shogiBoardState.setPieceAt(new Square(9, 9), Piece.SENTE_LANCE);
 
-		shogiBoardState.setPieceAt(new Square(2, 8), Piece.SENTE_BISHOP);
-		shogiBoardState.setPieceAt(new Square(8, 8), Piece.SENTE_ROOK);
+		shogiBoardState.setPieceAt(new Square(8, 8), Piece.SENTE_BISHOP);
+		shogiBoardState.setPieceAt(new Square(2, 8), Piece.SENTE_ROOK);
 
 		for (int i = 1; i <= 9; i++) {
 			shogiBoardState.setPieceAt(new Square(i, 7), Piece.SENTE_PAWN);
