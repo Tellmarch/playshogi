@@ -18,7 +18,7 @@
   
   <!-- Default page to serve -->
   <welcome-file-list>
-    <welcome-file>Playshogi_website_gwt.html</welcome-file>
+    <welcome-file>ShogiBoard.html</welcome-file>
   </welcome-file-list>
 
 </web-app>
