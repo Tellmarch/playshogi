@@ -1,8 +1,8 @@
-.gwt-Green-Border{ 
+.gwt-piece-selected{ 
   //  border:0px solid green;
    background: rgba(255,0,0, 0.5);
 }
 
-.gwt-White-Border{ 
+.gwt-piece-unselected{ 
    // border:0px solid white;
 }

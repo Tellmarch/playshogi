@@ -21,18 +21,17 @@ public class ShogiRulesEngine implements GameRulesEngine<ShogiPosition> {
 	}
 
 	private void playCaptureMove(final ShogiPosition position, final CaptureMove move) {
-		// TODO Auto-generated method stub
-
+		position.getShogiBoardState().setPieceAt(move.getToSquare(), move.getPiece());
+		position.getShogiBoardState().setPieceAt(move.getToSquare(), null);
 	}
 
 	private void playDropMove(final ShogiPosition position, final DropMove move) {
-		// TODO Auto-generated method stub
-
+		position.getShogiBoardState().setPieceAt(move.getToSquare(), move.getPiece());
 	}
 
 	private void playNormalMove(final ShogiPosition position, final NormalMove move) {
-		// TODO Auto-generated method stub
-
+		position.getShogiBoardState().setPieceAt(move.getToSquare(), move.getPiece());
+		position.getShogiBoardState().setPieceAt(move.getToSquare(), null);
 	}
 
 	@Override
