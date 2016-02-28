@@ -1,14 +1,14 @@
 package com.playshogi.library.shogi.models.shogivariant;
 
 public enum ShogiVariant {
-	NORMAL_SHOGI("Shogi", (short) 9, (short) 9, true),;
+	NORMAL_SHOGI("Shogi", 9, 9, true),;
 
 	private final String variantName;
-	private final short boardWidth;
-	private final short boardHeight;
+	private final int boardWidth;
+	private final int boardHeight;
 	private final boolean dropsAllowed;
 
-	private ShogiVariant(final String variantName, final short boardWidth, final short boardHeight,
+	private ShogiVariant(final String variantName, final int boardWidth, final int boardHeight,
 			final boolean dropsAllowed) {
 		this.variantName = variantName;
 		this.boardWidth = boardWidth;
@@ -20,11 +20,11 @@ public enum ShogiVariant {
 		return variantName;
 	}
 
-	public short getBoardWidth() {
+	public int getBoardWidth() {
 		return boardWidth;
 	}
 
-	public short getBoardHeight() {
+	public int getBoardHeight() {
 		return boardHeight;
 	}
 

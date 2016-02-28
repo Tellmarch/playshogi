@@ -1,19 +1,19 @@
 package com.playshogi.library.models;
 
 public class Square {
-	private final short row;
-	private final short column;
+	private final int row;
+	private final int column;
 
-	public Square(final short row, final short column) {
+	public Square(final int row, final int column) {
 		this.row = row;
 		this.column = column;
 	}
 
-	public short getRow() {
+	public int getRow() {
 		return row;
 	}
 
-	public short getColumn() {
+	public int getColumn() {
 		return column;
 	}
 
