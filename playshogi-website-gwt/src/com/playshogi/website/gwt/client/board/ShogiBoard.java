@@ -7,9 +7,11 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.user.client.ui.AbsolutePanel;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DecoratorPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.TextBox;
 import com.playshogi.library.models.Square;
 import com.playshogi.library.shogi.models.Piece;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
@@ -50,30 +52,32 @@ public class ShogiBoard implements EntryPoint, ClickHandler {
 	@Override
 	public void onModuleLoad() {
 
-		// final Button shareButton = new Button("Share");
-		// final Button loadButton = new Button("Load");
-		// final TextBox keyField = new TextBox();
-		// keyField.setText("MyBoard");
-		//
-		// shareButton.addClickHandler(new ClickHandler() {
-		// @Override
-		// public void onClick(final ClickEvent event) {
-		// // positionSharingService.sharePosition(position,
-		// // keyField.getText());
-		// }
-		// });
-		//
-		// loadButton.addClickHandler(new ClickHandler() {
-		// @Override
-		// public void onClick(final ClickEvent event) {
-		// ShogiPosition positionFromServer = SfenConverter
-		// .fromSFEN(positionSharingService.getPosition(keyField.getText()));
-		// if (positionFromServer != null) {
-		// position = positionFromServer;
-		// displayPosition();
-		// }
-		// }
-		// });
+		final Button shareButton = new Button("Share");
+		final Button loadButton = new Button("Load");
+		final TextBox keyField = new TextBox();
+		keyField.setText("MyBoard");
+
+		shareButton.addClickHandler(new ClickHandler() {
+			@Override
+			public void onClick(final ClickEvent event) {
+				// positionSharingService.sharePosition(
+				// "lnsg3nl/2k2gr2/ppbp1p1pp/2p1P4/4s1S2/5B3/PPPP1P1PP/2S1GGR2/LN4KNL
+				// b 2Pp 34",
+				// keyField.getText());
+			}
+		});
+
+		loadButton.addClickHandler(new ClickHandler() {
+			@Override
+			public void onClick(final ClickEvent event) {
+				// ShogiPosition positionFromServer = SfenConverter
+				// .fromSFEN(positionSharingService.getPosition(keyField.getText()));
+				// if (positionFromServer != null) {
+				// position = positionFromServer;
+				// displayPosition();
+				// }
+			}
+		});
 
 		BoardBundle boardResources = GWT.create(BoardBundle.class);
 
@@ -112,15 +116,28 @@ public class ShogiBoard implements EntryPoint, ClickHandler {
 		DecoratorPanel absolutePanelWrapper = new DecoratorPanel();
 		absolutePanelWrapper.setWidget(absolutePanel);
 
-		// RootPanel.get().add(keyField);
-		// RootPanel.get().add(shareButton);
-		// RootPanel.get().add(loadButton);
+		RootPanel.get().add(keyField);
+		RootPanel.get().add(shareButton);
+		RootPanel.get().add(loadButton);
 		RootPanel.get().add(absolutePanelWrapper);
 	}
 
 	private void displayPosition() {
+
 		int rows = position.getShogiBoardState().getHeight();
 		int columns = position.getShogiBoardState().getWidth();
+
+		if (pieceImages != null) {
+			for (int row = 0; row < rows; ++row) {
+				for (int col = 0; col < columns; ++col) {
+					Image image = pieceImages[row][col];
+					if (image != null) {
+
+						absolutePanel.remove(image);
+					}
+				}
+			}
+		}
 
 		pieceImages = new Image[rows][columns];
 

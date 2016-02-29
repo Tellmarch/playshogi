@@ -95,14 +95,14 @@ public class SfenConverter {
 					int s = x - '0';
 					if (1 <= s && s <= 9) {
 						for (int w = 0; w < s; w++) {
-							shogiBoardState.setPieceAt(k++, i, null);
+							shogiBoardState.setPieceAt(1 + (8 - k++), 1 + i, null);
 						}
 					}
 				} else {
 					if (prom) {
 						p = p.getPromotedPiece();
 					}
-					shogiBoardState.setPieceAt(k++, i, p);
+					shogiBoardState.setPieceAt(1 + (8 - k++), 1 + i, p);
 				}
 				prom = false;
 			}
@@ -201,6 +201,10 @@ public class SfenConverter {
 			return Piece.GOTE_KING;
 		}
 		return null;
+	}
+
+	public static void main(final String[] args) {
+		fromSFEN("lnsg3nl/2k2gr2/ppbp1p1pp/2p1P4/4s1S2/5B3/PPPP1P1PP/2S1GGR2/LN4KNL b 2Pp 34");
 	}
 
 }
