@@ -7,16 +7,13 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.user.client.ui.AbsolutePanel;
-import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DecoratorPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.TextBox;
 import com.playshogi.library.models.Square;
 import com.playshogi.library.shogi.models.Piece;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.library.shogi.models.shogivariant.ShogiInitialPositionFactory;
-import com.playshogi.website.gwt.client.PositionSharingService;
 import com.playshogi.website.gwt.client.board.Komadai.Point;
 
 public class ShogiBoard implements EntryPoint, ClickHandler {
@@ -47,33 +44,36 @@ public class ShogiBoard implements EntryPoint, ClickHandler {
 	private int senteKomadaiX;
 	private int senteKomadaiY;
 
-	private final PositionSharingService positionSharingService = GWT.create(PositionSharingService.class);
+	// private final PositionSharingService positionSharingService =
+	// GWT.create(PositionSharingService.class);
 
 	@Override
 	public void onModuleLoad() {
 
-		final Button shareButton = new Button("Share");
-		final Button loadButton = new Button("Load");
-		final TextBox keyField = new TextBox();
-		keyField.setText("MyBoard");
-
-		shareButton.addClickHandler(new ClickHandler() {
-			@Override
-			public void onClick(final ClickEvent event) {
-				positionSharingService.sharePosition(position, keyField.getText());
-			}
-		});
-
-		loadButton.addClickHandler(new ClickHandler() {
-			@Override
-			public void onClick(final ClickEvent event) {
-				ShogiPosition positionFromServer = positionSharingService.getPosition(keyField.getText());
-				if (positionFromServer != null) {
-					position = positionFromServer;
-					displayPosition();
-				}
-			}
-		});
+		// final Button shareButton = new Button("Share");
+		// final Button loadButton = new Button("Load");
+		// final TextBox keyField = new TextBox();
+		// keyField.setText("MyBoard");
+		//
+		// shareButton.addClickHandler(new ClickHandler() {
+		// @Override
+		// public void onClick(final ClickEvent event) {
+		// // positionSharingService.sharePosition(position,
+		// // keyField.getText());
+		// }
+		// });
+		//
+		// loadButton.addClickHandler(new ClickHandler() {
+		// @Override
+		// public void onClick(final ClickEvent event) {
+		// ShogiPosition positionFromServer = SfenConverter
+		// .fromSFEN(positionSharingService.getPosition(keyField.getText()));
+		// if (positionFromServer != null) {
+		// position = positionFromServer;
+		// displayPosition();
+		// }
+		// }
+		// });
 
 		BoardBundle boardResources = GWT.create(BoardBundle.class);
 
@@ -112,9 +112,9 @@ public class ShogiBoard implements EntryPoint, ClickHandler {
 		DecoratorPanel absolutePanelWrapper = new DecoratorPanel();
 		absolutePanelWrapper.setWidget(absolutePanel);
 
-		RootPanel.get().add(keyField);
-		RootPanel.get().add(shareButton);
-		RootPanel.get().add(loadButton);
+		// RootPanel.get().add(keyField);
+		// RootPanel.get().add(shareButton);
+		// RootPanel.get().add(loadButton);
 		RootPanel.get().add(absolutePanelWrapper);
 	}
 

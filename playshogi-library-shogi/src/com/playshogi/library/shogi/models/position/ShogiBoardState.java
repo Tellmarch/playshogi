@@ -17,12 +17,20 @@ public class ShogiBoardState {
 		board = new Piece[width][height];
 	}
 
-	public Piece getPieceAt(final Square square) {
-		return board[square.getColumn() - 1][square.getRow() - 1];
+	public Piece getPieceAt(final int column, final int row) {
+		return board[column - 1][row - 1];
+	}
+
+	public void setPieceAt(final int column, final int row, final Piece piece) {
+		board[column - 1][row - 1] = piece;
 	}
 
 	public void setPieceAt(final Square square, final Piece piece) {
-		board[square.getColumn() - 1][square.getRow() - 1] = piece;
+		setPieceAt(square.getColumn(), square.getRow(), piece);
+	}
+
+	public Piece getPieceAt(final Square square) {
+		return getPieceAt(square.getColumn(), square.getRow());
 	}
 
 	public int getWidth() {

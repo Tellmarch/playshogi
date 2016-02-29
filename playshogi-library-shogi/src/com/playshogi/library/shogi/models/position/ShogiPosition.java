@@ -10,11 +10,23 @@ public class ShogiPosition implements Position {
 	private KomadaiState senteKomadai;
 	private KomadaiState goteKomadai;
 
+	public ShogiPosition() {
+		this(ShogiVariant.NORMAL_SHOGI);
+	}
+
 	public ShogiPosition(final ShogiVariant shogiVariant) {
 		shogiBoardState = new ShogiBoardState(shogiVariant.getBoardWidth(), shogiVariant.getBoardHeight());
 		senteToPlay = true;
 		goteKomadai = new KomadaiState();
 		senteKomadai = new KomadaiState();
+	}
+
+	public ShogiPosition(final boolean senteToPlay, final ShogiBoardState shogiBoardState,
+			final KomadaiState senteKomadai, final KomadaiState goteKomadai) {
+		this.senteToPlay = senteToPlay;
+		this.shogiBoardState = shogiBoardState;
+		this.senteKomadai = senteKomadai;
+		this.goteKomadai = goteKomadai;
 	}
 
 	public boolean isSenteToPlay() {
