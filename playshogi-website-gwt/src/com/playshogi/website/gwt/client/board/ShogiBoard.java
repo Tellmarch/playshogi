@@ -6,6 +6,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DecoratorPanel;
@@ -14,8 +15,11 @@ import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.playshogi.library.models.Square;
 import com.playshogi.library.shogi.models.Piece;
+import com.playshogi.library.shogi.models.formats.sfen.SfenConverter;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.library.shogi.models.shogivariant.ShogiInitialPositionFactory;
+import com.playshogi.website.gwt.client.PositionSharingService;
+import com.playshogi.website.gwt.client.PositionSharingServiceAsync;
 import com.playshogi.website.gwt.client.board.Komadai.Point;
 
 public class ShogiBoard implements EntryPoint, ClickHandler {
@@ -46,8 +50,7 @@ public class ShogiBoard implements EntryPoint, ClickHandler {
 	private int senteKomadaiX;
 	private int senteKomadaiY;
 
-	// private final PositionSharingService positionSharingService =
-	// GWT.create(PositionSharingService.class);
+	private final PositionSharingServiceAsync positionSharingService = GWT.create(PositionSharingService.class);
 
 	@Override
 	public void onModuleLoad() {
@@ -60,22 +63,43 @@ public class ShogiBoard implements EntryPoint, ClickHandler {
 		shareButton.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(final ClickEvent event) {
-				// positionSharingService.sharePosition(
-				// "lnsg3nl/2k2gr2/ppbp1p1pp/2p1P4/4s1S2/5B3/PPPP1P1PP/2S1GGR2/LN4KNL
-				// b 2Pp 34",
-				// keyField.getText());
+				positionSharingService.sharePosition(
+						"lnsg3nl/2k2gr2/ppbp1p1pp/2p1P4/4s1S2/5B3/PPPP1P1PP/2S1GGR2/LN4KNL b 2Pp 34",
+						keyField.getText(), new AsyncCallback<Void>() {
+
+							@Override
+							public void onSuccess(final Void result) {
+								GWT.log("share success");
+							}
+
+							@Override
+							public void onFailure(final Throwable caught) {
+								GWT.log("share failure");
+							}
+						});
 			}
 		});
 
 		loadButton.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(final ClickEvent event) {
-				// ShogiPosition positionFromServer = SfenConverter
-				// .fromSFEN(positionSharingService.getPosition(keyField.getText()));
-				// if (positionFromServer != null) {
-				// position = positionFromServer;
-				// displayPosition();
-				// }
+				positionSharingService.getPosition(keyField.getText(), new AsyncCallback<String>() {
+
+					@Override
+					public void onFailure(final Throwable caught) {
+						GWT.log("load failure");
+					}
+
+					@Override
+					public void onSuccess(final String result) {
+						GWT.log("load success");
+						ShogiPosition positionFromServer = SfenConverter.fromSFEN(result);
+						if (positionFromServer != null) {
+							position = positionFromServer;
+							displayPosition();
+						}
+					}
+				});
 			}
 		});
 
