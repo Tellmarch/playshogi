@@ -6,16 +6,6 @@
          xmlns="http://java.sun.com/xml/ns/javaee">
 
   <!-- Servlets -->
-  <servlet>
-    <servlet-name>greetServlet</servlet-name>
-    <servlet-class>com.playshogi.website.gwt.server.GreetingServiceImpl</servlet-class>
-  </servlet>
-  
-  <servlet-mapping>
-    <servlet-name>greetServlet</servlet-name>
-    <url-pattern>/playshogi_website_gwt/greet</url-pattern>
-  </servlet-mapping>
-
 
   <servlet>
     <servlet-name>positionSharing</servlet-name>
