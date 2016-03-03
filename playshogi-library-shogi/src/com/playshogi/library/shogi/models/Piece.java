@@ -74,4 +74,21 @@ public enum Piece {
 		return pieceType.name() + (sentePiece ? ",sente" : ",gote") + (promoted ? ", promoted" : "");
 	}
 
+	private static final Piece[] allPieces = new Piece[PieceType.values().length * 4];
+
+	static {
+		for (Piece piece : Piece.values()) {
+			allPieces[piece.getPieceType().ordinal() * 4 + (piece.isSentePiece() ? 2 : 0)
+					+ (piece.isPromoted() ? 1 : 0)] = piece;
+		}
+	}
+
+	public static Piece getPiece(final PieceType pieceType, final boolean sente, final boolean promoted) {
+		return allPieces[pieceType.ordinal() * 4 + (sente ? 2 : 0) + (promoted ? 1 : 0)];
+	}
+
+	public static Piece getPiece(final PieceType pieceType, final boolean sente) {
+		return sente ? allPieces[pieceType.ordinal() * 4 + 2] : allPieces[pieceType.ordinal() * 4];
+	}
+
 }
