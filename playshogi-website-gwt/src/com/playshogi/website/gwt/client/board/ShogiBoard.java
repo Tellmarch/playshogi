@@ -190,7 +190,7 @@ public class ShogiBoard implements EntryPoint, ClickHandler {
 	}
 
 	private Square getSquare(final int row, final int col) {
-		return new Square(((8 - col) + 1), row + 1);
+		return Square.of(((8 - col) + 1), row + 1);
 	}
 
 	private int getY(final int row) {

@@ -2,6 +2,7 @@ package com.playshogi.library.shogi.models.position;
 
 import com.playshogi.library.models.Square;
 import com.playshogi.library.shogi.models.Piece;
+import com.playshogi.library.shogi.models.PieceType;
 
 public class ShogiBoardState {
 
@@ -41,4 +42,17 @@ public class ShogiBoardState {
 		return height;
 	}
 
+	public boolean hasSentePawnOnColumn(final int column) {
+		for (Piece piece : board[column - 1]) {
+			if (piece != null && piece.isSentePiece() && piece.getPieceType() == PieceType.PAWN) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public ShogiBoardState opposite() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

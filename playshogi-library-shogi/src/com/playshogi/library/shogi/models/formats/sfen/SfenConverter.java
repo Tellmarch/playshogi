@@ -8,6 +8,8 @@ import com.playshogi.library.shogi.models.position.ShogiPosition;
 
 public class SfenConverter {
 
+	private static final PieceType[] PIECE_TYPE_VALUES = PieceType.values();
+
 	public static String toSFEN(final ShogiPosition pos) {
 		String res = "";
 		int numspace = 0;
@@ -52,7 +54,7 @@ public class SfenConverter {
 				if (n != 1) {
 					c += n;
 				}
-				c += pieceToString(Piece.getPiece(PieceType.values()[i], true));
+				c += pieceToString(Piece.getPiece(PIECE_TYPE_VALUES[i], true));
 			}
 		}
 		int[] capture2 = pos.getGoteKomadai().getPieces();
@@ -62,7 +64,7 @@ public class SfenConverter {
 				if (n != 1) {
 					c += n;
 				}
-				c += pieceToString(Piece.getPiece(PieceType.values()[i], false));
+				c += pieceToString(Piece.getPiece(PIECE_TYPE_VALUES[i], false));
 			}
 		}
 		if (c.equals("")) {

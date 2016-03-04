@@ -1,13 +1,27 @@
 package com.playshogi.library.shogi.rules;
 
+import java.util.Collections;
+import java.util.EnumMap;
+import java.util.List;
+
 import com.playshogi.library.models.Move;
+import com.playshogi.library.models.Square;
 import com.playshogi.library.models.games.GameRulesEngine;
+import com.playshogi.library.shogi.models.Piece;
+import com.playshogi.library.shogi.models.PieceType;
 import com.playshogi.library.shogi.models.moves.CaptureMove;
 import com.playshogi.library.shogi.models.moves.DropMove;
 import com.playshogi.library.shogi.models.moves.NormalMove;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
+import com.playshogi.library.shogi.rules.movements.PawnPieceMovement;
+import com.playshogi.library.shogi.rules.movements.PieceMovement;
 
 public class ShogiRulesEngine implements GameRulesEngine<ShogiPosition> {
+
+	private static final EnumMap<PieceType, PieceMovement> PIECE_MOVEMENTS = new EnumMap<>(PieceType.class);
+	static {
+		PIECE_MOVEMENTS.put(PieceType.PAWN, new PawnPieceMovement());
+	}
 
 	@Override
 	public void playMoveInPosition(final ShogiPosition position, final Move move) {
@@ -40,10 +54,56 @@ public class ShogiRulesEngine implements GameRulesEngine<ShogiPosition> {
 
 	}
 
+	public List<Square> getPossibleTargetSquaresFromSquareInPosition(final ShogiPosition position, final Square from) {
+		Piece piece = position.getPieceAt(from);
+		if (piece == null) {
+			return Collections.emptyList();
+		}
+		PieceMovement pieceMovement = PIECE_MOVEMENTS.get(piece.getPieceType());
+		if (piece.isSentePiece()) {
+			return pieceMovement.getPossibleMoves(position.getShogiBoardState(), from);
+		} else {
+			return Square.opposite(
+					pieceMovement.getPossibleMoves(position.getShogiBoardState().opposite(), from.opposite()));
+		}
+
+	}
+
 	@Override
 	public boolean isMoveLegalInPosition(final ShogiPosition position, final Move move) {
+		if (move instanceof CaptureMove) {
+			return isCaptureMoveLegalInPosition(position, (CaptureMove) move);
+		} else if (move instanceof DropMove) {
+			return isDropMoveLegalInPosition(position, (DropMove) move);
+		} else if (move instanceof NormalMove) {
+			return isNormalMoveLegalInPosition(position, (NormalMove) move);
+		} else {
+			return false;
+		}
+	}
+
+	private boolean isNormalMoveLegalInPosition(final ShogiPosition position, final NormalMove move) {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	private boolean isDropMoveLegalInPosition(final ShogiPosition position, final DropMove move) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	private boolean isCaptureMoveLegalInPosition(final ShogiPosition position, final CaptureMove move) {
+		Piece capturedPiece = position.getPieceAt(move.getToSquare());
+		if (capturedPiece == null || capturedPiece.isSentePiece() == move.isSenteMoving()) {
+			return false;
+		} else {
+			return isNormalMoveLegalInPosition(position, move);
+		}
+	}
+
+	public static boolean hasSentePieceMoves(final PieceType piece, final int row) {
+		return (row > 1) || !(piece == PieceType.PAWN && row == 1 || piece == PieceType.KNIGHT && row <= 1
+				|| piece == PieceType.LANCE && row == 0);
 	}
 
 }

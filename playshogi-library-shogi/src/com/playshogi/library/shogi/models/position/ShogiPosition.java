@@ -1,6 +1,8 @@
 package com.playshogi.library.shogi.models.position;
 
 import com.playshogi.library.models.Position;
+import com.playshogi.library.models.Square;
+import com.playshogi.library.shogi.models.Piece;
 import com.playshogi.library.shogi.models.shogivariant.ShogiVariant;
 
 public class ShogiPosition implements Position {
@@ -59,6 +61,10 @@ public class ShogiPosition implements Position {
 
 	public void setGoteKomadai(final KomadaiState goteKomadai) {
 		this.goteKomadai = goteKomadai;
+	}
+
+	public Piece getPieceAt(final Square square) {
+		return shogiBoardState.getPieceAt(square);
 	}
 
 }
