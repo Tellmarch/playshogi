@@ -73,7 +73,7 @@ public class BoardConfiguration {
 		return positionEditingMode;
 	}
 
-	public void setPositionEditingMove(final boolean positionEditingMode) {
+	public void setPositionEditingMode(final boolean positionEditingMode) {
 		this.positionEditingMode = positionEditingMode;
 	}
 

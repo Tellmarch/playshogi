@@ -59,7 +59,7 @@ public class UsfMoveConverter {
 		}
 	}
 
-	public String toUsfString(final ShogiMove move) {
+	public static String toUsfString(final ShogiMove move) {
 		if (move instanceof DropMove) {
 			return toUsfString((DropMove) move);
 		} else if (move instanceof NormalMove) {
@@ -69,13 +69,13 @@ public class UsfMoveConverter {
 		}
 	}
 
-	public String toUsfString(final DropMove move) {
+	private static String toUsfString(final DropMove move) {
 		Piece piece = Piece.getPiece(move.getPieceType(), move.isSenteMoving());
 		return UsfUtil.pieceToString(piece) + '*' + UsfUtil.columnNumber2Char(move.getToSquare().getColumn())
 				+ UsfUtil.rowNumber2Char(move.getToSquare().getRow());
 	}
 
-	public String toUsfString(final NormalMove move) {
+	private static String toUsfString(final NormalMove move) {
 		return "" + UsfUtil.columnNumber2Char(move.getFromSquare().getColumn())
 				+ UsfUtil.rowNumber2Char(move.getFromSquare().getRow())
 				+ UsfUtil.columnNumber2Char(move.getToSquare().getColumn())

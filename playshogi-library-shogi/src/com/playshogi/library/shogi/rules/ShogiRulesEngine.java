@@ -46,11 +46,13 @@ public class ShogiRulesEngine implements GameRulesEngine<ShogiPosition> {
 		} else if (move instanceof NormalMove) {
 			playNormalMove(position, (NormalMove) move);
 		}
+		position.setSenteToPlay(!position.isSenteToPlay());
 	}
 
 	private void playCaptureMove(final ShogiPosition position, final CaptureMove move) {
+		// TODO
 		position.getShogiBoardState().setPieceAt(move.getToSquare(), move.getPiece());
-		position.getShogiBoardState().setPieceAt(move.getToSquare(), null);
+		position.getShogiBoardState().setPieceAt(move.getFromSquare(), null);
 	}
 
 	private void playDropMove(final ShogiPosition position, final DropMove move) {
@@ -60,7 +62,7 @@ public class ShogiRulesEngine implements GameRulesEngine<ShogiPosition> {
 
 	private void playNormalMove(final ShogiPosition position, final NormalMove move) {
 		position.getShogiBoardState().setPieceAt(move.getToSquare(), move.getPiece());
-		position.getShogiBoardState().setPieceAt(move.getToSquare(), null);
+		position.getShogiBoardState().setPieceAt(move.getFromSquare(), null);
 	}
 
 	@Override

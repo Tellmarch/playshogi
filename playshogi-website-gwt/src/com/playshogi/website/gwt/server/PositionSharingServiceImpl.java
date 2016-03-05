@@ -24,19 +24,22 @@ public class PositionSharingServiceImpl extends RemoteServiceServlet implements 
 
 	@Override
 	public String getPosition(final String key) {
+		System.out.println("someone requested position " + key);
 		return SfenConverter.toSFEN(positions.get(key));
 	}
 
 	@Override
 	public void sharePosition(final String position, final String key) {
+		System.out.println("someone share position " + position + " as " + key);
 		positions.put(key, SfenConverter.fromSFEN(position));
-		positionListeners.put(key, new HashSet<>());
 	}
 
 	@Override
 	public String getNextMove(final String key) {
+		System.out.println("someone is waiting for the next move in " + key);
 		FutureResult futureResult = new FutureResult();
-		positionListeners.get(key).add(futureResult);
+
+		getListeners(key).add(futureResult);
 		try {
 			return (String) futureResult.get();
 		} catch (Exception e) {
@@ -45,17 +48,25 @@ public class PositionSharingServiceImpl extends RemoteServiceServlet implements 
 		}
 	}
 
+	private Set<FutureResult> getListeners(final String key) {
+		if (!positionListeners.containsKey(key)) {
+			positionListeners.put(key, new HashSet<>());
+		}
+		return positionListeners.get(key);
+	}
+
 	@Override
 	public void playMove(final String key, final String move) {
-		if (positions.containsKey(move)) {
+		System.out.println("someone played move " + move + " in " + key);
+		if (positions.containsKey(key)) {
 			ShogiPosition position = positions.get(key);
 			ShogiMove shogiMove = UsfMoveConverter.fromUsfString(move, position);
 			shogiRulesEngine.playMoveInPosition(position, shogiMove);
-			Set<FutureResult> set = positionListeners.get(key);
-			for (FutureResult futureResult : set) {
+			for (FutureResult futureResult : getListeners(key)) {
+				System.out.println("setting a future in " + key);
 				futureResult.set(move);
 			}
-			set.clear();
+			getListeners(key).clear();
 		}
 	}
 }
