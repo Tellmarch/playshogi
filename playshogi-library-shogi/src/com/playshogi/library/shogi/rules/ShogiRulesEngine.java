@@ -13,14 +13,28 @@ import com.playshogi.library.shogi.models.moves.CaptureMove;
 import com.playshogi.library.shogi.models.moves.DropMove;
 import com.playshogi.library.shogi.models.moves.NormalMove;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
+import com.playshogi.library.shogi.rules.movements.BishopMovement;
+import com.playshogi.library.shogi.rules.movements.GoldMovement;
+import com.playshogi.library.shogi.rules.movements.KingMovement;
+import com.playshogi.library.shogi.rules.movements.KnightMovement;
+import com.playshogi.library.shogi.rules.movements.LanceMovement;
 import com.playshogi.library.shogi.rules.movements.PawnMovement;
 import com.playshogi.library.shogi.rules.movements.PieceMovement;
+import com.playshogi.library.shogi.rules.movements.RookMovement;
+import com.playshogi.library.shogi.rules.movements.SilverMovement;
 
 public class ShogiRulesEngine implements GameRulesEngine<ShogiPosition> {
 
 	private static final EnumMap<PieceType, PieceMovement> PIECE_MOVEMENTS = new EnumMap<>(PieceType.class);
 	static {
 		PIECE_MOVEMENTS.put(PieceType.PAWN, new PawnMovement());
+		PIECE_MOVEMENTS.put(PieceType.LANCE, new LanceMovement());
+		PIECE_MOVEMENTS.put(PieceType.KNIGHT, new KnightMovement());
+		PIECE_MOVEMENTS.put(PieceType.SILVER, new SilverMovement());
+		PIECE_MOVEMENTS.put(PieceType.GOLD, new GoldMovement());
+		PIECE_MOVEMENTS.put(PieceType.KING, new KingMovement());
+		PIECE_MOVEMENTS.put(PieceType.ROOK, new RookMovement());
+		PIECE_MOVEMENTS.put(PieceType.BISHOP, new BishopMovement());
 	}
 
 	@Override
@@ -89,10 +103,11 @@ public class ShogiRulesEngine implements GameRulesEngine<ShogiPosition> {
 	private boolean isNormalMoveLegalInPosition(final ShogiPosition position, final NormalMove move) {
 		PieceMovement pieceMovement = PIECE_MOVEMENTS.get(move.getPiece().getPieceType());
 		if (move.isSenteMoving()) {
-			return pieceMovement.isMoveDxDyValid(position.getShogiBoardState(), move.getFromSquare(), move.getToSquare());
+			return pieceMovement.isMoveDxDyValid(position.getShogiBoardState(), move.getFromSquare(),
+					move.getToSquare());
 		} else {
-			return pieceMovement.isMoveDxDyValid(position.getShogiBoardState().opposite(), move.getFromSquare().opposite(),
-					move.getToSquare().opposite());
+			return pieceMovement.isMoveDxDyValid(position.getShogiBoardState().opposite(),
+					move.getFromSquare().opposite(), move.getToSquare().opposite());
 		}
 	}
 

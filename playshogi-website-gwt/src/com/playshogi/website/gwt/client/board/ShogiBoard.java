@@ -1,5 +1,7 @@
 package com.playshogi.website.gwt.client.board;
 
+import java.util.List;
+
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -18,6 +20,7 @@ import com.playshogi.library.shogi.models.Piece;
 import com.playshogi.library.shogi.models.formats.sfen.SfenConverter;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.library.shogi.models.shogivariant.ShogiInitialPositionFactory;
+import com.playshogi.library.shogi.rules.ShogiRulesEngine;
 import com.playshogi.website.gwt.client.PositionSharingService;
 import com.playshogi.website.gwt.client.PositionSharingServiceAsync;
 import com.playshogi.website.gwt.client.board.Komadai.Point;
@@ -32,11 +35,9 @@ public class ShogiBoard implements EntryPoint, ClickHandler {
 	public static final int SQUARE_WIDTH = 43;
 	public static final int SQUARE_HEIGHT = 48;
 
+	private final ShogiRulesEngine shogiRulesEngine = new ShogiRulesEngine();
 	private ShogiPosition position;
-	private boolean pieceSelected = false;
-	private Piece selectedPiece = null;
-	private int selectionRow = 0;
-	private int selectionColumn = 0;
+	private PieceWrapper selectedPiece = null;
 	private Image[][] pieceImages;
 	private Image[][] squareImages;
 	private Image ban;
@@ -57,8 +58,6 @@ public class ShogiBoard implements EntryPoint, ClickHandler {
 
 	@Override
 	public void onModuleLoad() {
-
-		initSquareImages();
 
 		final Button shareButton = new Button("Share");
 		final Button loadButton = new Button("Load");
@@ -134,9 +133,10 @@ public class ShogiBoard implements EntryPoint, ClickHandler {
 
 		position = new ShogiInitialPositionFactory().createInitialPosition();
 
+		initSquareImages();
+
 		displayPosition();
 
-		grid.addClickHandler(this);
 		goteKomadaiImage.addClickHandler(this);
 		senteKomadaiImage.addClickHandler(this);
 
@@ -158,11 +158,14 @@ public class ShogiBoard implements EntryPoint, ClickHandler {
 		for (int row = 0; row < rows; ++row) {
 			for (int col = 0; col < columns; ++col) {
 				final Image image = new Image(boardResources.empty());
+				image.addClickHandler(this);
 
 				squareImages[row][col] = image;
 				image.setStyleName("gwt-piece-unselected");
 
 				absolutePanel.add(image, getX(col), getY(row));
+
+				setupSquareClickHandler(image, row, col);
 			}
 		}
 	}
@@ -192,11 +195,11 @@ public class ShogiBoard implements EntryPoint, ClickHandler {
 				if (piece != null) {
 					final Image image = new Image(PieceGraphics.getPieceImage(piece));
 
-					final int imageRow = row;
-					final int imageCol = col;
-					pieceImages[imageRow][imageCol] = image;
+					pieceImages[row][col] = image;
 
-					setupPieceClickHandler(image, imageRow, imageCol, piece);
+					PieceWrapper pieceWrapper = new PieceWrapper(piece, image, row, col);
+
+					setupPieceClickHandler(pieceWrapper);
 					image.setStyleName("gwt-piece-unselected");
 
 					absolutePanel.add(image, getX(col), getY(row));
@@ -229,7 +232,7 @@ public class ShogiBoard implements EntryPoint, ClickHandler {
 		return (y - BOARD_TOP_MARGIN) / SQUARE_HEIGHT;
 	}
 
-	private void setupPieceClickHandler(final Image image, final int imageRow, final int imageCol, final Piece piece) {
+	private void setupSquareClickHandler(final Image image, final int row, final int col) {
 		image.addMouseDownHandler(new MouseDownHandler() {
 			@Override
 			public void onMouseDown(final MouseDownEvent event) {
@@ -240,19 +243,50 @@ public class ShogiBoard implements EntryPoint, ClickHandler {
 		image.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(final ClickEvent event) {
+				if (selectedPiece != null) {
+					Piece piece = selectedPiece.getPiece();
+					absolutePanel.add(selectedPiece.getImage(), getX(col), getY(row));
+					selectedPiece.setColumn(col);
+					selectedPiece.setRow(row);
+					selectedPiece.setInKomadai(false);
 
-				if (image.getStyleName().equals("gwt-piece-selected")) {
-					image.setStyleName("gwt-piece-unselected");
-					pieceSelected = false;
+					position.getShogiBoardState().setPieceAt(getSquare(row, col), piece);
+
+					unselect();
+				}
+			}
+		});
+	}
+
+	private void setupPieceClickHandler(final PieceWrapper pieceWrapper) {
+		pieceWrapper.getImage().addMouseDownHandler(new MouseDownHandler() {
+			@Override
+			public void onMouseDown(final MouseDownEvent event) {
+				event.preventDefault();
+			}
+		});
+
+		pieceWrapper.getImage().addClickHandler(new ClickHandler() {
+			@Override
+			public void onClick(final ClickEvent event) {
+
+				if (selectedPiece == pieceWrapper) {
+					unselect();
 				} else {
-					if (pieceSelected) {
+					if (selectedPiece != null) {
 						unselect();
 					}
-					selectedPiece = piece;
-					selectionRow = imageRow;
-					selectionColumn = imageCol;
-					pieceSelected = true;
-					image.setStyleName("gwt-piece-selected");
+					selectedPiece = pieceWrapper;
+					pieceWrapper.getImage().setStyleName("gwt-piece-selected");
+
+					if (!pieceWrapper.isInKomadai()) {
+						List<Square> possibleTargets = shogiRulesEngine.getPossibleTargetSquaresFromSquareInPosition(
+								position, getSquare(pieceWrapper.getRow(), pieceWrapper.getColumn()));
+						for (Square square : possibleTargets) {
+							squareImages[square.getRow() - 1][8 - (square.getColumn() - 1)]
+									.setStyleName("gwt-square-selected");
+						}
+					}
 				}
 			}
 
@@ -260,39 +294,36 @@ public class ShogiBoard implements EntryPoint, ClickHandler {
 	}
 
 	private void unselect() {
-		pieceImages[selectionRow][selectionColumn].setStyleName("gwt-piece-unselected");
-		pieceSelected = false;
+		for (int i = 0; i < 9; i++) {
+			for (int j = 0; j < 9; j++) {
+				squareImages[i][j].setStyleName("gwt-square-unselected");
+			}
+		}
+		if (selectedPiece != null) {
+			selectedPiece.getImage().setStyleName("gwt-piece-unselected");
+			selectedPiece = null;
+		}
 	}
 
 	@Override
 	public void onClick(final ClickEvent event) {
 
 		Object source = event.getSource();
-		if (source == grid) {
-			if (pieceSelected) {
-				Piece piece = selectedPiece;
-				int column = getColumn(event.getX());
-				int row = getRow(event.getY());
-				absolutePanel.add(pieceImages[selectionRow][selectionColumn], getX(column), getY(row));
-				unselect();
-
-				position.getShogiBoardState().setPieceAt(getSquare(row, column), piece);
-			}
-		} else if (source == senteKomadaiImage && pieceSelected) {
-			Piece piece = selectedPiece;
+		if (source == senteKomadaiImage && selectedPiece != null) {
+			Piece piece = selectedPiece.getPiece();
+			selectedPiece.setInKomadai(true);
 
 			Point point = senteKomadai.addPiece(piece);
 
-			absolutePanel.add(pieceImages[selectionRow][selectionColumn], senteKomadaiX + point.x,
-					senteKomadaiY + point.y);
+			absolutePanel.add(selectedPiece.getImage(), senteKomadaiX + point.x, senteKomadaiY + point.y);
 			unselect();
-		} else if (source == goteKomadaiImage && pieceSelected) {
-			Piece piece = selectedPiece;
+		} else if (source == goteKomadaiImage && selectedPiece != null) {
+			Piece piece = selectedPiece.getPiece();
+			selectedPiece.setInKomadai(true);
 
 			Point point = goteKomadai.addPiece(piece);
 
-			absolutePanel.add(pieceImages[selectionRow][selectionColumn], TATAMI_LEFT_MARGIN + point.x,
-					TATAMI_TOP_MARGIN + point.y);
+			absolutePanel.add(selectedPiece.getImage(), TATAMI_LEFT_MARGIN + point.x, TATAMI_TOP_MARGIN + point.y);
 			unselect();
 		}
 	}

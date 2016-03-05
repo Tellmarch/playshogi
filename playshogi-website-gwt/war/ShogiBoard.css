@@ -1,8 +1,14 @@
 .gwt-piece-selected{ 
-  //  border:0px solid green;
    background: rgba(255,0,0, 0.5);
 }
 
 .gwt-piece-unselected{ 
-   // border:0px solid white;
+}
+
+.gwt-square-selected{ 
+   background: rgba(255,0,0, 0.3);
+}
+
+
+.gwt-square-unselected{ 
 }
