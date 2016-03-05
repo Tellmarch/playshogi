@@ -17,7 +17,7 @@ public class ShogiPosition implements Position {
 	}
 
 	public ShogiPosition(final ShogiVariant shogiVariant) {
-		shogiBoardState = new ShogiBoardState(shogiVariant.getBoardWidth(), shogiVariant.getBoardHeight());
+		shogiBoardState = new ShogiBoardStateImpl(shogiVariant.getBoardWidth(), shogiVariant.getBoardHeight());
 		senteToPlay = true;
 		goteKomadai = new KomadaiState();
 		senteKomadai = new KomadaiState();

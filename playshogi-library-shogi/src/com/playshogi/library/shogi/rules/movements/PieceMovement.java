@@ -7,10 +7,10 @@ import com.playshogi.library.shogi.models.position.ShogiBoardState;
 
 public interface PieceMovement {
 
-	List<Square> getPossibleMoves(ShogiBoardState position, Square from);
+	List<Square> getPossibleMoves(ShogiBoardState boardState, Square from);
 
-	boolean isMoveValid(ShogiBoardState position, Square from, Square to);
+	boolean isMoveValid(ShogiBoardState boardState, Square from, Square to);
 
-	boolean isDropValid(ShogiBoardState position, Square to);
+	boolean isDropValid(ShogiBoardState boardState, Square to);
 
 }

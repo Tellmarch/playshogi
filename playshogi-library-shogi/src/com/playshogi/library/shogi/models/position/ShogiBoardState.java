@@ -2,57 +2,23 @@ package com.playshogi.library.shogi.models.position;
 
 import com.playshogi.library.models.Square;
 import com.playshogi.library.shogi.models.Piece;
-import com.playshogi.library.shogi.models.PieceType;
 
-public class ShogiBoardState {
+public interface ShogiBoardState {
 
-	private final int width;
-	private final int height;
+	Piece getPieceAt(int column, int row);
 
-	private final Piece[][] board;
+	void setPieceAt(int column, int row, Piece piece);
 
-	public ShogiBoardState(final int width, final int height) {
-		this.width = width;
-		this.height = height;
+	void setPieceAt(Square square, Piece piece);
 
-		board = new Piece[width][height];
-	}
+	Piece getPieceAt(Square square);
 
-	public Piece getPieceAt(final int column, final int row) {
-		return board[column - 1][row - 1];
-	}
+	int getWidth();
 
-	public void setPieceAt(final int column, final int row, final Piece piece) {
-		board[column - 1][row - 1] = piece;
-	}
+	int getHeight();
 
-	public void setPieceAt(final Square square, final Piece piece) {
-		setPieceAt(square.getColumn(), square.getRow(), piece);
-	}
+	ShogiBoardState opposite();
 
-	public Piece getPieceAt(final Square square) {
-		return getPieceAt(square.getColumn(), square.getRow());
-	}
+	boolean hasPlayerPawnOnColumn(boolean isPlayerSente, int column);
 
-	public int getWidth() {
-		return width;
-	}
-
-	public int getHeight() {
-		return height;
-	}
-
-	public boolean hasSentePawnOnColumn(final int column) {
-		for (Piece piece : board[column - 1]) {
-			if (piece != null && piece.isSentePiece() && piece.getPieceType() == PieceType.PAWN) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	public ShogiBoardState opposite() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 }

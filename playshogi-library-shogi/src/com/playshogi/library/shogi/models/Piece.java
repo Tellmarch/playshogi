@@ -69,6 +69,10 @@ public enum Piece {
 		return promotedPiece != null;
 	}
 
+	public Piece opposite() {
+		return getPiece(pieceType, !sentePiece, promoted);
+	}
+
 	@Override
 	public String toString() {
 		return pieceType.name() + (sentePiece ? ",sente" : ",gote") + (promoted ? ", promoted" : "");
@@ -89,6 +93,14 @@ public enum Piece {
 
 	public static Piece getPiece(final PieceType pieceType, final boolean sente) {
 		return sente ? allPieces[pieceType.ordinal() * 4 + 2] : allPieces[pieceType.ordinal() * 4];
+	}
+
+	public static Piece getOppositePiece(final Piece piece) {
+		if (piece == null) {
+			return null;
+		} else {
+			return piece.opposite();
+		}
 	}
 
 }

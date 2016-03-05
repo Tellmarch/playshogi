@@ -7,7 +7,7 @@ import com.playshogi.library.models.Square;
 import com.playshogi.library.shogi.models.Piece;
 import com.playshogi.library.shogi.models.position.ShogiBoardState;
 
-public class PawnPieceMovement implements PieceMovement {
+public class PawnMovement implements PieceMovement {
 
 	@Override
 	public List<Square> getPossibleMoves(final ShogiBoardState position, final Square from) {
@@ -28,7 +28,7 @@ public class PawnPieceMovement implements PieceMovement {
 
 	@Override
 	public boolean isDropValid(final ShogiBoardState position, final Square to) {
-		return !position.hasSentePawnOnColumn(to.getColumn()) && !checkMatePawnMove(position, to);
+		return !position.hasPlayerPawnOnColumn(true, to.getColumn()) && !checkMatePawnMove(position, to);
 	}
 
 	private boolean checkMatePawnMove(final ShogiBoardState position, final Square to) {

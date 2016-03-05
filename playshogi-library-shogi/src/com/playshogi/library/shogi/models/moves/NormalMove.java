@@ -10,9 +10,8 @@ public class NormalMove extends ShogiMove {
 	private final Square toSquare;
 	private final boolean promote;
 
-	public NormalMove(final boolean senteMoving, final Piece piece, final Square fromSquare, final Square toSquare,
-			final boolean promote) {
-		super(senteMoving);
+	public NormalMove(final Piece piece, final Square fromSquare, final Square toSquare, final boolean promote) {
+		super(piece.isSentePiece());
 		this.piece = piece;
 		this.fromSquare = fromSquare;
 		this.toSquare = toSquare;

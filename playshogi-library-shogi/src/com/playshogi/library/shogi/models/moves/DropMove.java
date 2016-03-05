@@ -1,19 +1,20 @@
 package com.playshogi.library.shogi.models.moves;
 
 import com.playshogi.library.models.Square;
-import com.playshogi.library.shogi.models.Piece;
+import com.playshogi.library.shogi.models.PieceType;
 
-public class DropMove {
+public class DropMove extends ShogiMove {
 
-	private final Piece piece;
+	private final PieceType piece;
 	private final Square toSquare;
 
-	public DropMove(final Piece piece, final Square toSquare) {
+	public DropMove(final boolean senteMoving, final PieceType piece, final Square toSquare) {
+		super(senteMoving);
 		this.piece = piece;
 		this.toSquare = toSquare;
 	}
 
-	public Piece getPiece() {
+	public PieceType getPieceType() {
 		return piece;
 	}
 
