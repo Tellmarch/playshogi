@@ -5,6 +5,9 @@ import com.playshogi.library.shogi.models.Piece;
 
 public interface ShogiBoardState {
 
+	static final int FIRST_ROW = 1;
+	static final int FIRST_COLUMN = 1;
+
 	Piece getPieceAt(int column, int row);
 
 	void setPieceAt(int column, int row, Piece piece);
@@ -20,5 +23,7 @@ public interface ShogiBoardState {
 	ShogiBoardState opposite();
 
 	boolean hasPlayerPawnOnColumn(boolean isPlayerSente, int column);
+
+	boolean isSquareEmptyOrGote(Square square);
 
 }

@@ -71,6 +71,12 @@ public class ShogiBoardStateImpl implements ShogiBoardState {
 		return invert;
 	}
 
+	@Override
+	public boolean isSquareEmptyOrGote(final Square square) {
+		Piece piece = getPieceAt(square);
+		return piece == null || !piece.isSentePiece();
+	}
+
 	private static class InvertedShogiBoardState implements ShogiBoardState {
 		private final ShogiBoardState original;
 
@@ -118,5 +124,10 @@ public class ShogiBoardStateImpl implements ShogiBoardState {
 			return original;
 		}
 
+		@Override
+		public boolean isSquareEmptyOrGote(final Square square) {
+			Piece piece = original.getPieceAt(square.opposite());
+			return piece == null || piece.isSentePiece();
+		}
 	}
 }

@@ -11,7 +11,7 @@ public class PawnMovement implements PieceMovement {
 
 	@Override
 	public List<Square> getPossibleMoves(final ShogiBoardState position, final Square from) {
-		if (from.getRow() != 0) {
+		if (from.getRow() != ShogiBoardState.FIRST_ROW) {
 			Piece piece = position.getPieceAt(from.getColumn(), from.getRow() - 1);
 			if (piece == null || !piece.isSentePiece()) {
 				return Collections.singletonList(Square.of(from.getColumn(), from.getRow() - 1));
@@ -22,13 +22,14 @@ public class PawnMovement implements PieceMovement {
 	}
 
 	@Override
-	public boolean isMoveValid(final ShogiBoardState position, final Square from, final Square to) {
+	public boolean isMoveDxDyValid(final ShogiBoardState position, final Square from, final Square to) {
 		return from.getColumn() == to.getColumn() && from.getRow() == to.getRow() + 1;
 	}
 
 	@Override
 	public boolean isDropValid(final ShogiBoardState position, final Square to) {
-		return !position.hasPlayerPawnOnColumn(true, to.getColumn()) && !checkMatePawnMove(position, to);
+		return to.getRow() != ShogiBoardState.FIRST_ROW && !position.hasPlayerPawnOnColumn(true, to.getColumn())
+				&& !checkMatePawnMove(position, to);
 	}
 
 	private boolean checkMatePawnMove(final ShogiBoardState position, final Square to) {

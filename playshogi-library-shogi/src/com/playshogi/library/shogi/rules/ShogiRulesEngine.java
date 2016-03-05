@@ -89,9 +89,9 @@ public class ShogiRulesEngine implements GameRulesEngine<ShogiPosition> {
 	private boolean isNormalMoveLegalInPosition(final ShogiPosition position, final NormalMove move) {
 		PieceMovement pieceMovement = PIECE_MOVEMENTS.get(move.getPiece().getPieceType());
 		if (move.isSenteMoving()) {
-			return pieceMovement.isMoveValid(position.getShogiBoardState(), move.getFromSquare(), move.getToSquare());
+			return pieceMovement.isMoveDxDyValid(position.getShogiBoardState(), move.getFromSquare(), move.getToSquare());
 		} else {
-			return pieceMovement.isMoveValid(position.getShogiBoardState().opposite(), move.getFromSquare().opposite(),
+			return pieceMovement.isMoveDxDyValid(position.getShogiBoardState().opposite(), move.getFromSquare().opposite(),
 					move.getToSquare().opposite());
 		}
 	}
@@ -112,11 +112,6 @@ public class ShogiRulesEngine implements GameRulesEngine<ShogiPosition> {
 		} else {
 			return isNormalMoveLegalInPosition(position, move);
 		}
-	}
-
-	public static boolean hasSentePieceMoves(final PieceType piece, final int row) {
-		return (row > 1) || !(piece == PieceType.PAWN && row == 1 || piece == PieceType.KNIGHT && row <= 1
-				|| piece == PieceType.LANCE && row == 0);
 	}
 
 }
