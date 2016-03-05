@@ -10,4 +10,8 @@ public interface PositionSharingService extends RemoteService {
 
 	void sharePosition(String position, String key);
 
+	String getNextMove(String key);
+
+	void playMove(String key, String move);
+
 }

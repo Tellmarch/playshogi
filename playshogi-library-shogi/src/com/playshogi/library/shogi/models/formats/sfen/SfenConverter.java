@@ -1,9 +1,12 @@
 package com.playshogi.library.shogi.models.formats.sfen;
 
+import static com.playshogi.library.shogi.models.formats.usf.UsfUtil.pieceFromChar;
+import static com.playshogi.library.shogi.models.formats.usf.UsfUtil.pieceToString;
+
 import com.playshogi.library.shogi.models.Piece;
 import com.playshogi.library.shogi.models.PieceType;
-import com.playshogi.library.shogi.models.position.ShogiBoardState;
 import com.playshogi.library.shogi.models.position.KomadaiState;
+import com.playshogi.library.shogi.models.position.ShogiBoardState;
 import com.playshogi.library.shogi.models.position.ShogiBoardStateImpl;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
 
@@ -169,108 +172,6 @@ public class SfenConverter {
 		}
 
 		return new ShogiPosition(senteTurn, shogiBoardState, senteKomadai, goteKomadai);
-	}
-
-	public static Piece pieceFromChar(final char x) {
-		switch (x) {
-		case 'P':
-			return Piece.SENTE_PAWN;
-		case 'L':
-			return Piece.SENTE_LANCE;
-		case 'N':
-			return Piece.SENTE_KNIGHT;
-		case 'S':
-			return Piece.SENTE_SILVER;
-		case 'G':
-			return Piece.SENTE_GOLD;
-		case 'B':
-			return Piece.SENTE_BISHOP;
-		case 'R':
-			return Piece.SENTE_ROOK;
-		case 'K':
-			return Piece.SENTE_KING;
-		case 'p':
-			return Piece.GOTE_PAWN;
-		case 'l':
-			return Piece.GOTE_LANCE;
-		case 'n':
-			return Piece.GOTE_KNIGHT;
-		case 's':
-			return Piece.GOTE_SILVER;
-		case 'g':
-			return Piece.GOTE_GOLD;
-		case 'b':
-			return Piece.GOTE_BISHOP;
-		case 'r':
-			return Piece.GOTE_ROOK;
-		case 'k':
-			return Piece.GOTE_KING;
-		}
-		return null;
-	}
-
-	public static String pieceToString(final Piece x) {
-		switch (x) {
-		case GOTE_BISHOP:
-			return "b";
-		case GOTE_GOLD:
-			return "g";
-		case GOTE_KING:
-			return "k";
-		case GOTE_KNIGHT:
-			return "n";
-		case GOTE_LANCE:
-			return "l";
-		case GOTE_PAWN:
-			return "p";
-		case GOTE_PROMOTED_BISHOP:
-			return "+b";
-		case GOTE_PROMOTED_KNIGHT:
-			return "+n";
-		case GOTE_PROMOTED_LANCE:
-			return "+l";
-		case GOTE_PROMOTED_PAWN:
-			return "+p";
-		case GOTE_PROMOTED_ROOK:
-			return "+r";
-		case GOTE_PROMOTED_SILVER:
-			return "+s";
-		case GOTE_ROOK:
-			return "r";
-		case GOTE_SILVER:
-			return "s";
-		case SENTE_BISHOP:
-			return "B";
-		case SENTE_GOLD:
-			return "G";
-		case SENTE_KING:
-			return "K";
-		case SENTE_KNIGHT:
-			return "N";
-		case SENTE_LANCE:
-			return "L";
-		case SENTE_PAWN:
-			return "P";
-		case SENTE_PROMOTED_BISHOP:
-			return "+B";
-		case SENTE_PROMOTED_KNIGHT:
-			return "+N";
-		case SENTE_PROMOTED_LANCE:
-			return "+L";
-		case SENTE_PROMOTED_PAWN:
-			return "+P";
-		case SENTE_PROMOTED_ROOK:
-			return "+R";
-		case SENTE_PROMOTED_SILVER:
-			return "+S";
-		case SENTE_ROOK:
-			return "R";
-		case SENTE_SILVER:
-			return "S";
-		default:
-			return "";
-
-		}
 	}
 
 	public static void main(final String[] args) {

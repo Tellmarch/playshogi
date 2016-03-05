@@ -8,4 +8,8 @@ public interface PositionSharingServiceAsync {
 
 	void getPosition(String key, AsyncCallback<String> callback);
 
+	void getNextMove(String key, AsyncCallback<String> callback);
+
+	void playMove(String key, String move, AsyncCallback<Void> callback);
+
 }

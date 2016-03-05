@@ -11,6 +11,9 @@ public class PlayShogiMain implements EntryPoint {
 	public void onModuleLoad() {
 		ShogiBoard shogiBoard = new ShogiBoard();
 		PositionSharing positionSharing = new PositionSharing(shogiBoard);
+		// BoardConfigurationMenu boardConfigurationMenu = new
+		// BoardConfigurationMenu(shogiBoard);
+		// RootPanel.get().add(boardConfigurationMenu);
 		RootPanel.get().add(positionSharing);
 		RootPanel.get().add(shogiBoard);
 	}

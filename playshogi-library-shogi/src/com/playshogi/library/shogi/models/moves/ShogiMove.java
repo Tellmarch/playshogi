@@ -1,6 +1,8 @@
 package com.playshogi.library.shogi.models.moves;
 
-public class ShogiMove {
+import com.playshogi.library.models.Move;
+
+public class ShogiMove implements Move {
 
 	private final boolean senteMoving;
 

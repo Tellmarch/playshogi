@@ -2,7 +2,7 @@ package com.playshogi.library.shogi.models.position;
 
 import com.playshogi.library.models.Square;
 import com.playshogi.library.shogi.models.Piece;
-import com.playshogi.library.shogi.models.formats.sfen.SfenConverter;
+import com.playshogi.library.shogi.models.formats.usf.UsfUtil;
 
 public abstract class ShogiBoardState {
 
@@ -46,7 +46,7 @@ public abstract class ShogiBoardState {
 				if (pieceAt == null) {
 					builder.append("  ");
 				} else {
-					String pieceToString = SfenConverter.pieceToString(pieceAt);
+					String pieceToString = UsfUtil.pieceToString(pieceAt);
 					if (pieceToString.length() == 1) {
 						builder.append(' ');
 					}
