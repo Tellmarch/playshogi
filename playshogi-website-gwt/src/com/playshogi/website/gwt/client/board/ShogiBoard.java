@@ -9,6 +9,10 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
+import com.google.gwt.event.dom.client.MouseOutEvent;
+import com.google.gwt.event.dom.client.MouseOutHandler;
+import com.google.gwt.event.dom.client.MouseOverEvent;
+import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Button;
@@ -36,6 +40,7 @@ public class ShogiBoard implements EntryPoint, ClickHandler {
 	public static final int SQUARE_WIDTH = 43;
 	public static final int SQUARE_HEIGHT = 48;
 
+	private final BoardConfiguration boardConfiguration = new BoardConfiguration();
 	private final ShogiRulesEngine shogiRulesEngine = new ShogiRulesEngine();
 	private ShogiPosition position;
 	private PieceWrapper selectedPiece = null;
@@ -283,20 +288,60 @@ public class ShogiBoard implements EntryPoint, ClickHandler {
 			}
 
 		});
+
+		if (boardConfiguration.isShowPossibleMovesOnPieceMouseOver()) {
+
+			pieceWrapper.getImage().addMouseOverHandler(new MouseOverHandler() {
+
+				@Override
+				public void onMouseOver(final MouseOverEvent event) {
+					// GWT.log("mouse over");
+					if (selectedPiece == null) {
+						if (!pieceWrapper.isInKomadai()) {
+							List<Square> possibleTargets = shogiRulesEngine
+									.getPossibleTargetSquaresFromSquareInPosition(position,
+											getSquare(pieceWrapper.getRow(), pieceWrapper.getColumn()));
+							for (Square square : possibleTargets) {
+								squareImages[square.getRow() - 1][8 - (square.getColumn() - 1)]
+										.setStyleName("gwt-square-selected");
+							}
+							squareImages[pieceWrapper.getRow()][pieceWrapper.getColumn()]
+									.setStyleName("gwt-square-selected");
+						}
+					}
+
+				}
+			});
+
+			pieceWrapper.getImage().addMouseOutHandler(new MouseOutHandler() {
+
+				@Override
+				public void onMouseOut(final MouseOutEvent event) {
+					// GWT.log("mouse out");
+					if (selectedPiece == null) {
+						unselectSquares();
+					}
+				}
+			});
+		}
 	}
 
 	private void unselect() {
-		for (int i = 0; i < 9; i++) {
-			for (int j = 0; j < 9; j++) {
-				squareImages[i][j].setStyleName("gwt-square-unselected");
-			}
-		}
+		unselectSquares();
 		if (selectedPiece != null) {
 			selectedPiece.getImage().setStyleName("gwt-piece-unselected");
 			selectedPiece = null;
 		}
 
 		GWT.log(position.toString());
+	}
+
+	private void unselectSquares() {
+		for (int i = 0; i < 9; i++) {
+			for (int j = 0; j < 9; j++) {
+				squareImages[i][j].setStyleName("gwt-square-unselected");
+			}
+		}
 	}
 
 	@Override
