@@ -303,6 +303,8 @@ public class ShogiBoard implements EntryPoint, ClickHandler {
 			selectedPiece.getImage().setStyleName("gwt-piece-unselected");
 			selectedPiece = null;
 		}
+
+		GWT.log(position.toString());
 	}
 
 	@Override

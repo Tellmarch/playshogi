@@ -67,4 +67,9 @@ public class ShogiPosition implements Position {
 		return shogiBoardState.getPieceAt(square);
 	}
 
+	@Override
+	public String toString() {
+		return shogiBoardState.toString();
+	}
+
 }
