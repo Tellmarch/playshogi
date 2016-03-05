@@ -3,7 +3,6 @@ package com.playshogi.website.gwt.client.board;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -13,24 +12,18 @@ import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbsolutePanel;
-import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DecoratorPanel;
 import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.TextBox;
 import com.playshogi.library.models.Square;
 import com.playshogi.library.shogi.models.Piece;
-import com.playshogi.library.shogi.models.formats.sfen.SfenConverter;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.library.shogi.models.shogivariant.ShogiInitialPositionFactory;
 import com.playshogi.library.shogi.rules.ShogiRulesEngine;
-import com.playshogi.website.gwt.client.PositionSharingService;
-import com.playshogi.website.gwt.client.PositionSharingServiceAsync;
 import com.playshogi.website.gwt.client.board.Komadai.Point;
 
-public class ShogiBoard implements EntryPoint, ClickHandler {
+public class ShogiBoard extends Composite implements ClickHandler {
 
 	private static final int TATAMI_LEFT_MARGIN = 10;
 	private static final int TATAMI_TOP_MARGIN = 10;
@@ -46,72 +39,21 @@ public class ShogiBoard implements EntryPoint, ClickHandler {
 	private PieceWrapper selectedPiece = null;
 	private final List<PieceWrapper> pieceWrappers = new ArrayList<>();
 	private Image[][] squareImages;
-	private Image ban;
-	private AbsolutePanel absolutePanel;
-	private Image grid;
-	private int boardLeft;
-	private int boardTop;
-	private Image goteKomadaiImage;
-	private Image senteKomadaiImage;
-	private Komadai senteKomadai;
-	private Komadai goteKomadai;
-	private int senteKomadaiX;
-	private int senteKomadaiY;
+	private final Image ban;
+	private final AbsolutePanel absolutePanel;
+	private final Image grid;
+	private final int boardLeft;
+	private final int boardTop;
+	private final Image goteKomadaiImage;
+	private final Image senteKomadaiImage;
+	private final Komadai senteKomadai;
+	private final Komadai goteKomadai;
+	private final int senteKomadaiX;
+	private final int senteKomadaiY;
 
 	private static final BoardBundle boardResources = GWT.create(BoardBundle.class);
 
-	private final PositionSharingServiceAsync positionSharingService = GWT.create(PositionSharingService.class);
-
-	@Override
-	public void onModuleLoad() {
-
-		final Button shareButton = new Button("Share");
-		final Button loadButton = new Button("Load");
-		final TextBox keyField = new TextBox();
-		keyField.setText("MyBoard");
-
-		shareButton.addClickHandler(new ClickHandler() {
-			@Override
-			public void onClick(final ClickEvent event) {
-				positionSharingService.sharePosition(
-						"lnsg3nl/2k2gr2/ppbp1p1pp/2p1P4/4s1S2/5B3/PPPP1P1PP/2S1GGR2/LN4KNL b 2Pp 34",
-						keyField.getText(), new AsyncCallback<Void>() {
-
-							@Override
-							public void onSuccess(final Void result) {
-								GWT.log("share success");
-							}
-
-							@Override
-							public void onFailure(final Throwable caught) {
-								GWT.log("share failure");
-							}
-						});
-			}
-		});
-
-		loadButton.addClickHandler(new ClickHandler() {
-			@Override
-			public void onClick(final ClickEvent event) {
-				positionSharingService.getPosition(keyField.getText(), new AsyncCallback<String>() {
-
-					@Override
-					public void onFailure(final Throwable caught) {
-						GWT.log("load failure");
-					}
-
-					@Override
-					public void onSuccess(final String result) {
-						GWT.log("load success");
-						ShogiPosition positionFromServer = SfenConverter.fromSFEN(result);
-						if (positionFromServer != null) {
-							position = positionFromServer;
-							displayPosition();
-						}
-					}
-				});
-			}
-		});
+	public ShogiBoard() {
 
 		absolutePanel = new AbsolutePanel();
 		ban = new Image(boardResources.ban_kaya_a());
@@ -149,10 +91,7 @@ public class ShogiBoard implements EntryPoint, ClickHandler {
 		DecoratorPanel absolutePanelWrapper = new DecoratorPanel();
 		absolutePanelWrapper.setWidget(absolutePanel);
 
-		RootPanel.get().add(keyField);
-		RootPanel.get().add(shareButton);
-		RootPanel.get().add(loadButton);
-		RootPanel.get().add(absolutePanelWrapper);
+		initWidget(absolutePanelWrapper);
 	}
 
 	private void initSquareImages() {
@@ -365,5 +304,14 @@ public class ShogiBoard implements EntryPoint, ClickHandler {
 			absolutePanel.add(selectedPiece.getImage(), TATAMI_LEFT_MARGIN + point.x, TATAMI_TOP_MARGIN + point.y);
 			unselect();
 		}
+	}
+
+	public void setPosition(final ShogiPosition position) {
+		this.position = position;
+		displayPosition();
+	}
+
+	public ShogiPosition getPosition() {
+		return position;
 	}
 }

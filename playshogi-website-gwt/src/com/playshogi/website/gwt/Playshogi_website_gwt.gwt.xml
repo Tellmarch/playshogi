@@ -22,7 +22,7 @@
 	<inherits name="com.playshogi.playshogi-library-shogi" />
 
 	<!-- Specify the app entry point class. -->
-	<entry-point class='com.playshogi.website.gwt.client.board.ShogiBoard' />
+	<entry-point class='com.playshogi.website.gwt.client.PlayShogiMain' />
 
 	<!-- Specify the paths for translatable code -->
 	<source path='client' />
