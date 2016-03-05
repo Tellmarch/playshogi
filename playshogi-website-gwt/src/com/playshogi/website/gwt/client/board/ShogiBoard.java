@@ -1,5 +1,6 @@
 package com.playshogi.website.gwt.client.board;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.google.gwt.core.client.EntryPoint;
@@ -38,7 +39,7 @@ public class ShogiBoard implements EntryPoint, ClickHandler {
 	private final ShogiRulesEngine shogiRulesEngine = new ShogiRulesEngine();
 	private ShogiPosition position;
 	private PieceWrapper selectedPiece = null;
-	private Image[][] pieceImages;
+	private final List<PieceWrapper> pieceWrappers = new ArrayList<>();
 	private Image[][] squareImages;
 	private Image ban;
 	private AbsolutePanel absolutePanel;
@@ -175,19 +176,11 @@ public class ShogiBoard implements EntryPoint, ClickHandler {
 		int rows = position.getShogiBoardState().getHeight();
 		int columns = position.getShogiBoardState().getWidth();
 
-		if (pieceImages != null) {
-			for (int row = 0; row < rows; ++row) {
-				for (int col = 0; col < columns; ++col) {
-					Image image = pieceImages[row][col];
-					if (image != null) {
-
-						absolutePanel.remove(image);
-					}
-				}
-			}
+		for (PieceWrapper wrapper : pieceWrappers) {
+			absolutePanel.remove(wrapper.getImage());
 		}
 
-		pieceImages = new Image[rows][columns];
+		pieceWrappers.clear();
 
 		for (int row = 0; row < rows; ++row) {
 			for (int col = 0; col < columns; ++col) {
@@ -195,9 +188,8 @@ public class ShogiBoard implements EntryPoint, ClickHandler {
 				if (piece != null) {
 					final Image image = new Image(PieceGraphics.getPieceImage(piece));
 
-					pieceImages[row][col] = image;
-
 					PieceWrapper pieceWrapper = new PieceWrapper(piece, image, row, col);
+					pieceWrappers.add(pieceWrapper);
 
 					setupPieceClickHandler(pieceWrapper);
 					image.setStyleName("gwt-piece-unselected");
