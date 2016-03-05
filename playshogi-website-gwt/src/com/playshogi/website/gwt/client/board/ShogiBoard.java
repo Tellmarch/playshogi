@@ -38,6 +38,7 @@ public class ShogiBoard implements EntryPoint, ClickHandler {
 	private int selectionRow = 0;
 	private int selectionColumn = 0;
 	private Image[][] pieceImages;
+	private Image[][] squareImages;
 	private Image ban;
 	private AbsolutePanel absolutePanel;
 	private Image grid;
@@ -50,10 +51,14 @@ public class ShogiBoard implements EntryPoint, ClickHandler {
 	private int senteKomadaiX;
 	private int senteKomadaiY;
 
+	private static final BoardBundle boardResources = GWT.create(BoardBundle.class);
+
 	private final PositionSharingServiceAsync positionSharingService = GWT.create(PositionSharingService.class);
 
 	@Override
 	public void onModuleLoad() {
+
+		initSquareImages();
 
 		final Button shareButton = new Button("Share");
 		final Button loadButton = new Button("Load");
@@ -103,8 +108,6 @@ public class ShogiBoard implements EntryPoint, ClickHandler {
 			}
 		});
 
-		BoardBundle boardResources = GWT.create(BoardBundle.class);
-
 		absolutePanel = new AbsolutePanel();
 		ban = new Image(boardResources.ban_kaya_a());
 		grid = new Image(boardResources.masu_dot());
@@ -146,6 +149,24 @@ public class ShogiBoard implements EntryPoint, ClickHandler {
 		RootPanel.get().add(absolutePanelWrapper);
 	}
 
+	private void initSquareImages() {
+		int rows = 9;
+		int columns = 9;
+
+		squareImages = new Image[rows][columns];
+
+		for (int row = 0; row < rows; ++row) {
+			for (int col = 0; col < columns; ++col) {
+				final Image image = new Image(boardResources.empty());
+
+				squareImages[row][col] = image;
+				image.setStyleName("gwt-piece-unselected");
+
+				absolutePanel.add(image, getX(col), getY(row));
+			}
+		}
+	}
+
 	private void displayPosition() {
 
 		int rows = position.getShogiBoardState().getHeight();
@@ -165,7 +186,6 @@ public class ShogiBoard implements EntryPoint, ClickHandler {
 
 		pieceImages = new Image[rows][columns];
 
-		// Put some values in the grid cells.
 		for (int row = 0; row < rows; ++row) {
 			for (int col = 0; col < columns; ++col) {
 				Piece piece = getPiece(row, col);
