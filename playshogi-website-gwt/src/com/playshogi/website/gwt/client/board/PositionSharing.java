@@ -21,9 +21,6 @@ public class PositionSharing extends Composite implements ShogiBoardHandler {
 	private final ShogiBoard shogiBoard;
 	private final TextBox keyField;
 
-	// "lnsg3nl/2k2gr2/ppbp1p1pp/2p1P4/4s1S2/5B3/PPPP1P1PP/2S1GGR2/LN4KNL b 2Pp
-	// 34"
-
 	public PositionSharing(final ShogiBoard shogiBoard) {
 		this.shogiBoard = shogiBoard;
 		final Button shareButton = new Button("Share");
