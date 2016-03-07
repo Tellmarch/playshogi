@@ -142,7 +142,7 @@ public class ShogiBoard extends Composite implements ClickHandler {
 					PieceWrapper pieceWrapper = new PieceWrapper(piece, image, row, col);
 					pieceWrappers.add(pieceWrapper);
 
-					setupPieceClickHandler(pieceWrapper);
+					setupPieceEventHandlers(pieceWrapper);
 					image.setStyleName("gwt-piece-unselected");
 
 					absolutePanel.add(image, getX(col), getY(row));
@@ -213,7 +213,7 @@ public class ShogiBoard extends Composite implements ClickHandler {
 		});
 	}
 
-	private void setupPieceClickHandler(final PieceWrapper pieceWrapper) {
+	private void setupPieceEventHandlers(final PieceWrapper pieceWrapper) {
 		pieceWrapper.getImage().addMouseDownHandler(new MouseDownHandler() {
 			@Override
 			public void onMouseDown(final MouseDownEvent event) {
