@@ -1,6 +1,7 @@
 package com.playshogi.website.gwt.client.board;
 
 import com.google.gwt.user.client.ui.Image;
+import com.playshogi.library.models.Square;
 import com.playshogi.library.shogi.models.Piece;
 
 public class PieceWrapper {
@@ -55,6 +56,10 @@ public class PieceWrapper {
 
 	public void setInKomadai(final boolean inKomadai) {
 		this.inKomadai = inKomadai;
+	}
+
+	public Square getSquare() {
+		return Square.of(((8 - column) + 1), row + 1);
 	}
 
 }

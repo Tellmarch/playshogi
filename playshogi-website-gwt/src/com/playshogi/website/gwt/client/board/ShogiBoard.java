@@ -229,6 +229,14 @@ public class ShogiBoard extends Composite implements ClickHandler {
 						unselect();
 					} else {
 						if (selectedPiece != null) {
+							if (!selectedPiece.isInKomadai() && selectedPiece.getPiece().isSentePiece() != pieceWrapper
+									.getPiece().isSentePiece()) {
+								CaptureMove move = new CaptureMove(selectedPiece.getPiece(), selectedPiece.getSquare(),
+										pieceWrapper.getSquare(), false, pieceWrapper.getPiece());
+								playMove(move, true);
+								return;
+							}
+
 							unselect();
 						}
 						selectedPiece = pieceWrapper;
