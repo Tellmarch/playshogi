@@ -167,14 +167,6 @@ public class ShogiBoard extends Composite implements ClickHandler {
 		return boardLeft + BOARD_LEFT_MARGIN + col * SQUARE_WIDTH;
 	}
 
-	private int getColumn(final int x) {
-		return (x - BOARD_LEFT_MARGIN) / SQUARE_WIDTH;
-	}
-
-	private int getRow(final int y) {
-		return (y - BOARD_TOP_MARGIN) / SQUARE_HEIGHT;
-	}
-
 	private void setupSquareClickHandler(final Image image, final int row, final int col) {
 		image.addMouseDownHandler(new MouseDownHandler() {
 			@Override
