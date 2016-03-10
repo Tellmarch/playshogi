@@ -30,6 +30,7 @@ import com.playshogi.website.gwt.client.board.Komadai.Point;
 
 public class ShogiBoard extends Composite implements ClickHandler {
 
+	private static final String STYLE_PIECE_UNSELECTED = "gwt-piece-unselected";
 	private static final int TATAMI_LEFT_MARGIN = 10;
 	private static final int TATAMI_TOP_MARGIN = 10;
 	private static final int TATAMI_INSIDE_MARGIN = 5;
@@ -112,7 +113,7 @@ public class ShogiBoard extends Composite implements ClickHandler {
 				image.addClickHandler(this);
 
 				squareImages[row][col] = image;
-				image.setStyleName("gwt-piece-unselected");
+				image.setStyleName(STYLE_PIECE_UNSELECTED);
 
 				absolutePanel.add(image, getX(col), getY(row));
 
@@ -143,7 +144,7 @@ public class ShogiBoard extends Composite implements ClickHandler {
 					pieceWrappers.add(pieceWrapper);
 
 					setupPieceEventHandlers(pieceWrapper);
-					image.setStyleName("gwt-piece-unselected");
+					image.setStyleName(STYLE_PIECE_UNSELECTED);
 
 					absolutePanel.add(image, getX(col), getY(row));
 				}
@@ -289,7 +290,7 @@ public class ShogiBoard extends Composite implements ClickHandler {
 	private void unselect() {
 		unselectSquares();
 		if (selectedPiece != null) {
-			selectedPiece.getImage().setStyleName("gwt-piece-unselected");
+			selectedPiece.getImage().setStyleName(STYLE_PIECE_UNSELECTED);
 			selectedPiece = null;
 		}
 	}
