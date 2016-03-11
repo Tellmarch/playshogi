@@ -30,6 +30,7 @@ import com.playshogi.website.gwt.client.board.Komadai.Point;
 
 public class ShogiBoard extends Composite implements ClickHandler {
 
+	private static final String STYLE_PIECE_SELECTED = "gwt-piece-selected";
 	private static final String STYLE_PIECE_UNSELECTED = "gwt-piece-unselected";
 	private static final int TATAMI_LEFT_MARGIN = 10;
 	private static final int TATAMI_TOP_MARGIN = 10;
@@ -233,7 +234,7 @@ public class ShogiBoard extends Composite implements ClickHandler {
 							unselect();
 						}
 						selectedPiece = pieceWrapper;
-						pieceWrapper.getImage().setStyleName("gwt-piece-selected");
+						pieceWrapper.getImage().setStyleName(STYLE_PIECE_SELECTED);
 
 						if (!pieceWrapper.isInKomadai()) {
 							List<Square> possibleTargets = shogiRulesEngine
