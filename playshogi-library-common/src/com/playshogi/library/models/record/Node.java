@@ -45,4 +45,12 @@ public class Node {
 		return children;
 	}
 
+	public void addChild(final Node node) {
+		children.add(node);
+	}
+
+	public boolean hasChildren() {
+		return !children.isEmpty();
+	}
+
 }
