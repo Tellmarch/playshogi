@@ -5,7 +5,7 @@ import com.playshogi.library.models.Square;
 import com.playshogi.library.shogi.models.Piece;
 import com.playshogi.library.shogi.models.shogivariant.ShogiVariant;
 
-public class ShogiPosition implements Position {
+public class ShogiPosition implements Position<ShogiPosition> {
 
 	private boolean senteToPlay;
 	private ShogiBoardState shogiBoardState;
@@ -70,6 +70,12 @@ public class ShogiPosition implements Position {
 	@Override
 	public String toString() {
 		return shogiBoardState.toString();
+	}
+
+	@Override
+	public ShogiPosition clonePosition() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

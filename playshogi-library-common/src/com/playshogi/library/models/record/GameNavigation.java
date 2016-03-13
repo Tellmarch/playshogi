@@ -3,17 +3,19 @@ package com.playshogi.library.models.record;
 import com.playshogi.library.models.Position;
 import com.playshogi.library.models.games.GameRulesEngine;
 
-public class GameNavigation<P extends Position> {
+public class GameNavigation<P extends Position<P>> {
 
 	private final GameTree gameTree;
 	private Node currentNode;
 	private final P position;
 	private final GameRulesEngine<P> gameRulesEngine;
+	private final P startPosition;
 
-	public GameNavigation(final GameRulesEngine<P> gameRulesEngine, final GameTree gameTree, final P position) {
+	public GameNavigation(final GameRulesEngine<P> gameRulesEngine, final GameTree gameTree, final P startPosition) {
 		this.gameRulesEngine = gameRulesEngine;
 		this.gameTree = gameTree;
-		this.position = position;
+		this.startPosition = startPosition;
+		this.position = startPosition.clonePosition();
 		this.currentNode = gameTree.getRootNode();
 	}
 
@@ -34,9 +36,30 @@ public class GameNavigation<P extends Position> {
 	}
 
 	public void moveBack() {
-		if (currentNode.getParent() != null) {
+		if (canMoveBack()) {
 			gameRulesEngine.undoMoveInPosition(position, currentNode.getMove());
 			currentNode = currentNode.getParent();
+		}
+	}
+
+	public void moveForward() {
+		if (canMoveForward()) {
+			currentNode = currentNode.getChildren().get(0);
+			gameRulesEngine.playMoveInPosition(position, currentNode.getMove());
+		}
+	}
+
+	public void moveToStart() {
+		// currentNode = gameTree.getRootNode();
+		// this.position = startPosition.clonePosition();
+		while (canMoveBack()) {
+			moveBack();
+		}
+	}
+
+	public void moveToEndOfVariation() {
+		while (canMoveForward()) {
+			moveForward();
 		}
 	}
 }
