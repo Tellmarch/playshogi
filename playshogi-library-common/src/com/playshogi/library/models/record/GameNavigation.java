@@ -35,6 +35,7 @@ public class GameNavigation<P extends Position> {
 
 	public void moveBack() {
 		if (currentNode.getParent() != null) {
+			gameRulesEngine.undoMoveInPosition(position, currentNode.getMove());
 			currentNode = currentNode.getParent();
 		}
 	}
