@@ -123,7 +123,7 @@ public class ShogiBoard extends Composite implements ClickHandler {
 		}
 	}
 
-	private void displayPosition() {
+	public void displayPosition() {
 		unselect();
 
 		int rows = position.getShogiBoardState().getHeight();

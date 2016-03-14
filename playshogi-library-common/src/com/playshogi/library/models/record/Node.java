@@ -2,6 +2,7 @@ package com.playshogi.library.models.record;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import com.playshogi.library.models.Move;
 
@@ -51,6 +52,20 @@ public class Node {
 
 	public boolean hasChildren() {
 		return !children.isEmpty();
+	}
+
+	public boolean hasChildWithMove(final Move move) {
+		return getChildWithMove(move) == null;
+	}
+
+	public Node getChildWithMove(final Move move) {
+		for (Node node : children) {
+			if (Objects.equals(node.getMove(), move)) {
+				return node;
+			}
+		}
+
+		return null;
 	}
 
 }

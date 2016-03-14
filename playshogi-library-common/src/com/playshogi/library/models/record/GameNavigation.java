@@ -1,5 +1,6 @@
 package com.playshogi.library.models.record;
 
+import com.playshogi.library.models.Move;
 import com.playshogi.library.models.Position;
 import com.playshogi.library.models.games.GameRulesEngine;
 
@@ -61,5 +62,18 @@ public class GameNavigation<P extends Position<P>> {
 		while (canMoveForward()) {
 			moveForward();
 		}
+	}
+
+	public void addMove(final Move move) {
+		Node childNode = currentNode.getChildWithMove(move);
+		if (childNode == null) {
+			Node newNode = new Node(move);
+			newNode.setParent(currentNode);
+			currentNode.addChild(newNode);
+			currentNode = newNode;
+		} else {
+			currentNode = childNode;
+		}
+		// gameRulesEngine.playMoveInPosition(position, move);
 	}
 }
