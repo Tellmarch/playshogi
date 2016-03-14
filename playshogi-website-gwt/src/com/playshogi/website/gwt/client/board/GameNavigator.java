@@ -62,10 +62,12 @@ public class GameNavigator extends Composite implements ShogiBoardHandler, Click
 		} else if (source == nextButton) {
 			gameNavigation.moveForward();
 		} else if (source == previousButton) {
+			GWT.log("Moving back");
 			gameNavigation.moveBack();
 		} else if (source == lastButton) {
 			gameNavigation.moveToEndOfVariation();
 		}
+		GWT.log("Displaying board");
 		shogiBoard.displayPosition();
 	}
 

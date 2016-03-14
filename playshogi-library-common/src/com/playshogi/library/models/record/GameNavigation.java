@@ -16,7 +16,8 @@ public class GameNavigation<P extends Position<P>> {
 		this.gameRulesEngine = gameRulesEngine;
 		this.gameTree = gameTree;
 		this.startPosition = startPosition;
-		this.position = startPosition.clonePosition();
+		// this.position = startPosition.clonePosition();
+		this.position = startPosition;
 		this.currentNode = gameTree.getRootNode();
 	}
 

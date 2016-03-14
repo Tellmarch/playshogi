@@ -65,6 +65,10 @@ public enum Piece {
 		return promotedPiece;
 	}
 
+	public Piece getUnpromotedPiece() {
+		return getPiece(pieceType, sentePiece);
+	}
+
 	public boolean canPromote() {
 		return promotedPiece != null;
 	}

@@ -3,6 +3,7 @@ package com.playshogi.library.shogi.rules;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
+import java.util.Objects;
 
 import com.playshogi.library.models.Move;
 import com.playshogi.library.models.Square;
@@ -50,25 +51,82 @@ public class ShogiRulesEngine implements GameRulesEngine<ShogiPosition> {
 	}
 
 	private void playCaptureMove(final ShogiPosition position, final CaptureMove move) {
-		// TODO
-		position.getShogiBoardState().setPieceAt(move.getToSquare(), move.getPiece());
+		if (move.isSenteMoving()) {
+			position.getSenteKomadai().addPiece(move.getCapturedPiece().getPieceType());
+		} else {
+			position.getGoteKomadai().addPiece(move.getCapturedPiece().getPieceType());
+		}
+		if (move.isPromote()) {
+			position.getShogiBoardState().setPieceAt(move.getToSquare(), move.getPiece().getPromotedPiece());
+		} else {
+			position.getShogiBoardState().setPieceAt(move.getToSquare(), move.getPiece());
+		}
 		position.getShogiBoardState().setPieceAt(move.getFromSquare(), null);
 	}
 
 	private void playDropMove(final ShogiPosition position, final DropMove move) {
 		position.getShogiBoardState().setPieceAt(move.getToSquare(),
 				Piece.getPiece(move.getPieceType(), move.isSenteMoving()));
+		if (move.isSenteMoving()) {
+			position.getSenteKomadai().removePiece(move.getPieceType());
+		} else {
+			position.getGoteKomadai().removePiece(move.getPieceType());
+		}
 	}
 
 	private void playNormalMove(final ShogiPosition position, final NormalMove move) {
-		position.getShogiBoardState().setPieceAt(move.getToSquare(), move.getPiece());
+		if (move.isPromote()) {
+			position.getShogiBoardState().setPieceAt(move.getToSquare(), move.getPiece().getPromotedPiece());
+		} else {
+			position.getShogiBoardState().setPieceAt(move.getToSquare(), move.getPiece());
+		}
 		position.getShogiBoardState().setPieceAt(move.getFromSquare(), null);
 	}
 
 	@Override
 	public void undoMoveInPosition(final ShogiPosition position, final Move move) {
-		// TODO Auto-generated method stub
+		Objects.requireNonNull(move);
+		Objects.requireNonNull(position);
+		if (move instanceof CaptureMove) {
+			undoCaptureMove(position, (CaptureMove) move);
+		} else if (move instanceof DropMove) {
+			undoDropMove(position, (DropMove) move);
+		} else if (move instanceof NormalMove) {
+			undoNormalMove(position, (NormalMove) move);
+		}
+		position.setSenteToPlay(!position.isSenteToPlay());
+	}
 
+	private void undoNormalMove(final ShogiPosition position, final NormalMove move) {
+		if (move.isPromote()) {
+			position.getShogiBoardState().setPieceAt(move.getFromSquare(), move.getPiece().getUnpromotedPiece());
+		} else {
+			position.getShogiBoardState().setPieceAt(move.getFromSquare(), move.getPiece());
+		}
+		position.getShogiBoardState().setPieceAt(move.getToSquare(), null);
+	}
+
+	private void undoDropMove(final ShogiPosition position, final DropMove move) {
+		if (move.isSenteMoving()) {
+			position.getSenteKomadai().addPiece(move.getPieceType());
+		} else {
+			position.getGoteKomadai().addPiece(move.getPieceType());
+		}
+		position.getShogiBoardState().setPieceAt(move.getToSquare(), null);
+	}
+
+	private void undoCaptureMove(final ShogiPosition position, final CaptureMove move) {
+		if (move.isSenteMoving()) {
+			position.getSenteKomadai().removePiece(move.getCapturedPiece().getPieceType());
+		} else {
+			position.getGoteKomadai().removePiece(move.getCapturedPiece().getPieceType());
+		}
+		if (move.isPromote()) {
+			position.getShogiBoardState().setPieceAt(move.getFromSquare(), move.getPiece().getUnpromotedPiece());
+		} else {
+			position.getShogiBoardState().setPieceAt(move.getFromSquare(), move.getPiece());
+		}
+		position.getShogiBoardState().setPieceAt(move.getToSquare(), move.getCapturedPiece());
 	}
 
 	public List<Square> getPossibleTargetSquaresFromSquareInPosition(final ShogiPosition position, final Square from) {
