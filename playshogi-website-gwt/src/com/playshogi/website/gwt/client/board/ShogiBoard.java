@@ -18,6 +18,7 @@ import com.google.gwt.user.client.ui.DecoratorPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.playshogi.library.models.Square;
 import com.playshogi.library.shogi.models.Piece;
+import com.playshogi.library.shogi.models.PieceType;
 import com.playshogi.library.shogi.models.formats.usf.UsfMoveConverter;
 import com.playshogi.library.shogi.models.moves.CaptureMove;
 import com.playshogi.library.shogi.models.moves.DropMove;
@@ -151,6 +152,47 @@ public class ShogiBoard extends Composite implements ClickHandler {
 				}
 			}
 		}
+
+		PieceType[] pieceTypes = PieceType.values();
+
+		senteKomadai.removeAll();
+		int[] sentePieces = position.getSenteKomadai().getPieces();
+		for (int i = 0; i < sentePieces.length; i++) {
+			for (int j = 0; j < sentePieces[i]; j++) {
+				Piece piece = Piece.getPiece(pieceTypes[i], true);
+				final Image image = new Image(PieceGraphics.getPieceImage(piece));
+				PieceWrapper pieceWrapper = new PieceWrapper(piece, image, -1, -1);
+				pieceWrapper.setInKomadai(true);
+				pieceWrappers.add(pieceWrapper);
+
+				setupPieceEventHandlers(pieceWrapper);
+				image.setStyleName(STYLE_PIECE_UNSELECTED);
+
+				Point point = senteKomadai.addPiece(piece);
+
+				absolutePanel.add(image, senteKomadaiX + point.x, senteKomadaiY + point.y);
+			}
+		}
+
+		goteKomadai.removeAll();
+		int[] gotePieces = position.getGoteKomadai().getPieces();
+		for (int i = 0; i < gotePieces.length; i++) {
+			for (int j = 0; j < gotePieces[i]; j++) {
+				Piece piece = Piece.getPiece(pieceTypes[i], false);
+				final Image image = new Image(PieceGraphics.getPieceImage(piece));
+				PieceWrapper pieceWrapper = new PieceWrapper(piece, image, -2, -2);
+				pieceWrapper.setInKomadai(true);
+				pieceWrappers.add(pieceWrapper);
+
+				setupPieceEventHandlers(pieceWrapper);
+				image.setStyleName(STYLE_PIECE_UNSELECTED);
+
+				Point point = goteKomadai.addPiece(piece);
+
+				absolutePanel.add(image, TATAMI_LEFT_MARGIN + point.x, TATAMI_TOP_MARGIN + point.y);
+			}
+		}
+
 	}
 
 	private Piece getPiece(final int row, final int col) {

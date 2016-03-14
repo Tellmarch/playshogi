@@ -2,7 +2,6 @@ package com.playshogi.website.gwt.client.board;
 
 import static com.playshogi.website.gwt.client.board.ShogiBoard.SQUARE_WIDTH;
 
-import com.google.gwt.core.client.GWT;
 import com.playshogi.library.shogi.models.Piece;
 
 public class Komadai {
@@ -27,9 +26,15 @@ public class Komadai {
 		this.sente = sente;
 	}
 
+	public void removeAll() {
+		for (int i = 0; i < pieces.length; i++) {
+			pieces[i] = 0;
+		}
+	}
+
 	public Point addPiece(final Piece piece) {
 
-		GWT.log("Adding piece: " + piece.toString());
+		// GWT.log("Adding piece: " + piece.toString());
 
 		int pieceNum = piece.getPieceType().ordinal();
 
@@ -52,6 +57,8 @@ public class Komadai {
 		}
 
 		pieces[pieceNum]++;
+
+		// GWT.log("Added piece: " + piece.toString() + " at " + x + "," + y);
 
 		return new Point(x, y);
 	}
