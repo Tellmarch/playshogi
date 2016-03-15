@@ -7,11 +7,9 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.playshogi.library.models.record.GameNavigation;
-import com.playshogi.library.models.record.GameTree;
 import com.playshogi.library.shogi.models.formats.usf.UsfMoveConverter;
 import com.playshogi.library.shogi.models.moves.ShogiMove;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
-import com.playshogi.library.shogi.rules.ShogiRulesEngine;
 
 public class GameNavigator extends Composite implements ShogiBoardHandler, ClickHandler {
 
@@ -20,12 +18,11 @@ public class GameNavigator extends Composite implements ShogiBoardHandler, Click
 	private final Button previousButton;
 	private final Button nextButton;
 	private final Button lastButton;
-	private final ShogiRulesEngine shogiRulesEngine = new ShogiRulesEngine();
 	private final GameNavigation<ShogiPosition> gameNavigation;
 
-	public GameNavigator(final ShogiBoard shogiBoard) {
+	public GameNavigator(final ShogiBoard shogiBoard, final GameNavigation<ShogiPosition> gameNavigation) {
 
-		gameNavigation = new GameNavigation<>(shogiRulesEngine, new GameTree(), shogiBoard.getPosition());
+		this.gameNavigation = gameNavigation;
 		this.shogiBoard = shogiBoard;
 		firstButton = new Button("<<");
 		previousButton = new Button("<");

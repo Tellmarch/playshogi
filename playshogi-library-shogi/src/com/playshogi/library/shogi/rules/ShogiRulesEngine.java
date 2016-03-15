@@ -14,6 +14,7 @@ import com.playshogi.library.shogi.models.moves.CaptureMove;
 import com.playshogi.library.shogi.models.moves.DropMove;
 import com.playshogi.library.shogi.models.moves.NormalMove;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
+import com.playshogi.library.shogi.models.shogivariant.ShogiVariant;
 import com.playshogi.library.shogi.rules.movements.BishopMovement;
 import com.playshogi.library.shogi.rules.movements.GoldMovement;
 import com.playshogi.library.shogi.rules.movements.KingMovement;
@@ -27,6 +28,7 @@ import com.playshogi.library.shogi.rules.movements.SilverMovement;
 public class ShogiRulesEngine implements GameRulesEngine<ShogiPosition> {
 
 	private static final EnumMap<PieceType, PieceMovement> PIECE_MOVEMENTS = new EnumMap<>(PieceType.class);
+
 	static {
 		PIECE_MOVEMENTS.put(PieceType.PAWN, new PawnMovement());
 		PIECE_MOVEMENTS.put(PieceType.LANCE, new LanceMovement());
@@ -36,6 +38,16 @@ public class ShogiRulesEngine implements GameRulesEngine<ShogiPosition> {
 		PIECE_MOVEMENTS.put(PieceType.KING, new KingMovement());
 		PIECE_MOVEMENTS.put(PieceType.ROOK, new RookMovement());
 		PIECE_MOVEMENTS.put(PieceType.BISHOP, new BishopMovement());
+	}
+
+	private final ShogiVariant shogiVariant;
+
+	public ShogiRulesEngine() {
+		this(ShogiVariant.NORMAL_SHOGI);
+	}
+
+	public ShogiRulesEngine(final ShogiVariant shogiVariant) {
+		this.shogiVariant = shogiVariant;
 	}
 
 	@Override
@@ -142,6 +154,27 @@ public class ShogiRulesEngine implements GameRulesEngine<ShogiPosition> {
 					pieceMovement.getPossibleMoves(position.getShogiBoardState().opposite(), from.opposite()));
 		}
 
+	}
+
+	public boolean canMoveWithPromotion(final ShogiPosition position, final Move move) {
+		if (move instanceof NormalMove) {
+			NormalMove normalMove = (NormalMove) move;
+
+			if (normalMove.getPiece().isPromoted() || !normalMove.getPiece().canPromote()) {
+				return false;
+			}
+
+			if (normalMove.isSenteMoving()) {
+				return (normalMove.getFromSquare().getRow() <= shogiVariant.getSentePromotionHeight()
+						|| normalMove.getToSquare().getRow() <= shogiVariant.getSentePromotionHeight());
+			} else {
+				return (normalMove.getFromSquare().getRow() >= shogiVariant.getGotePromotionHeight()
+						|| normalMove.getToSquare().getRow() >= shogiVariant.getGotePromotionHeight());
+			}
+
+		}
+
+		return false;
 	}
 
 	@Override
