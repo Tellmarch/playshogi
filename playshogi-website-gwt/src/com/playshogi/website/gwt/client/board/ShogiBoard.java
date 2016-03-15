@@ -231,7 +231,7 @@ public class ShogiBoard extends Composite implements ClickHandler {
 						NormalMove move = new NormalMove(piece,
 								getSquare(selectedPiece.getRow(), selectedPiece.getColumn()), getSquare(row, col),
 								false);
-						if (shogiRulesEngine.canMoveWithPromotion(position, move)) {
+						if (!event.isControlKeyDown() && shogiRulesEngine.canMoveWithPromotion(position, move)) {
 							move.setPromote(true);
 						}
 						playMove(move, true);
@@ -272,7 +272,8 @@ public class ShogiBoard extends Composite implements ClickHandler {
 									.getPiece().isSentePiece()) {
 								CaptureMove move = new CaptureMove(selectedPiece.getPiece(), selectedPiece.getSquare(),
 										pieceWrapper.getSquare(), false, pieceWrapper.getPiece());
-								if (shogiRulesEngine.canMoveWithPromotion(position, move)) {
+								if (!event.isControlKeyDown()
+										&& shogiRulesEngine.canMoveWithPromotion(position, move)) {
 									move.setPromote(true);
 								}
 								playMove(move, true);

@@ -12,6 +12,9 @@ public class KnightMovement implements PieceMovement {
 	public List<Square> getPossibleMoves(final ShogiBoardState boardState, final Square from) {
 		List<Square> result = new ArrayList<>(2);
 		int toRow = from.getRow() - 2;
+		if (toRow < ShogiBoardState.FIRST_ROW) {
+			return result;
+		}
 		if (from.getColumn() != ShogiBoardState.FIRST_COLUMN) {
 			Square square = Square.of(from.getColumn() - 1, toRow);
 			if (boardState.isSquareEmptyOrGote(square)) {

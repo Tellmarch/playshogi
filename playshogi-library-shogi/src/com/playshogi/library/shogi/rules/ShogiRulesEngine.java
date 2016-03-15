@@ -9,7 +9,6 @@ import com.playshogi.library.models.Move;
 import com.playshogi.library.models.Square;
 import com.playshogi.library.models.games.GameRulesEngine;
 import com.playshogi.library.shogi.models.Piece;
-import com.playshogi.library.shogi.models.PieceType;
 import com.playshogi.library.shogi.models.moves.CaptureMove;
 import com.playshogi.library.shogi.models.moves.DropMove;
 import com.playshogi.library.shogi.models.moves.NormalMove;
@@ -22,22 +21,31 @@ import com.playshogi.library.shogi.rules.movements.KnightMovement;
 import com.playshogi.library.shogi.rules.movements.LanceMovement;
 import com.playshogi.library.shogi.rules.movements.PawnMovement;
 import com.playshogi.library.shogi.rules.movements.PieceMovement;
+import com.playshogi.library.shogi.rules.movements.PromotedBishopMovement;
+import com.playshogi.library.shogi.rules.movements.PromotedRookMovement;
 import com.playshogi.library.shogi.rules.movements.RookMovement;
 import com.playshogi.library.shogi.rules.movements.SilverMovement;
 
 public class ShogiRulesEngine implements GameRulesEngine<ShogiPosition> {
 
-	private static final EnumMap<PieceType, PieceMovement> PIECE_MOVEMENTS = new EnumMap<>(PieceType.class);
+	private static final EnumMap<Piece, PieceMovement> PIECE_MOVEMENTS = new EnumMap<>(Piece.class);
 
 	static {
-		PIECE_MOVEMENTS.put(PieceType.PAWN, new PawnMovement());
-		PIECE_MOVEMENTS.put(PieceType.LANCE, new LanceMovement());
-		PIECE_MOVEMENTS.put(PieceType.KNIGHT, new KnightMovement());
-		PIECE_MOVEMENTS.put(PieceType.SILVER, new SilverMovement());
-		PIECE_MOVEMENTS.put(PieceType.GOLD, new GoldMovement());
-		PIECE_MOVEMENTS.put(PieceType.KING, new KingMovement());
-		PIECE_MOVEMENTS.put(PieceType.ROOK, new RookMovement());
-		PIECE_MOVEMENTS.put(PieceType.BISHOP, new BishopMovement());
+		PIECE_MOVEMENTS.put(Piece.SENTE_PAWN, new PawnMovement());
+		PIECE_MOVEMENTS.put(Piece.SENTE_LANCE, new LanceMovement());
+		PIECE_MOVEMENTS.put(Piece.SENTE_KNIGHT, new KnightMovement());
+		PIECE_MOVEMENTS.put(Piece.SENTE_SILVER, new SilverMovement());
+		PIECE_MOVEMENTS.put(Piece.SENTE_GOLD, new GoldMovement());
+		PIECE_MOVEMENTS.put(Piece.SENTE_KING, new KingMovement());
+		PIECE_MOVEMENTS.put(Piece.SENTE_ROOK, new RookMovement());
+		PIECE_MOVEMENTS.put(Piece.SENTE_BISHOP, new BishopMovement());
+
+		PIECE_MOVEMENTS.put(Piece.SENTE_PROMOTED_PAWN, new GoldMovement());
+		PIECE_MOVEMENTS.put(Piece.SENTE_PROMOTED_LANCE, new GoldMovement());
+		PIECE_MOVEMENTS.put(Piece.SENTE_PROMOTED_KNIGHT, new GoldMovement());
+		PIECE_MOVEMENTS.put(Piece.SENTE_PROMOTED_SILVER, new GoldMovement());
+		PIECE_MOVEMENTS.put(Piece.SENTE_PROMOTED_BISHOP, new PromotedBishopMovement());
+		PIECE_MOVEMENTS.put(Piece.SENTE_PROMOTED_ROOK, new PromotedRookMovement());
 	}
 
 	private final ShogiVariant shogiVariant;
@@ -146,7 +154,8 @@ public class ShogiRulesEngine implements GameRulesEngine<ShogiPosition> {
 		if (piece == null) {
 			return Collections.emptyList();
 		}
-		PieceMovement pieceMovement = PIECE_MOVEMENTS.get(piece.getPieceType());
+		PieceMovement pieceMovement = PIECE_MOVEMENTS
+				.get(Piece.getPiece(piece.getPieceType(), true, piece.isPromoted()));
 		if (piece.isSentePiece()) {
 			return pieceMovement.getPossibleMoves(position.getShogiBoardState(), from);
 		} else {
