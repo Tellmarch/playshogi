@@ -154,8 +154,7 @@ public class ShogiRulesEngine implements GameRulesEngine<ShogiPosition> {
 		if (piece == null) {
 			return Collections.emptyList();
 		}
-		PieceMovement pieceMovement = PIECE_MOVEMENTS
-				.get(Piece.getPiece(piece.getPieceType(), true, piece.isPromoted()));
+		PieceMovement pieceMovement = PIECE_MOVEMENTS.get(piece.getSentePiece());
 		if (piece.isSentePiece()) {
 			return pieceMovement.getPossibleMoves(position.getShogiBoardState(), from);
 		} else {
@@ -203,7 +202,7 @@ public class ShogiRulesEngine implements GameRulesEngine<ShogiPosition> {
 	// don't capture our piece
 
 	private boolean isNormalMoveLegalInPosition(final ShogiPosition position, final NormalMove move) {
-		PieceMovement pieceMovement = PIECE_MOVEMENTS.get(move.getPiece().getPieceType());
+		PieceMovement pieceMovement = PIECE_MOVEMENTS.get(move.getPiece().getSentePiece());
 		if (move.isSenteMoving()) {
 			return pieceMovement.isMoveDxDyValid(position.getShogiBoardState(), move.getFromSquare(),
 					move.getToSquare());
@@ -214,7 +213,7 @@ public class ShogiRulesEngine implements GameRulesEngine<ShogiPosition> {
 	}
 
 	private boolean isDropMoveLegalInPosition(final ShogiPosition position, final DropMove move) {
-		PieceMovement pieceMovement = PIECE_MOVEMENTS.get(move.getPieceType());
+		PieceMovement pieceMovement = PIECE_MOVEMENTS.get(Piece.getPiece(move.getPieceType(), true));
 		if (move.isSenteMoving()) {
 			return pieceMovement.isDropValid(position.getShogiBoardState(), move.getToSquare());
 		} else {
