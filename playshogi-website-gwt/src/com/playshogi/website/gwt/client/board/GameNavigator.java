@@ -48,7 +48,7 @@ public class GameNavigator extends Composite implements ShogiBoardHandler, Click
 	public void handleMovePlayed(final ShogiMove move) {
 		String usfMove = UsfMoveConverter.toUsfString(move);
 		GWT.log("Move played: " + usfMove);
-		gameNavigation.addMove(move);
+		gameNavigation.addMove(move, false);
 	}
 
 	@Override

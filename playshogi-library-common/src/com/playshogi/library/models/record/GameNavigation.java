@@ -6,7 +6,7 @@ import com.playshogi.library.models.games.GameRulesEngine;
 
 public class GameNavigation<P extends Position<P>> {
 
-	private final GameTree gameTree;
+	private GameTree gameTree;
 	private Node currentNode;
 	private final P position;
 	private final GameRulesEngine<P> gameRulesEngine;
@@ -51,6 +51,27 @@ public class GameNavigation<P extends Position<P>> {
 		}
 	}
 
+	/**
+	 * Useful for USF processing
+	 */
+	public void moveForwardInLastVariation() {
+		if (canMoveForward()) {
+			currentNode = currentNode.getChildren().get(currentNode.getChildren().size() - 1);
+			gameRulesEngine.playMoveInPosition(position, currentNode.getMove());
+		}
+	}
+
+	/**
+	 * Go the the n-th node following the last branch at every move. Useful for
+	 * USF processing
+	 */
+	public void goToNodeUSF(final int moveNumber) {
+		moveToStart();
+		for (int j = 0; j < moveNumber; j++) {
+			moveForwardInLastVariation();
+		}
+	}
+
 	public void moveToStart() {
 		// currentNode = gameTree.getRootNode();
 		// this.position = startPosition.clonePosition();
@@ -65,7 +86,7 @@ public class GameNavigation<P extends Position<P>> {
 		}
 	}
 
-	public void addMove(final Move move) {
+	public void addMove(final Move move, final boolean playInPosition) {
 		Node childNode = currentNode.getChildWithMove(move);
 		if (childNode == null) {
 			Node newNode = new Node(move);
@@ -75,6 +96,18 @@ public class GameNavigation<P extends Position<P>> {
 		} else {
 			currentNode = childNode;
 		}
-		// gameRulesEngine.playMoveInPosition(position, move);
+		if (playInPosition) {
+			gameRulesEngine.playMoveInPosition(position, move);
+		}
+	}
+
+	public GameTree getGameTree() {
+		return gameTree;
+	}
+
+	public void setGameTree(final GameTree gameTree) {
+		moveToStart();
+		this.gameTree = gameTree;
+		this.currentNode = gameTree.getRootNode();
 	}
 }

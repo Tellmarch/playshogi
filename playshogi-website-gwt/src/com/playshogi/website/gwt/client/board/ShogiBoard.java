@@ -226,7 +226,11 @@ public class ShogiBoard extends Composite implements ClickHandler {
 					Piece piece = selectedPiece.getPiece();
 
 					if (selectedPiece.isInKomadai()) {
-						playMove(new DropMove(piece.isSentePiece(), piece.getPieceType(), getSquare(row, col)), true);
+						DropMove move = new DropMove(piece.isSentePiece(), piece.getPieceType(), getSquare(row, col));
+						if (!boardConfiguration.isAllowOnlyLegalMoves()
+								|| shogiRulesEngine.isMoveLegalInPosition(position, move)) {
+							playMove(move, true);
+						}
 					} else {
 						NormalMove move = new NormalMove(piece,
 								getSquare(selectedPiece.getRow(), selectedPiece.getColumn()), getSquare(row, col),
