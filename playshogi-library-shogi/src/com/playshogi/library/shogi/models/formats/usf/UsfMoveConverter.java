@@ -55,6 +55,7 @@ public class UsfMoveConverter {
 		if (drop) {
 			return new DropMove(piece.isSentePiece(), piece.getPieceType(), Square.of(col2, row2));
 		} else {
+			// TODO capture
 			return new NormalMove(piece, Square.of(col1, row1), Square.of(col2, row2), promotion);
 		}
 	}
