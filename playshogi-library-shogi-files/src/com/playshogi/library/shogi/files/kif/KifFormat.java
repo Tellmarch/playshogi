@@ -72,6 +72,15 @@ public class KifFormat {
 					// Time used : ignored.
 				} else if (sn.equals("後手の持駒")) {
 					// gote pieces in hand
+					l = s.nextLine();
+					l = s.nextLine();
+					for (int row = 1; row <= 9; row++) {
+						l = s.nextLine();
+						for (int column = 1; column <= 9; column++) {
+							String square = l.substring(1 + column * 2, 1 + column * 2 + 2);
+							System.out.println(square);
+						}
+					}
 				} else if (sn.equals("先手の持駒")) {
 					// sente pieces in hand
 				} else {
