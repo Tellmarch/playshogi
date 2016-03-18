@@ -7,8 +7,14 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.playshogi.library.models.Move;
+import com.playshogi.library.models.Square;
 import com.playshogi.library.models.games.Game;
 import com.playshogi.library.models.record.GameTree;
+import com.playshogi.library.shogi.models.Piece;
+import com.playshogi.library.shogi.models.moves.ShogiMove;
+import com.playshogi.library.shogi.models.moves.SpecialMove;
+import com.playshogi.library.shogi.models.moves.SpecialMoveType;
+import com.playshogi.library.shogi.models.moves.ToSquareMove;
 
 public class KifFormat {
 
@@ -159,6 +165,135 @@ public class KifFormat {
 				s.close();
 			}
 		}
+	}
+
+	public static ShogiMove fromKifString(final ShogiMove previousMove, final String str, final boolean sente) {
+		try {
+
+			if (str.startsWith("投了")) {
+				return new SpecialMove(sente, SpecialMoveType.RESIGN);
+			} else if (str.startsWith("千日手")) {
+				return new SpecialMove(sente, SpecialMoveType.SENNICHITE);
+			} else if (str.startsWith("持将棋")) {
+				return new SpecialMove(sente, SpecialMoveType.JISHOGI);
+			} else if (str.startsWith("中断")) {
+				return new SpecialMove(sente, SpecialMoveType.BREAK);
+			}
+
+			// First, read destination coordinates
+			Square toSquare;
+			char firstChar = str.charAt(0);
+			char secondChar = str.charAt(1);
+			if (firstChar == '同') {
+				// capture
+				toSquare = ((ToSquareMove) previousMove).getToSquare();
+			} else if (firstChar >= '1' && firstChar <= '9' && secondChar >= '一' && secondChar <= '九') {
+				int column = firstChar - '1' + 1;
+				int row = secondChar - '一' + 1;
+				toSquare = Square.of(column, row);
+			} else {
+				throw new IllegalArgumentException("Unrecognized move: " + str);
+			}
+
+			int piece = 0;
+			pos++;
+			switch (str.charAt(pos)) {
+			case '歩':
+				piece = Piece.PIECE_PAWN1;
+				break;
+			case '香':
+				piece = Piece.PIECE_LANCE1;
+				break;
+			case '桂':
+				piece = Piece.PIECE_KNIGHT1;
+				break;
+			case '銀':
+				piece = Piece.PIECE_SILVER1;
+				break;
+			case '金':
+				piece = Piece.PIECE_GOLD1;
+				break;
+			case '角':
+				piece = Piece.PIECE_BISHOP1;
+				break;
+			case '飛':
+				piece = Piece.PIECE_ROOK1;
+				break;
+			case '王':
+				piece = Piece.PIECE_KING1;
+				break;
+			case 'と':
+				piece = Piece.PIECE_PPAWN1;
+				break;
+			case '馬':
+				piece = Piece.PIECE_PBISHOP1;
+				break;
+			case '竜':
+				piece = Piece.PIECE_PROOK1;
+				break;
+			case '成':
+				// Special case : promoted piece...
+				pos++;
+				switch (str.charAt(pos)) {
+				case '香':
+					piece = Piece.PIECE_PLANCE1;
+					break;
+				case '桂':
+					piece = Piece.PIECE_PKNIGHT1;
+					break;
+				case '銀':
+					piece = Piece.PIECE_PSILVER1;
+					break;
+				}
+				break;
+			}
+			if (!sente) {
+				piece = Piece.changeSide(piece);
+			}
+			pos++;
+			boolean drop = false;
+			boolean promote = false;
+			char c = str.charAt(pos);
+			if (c == '成') {
+				// Promote
+				promote = true;
+				pos++;
+				c = str.charAt(pos);
+			}
+			int row2 = 0;
+			int column2 = 0;
+			if (c == '打') {
+				// Drop
+				drop = true;
+				if (sente) {
+					column2 = -1;
+					row2 = -1;
+				} else {
+					column2 = -2;
+					row2 = -2;
+				}
+			} else if (c == '(') {
+				// Reading the destination square
+				pos++;
+				c = str.charAt(pos);
+				column2 = 8 - (c - '1');
+				pos++;
+				c = str.charAt(pos);
+				row2 = c - '1';
+			} else {
+				throw new Exception("Error reading the move " + str);
+			}
+
+			Move m = new Move(column2, row2, column, row, promote, piece, drop);
+			// System.out.println(m);
+			return m;
+		} catch (
+
+		Exception ex) {
+			System.out.println("Error parsing the move " + str);
+			Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
+		}
+		return null;
 	}
 
 }

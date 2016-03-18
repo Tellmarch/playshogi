@@ -3,7 +3,7 @@ package com.playshogi.library.shogi.models.moves;
 import com.playshogi.library.models.Square;
 import com.playshogi.library.shogi.models.Piece;
 
-public class NormalMove extends ShogiMove {
+public class NormalMove extends ShogiMove implements ToSquareMove {
 
 	private final Piece piece;
 	private final Square fromSquare;
@@ -26,6 +26,7 @@ public class NormalMove extends ShogiMove {
 		return fromSquare;
 	}
 
+	@Override
 	public Square getToSquare() {
 		return toSquare;
 	}
