@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.playshogi.library.shogi.models.formats.usf;
 
 import com.playshogi.library.models.Move;
@@ -11,18 +7,26 @@ import com.playshogi.library.models.record.GameRecord;
 import com.playshogi.library.models.record.GameResult;
 import com.playshogi.library.models.record.GameTree;
 import com.playshogi.library.models.record.Node;
+import com.playshogi.library.shogi.models.formats.sfen.GameRecordFormat;
+import com.playshogi.library.shogi.models.formats.sfen.LineReader;
 import com.playshogi.library.shogi.models.formats.sfen.SfenConverter;
+import com.playshogi.library.shogi.models.formats.sfen.StringLineReader;
 import com.playshogi.library.shogi.models.moves.ShogiMove;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.library.shogi.models.shogivariant.ShogiInitialPositionFactory;
 import com.playshogi.library.shogi.rules.ShogiRulesEngine;
 
-public class UsfFormat {
+public enum UsfFormat implements GameRecordFormat {
+	INSTANCE;
 
-	public static GameRecord read(final String usfGame) {
-		String[] lines = usfGame.split("\n");
-		int currentLine = 0;
-		String l = lines[currentLine++];
+	@Override
+	public GameRecord read(final String usfString) {
+		return read(new StringLineReader(usfString));
+	}
+
+	@Override
+	public GameRecord read(final LineReader lineReader) {
+		String l = lineReader.nextLine();
 		// First, check that the file is indeed USF.
 		if (l.indexOf("USF:") == -1) {
 			throw (new IllegalArgumentException("Not a recognized USF File. Maybe wrong encoding?"));
@@ -30,7 +34,7 @@ public class UsfFormat {
 
 		// Go to the start of the next game
 		while (!l.startsWith("^")) {
-			l = lines[currentLine++];
+			l = lineReader.nextLine();
 		}
 
 		// This line contains the "preview" line
@@ -75,8 +79,8 @@ public class UsfFormat {
 		// Now, we read tag lines. We read every lines until the end of the
 		// file,
 		// or the start of another game, identified by "^",.
-		while (currentLine < lines.length) {
-			l = lines[currentLine++];
+		while (lineReader.hasNextLine()) {
+			l = lineReader.nextLine();
 
 			// If the line is empty, skip it
 			if (l.isEmpty()) {
@@ -206,12 +210,14 @@ public class UsfFormat {
 		}
 	}
 
-	public static String write(final GameRecord gameRecord) {
+	@Override
+	public String write(final GameRecord gameRecord) {
 		GameTree gameTree = gameRecord.getGameTree();
 		return write(gameTree);
 	}
 
-	public static String write(final GameTree gameTree) {
+	@Override
+	public String write(final GameTree gameTree) {
 		return "USF:1.0\n" + toUSFString(gameTree);
 	}
 
@@ -253,8 +259,8 @@ public class UsfFormat {
 
 	public static void main(final String[] args) {
 		String s = "USF:1.0\n^*:7g7f3c3d";
-		GameRecord gameRecord = read(s);
-		System.out.println(write(gameRecord));
+		GameRecord gameRecord = INSTANCE.read(s);
+		System.out.println(INSTANCE.write(gameRecord));
 	}
 
 }
