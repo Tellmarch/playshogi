@@ -287,6 +287,15 @@ public enum KifFormat implements GameRecordFormat {
 		case '竜':
 			piece = Piece.getPiece(PieceType.ROOK, sente, true);
 			break;
+		case '杏':
+			piece = Piece.getPiece(PieceType.LANCE, sente, true);
+			break;
+		case '圭':
+			piece = Piece.getPiece(PieceType.KNIGHT, sente, true);
+			break;
+		case '全':
+			piece = Piece.getPiece(PieceType.SILVER, sente, true);
+			break;
 		case '成': {
 			// Special case : promoted piece...
 			pos++;
