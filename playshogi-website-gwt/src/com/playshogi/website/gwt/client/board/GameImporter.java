@@ -10,6 +10,7 @@ import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.playshogi.library.models.record.GameNavigation;
 import com.playshogi.library.models.record.GameRecord;
+import com.playshogi.library.shogi.models.formats.kif.KifFormat;
 import com.playshogi.library.shogi.models.formats.usf.UsfFormat;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.library.shogi.rules.ShogiRulesEngine;
@@ -61,14 +62,15 @@ public class GameImporter extends Composite implements ClickHandler {
 	}
 
 	private void exportGame() {
-		textArea.setText(UsfFormat.write(gameNavigation.getGameTree()));
+		textArea.setText(UsfFormat.INSTANCE.write(gameNavigation.getGameTree()));
 	}
 
 	private void importGame() {
 		GWT.log("Importing game...");
-		GameRecord gameRecord = UsfFormat.read(textArea.getText());
+		GameRecord gameRecord = KifFormat.INSTANCE.read(textArea.getText());
 		GWT.log("Updating game navigator...");
 		gameNavigation.setGameTree(gameRecord.getGameTree());
+		shogiBoard.setPosition(gameNavigation.getPosition());
 	}
 
 }

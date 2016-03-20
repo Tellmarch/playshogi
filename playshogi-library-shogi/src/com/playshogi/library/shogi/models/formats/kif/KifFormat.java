@@ -32,7 +32,6 @@ public enum KifFormat implements GameRecordFormat {
 
 	@Override
 	public GameRecord read(final LineReader lineReader) {
-		String l = lineReader.nextLine();
 		String date = "1000-1-1";
 		String tournament = "UNKNOWN";
 		String opening = "UNKNOWN";
@@ -41,7 +40,16 @@ public enum KifFormat implements GameRecordFormat {
 		String handicap = "UNKNOWN";
 		String gote = "UNKNOWN";
 		String sente = "UNKNOWN";
+
+		ShogiPosition startingPosition = null;
+
+		String l = lineReader.nextLine();
 		while (!l.startsWith("手数")) {
+			l = l.trim();
+			if (l.startsWith("#")) {
+				l = lineReader.nextLine();
+				continue;
+			}
 			String[] sp = l.split("：", 2);
 			if (sp.length < 2) {
 				System.out.println("WARNING : unable to parse line " + l + " in file " + "???" + " , ignored.");
@@ -64,7 +72,7 @@ public enum KifFormat implements GameRecordFormat {
 				time = sn2;
 			} else if (sn.equals("手合割")) {
 				handicap = sn2;
-				if (!sn2.equals("平手")) {
+				if (!sn2.startsWith("平手")) {
 					// TODO
 					// System.out.println("Handicap game, we ignore for
 					// now");
@@ -84,11 +92,15 @@ public enum KifFormat implements GameRecordFormat {
 				// gote pieces in hand
 				l = lineReader.nextLine();
 				l = lineReader.nextLine();
+				startingPosition = new ShogiPosition();
 				for (int row = 1; row <= 9; row++) {
 					l = lineReader.nextLine();
-					for (int column = 1; column <= 9; column++) {
-						String square = l.substring(1 + column * 2, 1 + column * 2 + 2);
-						System.out.println(square);
+					int pos = 1;
+					for (int column = 9; column >= 1; column--) {
+						PieceParsingResult pieceParsingResult = readPiece(l, pos, true);
+						pos = pieceParsingResult.nextPosition;
+						startingPosition.getShogiBoardState().setPieceAt(Square.of(column, row),
+								pieceParsingResult.piece);
 					}
 				}
 			} else if (sn.equals("先手の持駒")) {
@@ -100,9 +112,11 @@ public enum KifFormat implements GameRecordFormat {
 		}
 		// s.next();
 		// s.useDelimiter("[ \r\n]");
-		GameTree gameTree = new GameTree();
-		ShogiPosition startingPosition;
-		startingPosition = new ShogiInitialPositionFactory().createInitialPosition();
+
+		if (startingPosition == null) {
+			startingPosition = new ShogiInitialPositionFactory().createInitialPosition();
+		}
+		GameTree gameTree = new GameTree(startingPosition);
 		GameNavigation<ShogiPosition> gameNavigation = new GameNavigation<ShogiPosition>(new ShogiRulesEngine(),
 				gameTree, startingPosition);
 
@@ -141,6 +155,7 @@ public enum KifFormat implements GameRecordFormat {
 			prevMove = curMove;
 		}
 
+		gameNavigation.moveToStart();
 		GameInformation gameInformation = new GameInformation();
 		GameResult gameResult = new GameResult();
 		return new GameRecord(gameInformation, gameTree, gameResult);
@@ -163,14 +178,13 @@ public enum KifFormat implements GameRecordFormat {
 		// First, read destination coordinates
 		Square toSquare;
 		char firstChar = str.charAt(0);
-		char secondChar = str.charAt(1);
 		if (firstChar == '同') {
 			// capture
 			toSquare = ((ToSquareMove) previousMove).getToSquare();
 			pos++;
-		} else if (firstChar >= '1' && firstChar <= '9' && secondChar >= '一' && secondChar <= '九') {
-			int column = firstChar - '1' + 1;
-			int row = secondChar - '一' + 1;
+		} else if (firstChar >= '１' && firstChar <= '９') {
+			int column = firstChar - '１' + 1;
+			int row = getRowNumber(str.charAt(1));
 			toSquare = Square.of(column, row);
 			pos += 2;
 		} else {
@@ -181,65 +195,12 @@ public enum KifFormat implements GameRecordFormat {
 			pos++;
 		}
 
-		Piece piece;
-		switch (str.charAt(pos)) {
-		case '歩':
-			piece = Piece.getPiece(PieceType.PAWN, sente);
-			break;
-		case '香':
-			piece = Piece.getPiece(PieceType.LANCE, sente);
-			break;
-		case '桂':
-			piece = Piece.getPiece(PieceType.KNIGHT, sente);
-			break;
-		case '銀':
-			piece = Piece.getPiece(PieceType.SILVER, sente);
-			break;
-		case '金':
-			piece = Piece.getPiece(PieceType.GOLD, sente);
-			break;
-		case '角':
-			piece = Piece.getPiece(PieceType.BISHOP, sente);
-			break;
-		case '飛':
-			piece = Piece.getPiece(PieceType.ROOK, sente);
-			break;
-		case '王':
-			piece = Piece.getPiece(PieceType.KING, sente);
-			break;
-		case 'と':
-			piece = Piece.getPiece(PieceType.PAWN, sente, true);
-			break;
-		case '馬':
-			piece = Piece.getPiece(PieceType.BISHOP, sente, true);
-			break;
-		case '竜':
-			piece = Piece.getPiece(PieceType.ROOK, sente, true);
-			break;
-		case '成': {
-			// Special case : promoted piece...
-			pos++;
-			switch (str.charAt(pos)) {
-			case '香':
-				piece = Piece.getPiece(PieceType.LANCE, sente, true);
-				break;
-			case '桂':
-				piece = Piece.getPiece(PieceType.KNIGHT, sente, true);
-				break;
-			case '銀':
-				piece = Piece.getPiece(PieceType.SILVER, sente, true);
-				break;
-			default:
-				throw new IllegalArgumentException("Error reading the move " + str);
-			}
-			break;
-		}
-		default:
-			throw new IllegalArgumentException("Error reading the move " + str);
-		}
+		PieceParsingResult pieceParsingResult = readPiece(str, pos, sente);
+		Piece piece = pieceParsingResult.piece;
+		pos = pieceParsingResult.nextPosition;
 
 		boolean promote = false;
-		char c = str.charAt(++pos);
+		char c = str.charAt(pos);
 		if (c == '成') {
 			// Promote
 			promote = true;
@@ -275,4 +236,113 @@ public enum KifFormat implements GameRecordFormat {
 	public String write(final GameTree gameTree) {
 		throw new UnsupportedOperationException();
 	}
+
+	private static PieceParsingResult readPiece(final String str, int pos, boolean sente) {
+
+		while (str.charAt(pos) == ' ') {
+			pos++;
+		}
+
+		if (str.charAt(pos) == 'v') {
+			sente = false;
+			pos++;
+		}
+
+		Piece piece;
+		switch (str.charAt(pos)) {
+		case '・':
+			piece = null;
+			break;
+		case '歩':
+			piece = Piece.getPiece(PieceType.PAWN, sente);
+			break;
+		case '香':
+			piece = Piece.getPiece(PieceType.LANCE, sente);
+			break;
+		case '桂':
+			piece = Piece.getPiece(PieceType.KNIGHT, sente);
+			break;
+		case '銀':
+			piece = Piece.getPiece(PieceType.SILVER, sente);
+			break;
+		case '金':
+			piece = Piece.getPiece(PieceType.GOLD, sente);
+			break;
+		case '角':
+			piece = Piece.getPiece(PieceType.BISHOP, sente);
+			break;
+		case '飛':
+			piece = Piece.getPiece(PieceType.ROOK, sente);
+			break;
+		case '王':
+		case '玉':
+			piece = Piece.getPiece(PieceType.KING, sente);
+			break;
+		case 'と':
+			piece = Piece.getPiece(PieceType.PAWN, sente, true);
+			break;
+		case '馬':
+			piece = Piece.getPiece(PieceType.BISHOP, sente, true);
+			break;
+		case '竜':
+			piece = Piece.getPiece(PieceType.ROOK, sente, true);
+			break;
+		case '成': {
+			// Special case : promoted piece...
+			pos++;
+			switch (str.charAt(pos)) {
+			case '香':
+				piece = Piece.getPiece(PieceType.LANCE, sente, true);
+				break;
+			case '桂':
+				piece = Piece.getPiece(PieceType.KNIGHT, sente, true);
+				break;
+			case '銀':
+				piece = Piece.getPiece(PieceType.SILVER, sente, true);
+				break;
+			default:
+				throw new IllegalArgumentException("Error reading the move " + str);
+			}
+			break;
+		}
+		default:
+			throw new IllegalArgumentException("Error reading the piece " + str);
+		}
+		return new PieceParsingResult(piece, pos + 1);
+	}
+
+	private static class PieceParsingResult {
+		public Piece piece;
+		public int nextPosition;
+
+		public PieceParsingResult(final Piece piece, final int nextPosition) {
+			this.piece = piece;
+			this.nextPosition = nextPosition;
+		}
+	}
+
+	public static int getRowNumber(final char rowChar) {
+		switch (rowChar) {
+		case '一':
+			return 1;
+		case '二':
+			return 2;
+		case '三':
+			return 3;
+		case '四':
+			return 4;
+		case '五':
+			return 5;
+		case '六':
+			return 6;
+		case '七':
+			return 7;
+		case '八':
+			return 8;
+		case '九':
+			return 9;
+		}
+		throw new IllegalArgumentException("Illegal row number: " + rowChar);
+	}
+
 }

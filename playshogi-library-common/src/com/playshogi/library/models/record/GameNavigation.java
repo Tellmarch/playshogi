@@ -1,5 +1,6 @@
 package com.playshogi.library.models.record;
 
+import com.playshogi.library.models.EditMove;
 import com.playshogi.library.models.Move;
 import com.playshogi.library.models.Position;
 import com.playshogi.library.models.games.GameRulesEngine;
@@ -8,17 +9,24 @@ public class GameNavigation<P extends Position<P>> {
 
 	private GameTree gameTree;
 	private Node currentNode;
-	private final P position;
+	private P position;
 	private final GameRulesEngine<P> gameRulesEngine;
-	private final P startPosition;
+	private P startPosition;
 
+	@SuppressWarnings("unchecked")
 	public GameNavigation(final GameRulesEngine<P> gameRulesEngine, final GameTree gameTree, final P startPosition) {
 		this.gameRulesEngine = gameRulesEngine;
 		this.gameTree = gameTree;
-		this.startPosition = startPosition;
-		// this.position = startPosition.clonePosition();
-		this.position = startPosition;
 		this.currentNode = gameTree.getRootNode();
+		if (currentNode.getMove() instanceof EditMove) {
+			EditMove editMove = (EditMove) currentNode.getMove();
+			this.position = (P) editMove.getPosition();
+			this.startPosition = startPosition;
+		} else {
+			this.startPosition = startPosition;
+			// this.position = startPosition.clonePosition();
+			this.position = startPosition;
+		}
 	}
 
 	public P getPosition() {
@@ -105,9 +113,15 @@ public class GameNavigation<P extends Position<P>> {
 		return gameTree;
 	}
 
+	@SuppressWarnings("unchecked")
 	public void setGameTree(final GameTree gameTree) {
 		moveToStart();
 		this.gameTree = gameTree;
 		this.currentNode = gameTree.getRootNode();
+		if (currentNode.getMove() instanceof EditMove) {
+			EditMove editMove = (EditMove) currentNode.getMove();
+			this.position = (P) editMove.getPosition();
+			this.startPosition = this.position;
+		}
 	}
 }
