@@ -15,6 +15,10 @@ public class PlayShogiMain implements EntryPoint {
 
 	@Override
 	public void onModuleLoad() {
+		myOldMain();
+	}
+
+	private void myOldMain() {
 		ShogiBoard shogiBoard = new ShogiBoard();
 
 		ShogiRulesEngine shogiRulesEngine = new ShogiRulesEngine();
