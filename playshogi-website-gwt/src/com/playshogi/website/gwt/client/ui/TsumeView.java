@@ -1,7 +1,7 @@
 package com.playshogi.website.gwt.client.ui;
 
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import com.playshogi.library.models.record.GameNavigation;
 import com.playshogi.library.models.record.GameTree;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
@@ -21,7 +21,14 @@ public class TsumeView extends Composite {
 		GameNavigator gameNavigator = new GameNavigator(shogiBoard, gameNavigation);
 		shogiBoard.setShogiBoardHandler(gameNavigator);
 
-		RootPanel.get().add(gameNavigator);
-		RootPanel.get().add(shogiBoard);
+		VerticalPanel verticalPanel = new VerticalPanel();
+		verticalPanel.add(gameNavigator);
+		verticalPanel.add(shogiBoard);
+		initWidget(verticalPanel);
+	}
+
+	public void setTsumeId(final String tsumeId) {
+		// TODO Auto-generated method stub
+
 	}
 }

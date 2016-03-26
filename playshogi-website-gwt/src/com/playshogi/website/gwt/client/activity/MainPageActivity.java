@@ -19,9 +19,4 @@ public class MainPageActivity extends AbstractActivity {
 		containerWidget.setWidget(mainPageView.asWidget());
 	}
 
-	@Override
-	public String mayStop() {
-		return "Please hold on. This activity is stopping.";
-	}
-
 }

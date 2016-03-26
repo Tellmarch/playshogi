@@ -12,8 +12,8 @@ import com.playshogi.library.shogi.models.formats.sfen.SfenConverter;
 import com.playshogi.library.shogi.models.formats.usf.UsfMoveConverter;
 import com.playshogi.library.shogi.models.moves.ShogiMove;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
-import com.playshogi.website.gwt.client.PositionSharingService;
-import com.playshogi.website.gwt.client.PositionSharingServiceAsync;
+import com.playshogi.website.gwt.client.services.PositionSharingService;
+import com.playshogi.website.gwt.client.services.PositionSharingServiceAsync;
 
 public class PositionSharing extends Composite implements ShogiBoardHandler {
 
