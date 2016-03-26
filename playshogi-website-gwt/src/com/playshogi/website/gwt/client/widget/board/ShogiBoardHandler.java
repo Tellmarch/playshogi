@@ -1,4 +1,4 @@
-package com.playshogi.website.gwt.client.board;
+package com.playshogi.website.gwt.client.widget.board;
 
 import com.playshogi.library.shogi.models.moves.ShogiMove;
 

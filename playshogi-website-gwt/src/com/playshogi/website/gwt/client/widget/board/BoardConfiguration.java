@@ -1,4 +1,4 @@
-package com.playshogi.website.gwt.client.board;
+package com.playshogi.website.gwt.client.widget.board;
 
 public class BoardConfiguration {
 	private boolean inverted = false;

@@ -1,4 +1,4 @@
-package com.playshogi.website.gwt.client.board;
+package com.playshogi.website.gwt.client.widget.board;
 
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.ImageResource;

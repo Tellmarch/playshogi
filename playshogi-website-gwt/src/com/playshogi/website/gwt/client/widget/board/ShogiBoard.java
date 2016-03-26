@@ -1,4 +1,4 @@
-package com.playshogi.website.gwt.client.board;
+package com.playshogi.website.gwt.client.widget.board;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +27,7 @@ import com.playshogi.library.shogi.models.moves.ShogiMove;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.library.shogi.models.shogivariant.ShogiInitialPositionFactory;
 import com.playshogi.library.shogi.rules.ShogiRulesEngine;
-import com.playshogi.website.gwt.client.board.Komadai.Point;
+import com.playshogi.website.gwt.client.widget.board.Komadai.Point;
 
 public class ShogiBoard extends Composite implements ClickHandler {
 

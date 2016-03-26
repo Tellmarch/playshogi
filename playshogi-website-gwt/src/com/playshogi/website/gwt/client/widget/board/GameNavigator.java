@@ -1,4 +1,4 @@
-package com.playshogi.website.gwt.client.board;
+package com.playshogi.website.gwt.client.widget.board;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;

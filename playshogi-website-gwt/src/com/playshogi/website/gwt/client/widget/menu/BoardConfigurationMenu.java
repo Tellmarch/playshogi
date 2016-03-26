@@ -1,11 +1,11 @@
-package com.playshogi.website.gwt.client.menu;
+package com.playshogi.website.gwt.client.widget.menu;
 
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.MenuBar;
 import com.google.gwt.user.client.ui.MenuItem;
-import com.playshogi.website.gwt.client.board.ShogiBoard;
+import com.playshogi.website.gwt.client.widget.board.ShogiBoard;
 
 public class BoardConfigurationMenu extends Composite {
 

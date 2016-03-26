@@ -1,6 +1,6 @@
-package com.playshogi.website.gwt.client.board;
+package com.playshogi.website.gwt.client.widget.board;
 
-import static com.playshogi.website.gwt.client.board.ShogiBoard.SQUARE_WIDTH;
+import static com.playshogi.website.gwt.client.widget.board.ShogiBoard.SQUARE_WIDTH;
 
 import com.playshogi.library.shogi.models.Piece;
 
