@@ -11,7 +11,6 @@ public class GameNavigation<P extends Position<P>> {
 	private Node currentNode;
 	private P position;
 	private final GameRulesEngine<P> gameRulesEngine;
-	private P startPosition;
 
 	@SuppressWarnings("unchecked")
 	public GameNavigation(final GameRulesEngine<P> gameRulesEngine, final GameTree gameTree, final P startPosition) {
@@ -21,10 +20,7 @@ public class GameNavigation<P extends Position<P>> {
 		if (currentNode.getMove() instanceof EditMove) {
 			EditMove editMove = (EditMove) currentNode.getMove();
 			this.position = (P) editMove.getPosition();
-			this.startPosition = startPosition;
 		} else {
-			this.startPosition = startPosition;
-			// this.position = startPosition.clonePosition();
 			this.position = startPosition;
 		}
 	}
@@ -81,8 +77,6 @@ public class GameNavigation<P extends Position<P>> {
 	}
 
 	public void moveToStart() {
-		// currentNode = gameTree.getRootNode();
-		// this.position = startPosition.clonePosition();
 		while (canMoveBack()) {
 			moveBack();
 		}
@@ -121,7 +115,6 @@ public class GameNavigation<P extends Position<P>> {
 		if (currentNode.getMove() instanceof EditMove) {
 			EditMove editMove = (EditMove) currentNode.getMove();
 			this.position = (P) editMove.getPosition();
-			this.startPosition = this.position;
 		}
 	}
 }

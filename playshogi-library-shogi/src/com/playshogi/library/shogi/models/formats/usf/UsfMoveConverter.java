@@ -2,6 +2,7 @@ package com.playshogi.library.shogi.models.formats.usf;
 
 import com.playshogi.library.models.Square;
 import com.playshogi.library.shogi.models.Piece;
+import com.playshogi.library.shogi.models.moves.CaptureMove;
 import com.playshogi.library.shogi.models.moves.DropMove;
 import com.playshogi.library.shogi.models.moves.NormalMove;
 import com.playshogi.library.shogi.models.moves.ShogiMove;
@@ -55,8 +56,12 @@ public class UsfMoveConverter {
 		if (drop) {
 			return new DropMove(piece.isSentePiece(), piece.getPieceType(), Square.of(col2, row2));
 		} else {
-			// TODO capture
-			return new NormalMove(piece, Square.of(col1, row1), Square.of(col2, row2), promotion);
+			Piece capturedPiece = shogiPosition.getPieceAt(Square.of(col2, row2));
+			if (capturedPiece == null) {
+				return new NormalMove(piece, Square.of(col1, row1), Square.of(col2, row2), promotion);
+			} else {
+				return new CaptureMove(piece, Square.of(col1, row1), Square.of(col2, row2), promotion, capturedPiece);
+			}
 		}
 	}
 

@@ -9,6 +9,8 @@ public class BoardConfiguration {
 	private boolean playSenteMoves = true;
 	private boolean playGoteMoves = true;
 	private boolean positionEditingMode = false;
+	private boolean showGoteKomadai = true;
+	private boolean showSenteKomadai = true;
 
 	public BoardConfiguration() {
 	}
@@ -77,13 +79,30 @@ public class BoardConfiguration {
 		this.positionEditingMode = positionEditingMode;
 	}
 
+	public boolean isShowGoteKomadai() {
+		return showGoteKomadai;
+	}
+
+	public void setShowGoteKomadai(final boolean showGoteKomadai) {
+		this.showGoteKomadai = showGoteKomadai;
+	}
+
+	public boolean isShowSenteKomadai() {
+		return showSenteKomadai;
+	}
+
+	public void setShowSenteKomadai(final boolean showSenteKomadai) {
+		this.showSenteKomadai = showSenteKomadai;
+	}
+
 	@Override
 	public String toString() {
 		return "BoardConfiguration [inverted=" + inverted + ", allowOnlyLegalMoves=" + allowOnlyLegalMoves
 				+ ", showPossibleMovesOnPieceSelection=" + showPossibleMovesOnPieceSelection
 				+ ", showPossibleMovesOnPieceMouseOver=" + showPossibleMovesOnPieceMouseOver
 				+ ", alternateSenteAndGoteMoves=" + alternateSenteAndGoteMoves + ", playSenteMoves=" + playSenteMoves
-				+ ", playGoteMoves=" + playGoteMoves + ", positionEditingMode=" + positionEditingMode + "]";
+				+ ", playGoteMoves=" + playGoteMoves + ", positionEditingMode=" + positionEditingMode
+				+ ", showGoteKomadai=" + showGoteKomadai + ", showSenteKomadai=" + showSenteKomadai + "]";
 	}
 
 }

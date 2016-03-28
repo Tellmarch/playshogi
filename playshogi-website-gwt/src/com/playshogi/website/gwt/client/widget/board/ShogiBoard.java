@@ -76,7 +76,10 @@ public class ShogiBoard extends Composite implements ClickHandler {
 
 		absolutePanel.setSize(tatami.getWidth() + "px", tatami.getHeight() + "px");
 		absolutePanel.add(tatami, 0, 0);
-		absolutePanel.add(goteKomadaiImage, TATAMI_LEFT_MARGIN, TATAMI_TOP_MARGIN);
+
+		if (boardConfiguration.isShowGoteKomadai()) {
+			absolutePanel.add(goteKomadaiImage, TATAMI_LEFT_MARGIN, TATAMI_TOP_MARGIN);
+		}
 
 		boardLeft = TATAMI_LEFT_MARGIN + goteKomadaiImage.getWidth() + TATAMI_INSIDE_MARGIN;
 		boardTop = TATAMI_TOP_MARGIN;
@@ -86,7 +89,10 @@ public class ShogiBoard extends Composite implements ClickHandler {
 
 		senteKomadaiX = boardLeft + ban.getWidth() + TATAMI_INSIDE_MARGIN;
 		senteKomadaiY = TATAMI_TOP_MARGIN + ban.getHeight() - senteKomadaiImage.getHeight();
-		absolutePanel.add(senteKomadaiImage, senteKomadaiX, senteKomadaiY);
+
+		if (boardConfiguration.isShowSenteKomadai()) {
+			absolutePanel.add(senteKomadaiImage, senteKomadaiX, senteKomadaiY);
+		}
 
 		position = new ShogiInitialPositionFactory().createInitialPosition();
 
@@ -155,41 +161,45 @@ public class ShogiBoard extends Composite implements ClickHandler {
 
 		PieceType[] pieceTypes = PieceType.values();
 
-		senteKomadai.removeAll();
-		int[] sentePieces = position.getSenteKomadai().getPieces();
-		for (int i = 0; i < sentePieces.length; i++) {
-			for (int j = 0; j < sentePieces[i]; j++) {
-				Piece piece = Piece.getPiece(pieceTypes[i], true);
-				final Image image = new Image(PieceGraphics.getPieceImage(piece));
-				PieceWrapper pieceWrapper = new PieceWrapper(piece, image, -1, -1);
-				pieceWrapper.setInKomadai(true);
-				pieceWrappers.add(pieceWrapper);
+		if (boardConfiguration.isShowSenteKomadai()) {
+			senteKomadai.removeAll();
+			int[] sentePieces = position.getSenteKomadai().getPieces();
+			for (int i = 0; i < sentePieces.length; i++) {
+				for (int j = 0; j < sentePieces[i]; j++) {
+					Piece piece = Piece.getPiece(pieceTypes[i], true);
+					final Image image = new Image(PieceGraphics.getPieceImage(piece));
+					PieceWrapper pieceWrapper = new PieceWrapper(piece, image, -1, -1);
+					pieceWrapper.setInKomadai(true);
+					pieceWrappers.add(pieceWrapper);
 
-				setupPieceEventHandlers(pieceWrapper);
-				image.setStyleName(STYLE_PIECE_UNSELECTED);
+					setupPieceEventHandlers(pieceWrapper);
+					image.setStyleName(STYLE_PIECE_UNSELECTED);
 
-				Point point = senteKomadai.addPiece(piece);
+					Point point = senteKomadai.addPiece(piece);
 
-				absolutePanel.add(image, senteKomadaiX + point.x, senteKomadaiY + point.y);
+					absolutePanel.add(image, senteKomadaiX + point.x, senteKomadaiY + point.y);
+				}
 			}
 		}
 
-		goteKomadai.removeAll();
-		int[] gotePieces = position.getGoteKomadai().getPieces();
-		for (int i = 0; i < gotePieces.length; i++) {
-			for (int j = 0; j < gotePieces[i]; j++) {
-				Piece piece = Piece.getPiece(pieceTypes[i], false);
-				final Image image = new Image(PieceGraphics.getPieceImage(piece));
-				PieceWrapper pieceWrapper = new PieceWrapper(piece, image, -2, -2);
-				pieceWrapper.setInKomadai(true);
-				pieceWrappers.add(pieceWrapper);
+		if (boardConfiguration.isShowGoteKomadai()) {
+			goteKomadai.removeAll();
+			int[] gotePieces = position.getGoteKomadai().getPieces();
+			for (int i = 0; i < gotePieces.length; i++) {
+				for (int j = 0; j < gotePieces[i]; j++) {
+					Piece piece = Piece.getPiece(pieceTypes[i], false);
+					final Image image = new Image(PieceGraphics.getPieceImage(piece));
+					PieceWrapper pieceWrapper = new PieceWrapper(piece, image, -2, -2);
+					pieceWrapper.setInKomadai(true);
+					pieceWrappers.add(pieceWrapper);
 
-				setupPieceEventHandlers(pieceWrapper);
-				image.setStyleName(STYLE_PIECE_UNSELECTED);
+					setupPieceEventHandlers(pieceWrapper);
+					image.setStyleName(STYLE_PIECE_UNSELECTED);
 
-				Point point = goteKomadai.addPiece(piece);
+					Point point = goteKomadai.addPiece(piece);
 
-				absolutePanel.add(image, TATAMI_LEFT_MARGIN + point.x, TATAMI_TOP_MARGIN + point.y);
+					absolutePanel.add(image, TATAMI_LEFT_MARGIN + point.x, TATAMI_TOP_MARGIN + point.y);
+				}
 			}
 		}
 
@@ -454,6 +464,10 @@ public class ShogiBoard extends Composite implements ClickHandler {
 
 	public void setPlayGoteMoves(final boolean playGoteMoves) {
 		boardConfiguration.setPlayGoteMoves(playGoteMoves);
+	}
+
+	public BoardConfiguration getBoardConfiguration() {
+		return boardConfiguration;
 	}
 
 }

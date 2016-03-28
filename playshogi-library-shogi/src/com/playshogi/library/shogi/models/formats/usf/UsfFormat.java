@@ -1,5 +1,6 @@
 package com.playshogi.library.shogi.models.formats.usf;
 
+import com.playshogi.library.models.EditMove;
 import com.playshogi.library.models.Move;
 import com.playshogi.library.models.record.GameInformation;
 import com.playshogi.library.models.record.GameNavigation;
@@ -55,17 +56,19 @@ public enum UsfFormat implements GameRecordFormat {
 		}
 
 		// We will know start building the game tree
-		GameTree gameTree = new GameTree();
 
 		ShogiPosition startingPosition;
+		GameTree gameTree;
 		// If the next character is ":", the game is starting from start
 		// position.
 		if (l.charAt(2) == ':') {
 			startingPosition = new ShogiInitialPositionFactory().createInitialPosition();
+			gameTree = new GameTree();
 		} else {
 			// We read the starting position, in a SFEN that goes up to ":"
 			String sfen = l.substring(2, l.indexOf(':'));
 			startingPosition = SfenConverter.fromSFEN(sfen);
+			gameTree = new GameTree(startingPosition);
 		}
 
 		GameNavigation<ShogiPosition> gameNavigation = new GameNavigation<ShogiPosition>(new ShogiRulesEngine(),
@@ -191,6 +194,7 @@ public enum UsfFormat implements GameRecordFormat {
 		// }
 		// }
 
+		gameNavigation.moveToStart();
 		GameInformation gameInformation = new GameInformation();
 		GameResult gameResult = new GameResult();
 		return new GameRecord(gameInformation, gameTree, gameResult);
@@ -222,8 +226,14 @@ public enum UsfFormat implements GameRecordFormat {
 	}
 
 	private static String toUSFString(final GameTree gameTree) {
-		String res = "^*:";
+		String res = "^*";
 		Node n = gameTree.getRootNode();
+		if (n.getMove() instanceof EditMove) {
+			EditMove editMove = (EditMove) n.getMove();
+			ShogiPosition position = (ShogiPosition) editMove.getPosition();
+			res += SfenConverter.toSFEN(position);
+		}
+		res += ":";
 		while (n.hasChildren()) {
 			n = n.getChildren().get(0);
 			res += UsfMoveConverter.toUsfString((ShogiMove) n.getMove());
