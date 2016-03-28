@@ -3,25 +3,39 @@ package com.playshogi.website.gwt.client.widget.board;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.TextBox;
+import com.google.web.bindery.event.shared.binder.EventBinder;
+import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.library.shogi.models.formats.sfen.SfenConverter;
 import com.playshogi.library.shogi.models.formats.usf.UsfMoveConverter;
 import com.playshogi.library.shogi.models.moves.ShogiMove;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
+import com.playshogi.website.gwt.client.events.MovePlayedEvent;
 import com.playshogi.website.gwt.client.services.PositionSharingService;
 import com.playshogi.website.gwt.client.services.PositionSharingServiceAsync;
 
-public class PositionSharing extends Composite implements ShogiBoardHandler {
+public class PositionSharing extends Composite {
+
+	interface MyEventBinder extends EventBinder<PositionSharing> {
+	}
+
+	private final MyEventBinder eventBinder = GWT.create(MyEventBinder.class);
 
 	private final PositionSharingServiceAsync positionSharingService = GWT.create(PositionSharingService.class);
 	private final ShogiBoard shogiBoard;
 	private final TextBox keyField;
 
-	public PositionSharing(final ShogiBoard shogiBoard) {
+	private final EventBus eventBus;
+
+	public PositionSharing(final EventBus eventBus, final ShogiBoard shogiBoard) {
+		this.eventBus = eventBus;
+		eventBinder.bindEventHandlers(this, this.eventBus);
+
 		this.shogiBoard = shogiBoard;
 		final Button shareButton = new Button("Share");
 		final Button loadButton = new Button("Load");
@@ -103,8 +117,9 @@ public class PositionSharing extends Composite implements ShogiBoardHandler {
 
 	}
 
-	@Override
-	public void handleMovePlayed(final ShogiMove move) {
+	@EventHandler
+	public void onMovePlayed(final MovePlayedEvent movePlayedEvent) {
+		ShogiMove move = movePlayedEvent.getMove();
 		String usfMove = UsfMoveConverter.toUsfString(move);
 		GWT.log("Sending move: " + usfMove);
 		positionSharingService.playMove(getKey(), usfMove, getVoidCallback("playMove"));
@@ -127,7 +142,7 @@ public class PositionSharing extends Composite implements ShogiBoardHandler {
 				GWT.log("Received move: " + move);
 				ShogiMove shogiMove = UsfMoveConverter.fromUsfString(move, shogiBoard.getPosition());
 
-				shogiBoard.playMove(shogiMove, false);
+				// shogiBoard.playMove(shogiMove, false);
 
 				if (!shogiBoard.canPlayMove()) {
 					waitForNextMove();

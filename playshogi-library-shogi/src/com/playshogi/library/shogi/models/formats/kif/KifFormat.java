@@ -175,7 +175,7 @@ public enum KifFormat implements GameRecordFormat {
 				System.out.println("Error parsing move in line " + line + "in file " + "???");
 				break;
 			}
-			gameNavigation.addMove(curMove, true);
+			gameNavigation.addMove(curMove);
 			bsente = !bsente;
 			prevMove = curMove;
 		}

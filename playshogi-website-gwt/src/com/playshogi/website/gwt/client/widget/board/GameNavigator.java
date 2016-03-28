@@ -3,27 +3,41 @@ package com.playshogi.website.gwt.client.widget.board;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.web.bindery.event.shared.binder.EventBinder;
+import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.library.models.record.GameNavigation;
 import com.playshogi.library.shogi.models.formats.usf.UsfMoveConverter;
 import com.playshogi.library.shogi.models.moves.ShogiMove;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
+import com.playshogi.website.gwt.client.events.EndOfVariationReachedEvent;
+import com.playshogi.website.gwt.client.events.MovePlayedEvent;
+import com.playshogi.website.gwt.client.events.NewVariationPlayedEvent;
+import com.playshogi.website.gwt.client.events.PositionChangedEvent;
 
-public class GameNavigator extends Composite implements ShogiBoardHandler, ClickHandler {
+public class GameNavigator extends Composite implements ClickHandler {
 
-	private final ShogiBoard shogiBoard;
+	interface MyEventBinder extends EventBinder<GameNavigator> {
+	}
+
+	private final MyEventBinder eventBinder = GWT.create(MyEventBinder.class);
+
 	private final Button firstButton;
 	private final Button previousButton;
 	private final Button nextButton;
 	private final Button lastButton;
 	private final GameNavigation<ShogiPosition> gameNavigation;
 
-	public GameNavigator(final ShogiBoard shogiBoard, final GameNavigation<ShogiPosition> gameNavigation) {
+	private final EventBus eventBus;
 
+	public GameNavigator(final EventBus eventBus, final GameNavigation<ShogiPosition> gameNavigation) {
+
+		this.eventBus = eventBus;
+		eventBinder.bindEventHandlers(this, this.eventBus);
 		this.gameNavigation = gameNavigation;
-		this.shogiBoard = shogiBoard;
 		firstButton = new Button("<<");
 		previousButton = new Button("<");
 		nextButton = new Button(">");
@@ -44,11 +58,20 @@ public class GameNavigator extends Composite implements ShogiBoardHandler, Click
 
 	}
 
-	@Override
-	public void handleMovePlayed(final ShogiMove move) {
+	@EventHandler
+	public void onMovePlayed(final MovePlayedEvent movePlayedEvent) {
+		ShogiMove move = movePlayedEvent.getMove();
 		String usfMove = UsfMoveConverter.toUsfString(move);
 		GWT.log("Move played: " + usfMove);
-		gameNavigation.addMove(move, false);
+		boolean existingMove = gameNavigation.hasMoveInCurrentPosition(move);
+		gameNavigation.addMove(move);
+		firePositionChanged();
+		if (!existingMove) {
+			eventBus.fireEvent(new NewVariationPlayedEvent());
+		}
+		if (!gameNavigation.canMoveForward()) {
+			eventBus.fireEvent(new EndOfVariationReachedEvent());
+		}
 	}
 
 	@Override
@@ -64,8 +87,11 @@ public class GameNavigator extends Composite implements ShogiBoardHandler, Click
 		} else if (source == lastButton) {
 			gameNavigation.moveToEndOfVariation();
 		}
-		GWT.log("Displaying board");
-		shogiBoard.displayPosition();
+		firePositionChanged();
+	}
+
+	private void firePositionChanged() {
+		eventBus.fireEvent(new PositionChangedEvent());
 	}
 
 }

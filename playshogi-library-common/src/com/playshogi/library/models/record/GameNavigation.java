@@ -88,7 +88,11 @@ public class GameNavigation<P extends Position<P>> {
 		}
 	}
 
-	public void addMove(final Move move, final boolean playInPosition) {
+	public boolean hasMoveInCurrentPosition(final Move move) {
+		return currentNode.getChildWithMove(move) != null;
+	}
+
+	public void addMove(final Move move) {
 		Node childNode = currentNode.getChildWithMove(move);
 		if (childNode == null) {
 			Node newNode = new Node(move);
@@ -98,9 +102,7 @@ public class GameNavigation<P extends Position<P>> {
 		} else {
 			currentNode = childNode;
 		}
-		if (playInPosition) {
-			gameRulesEngine.playMoveInPosition(position, move);
-		}
+		gameRulesEngine.playMoveInPosition(position, move);
 	}
 
 	public GameTree getGameTree() {

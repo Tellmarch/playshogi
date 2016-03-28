@@ -11,19 +11,10 @@ import com.google.gwt.place.shared.PlaceController;
 import com.google.gwt.place.shared.PlaceHistoryHandler;
 import com.google.gwt.user.client.ui.DockLayoutPanel;
 import com.google.gwt.user.client.ui.RootLayoutPanel;
-import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
-import com.playshogi.library.models.record.GameNavigation;
-import com.playshogi.library.models.record.GameTree;
-import com.playshogi.library.shogi.models.position.ShogiPosition;
-import com.playshogi.library.shogi.rules.ShogiRulesEngine;
 import com.playshogi.website.gwt.client.mvp.AppActivityMapper;
 import com.playshogi.website.gwt.client.mvp.AppPlaceHistoryMapper;
 import com.playshogi.website.gwt.client.place.MainPagePlace;
-import com.playshogi.website.gwt.client.widget.board.GameImporter;
-import com.playshogi.website.gwt.client.widget.board.GameNavigator;
-import com.playshogi.website.gwt.client.widget.board.PositionSharing;
-import com.playshogi.website.gwt.client.widget.board.ShogiBoard;
 import com.playshogi.website.gwt.client.widget.navigation.NavigationBar;
 
 public class PlayShogiMain implements EntryPoint {
@@ -55,26 +46,28 @@ public class PlayShogiMain implements EntryPoint {
 		historyHandler.handleCurrentHistory();
 	}
 
-	private void myOldMain() {
-		ShogiBoard shogiBoard = new ShogiBoard();
-
-		ShogiRulesEngine shogiRulesEngine = new ShogiRulesEngine();
-		GameNavigation<ShogiPosition> gameNavigation = new GameNavigation<>(shogiRulesEngine, new GameTree(),
-				shogiBoard.getPosition());
-
-		PositionSharing positionSharing = new PositionSharing(shogiBoard);
-		GameNavigator gameNavigator = new GameNavigator(shogiBoard, gameNavigation);
-		GameImporter gameImporter = new GameImporter(shogiBoard, gameNavigation);
-		// BoardConfigurationMenu boardConfigurationMenu = new
-		// BoardConfigurationMenu(shogiBoard);
-		// RootPanel.get().add(boardConfigurationMenu);
-		// shogiBoard.setShogiBoardHandler(positionSharing);
-		shogiBoard.setShogiBoardHandler(gameNavigator);
-
-		RootPanel.get().add(positionSharing);
-		RootPanel.get().add(gameNavigator);
-		RootPanel.get().add(shogiBoard);
-		RootPanel.get().add(gameImporter);
-	}
+	// private void myOldMain() {
+	// ShogiBoard shogiBoard = new ShogiBoard();
+	//
+	// ShogiRulesEngine shogiRulesEngine = new ShogiRulesEngine();
+	// GameNavigation<ShogiPosition> gameNavigation = new
+	// GameNavigation<>(shogiRulesEngine, new GameTree(),
+	// shogiBoard.getPosition());
+	//
+	// PositionSharing positionSharing = new PositionSharing(shogiBoard);
+	// GameNavigator gameNavigator = new GameNavigator(shogiBoard,
+	// gameNavigation);
+	// GameImporter gameImporter = new GameImporter(shogiBoard, gameNavigation);
+	// // BoardConfigurationMenu boardConfigurationMenu = new
+	// // BoardConfigurationMenu(shogiBoard);
+	// // RootPanel.get().add(boardConfigurationMenu);
+	// // shogiBoard.setShogiBoardHandler(positionSharing);
+	// shogiBoard.setShogiBoardHandler(gameNavigator);
+	//
+	// RootPanel.get().add(positionSharing);
+	// RootPanel.get().add(gameNavigator);
+	// RootPanel.get().add(shogiBoard);
+	// RootPanel.get().add(gameImporter);
+	// }
 
 }

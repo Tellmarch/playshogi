@@ -210,7 +210,7 @@ public enum UsfFormat implements GameRecordFormat {
 		for (int i = 0; i < numberOfMoves; i++) {
 			Move curMove = UsfMoveConverter.fromUsfString(moves.substring(4 * i, 4 * i + 4),
 					gameNavigation.getPosition());
-			gameNavigation.addMove(curMove, true);
+			gameNavigation.addMove(curMove);
 		}
 	}
 
