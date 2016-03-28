@@ -10,7 +10,7 @@ public class ClientFactoryImpl implements ClientFactory {
 	private static final EventBus eventBus = new SimpleEventBus();
 	private static final PlaceController placeController = new PlaceController(eventBus);
 	private final MainPageView mainPageView = new MainPageView(this);
-	private final TsumeView tsumeView = new TsumeView();
+	private final TsumeView tsumeView = new TsumeView(this);
 
 	@Override
 	public EventBus getEventBus() {

@@ -4,25 +4,28 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Random;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import com.playshogi.library.models.record.GameNavigation;
 import com.playshogi.library.models.record.GameRecord;
 import com.playshogi.library.models.record.GameTree;
 import com.playshogi.library.shogi.models.formats.usf.UsfFormat;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.library.shogi.rules.ShogiRulesEngine;
+import com.playshogi.website.gwt.client.ClientFactory;
 import com.playshogi.website.gwt.client.services.ProblemsService;
 import com.playshogi.website.gwt.client.services.ProblemsServiceAsync;
 import com.playshogi.website.gwt.client.widget.board.GameNavigator;
 import com.playshogi.website.gwt.client.widget.board.ShogiBoard;
+import com.playshogi.website.gwt.client.widget.problems.ProblemFeedbackPanel;
 
 public class TsumeView extends Composite {
 
 	private final ProblemsServiceAsync problemsService = GWT.create(ProblemsService.class);
 	private final GameNavigation<ShogiPosition> gameNavigation;
 	private final ShogiBoard shogiBoard;
+	private final ClientFactory clientFactory;
 
-	public TsumeView() {
+	public TsumeView(final ClientFactory clientFactory) {
+		this.clientFactory = clientFactory;
 		shogiBoard = new ShogiBoard();
 		shogiBoard.getBoardConfiguration().setShowGoteKomadai(false);
 
@@ -32,10 +35,11 @@ public class TsumeView extends Composite {
 		GameNavigator gameNavigator = new GameNavigator(shogiBoard, gameNavigation);
 		shogiBoard.setShogiBoardHandler(gameNavigator);
 
-		VerticalPanel verticalPanel = new VerticalPanel();
-		verticalPanel.add(gameNavigator);
-		verticalPanel.add(shogiBoard);
-		initWidget(verticalPanel);
+		ProblemFeedbackPanel problemFeedbackPanel = new ProblemFeedbackPanel(clientFactory.getEventBus(),
+				gameNavigator);
+		shogiBoard.setUpperRightPanel(problemFeedbackPanel);
+
+		initWidget(shogiBoard);
 	}
 
 	public void setTsumeId(final String tsumeId) {

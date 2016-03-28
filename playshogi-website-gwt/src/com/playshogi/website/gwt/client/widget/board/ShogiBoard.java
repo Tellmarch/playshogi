@@ -16,6 +16,7 @@ import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DecoratorPanel;
 import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.Widget;
 import com.playshogi.library.models.Square;
 import com.playshogi.library.shogi.models.Piece;
 import com.playshogi.library.shogi.models.PieceType;
@@ -61,6 +62,7 @@ public class ShogiBoard extends Composite implements ClickHandler {
 	private final int senteKomadaiY;
 
 	private static final BoardBundle boardResources = GWT.create(BoardBundle.class);
+	private Widget upperRightPanel;
 
 	public ShogiBoard() {
 
@@ -468,6 +470,17 @@ public class ShogiBoard extends Composite implements ClickHandler {
 
 	public BoardConfiguration getBoardConfiguration() {
 		return boardConfiguration;
+	}
+
+	public void setUpperRightPanel(final Widget panel) {
+		if (upperRightPanel != null) {
+			absolutePanel.remove(upperRightPanel);
+		}
+
+		this.upperRightPanel = panel;
+		panel.setWidth(senteKomadaiImage.getWidth() + "px");
+		panel.setHeight((senteKomadaiY - boardTop - BOARD_TOP_MARGIN) + "px");
+		absolutePanel.add(panel, senteKomadaiX, boardTop);
 	}
 
 }
