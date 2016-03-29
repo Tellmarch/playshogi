@@ -14,6 +14,7 @@ import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.website.gwt.client.events.EndOfVariationReachedEvent;
 import com.playshogi.website.gwt.client.events.NewVariationPlayedEvent;
+import com.playshogi.website.gwt.client.events.UserNavigatedBackEvent;
 import com.playshogi.website.gwt.client.events.UserSkippedProblemEvent;
 import com.playshogi.website.gwt.client.widget.board.GameNavigator;
 
@@ -24,9 +25,10 @@ public class ProblemFeedbackPanel extends Composite implements ClickHandler {
 
 	private final MyEventBinder eventBinder = GWT.create(MyEventBinder.class);
 
-	SafeHtml chooseHtml = SafeHtmlUtils.fromSafeConstant("Play the correct move!");
-	SafeHtml correctHtml = SafeHtmlUtils.fromSafeConstant("Correct!");
-	SafeHtml wrongHtml = SafeHtmlUtils.fromSafeConstant("Wrong!");
+	SafeHtml chooseHtml = SafeHtmlUtils
+			.fromSafeConstant("Play the correct move!<br>(Ctrl+click to play without promotion)");
+	SafeHtml correctHtml = SafeHtmlUtils.fromSafeConstant("<p style=\"font-size:20px;color:green\">Correct!</p>");
+	SafeHtml wrongHtml = SafeHtmlUtils.fromSafeConstant("<p style=\"font-size:20px;color:red\">Wrong!</p>");
 
 	private final EventBus eventBus;
 	private final Button skipButton;
@@ -38,10 +40,12 @@ public class ProblemFeedbackPanel extends Composite implements ClickHandler {
 		FlowPanel verticalPanel = new FlowPanel();
 		verticalPanel.add(gameNavigator);
 
-		skipButton = new Button("Skip");
+		skipButton = new Button("Skip/Next");
 		skipButton.addClickHandler(this);
 
 		verticalPanel.add(skipButton);
+
+		verticalPanel.add(new HTML(SafeHtmlUtils.fromSafeConstant("<br>")));
 
 		messagePanel = new HTML();
 		messagePanel.setHTML(chooseHtml);
@@ -57,6 +61,7 @@ public class ProblemFeedbackPanel extends Composite implements ClickHandler {
 	public void onClick(final ClickEvent event) {
 		Object source = event.getSource();
 		if (source == skipButton) {
+			messagePanel.setHTML(chooseHtml);
 			eventBus.fireEvent(new UserSkippedProblemEvent());
 		}
 	}
@@ -69,5 +74,10 @@ public class ProblemFeedbackPanel extends Composite implements ClickHandler {
 	@EventHandler
 	public void onEndOfVariation(final EndOfVariationReachedEvent event) {
 		messagePanel.setHTML(correctHtml);
+	}
+
+	@EventHandler
+	public void onUserNavigatedBack(final UserNavigatedBackEvent event) {
+		messagePanel.setHTML(chooseHtml);
 	}
 }

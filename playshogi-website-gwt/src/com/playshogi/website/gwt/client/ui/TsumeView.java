@@ -28,11 +28,13 @@ public class TsumeView extends Composite {
 		this.clientFactory = clientFactory;
 		shogiBoard = new ShogiBoard(clientFactory.getEventBus());
 		shogiBoard.getBoardConfiguration().setShowGoteKomadai(false);
+		shogiBoard.getBoardConfiguration().setPlayGoteMoves(false);
 
 		ShogiRulesEngine shogiRulesEngine = new ShogiRulesEngine();
 		gameNavigation = new GameNavigation<>(shogiRulesEngine, new GameTree(), shogiBoard.getPosition());
 
-		GameNavigator gameNavigator = new GameNavigator(clientFactory.getEventBus(), gameNavigation);
+		GameNavigator gameNavigator = new GameNavigator(clientFactory.getEventBus(), gameNavigation,
+				shogiBoard.getBoardConfiguration());
 
 		ProblemFeedbackPanel problemFeedbackPanel = new ProblemFeedbackPanel(clientFactory.getEventBus(),
 				gameNavigator);

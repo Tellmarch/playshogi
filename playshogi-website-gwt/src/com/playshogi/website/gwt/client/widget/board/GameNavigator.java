@@ -17,6 +17,7 @@ import com.playshogi.website.gwt.client.events.EndOfVariationReachedEvent;
 import com.playshogi.website.gwt.client.events.MovePlayedEvent;
 import com.playshogi.website.gwt.client.events.NewVariationPlayedEvent;
 import com.playshogi.website.gwt.client.events.PositionChangedEvent;
+import com.playshogi.website.gwt.client.events.UserNavigatedBackEvent;
 
 public class GameNavigator extends Composite implements ClickHandler {
 
@@ -33,9 +34,13 @@ public class GameNavigator extends Composite implements ClickHandler {
 
 	private final EventBus eventBus;
 
-	public GameNavigator(final EventBus eventBus, final GameNavigation<ShogiPosition> gameNavigation) {
+	private final BoardConfiguration boardConfiguration;
+
+	public GameNavigator(final EventBus eventBus, final GameNavigation<ShogiPosition> gameNavigation,
+			final BoardConfiguration boardConfiguration) {
 
 		this.eventBus = eventBus;
+		this.boardConfiguration = boardConfiguration;
 		eventBinder.bindEventHandlers(this, this.eventBus);
 		this.gameNavigation = gameNavigation;
 		firstButton = new Button("<<");
@@ -65,13 +70,22 @@ public class GameNavigator extends Composite implements ClickHandler {
 		GWT.log("Move played: " + usfMove);
 		boolean existingMove = gameNavigation.hasMoveInCurrentPosition(move);
 		gameNavigation.addMove(move);
-		firePositionChanged();
 		if (!existingMove) {
+			GWT.log("New variation");
 			eventBus.fireEvent(new NewVariationPlayedEvent());
-		}
-		if (!gameNavigation.canMoveForward()) {
+		} else if (!gameNavigation.canMoveForward()) {
 			eventBus.fireEvent(new EndOfVariationReachedEvent());
+		} else if (isSenteToPlay() && !boardConfiguration.isPlaySenteMoves()) {
+			gameNavigation.moveForward();
+		} else if (!isSenteToPlay() && !boardConfiguration.isPlayGoteMoves()) {
+			gameNavigation.moveForward();
 		}
+
+		firePositionChanged();
+	}
+
+	private boolean isSenteToPlay() {
+		return gameNavigation.getPosition().isSenteToPlay();
 	}
 
 	@Override
@@ -79,11 +93,12 @@ public class GameNavigator extends Composite implements ClickHandler {
 		Object source = event.getSource();
 		if (source == firstButton) {
 			gameNavigation.moveToStart();
+			eventBus.fireEvent(new UserNavigatedBackEvent());
 		} else if (source == nextButton) {
 			gameNavigation.moveForward();
 		} else if (source == previousButton) {
-			GWT.log("Moving back");
 			gameNavigation.moveBack();
+			eventBus.fireEvent(new UserNavigatedBackEvent());
 		} else if (source == lastButton) {
 			gameNavigation.moveToEndOfVariation();
 		}

@@ -28,7 +28,7 @@ public class ShogiMove implements Move {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + (senteMoving ? 1231 : 1237);
-		result = prime * result + ((usfString == null) ? 0 : usfString.hashCode());
+		result = prime * result + ((getUsfString() == null) ? 0 : getUsfString().hashCode());
 		return result;
 	}
 
@@ -43,10 +43,10 @@ public class ShogiMove implements Move {
 		ShogiMove other = (ShogiMove) obj;
 		if (senteMoving != other.senteMoving)
 			return false;
-		if (usfString == null) {
-			if (other.usfString != null)
+		if (getUsfString() == null) {
+			if (other.getUsfString() != null)
 				return false;
-		} else if (!usfString.equals(other.usfString))
+		} else if (!getUsfString().equals(other.getUsfString()))
 			return false;
 		return true;
 	}
