@@ -22,6 +22,8 @@
   <inherits name="com.google.gwt.place.Place"/>
 
 <inherits name='com.google.web.bindery.event.EventBinder'/>
+<inherits name="com.google.gwt.inject.Inject"/>
+
 
 	<inherits name="com.playshogi.playshogi-library-common" />
 	<inherits name="com.playshogi.playshogi-library-shogi" />

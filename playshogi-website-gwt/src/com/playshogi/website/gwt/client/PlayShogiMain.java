@@ -12,6 +12,7 @@ import com.google.gwt.place.shared.PlaceHistoryHandler;
 import com.google.gwt.user.client.ui.DockLayoutPanel;
 import com.google.gwt.user.client.ui.RootLayoutPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
+import com.playshogi.website.gwt.client.gin.PlayShogiGinjector;
 import com.playshogi.website.gwt.client.mvp.AppActivityMapper;
 import com.playshogi.website.gwt.client.mvp.AppPlaceHistoryMapper;
 import com.playshogi.website.gwt.client.place.MainPagePlace;
@@ -24,6 +25,8 @@ public class PlayShogiMain implements EntryPoint {
 
 	@Override
 	public void onModuleLoad() {
+		PlayShogiGinjector injector = GWT.create(PlayShogiGinjector.class);
+
 		ClientFactory clientFactory = GWT.create(ClientFactory.class);
 		EventBus eventBus = clientFactory.getEventBus();
 		PlaceController placeController = clientFactory.getPlaceController();

@@ -5,14 +5,14 @@ import com.google.gwt.place.shared.PlaceTokenizer;
 import com.google.gwt.place.shared.Prefix;
 
 public class FreeBoardPlace extends Place {
-	private final String helloName;
+	private final String boardId;
 
 	public FreeBoardPlace(final String token) {
-		this.helloName = token;
+		this.boardId = token;
 	}
 
-	public String getHelloName() {
-		return helloName;
+	public String getBoardId() {
+		return boardId;
 	}
 
 	@Prefix("Board")
@@ -20,7 +20,7 @@ public class FreeBoardPlace extends Place {
 
 		@Override
 		public String getToken(final FreeBoardPlace place) {
-			return place.getHelloName();
+			return place.getBoardId();
 		}
 
 		@Override

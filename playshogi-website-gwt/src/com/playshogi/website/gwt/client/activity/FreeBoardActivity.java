@@ -5,25 +5,23 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
 import com.google.web.bindery.event.shared.binder.EventBinder;
-import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.website.gwt.client.ClientFactory;
-import com.playshogi.website.gwt.client.events.UserSkippedProblemEvent;
-import com.playshogi.website.gwt.client.place.TsumePlace;
+import com.playshogi.website.gwt.client.place.FreeBoardPlace;
 import com.playshogi.website.gwt.client.ui.TsumeView;
 
-public class TsumeActivity extends AbstractActivity {
+public class FreeBoardActivity extends AbstractActivity {
 
-	interface MyEventBinder extends EventBinder<TsumeActivity> {
+	interface MyEventBinder extends EventBinder<FreeBoardActivity> {
 	}
 
 	private final MyEventBinder eventBinder = GWT.create(MyEventBinder.class);
 
 	private final ClientFactory clientFactory;
-	private final String tsumeId;
+	private final String boardId;
 	private TsumeView tsumeView;
 
-	public TsumeActivity(final TsumePlace place, final ClientFactory clientFactory) {
-		this.tsumeId = place.getTsumeId();
+	public FreeBoardActivity(final FreeBoardPlace place, final ClientFactory clientFactory) {
+		this.boardId = place.getBoardId();
 		this.clientFactory = clientFactory;
 	}
 
@@ -31,12 +29,8 @@ public class TsumeActivity extends AbstractActivity {
 	public void start(final AcceptsOneWidget containerWidget, final EventBus eventBus) {
 		eventBinder.bindEventHandlers(this, eventBus);
 		tsumeView = clientFactory.getTsumeView();
-		tsumeView.setTsumeId(tsumeId);
+		tsumeView.setTsumeId(boardId);
 		containerWidget.setWidget(tsumeView.asWidget());
 	}
 
-	@EventHandler
-	void onUserSkippedProblem(final UserSkippedProblemEvent event) {
-		tsumeView.setTsumeId(null);
-	}
 }
