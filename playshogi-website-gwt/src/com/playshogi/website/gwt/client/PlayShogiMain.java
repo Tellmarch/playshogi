@@ -26,6 +26,7 @@ public class PlayShogiMain implements EntryPoint {
 	@Override
 	public void onModuleLoad() {
 		PlayShogiGinjector injector = GWT.create(PlayShogiGinjector.class);
+		injector.inject(this);
 
 		ClientFactory clientFactory = GWT.create(ClientFactory.class);
 		EventBus eventBus = clientFactory.getEventBus();
