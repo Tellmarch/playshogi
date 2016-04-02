@@ -10,9 +10,12 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.library.models.record.GameNavigation;
+import com.playshogi.library.models.record.GameTree;
 import com.playshogi.library.shogi.models.formats.usf.UsfMoveConverter;
 import com.playshogi.library.shogi.models.moves.ShogiMove;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
+import com.playshogi.library.shogi.models.shogivariant.ShogiInitialPositionFactory;
+import com.playshogi.library.shogi.rules.ShogiRulesEngine;
 import com.playshogi.website.gwt.client.events.EndOfVariationReachedEvent;
 import com.playshogi.website.gwt.client.events.GameTreeChangedEvent;
 import com.playshogi.website.gwt.client.events.MovePlayedEvent;
@@ -37,9 +40,12 @@ public class GameNavigator extends Composite implements ClickHandler {
 
 	private final BoardConfiguration boardConfiguration;
 
-	public GameNavigator(final EventBus eventBus, final GameNavigation<ShogiPosition> gameNavigation,
-			final BoardConfiguration boardConfiguration) {
+	public GameNavigator(final EventBus eventBus, final BoardConfiguration boardConfiguration) {
 		GWT.log("Creating game navigator");
+
+		ShogiRulesEngine shogiRulesEngine = new ShogiRulesEngine();
+		GameNavigation<ShogiPosition> gameNavigation = new GameNavigation<>(shogiRulesEngine, new GameTree(),
+				new ShogiInitialPositionFactory().createInitialPosition());
 
 		this.eventBus = eventBus;
 		this.boardConfiguration = boardConfiguration;
@@ -63,6 +69,7 @@ public class GameNavigator extends Composite implements ClickHandler {
 
 		initWidget(horizontalPanel);
 
+		firePositionChanged();
 	}
 
 	@EventHandler
