@@ -14,6 +14,7 @@ import com.playshogi.library.shogi.models.formats.usf.UsfMoveConverter;
 import com.playshogi.library.shogi.models.moves.ShogiMove;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.website.gwt.client.events.EndOfVariationReachedEvent;
+import com.playshogi.website.gwt.client.events.GameTreeChangedEvent;
 import com.playshogi.website.gwt.client.events.MovePlayedEvent;
 import com.playshogi.website.gwt.client.events.NewVariationPlayedEvent;
 import com.playshogi.website.gwt.client.events.PositionChangedEvent;
@@ -38,6 +39,7 @@ public class GameNavigator extends Composite implements ClickHandler {
 
 	public GameNavigator(final EventBus eventBus, final GameNavigation<ShogiPosition> gameNavigation,
 			final BoardConfiguration boardConfiguration) {
+		GWT.log("Creating game navigator");
 
 		this.eventBus = eventBus;
 		this.boardConfiguration = boardConfiguration;
@@ -64,7 +66,15 @@ public class GameNavigator extends Composite implements ClickHandler {
 	}
 
 	@EventHandler
+	public void onGameTreeChanged(final GameTreeChangedEvent gameTreeChangedEvent) {
+		GWT.log("Handling game tree changed event");
+		gameNavigation.setGameTree(gameTreeChangedEvent.getGameTree());
+		firePositionChanged();
+	}
+
+	@EventHandler
 	public void onMovePlayed(final MovePlayedEvent movePlayedEvent) {
+		GWT.log("Handling move played event");
 		ShogiMove move = movePlayedEvent.getMove();
 		String usfMove = UsfMoveConverter.toUsfString(move);
 		GWT.log("Move played: " + usfMove);
@@ -106,7 +116,7 @@ public class GameNavigator extends Composite implements ClickHandler {
 	}
 
 	private void firePositionChanged() {
-		eventBus.fireEvent(new PositionChangedEvent());
+		eventBus.fireEvent(new PositionChangedEvent(gameNavigation.getPosition()));
 	}
 
 }

@@ -79,7 +79,6 @@ public class ShogiBoard extends Composite implements ClickHandler {
 	public ShogiBoard(final EventBus eventBus) {
 
 		this.eventBus = eventBus;
-		eventBinder.bindEventHandlers(this, this.eventBus);
 		absolutePanel = new AbsolutePanel();
 		ban = new Image(boardResources.ban_kaya_a());
 		grid = new Image(boardResources.masu_dot());
@@ -123,6 +122,12 @@ public class ShogiBoard extends Composite implements ClickHandler {
 		absolutePanelWrapper.setWidget(absolutePanel);
 
 		initWidget(absolutePanelWrapper);
+
+		start();
+	}
+
+	private void start() {
+		eventBinder.bindEventHandlers(this, this.eventBus);
 	}
 
 	private void initSquareImages() {
@@ -147,7 +152,8 @@ public class ShogiBoard extends Composite implements ClickHandler {
 	}
 
 	public void displayPosition() {
-		GWT.log(position.toString());
+		GWT.log("Displaying position");
+		// GWT.log(position.toString());
 
 		unselect();
 
@@ -488,7 +494,7 @@ public class ShogiBoard extends Composite implements ClickHandler {
 
 	@EventHandler
 	public void onPositionChanged(final PositionChangedEvent event) {
-		displayPosition();
+		setPosition(event.getPosition());
 	}
 
 }

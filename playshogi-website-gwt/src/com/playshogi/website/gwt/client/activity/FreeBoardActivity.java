@@ -25,7 +25,6 @@ public class FreeBoardActivity extends AbstractActivity {
 	@Override
 	public void start(final AcceptsOneWidget containerWidget, final EventBus eventBus) {
 		eventBinder.bindEventHandlers(this, eventBus);
-		tsumeView.setTsumeId(boardId);
 		containerWidget.setWidget(tsumeView.asWidget());
 	}
 
