@@ -6,7 +6,6 @@ import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
-import com.playshogi.website.gwt.client.ClientFactory;
 import com.playshogi.website.gwt.client.events.UserSkippedProblemEvent;
 import com.playshogi.website.gwt.client.place.TsumePlace;
 import com.playshogi.website.gwt.client.ui.TsumeView;
@@ -18,19 +17,17 @@ public class TsumeActivity extends AbstractActivity {
 
 	private final MyEventBinder eventBinder = GWT.create(MyEventBinder.class);
 
-	private final ClientFactory clientFactory;
 	private final String tsumeId;
-	private TsumeView tsumeView;
+	private final TsumeView tsumeView;
 
-	public TsumeActivity(final TsumePlace place, final ClientFactory clientFactory) {
+	public TsumeActivity(final TsumePlace place, final TsumeView tsumeView) {
+		this.tsumeView = tsumeView;
 		this.tsumeId = place.getTsumeId();
-		this.clientFactory = clientFactory;
 	}
 
 	@Override
 	public void start(final AcceptsOneWidget containerWidget, final EventBus eventBus) {
 		eventBinder.bindEventHandlers(this, eventBus);
-		tsumeView = clientFactory.getTsumeView();
 		tsumeView.setTsumeId(tsumeId);
 		containerWidget.setWidget(tsumeView.asWidget());
 	}

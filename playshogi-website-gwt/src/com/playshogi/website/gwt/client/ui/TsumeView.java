@@ -1,43 +1,43 @@
 package com.playshogi.website.gwt.client.ui;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.Random;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import com.playshogi.library.models.record.GameNavigation;
 import com.playshogi.library.models.record.GameRecord;
 import com.playshogi.library.models.record.GameTree;
 import com.playshogi.library.shogi.models.formats.usf.UsfFormat;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.library.shogi.rules.ShogiRulesEngine;
-import com.playshogi.website.gwt.client.ClientFactory;
 import com.playshogi.website.gwt.client.services.ProblemsService;
 import com.playshogi.website.gwt.client.services.ProblemsServiceAsync;
 import com.playshogi.website.gwt.client.widget.board.GameNavigator;
 import com.playshogi.website.gwt.client.widget.board.ShogiBoard;
 import com.playshogi.website.gwt.client.widget.problems.ProblemFeedbackPanel;
 
+@Singleton
 public class TsumeView extends Composite {
 
 	private final ProblemsServiceAsync problemsService = GWT.create(ProblemsService.class);
 	private final GameNavigation<ShogiPosition> gameNavigation;
 	private final ShogiBoard shogiBoard;
-	private final ClientFactory clientFactory;
 
-	public TsumeView(final ClientFactory clientFactory) {
-		this.clientFactory = clientFactory;
-		shogiBoard = new ShogiBoard(clientFactory.getEventBus());
+	@Inject
+	public TsumeView(final ShogiBoard shogiBoard, final EventBus eventBus) {
+		this.shogiBoard = shogiBoard;
 		shogiBoard.getBoardConfiguration().setShowGoteKomadai(false);
 		shogiBoard.getBoardConfiguration().setPlayGoteMoves(false);
 
 		ShogiRulesEngine shogiRulesEngine = new ShogiRulesEngine();
 		gameNavigation = new GameNavigation<>(shogiRulesEngine, new GameTree(), shogiBoard.getPosition());
 
-		GameNavigator gameNavigator = new GameNavigator(clientFactory.getEventBus(), gameNavigation,
-				shogiBoard.getBoardConfiguration());
+		GameNavigator gameNavigator = new GameNavigator(eventBus, gameNavigation, shogiBoard.getBoardConfiguration());
 
-		ProblemFeedbackPanel problemFeedbackPanel = new ProblemFeedbackPanel(clientFactory.getEventBus(),
-				gameNavigator);
+		ProblemFeedbackPanel problemFeedbackPanel = new ProblemFeedbackPanel(eventBus, gameNavigator);
 		shogiBoard.setUpperRightPanel(problemFeedbackPanel);
 
 		initWidget(shogiBoard);

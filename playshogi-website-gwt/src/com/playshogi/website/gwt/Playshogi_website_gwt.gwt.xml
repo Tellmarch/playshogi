@@ -31,11 +31,6 @@
 	<!-- Specify the app entry point class. -->
 	<entry-point class='com.playshogi.website.gwt.client.PlayShogiMain' />
 
-  <!-- Use ClientFactoryImpl by default -->
-  <replace-with class="com.playshogi.website.gwt.client.ClientFactoryImpl">
-    <when-type-is class="com.playshogi.website.gwt.client.ClientFactory"/>
-  </replace-with>
-
 	<!-- Specify the paths for translatable code -->
 	<source path='client' />
 	<source path='shared' />

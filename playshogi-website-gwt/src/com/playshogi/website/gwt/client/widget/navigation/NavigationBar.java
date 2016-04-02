@@ -4,14 +4,18 @@ import com.google.gwt.place.shared.Place;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Hyperlink;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import com.playshogi.website.gwt.client.mvp.AppPlaceHistoryMapper;
 import com.playshogi.website.gwt.client.place.MainPagePlace;
 import com.playshogi.website.gwt.client.place.TsumePlace;
 
+@Singleton
 public class NavigationBar extends Composite {
 
 	private final AppPlaceHistoryMapper historyMapper;
 
+	@Inject
 	public NavigationBar(final AppPlaceHistoryMapper historyMapper) {
 		this.historyMapper = historyMapper;
 		FlowPanel flowPanel = new FlowPanel();

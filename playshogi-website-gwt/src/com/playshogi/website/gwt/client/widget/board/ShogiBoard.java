@@ -18,6 +18,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DecoratorPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.inject.Inject;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.library.models.Square;
@@ -74,6 +75,7 @@ public class ShogiBoard extends Composite implements ClickHandler {
 	private Widget upperRightPanel;
 	private final EventBus eventBus;
 
+	@Inject
 	public ShogiBoard(final EventBus eventBus) {
 
 		this.eventBus = eventBus;
