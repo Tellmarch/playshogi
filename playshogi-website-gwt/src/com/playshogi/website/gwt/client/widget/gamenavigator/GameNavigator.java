@@ -1,4 +1,4 @@
-package com.playshogi.website.gwt.client.widget.board;
+package com.playshogi.website.gwt.client.widget.gamenavigator;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -7,6 +7,8 @@ import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.library.models.record.GameNavigation;
@@ -23,6 +25,7 @@ import com.playshogi.website.gwt.client.events.NewVariationPlayedEvent;
 import com.playshogi.website.gwt.client.events.PositionChangedEvent;
 import com.playshogi.website.gwt.client.events.UserNavigatedBackEvent;
 
+@Singleton
 public class GameNavigator extends Composite implements ClickHandler {
 
 	interface MyEventBinder extends EventBinder<GameNavigator> {
@@ -38,9 +41,10 @@ public class GameNavigator extends Composite implements ClickHandler {
 
 	private final EventBus eventBus;
 
-	private final BoardConfiguration boardConfiguration;
+	private final NavigatorConfiguration navigatorConfiguration;
 
-	public GameNavigator(final EventBus eventBus, final BoardConfiguration boardConfiguration) {
+	@Inject
+	public GameNavigator(final EventBus eventBus, final NavigatorConfiguration navigatorConfiguration) {
 		GWT.log("Creating game navigator");
 
 		ShogiRulesEngine shogiRulesEngine = new ShogiRulesEngine();
@@ -48,7 +52,7 @@ public class GameNavigator extends Composite implements ClickHandler {
 				new ShogiInitialPositionFactory().createInitialPosition());
 
 		this.eventBus = eventBus;
-		this.boardConfiguration = boardConfiguration;
+		this.navigatorConfiguration = navigatorConfiguration;
 		eventBinder.bindEventHandlers(this, this.eventBus);
 		this.gameNavigation = gameNavigation;
 		firstButton = new Button("<<");
@@ -92,9 +96,10 @@ public class GameNavigator extends Composite implements ClickHandler {
 			eventBus.fireEvent(new NewVariationPlayedEvent());
 		} else if (!gameNavigation.canMoveForward()) {
 			eventBus.fireEvent(new EndOfVariationReachedEvent());
-		} else if (isSenteToPlay() && !boardConfiguration.isPlaySenteMoves()) {
-			gameNavigation.moveForward();
-		} else if (!isSenteToPlay() && !boardConfiguration.isPlayGoteMoves()) {
+			// } else if (isSenteToPlay() &&
+			// !boardConfiguration.isPlaySenteMoves()) {
+			// gameNavigation.moveForward();
+		} else if (!isSenteToPlay() && navigatorConfiguration.isProblemMode()) {
 			gameNavigation.moveForward();
 		}
 
@@ -124,6 +129,10 @@ public class GameNavigator extends Composite implements ClickHandler {
 
 	private void firePositionChanged() {
 		eventBus.fireEvent(new PositionChangedEvent(gameNavigation.getPosition()));
+	}
+
+	public NavigatorConfiguration getNavigatorConfiguration() {
+		return navigatorConfiguration;
 	}
 
 }

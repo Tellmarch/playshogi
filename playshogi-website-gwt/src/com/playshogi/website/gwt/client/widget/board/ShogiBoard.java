@@ -486,10 +486,12 @@ public class ShogiBoard extends Composite implements ClickHandler {
 			absolutePanel.remove(upperRightPanel);
 		}
 
-		this.upperRightPanel = panel;
-		panel.setWidth(senteKomadaiImage.getWidth() + "px");
-		panel.setHeight((senteKomadaiY - boardTop - BOARD_TOP_MARGIN) + "px");
-		absolutePanel.add(panel, senteKomadaiX, boardTop);
+		if (panel != null) {
+			this.upperRightPanel = panel;
+			panel.setWidth(senteKomadaiImage.getWidth() + "px");
+			panel.setHeight((senteKomadaiY - boardTop - BOARD_TOP_MARGIN) + "px");
+			absolutePanel.add(panel, senteKomadaiX, boardTop);
+		}
 	}
 
 	@EventHandler

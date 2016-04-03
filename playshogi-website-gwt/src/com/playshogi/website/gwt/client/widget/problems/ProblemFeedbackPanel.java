@@ -16,7 +16,7 @@ import com.playshogi.website.gwt.client.events.EndOfVariationReachedEvent;
 import com.playshogi.website.gwt.client.events.NewVariationPlayedEvent;
 import com.playshogi.website.gwt.client.events.UserNavigatedBackEvent;
 import com.playshogi.website.gwt.client.events.UserSkippedProblemEvent;
-import com.playshogi.website.gwt.client.widget.board.GameNavigator;
+import com.playshogi.website.gwt.client.widget.gamenavigator.GameNavigator;
 
 public class ProblemFeedbackPanel extends Composite implements ClickHandler {
 
@@ -68,16 +68,19 @@ public class ProblemFeedbackPanel extends Composite implements ClickHandler {
 
 	@EventHandler
 	public void onNewVariation(final NewVariationPlayedEvent event) {
+		GWT.log("Problem feedback: handle new variation played event");
 		messagePanel.setHTML(wrongHtml);
 	}
 
 	@EventHandler
 	public void onEndOfVariation(final EndOfVariationReachedEvent event) {
+		GWT.log("Problem feedback: handle end of variation reached event");
 		messagePanel.setHTML(correctHtml);
 	}
 
 	@EventHandler
 	public void onUserNavigatedBack(final UserNavigatedBackEvent event) {
+		GWT.log("Problem feedback: handle user navigated back event");
 		messagePanel.setHTML(chooseHtml);
 	}
 }
