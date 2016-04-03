@@ -7,7 +7,6 @@ import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.inject.Singleton;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.library.models.record.GameNavigation;
@@ -24,7 +23,6 @@ import com.playshogi.website.gwt.client.events.NewVariationPlayedEvent;
 import com.playshogi.website.gwt.client.events.PositionChangedEvent;
 import com.playshogi.website.gwt.client.events.UserNavigatedBackEvent;
 
-@Singleton
 public class GameNavigator extends Composite implements ClickHandler {
 
 	interface MyEventBinder extends EventBinder<GameNavigator> {
@@ -75,6 +73,7 @@ public class GameNavigator extends Composite implements ClickHandler {
 	}
 
 	public void activate(final EventBus eventBus) {
+		GWT.log("Activating Game Navigator");
 		this.eventBus = eventBus;
 		eventBinder.bindEventHandlers(this, this.eventBus);
 		firePositionChanged();

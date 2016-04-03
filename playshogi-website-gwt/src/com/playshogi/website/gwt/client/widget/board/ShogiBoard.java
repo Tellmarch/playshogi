@@ -79,6 +79,7 @@ public class ShogiBoard extends Composite implements ClickHandler {
 	}
 
 	public ShogiBoard(final BoardConfiguration boardConfiguration) {
+		GWT.log("Creating shogi board");
 
 		this.boardConfiguration = boardConfiguration;
 		absolutePanel = new AbsolutePanel();
@@ -128,6 +129,7 @@ public class ShogiBoard extends Composite implements ClickHandler {
 	}
 
 	public void activate(final EventBus eventBus) {
+		GWT.log("Activating Shogi Board");
 		this.eventBus = eventBus;
 		eventBinder.bindEventHandlers(this, this.eventBus);
 	}

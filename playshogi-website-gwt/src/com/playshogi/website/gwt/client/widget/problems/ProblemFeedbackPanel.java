@@ -84,6 +84,7 @@ public class ProblemFeedbackPanel extends Composite implements ClickHandler {
 	}
 
 	public void activate(final EventBus eventBus) {
+		GWT.log("Activating Problem feedback panel");
 		this.eventBus = eventBus;
 		eventBinder.bindEventHandlers(this, eventBus);
 	}
