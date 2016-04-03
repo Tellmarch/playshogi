@@ -10,6 +10,7 @@ import com.playshogi.website.gwt.client.activity.TsumeActivity;
 import com.playshogi.website.gwt.client.place.FreeBoardPlace;
 import com.playshogi.website.gwt.client.place.MainPagePlace;
 import com.playshogi.website.gwt.client.place.TsumePlace;
+import com.playshogi.website.gwt.client.ui.FreeBoardView;
 import com.playshogi.website.gwt.client.ui.MainPageView;
 import com.playshogi.website.gwt.client.ui.TsumeView;
 
@@ -17,6 +18,7 @@ public class AppActivityMapper implements ActivityMapper {
 
 	@Inject MainPageView mainPageView;
 	@Inject TsumeView tsumeView;
+	@Inject FreeBoardView freeBoardView;
 
 	@Override
 	public Activity getActivity(final Place place) {
@@ -25,7 +27,7 @@ public class AppActivityMapper implements ActivityMapper {
 		} else if (place instanceof TsumePlace) {
 			return new TsumeActivity((TsumePlace) place, tsumeView);
 		} else if (place instanceof FreeBoardPlace) {
-			return new FreeBoardActivity((FreeBoardPlace) place);
+			return new FreeBoardActivity((FreeBoardPlace) place, freeBoardView);
 		}
 		return null;
 	}

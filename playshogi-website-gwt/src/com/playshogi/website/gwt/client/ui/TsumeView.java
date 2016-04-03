@@ -1,5 +1,6 @@
 package com.playshogi.website.gwt.client.ui;
 
+import com.google.gwt.core.shared.GWT;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.inject.Inject;
@@ -11,17 +12,32 @@ import com.playshogi.website.gwt.client.widget.problems.ProblemFeedbackPanel;
 @Singleton
 public class TsumeView extends Composite {
 
+	private final ShogiBoard shogiBoard;
+	private final GameNavigator gameNavigator;
+	private final ProblemFeedbackPanel problemFeedbackPanel;
+
 	@Inject
-	public TsumeView(final ShogiBoard shogiBoard, final GameNavigator gameNavigator, final EventBus eventBus) {
+	public TsumeView(final EventBus eventBus) {
+		GWT.log("Creating tsume view");
+		shogiBoard = new ShogiBoard();
+		gameNavigator = new GameNavigator();
+		problemFeedbackPanel = new ProblemFeedbackPanel(gameNavigator);
+
+		shogiBoard.setUpperRightPanel(problemFeedbackPanel);
+
 		shogiBoard.getBoardConfiguration().setShowGoteKomadai(false);
 		shogiBoard.getBoardConfiguration().setPlayGoteMoves(false);
 
 		gameNavigator.getNavigatorConfiguration().setProblemMode(true);
 
-		ProblemFeedbackPanel problemFeedbackPanel = new ProblemFeedbackPanel(eventBus, gameNavigator);
-		shogiBoard.setUpperRightPanel(problemFeedbackPanel);
-
 		initWidget(shogiBoard);
+	}
+
+	public void activate(final EventBus eventBus) {
+		GWT.log("Activating tsume view");
+		shogiBoard.activate(eventBus);
+		gameNavigator.activate(eventBus);
+		problemFeedbackPanel.activate(eventBus);
 	}
 
 }

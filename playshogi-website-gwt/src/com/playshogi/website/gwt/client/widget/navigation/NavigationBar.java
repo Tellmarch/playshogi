@@ -7,6 +7,7 @@ import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.playshogi.website.gwt.client.mvp.AppPlaceHistoryMapper;
+import com.playshogi.website.gwt.client.place.FreeBoardPlace;
 import com.playshogi.website.gwt.client.place.MainPagePlace;
 import com.playshogi.website.gwt.client.place.TsumePlace;
 
@@ -26,7 +27,7 @@ public class NavigationBar extends Composite {
 		flowPanel.add(createHyperlink("Problems", new TsumePlace()));
 		flowPanel.add(createHyperlink("Openings", new MainPagePlace()));
 		flowPanel.add(createHyperlink("My Games", new MainPagePlace()));
-		flowPanel.add(createHyperlink("Free Board", new MainPagePlace()));
+		flowPanel.add(createHyperlink("Free Board", new FreeBoardPlace()));
 		flowPanel.add(createHyperlink("Play Online", new MainPagePlace()));
 		flowPanel.add(createHyperlink("About", new MainPagePlace()));
 

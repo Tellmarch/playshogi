@@ -38,8 +38,10 @@ public class TsumeActivity extends AbstractActivity {
 
 	@Override
 	public void start(final AcceptsOneWidget containerWidget, final EventBus eventBus) {
+		GWT.log("Starting tsume activity");
 		this.eventBus = eventBus;
 		eventBinder.bindEventHandlers(this, eventBus);
+		tsumeView.activate(eventBus);
 		setTsumeId(tsumeId);
 		containerWidget.setWidget(tsumeView.asWidget());
 	}
@@ -75,7 +77,6 @@ public class TsumeActivity extends AbstractActivity {
 					GWT.log("Updating game navigator...");
 
 					eventBus.fireEvent(new GameTreeChangedEvent(gameRecord.getGameTree()));
-
 				}
 			}
 

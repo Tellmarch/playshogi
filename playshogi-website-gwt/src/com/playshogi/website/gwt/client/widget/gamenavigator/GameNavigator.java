@@ -7,7 +7,6 @@ import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
@@ -39,21 +38,22 @@ public class GameNavigator extends Composite implements ClickHandler {
 	private final Button lastButton;
 	private final GameNavigation<ShogiPosition> gameNavigation;
 
-	private final EventBus eventBus;
+	private EventBus eventBus;
 
 	private final NavigatorConfiguration navigatorConfiguration;
 
-	@Inject
-	public GameNavigator(final EventBus eventBus, final NavigatorConfiguration navigatorConfiguration) {
+	public GameNavigator() {
+		this(new NavigatorConfiguration());
+	}
+
+	public GameNavigator(final NavigatorConfiguration navigatorConfiguration) {
 		GWT.log("Creating game navigator");
 
 		ShogiRulesEngine shogiRulesEngine = new ShogiRulesEngine();
 		GameNavigation<ShogiPosition> gameNavigation = new GameNavigation<>(shogiRulesEngine, new GameTree(),
 				new ShogiInitialPositionFactory().createInitialPosition());
 
-		this.eventBus = eventBus;
 		this.navigatorConfiguration = navigatorConfiguration;
-		eventBinder.bindEventHandlers(this, this.eventBus);
 		this.gameNavigation = gameNavigation;
 		firstButton = new Button("<<");
 		previousButton = new Button("<");
@@ -72,7 +72,11 @@ public class GameNavigator extends Composite implements ClickHandler {
 		horizontalPanel.add(lastButton);
 
 		initWidget(horizontalPanel);
+	}
 
+	public void activate(final EventBus eventBus) {
+		this.eventBus = eventBus;
+		eventBinder.bindEventHandlers(this, this.eventBus);
 		firePositionChanged();
 	}
 

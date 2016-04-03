@@ -13,7 +13,6 @@ import com.google.inject.Singleton;
 import com.playshogi.website.gwt.client.mvp.AppActivityMapper;
 import com.playshogi.website.gwt.client.mvp.AppPlaceHistoryMapper;
 import com.playshogi.website.gwt.client.place.MainPagePlace;
-import com.playshogi.website.gwt.client.widget.board.ShogiBoard;
 
 public class PlayShogiGinModule extends AbstractGinModule {
 
@@ -22,7 +21,6 @@ public class PlayShogiGinModule extends AbstractGinModule {
 	@Override
 	protected void configure() {
 		bind(EventBus.class).to(SimpleEventBus.class).in(Singleton.class);
-		bind(ShogiBoard.class).in(Singleton.class);
 		bind(ActivityMapper.class).to(AppActivityMapper.class).in(Singleton.class);
 	}
 

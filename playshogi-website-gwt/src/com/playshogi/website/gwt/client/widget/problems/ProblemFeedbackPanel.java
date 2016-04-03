@@ -30,13 +30,13 @@ public class ProblemFeedbackPanel extends Composite implements ClickHandler {
 	SafeHtml correctHtml = SafeHtmlUtils.fromSafeConstant("<p style=\"font-size:20px;color:green\">Correct!</p>");
 	SafeHtml wrongHtml = SafeHtmlUtils.fromSafeConstant("<p style=\"font-size:20px;color:red\">Wrong!</p>");
 
-	private final EventBus eventBus;
+	private EventBus eventBus;
 	private final Button skipButton;
 
 	private final HTML messagePanel;
 
-	public ProblemFeedbackPanel(final EventBus eventBus, final GameNavigator gameNavigator) {
-		this.eventBus = eventBus;
+	public ProblemFeedbackPanel(final GameNavigator gameNavigator) {
+
 		FlowPanel verticalPanel = new FlowPanel();
 		verticalPanel.add(gameNavigator);
 
@@ -53,7 +53,6 @@ public class ProblemFeedbackPanel extends Composite implements ClickHandler {
 
 		verticalPanel.add(messagePanel);
 
-		eventBinder.bindEventHandlers(this, eventBus);
 		initWidget(verticalPanel);
 	}
 
@@ -82,5 +81,10 @@ public class ProblemFeedbackPanel extends Composite implements ClickHandler {
 	public void onUserNavigatedBack(final UserNavigatedBackEvent event) {
 		GWT.log("Problem feedback: handle user navigated back event");
 		messagePanel.setHTML(chooseHtml);
+	}
+
+	public void activate(final EventBus eventBus) {
+		this.eventBus = eventBus;
+		eventBinder.bindEventHandlers(this, eventBus);
 	}
 }

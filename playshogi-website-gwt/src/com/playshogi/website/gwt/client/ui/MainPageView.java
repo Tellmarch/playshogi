@@ -12,6 +12,7 @@ public class MainPageView extends Composite {
 	}
 
 	public MainPageView() {
+		GWT.log("Creating main page view");
 		initWidget(uiBinder.createAndBindUi(this));
 	}
 

@@ -7,6 +7,10 @@ import com.google.gwt.place.shared.Prefix;
 public class FreeBoardPlace extends Place {
 	private final String boardId;
 
+	public FreeBoardPlace() {
+		this(null);
+	}
+
 	public FreeBoardPlace(final String token) {
 		this.boardId = token;
 	}

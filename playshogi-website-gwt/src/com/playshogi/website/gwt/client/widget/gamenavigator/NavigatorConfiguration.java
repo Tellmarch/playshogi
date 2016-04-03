@@ -1,8 +1,5 @@
 package com.playshogi.website.gwt.client.widget.gamenavigator;
 
-import com.google.inject.Singleton;
-
-@Singleton
 public class NavigatorConfiguration {
 
 	private boolean problemMode = false;

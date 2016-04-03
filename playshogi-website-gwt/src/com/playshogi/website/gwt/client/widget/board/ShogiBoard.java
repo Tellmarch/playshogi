@@ -18,7 +18,6 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DecoratorPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.inject.Inject;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.library.models.Square;
@@ -53,7 +52,7 @@ public class ShogiBoard extends Composite implements ClickHandler {
 	public static final int SQUARE_WIDTH = 43;
 	public static final int SQUARE_HEIGHT = 48;
 
-	private final BoardConfiguration boardConfiguration = new BoardConfiguration();
+	private final BoardConfiguration boardConfiguration;
 	private final ShogiRulesEngine shogiRulesEngine = new ShogiRulesEngine();
 	private ShogiPosition position;
 	private PieceWrapper selectedPiece = null;
@@ -73,12 +72,15 @@ public class ShogiBoard extends Composite implements ClickHandler {
 
 	private static final BoardBundle boardResources = GWT.create(BoardBundle.class);
 	private Widget upperRightPanel;
-	private final EventBus eventBus;
+	private EventBus eventBus;
 
-	@Inject
-	public ShogiBoard(final EventBus eventBus) {
+	public ShogiBoard() {
+		this(new BoardConfiguration());
+	}
 
-		this.eventBus = eventBus;
+	public ShogiBoard(final BoardConfiguration boardConfiguration) {
+
+		this.boardConfiguration = boardConfiguration;
 		absolutePanel = new AbsolutePanel();
 		ban = new Image(boardResources.ban_kaya_a());
 		grid = new Image(boardResources.masu_dot());
@@ -123,10 +125,10 @@ public class ShogiBoard extends Composite implements ClickHandler {
 
 		initWidget(absolutePanelWrapper);
 
-		start();
 	}
 
-	private void start() {
+	public void activate(final EventBus eventBus) {
+		this.eventBus = eventBus;
 		eventBinder.bindEventHandlers(this, this.eventBus);
 	}
 
