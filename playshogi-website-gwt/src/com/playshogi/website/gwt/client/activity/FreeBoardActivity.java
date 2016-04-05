@@ -31,4 +31,10 @@ public class FreeBoardActivity extends AbstractActivity {
 		containerWidget.setWidget(freeBoardView.asWidget());
 	}
 
+	@Override
+	public void onStop() {
+		GWT.log("Stopping free board activity");
+		super.onStop();
+	}
+
 }

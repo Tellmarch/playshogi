@@ -40,13 +40,16 @@ public class GameNavigator extends Composite implements ClickHandler {
 
 	private final NavigatorConfiguration navigatorConfiguration;
 
-	public GameNavigator() {
-		this(new NavigatorConfiguration());
+	private final String activityId;
+
+	public GameNavigator(final String activityId) {
+		this(activityId, new NavigatorConfiguration());
 	}
 
-	public GameNavigator(final NavigatorConfiguration navigatorConfiguration) {
-		GWT.log("Creating game navigator");
+	public GameNavigator(final String activityId, final NavigatorConfiguration navigatorConfiguration) {
+		GWT.log(activityId + ": Creating game navigator");
 
+		this.activityId = activityId;
 		ShogiRulesEngine shogiRulesEngine = new ShogiRulesEngine();
 		GameNavigation<ShogiPosition> gameNavigation = new GameNavigation<>(shogiRulesEngine, new GameTree(),
 				new ShogiInitialPositionFactory().createInitialPosition());
@@ -73,7 +76,7 @@ public class GameNavigator extends Composite implements ClickHandler {
 	}
 
 	public void activate(final EventBus eventBus) {
-		GWT.log("Activating Game Navigator");
+		GWT.log(activityId + ": Activating Game Navigator");
 		this.eventBus = eventBus;
 		eventBinder.bindEventHandlers(this, this.eventBus);
 		firePositionChanged();
@@ -81,14 +84,14 @@ public class GameNavigator extends Composite implements ClickHandler {
 
 	@EventHandler
 	public void onGameTreeChanged(final GameTreeChangedEvent gameTreeChangedEvent) {
-		GWT.log("Handling game tree changed event");
+		GWT.log(activityId + ": Handling game tree changed event");
 		gameNavigation.setGameTree(gameTreeChangedEvent.getGameTree());
 		firePositionChanged();
 	}
 
 	@EventHandler
 	public void onMovePlayed(final MovePlayedEvent movePlayedEvent) {
-		GWT.log("Handling move played event");
+		GWT.log(activityId + ": Handling move played event");
 		ShogiMove move = movePlayedEvent.getMove();
 		String usfMove = UsfMoveConverter.toUsfString(move);
 		GWT.log("Move played: " + usfMove);
@@ -131,6 +134,7 @@ public class GameNavigator extends Composite implements ClickHandler {
 	}
 
 	private void firePositionChanged() {
+		GWT.log(activityId + ": firing position changed");
 		eventBus.fireEvent(new PositionChangedEvent(gameNavigation.getPosition()));
 	}
 

@@ -12,15 +12,16 @@ import com.playshogi.website.gwt.client.widget.problems.ProblemFeedbackPanel;
 @Singleton
 public class TsumeView extends Composite {
 
+	private static final String TSUME = "tsume";
 	private final ShogiBoard shogiBoard;
 	private final GameNavigator gameNavigator;
 	private final ProblemFeedbackPanel problemFeedbackPanel;
 
 	@Inject
-	public TsumeView(final EventBus eventBus) {
+	public TsumeView() {
 		GWT.log("Creating tsume view");
-		shogiBoard = new ShogiBoard();
-		gameNavigator = new GameNavigator();
+		shogiBoard = new ShogiBoard(TSUME);
+		gameNavigator = new GameNavigator(TSUME);
 		problemFeedbackPanel = new ProblemFeedbackPanel(gameNavigator);
 
 		shogiBoard.setUpperRightPanel(problemFeedbackPanel);

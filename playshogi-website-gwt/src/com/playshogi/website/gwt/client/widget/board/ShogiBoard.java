@@ -74,13 +74,16 @@ public class ShogiBoard extends Composite implements ClickHandler {
 	private Widget upperRightPanel;
 	private EventBus eventBus;
 
-	public ShogiBoard() {
-		this(new BoardConfiguration());
+	private final String activityId;
+
+	public ShogiBoard(final String activityId) {
+		this(activityId, new BoardConfiguration());
 	}
 
-	public ShogiBoard(final BoardConfiguration boardConfiguration) {
-		GWT.log("Creating shogi board");
+	public ShogiBoard(final String activityId, final BoardConfiguration boardConfiguration) {
+		GWT.log(activityId + ": Creating shogi board");
 
+		this.activityId = activityId;
 		this.boardConfiguration = boardConfiguration;
 		absolutePanel = new AbsolutePanel();
 		ban = new Image(boardResources.ban_kaya_a());
@@ -116,8 +119,6 @@ public class ShogiBoard extends Composite implements ClickHandler {
 
 		initSquareImages();
 
-		displayPosition();
-
 		goteKomadaiImage.addClickHandler(this);
 		senteKomadaiImage.addClickHandler(this);
 
@@ -129,7 +130,7 @@ public class ShogiBoard extends Composite implements ClickHandler {
 	}
 
 	public void activate(final EventBus eventBus) {
-		GWT.log("Activating Shogi Board");
+		GWT.log(activityId + ": Activating Shogi Board");
 		this.eventBus = eventBus;
 		eventBinder.bindEventHandlers(this, this.eventBus);
 	}
@@ -156,8 +157,8 @@ public class ShogiBoard extends Composite implements ClickHandler {
 	}
 
 	public void displayPosition() {
-		GWT.log("Displaying position");
-		// GWT.log(position.toString());
+		GWT.log(activityId + ": Displaying position");
+		GWT.log(position.toString());
 
 		unselect();
 
@@ -438,7 +439,7 @@ public class ShogiBoard extends Composite implements ClickHandler {
 
 	private void playMove(final ShogiMove move) {
 		String usfMove = UsfMoveConverter.toUsfString(move);
-		GWT.log("Playing " + usfMove);
+		GWT.log(activityId + ": Playing " + usfMove);
 
 		if (move instanceof DropMove) {
 			playDropMove((DropMove) move);
@@ -447,7 +448,7 @@ public class ShogiBoard extends Composite implements ClickHandler {
 		} else if (move instanceof NormalMove) {
 			playNormalMove((NormalMove) move);
 		} else {
-			GWT.log("unknown move");
+			GWT.log(activityId + ": unknown move");
 		}
 
 		eventBus.fireEvent(new MovePlayedEvent(move));

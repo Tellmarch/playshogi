@@ -46,6 +46,12 @@ public class TsumeActivity extends AbstractActivity {
 		containerWidget.setWidget(tsumeView.asWidget());
 	}
 
+	@Override
+	public void onStop() {
+		GWT.log("Stopping tsume activity");
+		super.onStop();
+	}
+
 	@EventHandler
 	void onUserSkippedProblem(final UserSkippedProblemEvent event) {
 		setTsumeId(null);

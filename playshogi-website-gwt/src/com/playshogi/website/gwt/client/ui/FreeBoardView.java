@@ -11,14 +11,15 @@ import com.playshogi.website.gwt.client.widget.gamenavigator.GameNavigator;
 @Singleton
 public class FreeBoardView extends Composite {
 
+	private static final String FREEBOARD = "freeboard";
 	private final ShogiBoard shogiBoard;
 	private final GameNavigator gameNavigator;
 
 	@Inject
-	public FreeBoardView(final EventBus eventBus) {
+	public FreeBoardView() {
 		GWT.log("Creating free board view");
-		shogiBoard = new ShogiBoard();
-		gameNavigator = new GameNavigator();
+		shogiBoard = new ShogiBoard(FREEBOARD);
+		gameNavigator = new GameNavigator(FREEBOARD);
 		shogiBoard.setUpperRightPanel(null);
 
 		initWidget(shogiBoard);
