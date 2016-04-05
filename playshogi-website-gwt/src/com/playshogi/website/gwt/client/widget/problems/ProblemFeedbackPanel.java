@@ -27,8 +27,8 @@ public class ProblemFeedbackPanel extends Composite implements ClickHandler {
 
 	SafeHtml chooseHtml = SafeHtmlUtils
 			.fromSafeConstant("Play the correct move!<br>(Ctrl+click to play without promotion)");
-	SafeHtml correctHtml = SafeHtmlUtils.fromSafeConstant("<p style=\"font-size:20px;color:green\">Correct!</p>");
 	SafeHtml wrongHtml = SafeHtmlUtils.fromSafeConstant("<p style=\"font-size:20px;color:red\">Wrong!</p>");
+	SafeHtml correctHtml = SafeHtmlUtils.fromSafeConstant("<p style=\"font-size:20px;color:green\">Correct!</p>");
 
 	private EventBus eventBus;
 	private final Button skipButton;
