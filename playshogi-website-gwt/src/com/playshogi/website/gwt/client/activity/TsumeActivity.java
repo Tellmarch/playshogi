@@ -1,11 +1,10 @@
 package com.playshogi.website.gwt.client.activity;
 
-import com.google.gwt.activity.shared.AbstractActivity;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.Random;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
+import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.library.models.record.GameRecord;
@@ -17,7 +16,7 @@ import com.playshogi.website.gwt.client.services.ProblemsService;
 import com.playshogi.website.gwt.client.services.ProblemsServiceAsync;
 import com.playshogi.website.gwt.client.ui.TsumeView;
 
-public class TsumeActivity extends AbstractActivity {
+public class TsumeActivity extends MyAbstractActivity {
 
 	interface MyEventBinder extends EventBinder<TsumeActivity> {
 	}
