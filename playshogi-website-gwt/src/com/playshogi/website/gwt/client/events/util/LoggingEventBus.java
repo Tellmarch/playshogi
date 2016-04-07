@@ -23,6 +23,7 @@ public class LoggingEventBus extends SimpleEventBus {
 	@Override
 	public void fireEvent(final Event<?> event) {
 		GWT.log("firingevent: " + event.toDebugString());
+		GWT.log("#handlers: " + getHandlerCount(event.getAssociatedType()));
 		super.fireEvent(event);
 	}
 
