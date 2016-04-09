@@ -5,6 +5,9 @@ import com.google.gwt.place.shared.PlaceTokenizer;
 import com.google.gwt.place.shared.Prefix;
 import com.google.gwt.user.client.Random;
 
+/**
+ * A board with free editing, that can be shared with a unique URL
+ */
 public class FreeBoardPlace extends Place {
 	private final String boardId;
 
