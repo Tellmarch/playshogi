@@ -40,6 +40,13 @@ public class DbConnection {
 
 	}
 
+	public Connection getConnection() {
+		if (connection == null) {
+			start();
+		}
+		return connection;
+	}
+
 	public static void main(final String[] args) {
 		new DbConnection().start();
 	}
