@@ -8,7 +8,7 @@ import java.util.logging.Logger;
 
 public class DbConnection {
 
-	private static final Logger LOGGER = Logger.getLogger("DbConnection");
+	private static final Logger LOGGER = Logger.getLogger(DbConnection.class.getName());
 
 	private final String database = "playshogi";
 	private final String host = "localhost";
