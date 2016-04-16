@@ -35,7 +35,6 @@ public class Users {
 			LOGGER.log(Level.SEVERE, "Error looking up the user in db", e);
 			return false;
 		}
-
 	}
 
 	public static void main(final String[] args) {
