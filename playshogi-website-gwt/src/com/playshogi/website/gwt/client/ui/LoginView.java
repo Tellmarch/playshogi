@@ -26,8 +26,6 @@ public class LoginView extends Composite implements ClickHandler {
 
 		initWidget(uiBinder.createAndBindUi(this));
 
-		// Listen to all dom elts for clicks, handler function will deal with
-		// the useful ones
 		this.addDomHandler(this, ClickEvent.getType());
 	}
 
