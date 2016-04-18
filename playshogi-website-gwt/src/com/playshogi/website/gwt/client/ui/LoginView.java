@@ -31,7 +31,6 @@ public class LoginView extends Composite implements ClickHandler {
 
 	@Override
 	public void onClick(final ClickEvent event) {
-		// Check if the incoming target is part of either of the buttons
 		Node target = event.getNativeEvent().getEventTarget().<Node> cast();
 		if (login.isOrHasChild(target)) {
 			// presenter.login(email.getValue(), password.getValue());
