@@ -23,6 +23,7 @@ public class LoginView extends Composite implements ClickHandler {
 	@UiField ButtonElement register;
 
 	public LoginView() {
+
 		initWidget(uiBinder.createAndBindUi(this));
 
 		this.addDomHandler(this, ClickEvent.getType());
