@@ -2,6 +2,7 @@ package com.playshogi.website.gwt.client.ui;
 
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.PasswordTextBox;
@@ -11,13 +12,12 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 public class LoginView extends Composite {
 
 	public LoginView() {
-		HorizontalPanel loginPanel = new HorizontalPanel();
-		loginPanel.add(new HTML("Username:"));
-		loginPanel.add(new TextBox());
 
-		HorizontalPanel passwordPanel = new HorizontalPanel();
-		passwordPanel.add(new HTML("Password:"));
-		passwordPanel.add(new PasswordTextBox());
+		Grid grid = new Grid(2, 2);
+		grid.setWidget(0, 0, new HTML("Username:"));
+		grid.setWidget(0, 1, new TextBox());
+		grid.setWidget(1, 0, new HTML("Password:"));
+		grid.setWidget(1, 1, new PasswordTextBox());
 
 		HorizontalPanel buttonPanel = new HorizontalPanel();
 
@@ -25,8 +25,7 @@ public class LoginView extends Composite {
 		buttonPanel.add(new Button("Register"));
 
 		VerticalPanel verticalPanel = new VerticalPanel();
-		verticalPanel.add(loginPanel);
-		verticalPanel.add(passwordPanel);
+		verticalPanel.add(grid);
 		verticalPanel.add(buttonPanel);
 		initWidget(verticalPanel);
 	}
