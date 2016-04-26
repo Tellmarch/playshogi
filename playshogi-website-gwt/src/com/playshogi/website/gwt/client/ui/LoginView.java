@@ -1,5 +1,7 @@
 package com.playshogi.website.gwt.client.ui;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Grid;
@@ -9,7 +11,7 @@ import com.google.gwt.user.client.ui.PasswordTextBox;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
-public class LoginView extends Composite {
+public class LoginView extends Composite implements ClickHandler {
 
 	public LoginView() {
 
@@ -21,13 +23,22 @@ public class LoginView extends Composite {
 
 		HorizontalPanel buttonPanel = new HorizontalPanel();
 
-		buttonPanel.add(new Button("Login"));
+		Button loginButton = new Button("Login");
+		loginButton.addClickHandler(this);
+		buttonPanel.add(loginButton);
 		buttonPanel.add(new Button("Register"));
 
 		VerticalPanel verticalPanel = new VerticalPanel();
 		verticalPanel.add(grid);
 		verticalPanel.add(buttonPanel);
+
 		initWidget(verticalPanel);
+	}
+
+	@Override
+	public void onClick(final ClickEvent event) {
+		// TODO Auto-generated method stub
+
 	}
 
 }
