@@ -13,6 +13,8 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 
 public class LoginView extends Composite implements ClickHandler {
 
+	private final Button loginButton;
+
 	public LoginView() {
 
 		Grid grid = new Grid(2, 2);
@@ -23,7 +25,7 @@ public class LoginView extends Composite implements ClickHandler {
 
 		HorizontalPanel buttonPanel = new HorizontalPanel();
 
-		Button loginButton = new Button("Login");
+		loginButton = new Button("Login");
 		loginButton.addClickHandler(this);
 		buttonPanel.add(loginButton);
 		buttonPanel.add(new Button("Register"));
@@ -37,8 +39,10 @@ public class LoginView extends Composite implements ClickHandler {
 
 	@Override
 	public void onClick(final ClickEvent event) {
-		// TODO Auto-generated method stub
+		Object source = event.getSource();
+		if (source == loginButton) {
 
+		}
 	}
 
 }
