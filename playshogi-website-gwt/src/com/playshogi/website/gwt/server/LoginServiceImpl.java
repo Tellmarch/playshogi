@@ -13,7 +13,7 @@ public class LoginServiceImpl extends RemoteServiceServlet implements LoginServi
 
 	@Override
 	public String login(final String username, final String password) {
-		return users.authenticateUser(username, password);
+		return "" + users.authenticateUser(username, password);
 	}
 
 }
