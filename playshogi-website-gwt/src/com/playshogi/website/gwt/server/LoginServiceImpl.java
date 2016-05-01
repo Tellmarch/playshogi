@@ -12,8 +12,8 @@ public class LoginServiceImpl extends RemoteServiceServlet implements LoginServi
 	private final Users users = new Users(new DbConnection());
 
 	@Override
-	public String login(final String username, final String password) {
-		return "" + users.authenticateUser(username, password);
+	public boolean login(final String username, final String password) {
+		return users.authenticateUser(username, password);
 	}
 
 }
