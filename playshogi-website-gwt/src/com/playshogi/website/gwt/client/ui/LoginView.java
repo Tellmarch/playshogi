@@ -1,5 +1,6 @@
 package com.playshogi.website.gwt.client.ui;
 
+import com.google.gwt.core.shared.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Button;
@@ -10,10 +11,14 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.PasswordTextBox;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.playshogi.website.gwt.client.services.LoginService;
+import com.playshogi.website.gwt.client.services.LoginServiceAsync;
 
 public class LoginView extends Composite implements ClickHandler {
 
 	private final Button loginButton;
+
+	private final LoginServiceAsync loginService = GWT.create(LoginService.class);
 
 	public LoginView() {
 
