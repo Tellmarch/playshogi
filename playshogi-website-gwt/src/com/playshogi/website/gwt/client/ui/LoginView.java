@@ -46,7 +46,7 @@ public class LoginView extends Composite implements ClickHandler {
 	public void onClick(final ClickEvent event) {
 		Object source = event.getSource();
 		if (source == loginButton) {
-
+			loginService.login(username, password, this);
 		}
 	}
 
