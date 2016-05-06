@@ -64,8 +64,7 @@ public class LoginView extends Composite implements ClickHandler, AsyncCallback<
 
 	@Override
 	public void onFailure(final Throwable caught) {
-		// TODO Auto-generated method stub
-
+		GWT.log("ERROR trying to login user", caught);
 	}
 
 }
