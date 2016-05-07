@@ -58,8 +58,7 @@ public class LoginView extends Composite implements ClickHandler, AsyncCallback<
 
 	@Override
 	public void onSuccess(final Boolean result) {
-		// TODO Auto-generated method stub
-
+		GWT.log("Received answer from server login service: " + result);
 	}
 
 	@Override
