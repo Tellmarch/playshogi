@@ -25,7 +25,6 @@ public class LoginView extends Composite implements ClickHandler, AsyncCallback<
 	private final PasswordTextBox passwordTextBox;
 
 	public LoginView() {
-
 		Grid grid = new Grid(2, 2);
 		grid.setWidget(0, 0, new HTML("Username:"));
 		usernameTextBox = new TextBox();
