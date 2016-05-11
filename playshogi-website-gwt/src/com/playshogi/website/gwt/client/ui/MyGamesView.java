@@ -1,5 +1,7 @@
 package com.playshogi.website.gwt.client.ui;
 
-public class MyGamesView {
+import com.google.gwt.user.client.ui.Composite;
+
+public class MyGamesView extends Composite {
 
 }
