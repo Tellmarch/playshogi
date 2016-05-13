@@ -15,7 +15,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.playshogi.website.gwt.client.services.LoginService;
 import com.playshogi.website.gwt.client.services.LoginServiceAsync;
 
-public class LoginView extends Composite implements ClickHandler, AsyncCallback<Boolean> {
+public class LoginView extends Composite implements ClickHandler, AsyncCallback<String> {
 
 	private final Button loginButton;
 
@@ -56,7 +56,7 @@ public class LoginView extends Composite implements ClickHandler, AsyncCallback<
 	}
 
 	@Override
-	public void onSuccess(final Boolean result) {
+	public void onSuccess(final String result) {
 		GWT.log("Received answer from server login service: " + result);
 	}
 
