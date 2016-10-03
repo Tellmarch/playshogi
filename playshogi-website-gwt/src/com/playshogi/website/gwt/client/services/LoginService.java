@@ -7,6 +7,7 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 public interface LoginService extends RemoteService {
 	static String UNKNOWN_USERNAME = "UNKNOWN";
 	static String INVALID_PASSWORD = "INVALID";
+	static String LOGIN_OK = "LOGIN_OK";
 
 	String login(String username, String password);
 
