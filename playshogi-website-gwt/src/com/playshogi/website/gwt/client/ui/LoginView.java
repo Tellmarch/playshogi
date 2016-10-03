@@ -1,8 +1,11 @@
 package com.playshogi.website.gwt.client.ui;
 
+import java.util.Date;
+
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
@@ -58,6 +61,19 @@ public class LoginView extends Composite implements ClickHandler, AsyncCallback<
 	@Override
 	public void onSuccess(final String result) {
 		GWT.log("Received answer from server login service: " + result);
+		if (LoginService.UNKNOWN_USERNAME.equals(result)) {
+			GWT.log("Unknown username");
+		} else if (LoginService.UNKNOWN_USERNAME.equals(result)) {
+			GWT.log("Invalid password");
+		} else if (result != null) {
+			GWT.log("Correct login");
+			String sessionID = result;
+			final long DURATION = 1000 * 60 * 60 * 24 * 14;
+			Date expires = new Date(System.currentTimeMillis() + DURATION);
+			Cookies.setCookie("sid", sessionID, expires, null, "/", false);
+		} else {
+			GWT.log("null result from login");
+		}
 	}
 
 	@Override
