@@ -9,7 +9,8 @@ import com.google.gwt.place.shared.PlaceHistoryHandler;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.web.bindery.event.shared.EventBus;
-import com.google.web.bindery.event.shared.SimpleEventBus;
+import com.playshogi.website.gwt.client.SessionInformation;
+import com.playshogi.website.gwt.client.events.util.LoggingEventBus;
 import com.playshogi.website.gwt.client.mvp.AppActivityMapper;
 import com.playshogi.website.gwt.client.mvp.AppPlaceHistoryMapper;
 import com.playshogi.website.gwt.client.place.MainPagePlace;
@@ -20,9 +21,10 @@ public class PlayShogiGinModule extends AbstractGinModule {
 
 	@Override
 	protected void configure() {
-		bind(EventBus.class).to(SimpleEventBus.class).in(Singleton.class);
-		// bind(EventBus.class).to(LoggingEventBus.class).in(Singleton.class);
+		// bind(EventBus.class).to(SimpleEventBus.class).in(Singleton.class);
+		bind(EventBus.class).to(LoggingEventBus.class).in(Singleton.class);
 		bind(ActivityMapper.class).to(AppActivityMapper.class).in(Singleton.class);
+		bind(SessionInformation.class).in(Singleton.class);
 	}
 
 	@Singleton

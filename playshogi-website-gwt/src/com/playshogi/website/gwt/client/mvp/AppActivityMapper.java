@@ -5,10 +5,12 @@ import com.google.gwt.activity.shared.ActivityMapper;
 import com.google.gwt.place.shared.Place;
 import com.google.inject.Inject;
 import com.playshogi.website.gwt.client.activity.FreeBoardActivity;
+import com.playshogi.website.gwt.client.activity.LoginActivity;
 import com.playshogi.website.gwt.client.activity.MainPageActivity;
 import com.playshogi.website.gwt.client.activity.MyGamesActivity;
 import com.playshogi.website.gwt.client.activity.TsumeActivity;
 import com.playshogi.website.gwt.client.place.FreeBoardPlace;
+import com.playshogi.website.gwt.client.place.LoginPlace;
 import com.playshogi.website.gwt.client.place.MainPagePlace;
 import com.playshogi.website.gwt.client.place.MyGamesPlace;
 import com.playshogi.website.gwt.client.place.TsumePlace;
@@ -34,6 +36,8 @@ public class AppActivityMapper implements ActivityMapper {
 			return new FreeBoardActivity((FreeBoardPlace) place, freeBoardView);
 		} else if (place instanceof MyGamesPlace) {
 			return new MyGamesActivity(loginView);
+		} else if (place instanceof LoginPlace) {
+			return new LoginActivity(loginView);
 		}
 		return null;
 	}
