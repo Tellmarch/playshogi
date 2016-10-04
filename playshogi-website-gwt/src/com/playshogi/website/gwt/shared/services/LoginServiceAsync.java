@@ -1,4 +1,4 @@
-package com.playshogi.website.gwt.client.services;
+package com.playshogi.website.gwt.shared.services;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 

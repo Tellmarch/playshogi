@@ -3,7 +3,7 @@ package com.playshogi.website.gwt.server;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.playshogi.library.database.DbConnection;
 import com.playshogi.library.database.Users;
-import com.playshogi.website.gwt.client.services.LoginService;
+import com.playshogi.website.gwt.shared.services.LoginService;
 
 public class LoginServiceImpl extends RemoteServiceServlet implements LoginService {
 

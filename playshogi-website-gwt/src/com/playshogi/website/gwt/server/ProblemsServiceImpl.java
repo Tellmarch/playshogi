@@ -7,7 +7,7 @@ import com.playshogi.library.models.record.GameRecord;
 import com.playshogi.library.shogi.files.GameRecordFileReader;
 import com.playshogi.library.shogi.models.formats.kif.KifFormat;
 import com.playshogi.library.shogi.models.formats.usf.UsfFormat;
-import com.playshogi.website.gwt.client.services.ProblemsService;
+import com.playshogi.website.gwt.shared.services.ProblemsService;
 
 public class ProblemsServiceImpl extends RemoteServiceServlet implements ProblemsService {
 

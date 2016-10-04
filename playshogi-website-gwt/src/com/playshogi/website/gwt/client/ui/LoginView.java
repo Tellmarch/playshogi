@@ -19,8 +19,8 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.web.bindery.event.shared.EventBus;
 import com.playshogi.website.gwt.client.events.UserLoggedInEvent;
 import com.playshogi.website.gwt.client.events.UserLoggedOutEvent;
-import com.playshogi.website.gwt.client.services.LoginService;
-import com.playshogi.website.gwt.client.services.LoginServiceAsync;
+import com.playshogi.website.gwt.shared.services.LoginService;
+import com.playshogi.website.gwt.shared.services.LoginServiceAsync;
 
 public class LoginView extends Composite implements ClickHandler, AsyncCallback<String> {
 

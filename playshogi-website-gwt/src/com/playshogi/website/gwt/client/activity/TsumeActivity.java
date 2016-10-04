@@ -12,9 +12,9 @@ import com.playshogi.library.shogi.models.formats.usf.UsfFormat;
 import com.playshogi.website.gwt.client.events.GameTreeChangedEvent;
 import com.playshogi.website.gwt.client.events.UserSkippedProblemEvent;
 import com.playshogi.website.gwt.client.place.TsumePlace;
-import com.playshogi.website.gwt.client.services.ProblemsService;
-import com.playshogi.website.gwt.client.services.ProblemsServiceAsync;
 import com.playshogi.website.gwt.client.ui.TsumeView;
+import com.playshogi.website.gwt.shared.services.ProblemsService;
+import com.playshogi.website.gwt.shared.services.ProblemsServiceAsync;
 
 public class TsumeActivity extends MyAbstractActivity {
 
