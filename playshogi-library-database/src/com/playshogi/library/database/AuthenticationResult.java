@@ -1,5 +1,5 @@
 package com.playshogi.library.database;
 
-public enum LoginResult {
+public enum AuthenticationResult {
 	LOGIN_OK, UNKNOWN, INVALID, UNAVAILABLE
 }

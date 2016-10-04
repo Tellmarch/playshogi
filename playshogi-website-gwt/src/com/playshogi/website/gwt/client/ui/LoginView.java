@@ -19,10 +19,11 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.web.bindery.event.shared.EventBus;
 import com.playshogi.website.gwt.client.events.UserLoggedInEvent;
 import com.playshogi.website.gwt.client.events.UserLoggedOutEvent;
+import com.playshogi.website.gwt.shared.models.LoginResult;
 import com.playshogi.website.gwt.shared.services.LoginService;
 import com.playshogi.website.gwt.shared.services.LoginServiceAsync;
 
-public class LoginView extends Composite implements ClickHandler, AsyncCallback<String> {
+public class LoginView extends Composite implements ClickHandler, AsyncCallback<LoginResult> {
 
 	private final Button loginButton;
 
@@ -65,25 +66,18 @@ public class LoginView extends Composite implements ClickHandler, AsyncCallback<
 	}
 
 	@Override
-	public void onSuccess(final String result) {
+	public void onSuccess(final LoginResult result) {
 		GWT.log("Received answer from server login service: " + result);
-		if (LoginService.UNKNOWN_USERNAME.equals(result)) {
-			GWT.log("Unknown username");
+		if (result == null || !result.isLoggedIn()) {
 			eventBus.fireEvent(new UserLoggedOutEvent());
-			Window.alert("Access Denied. Check your username and password.");
-		} else if (LoginService.INVALID_PASSWORD.equals(result)) {
-			GWT.log("Invalid password");
-			Window.alert("Access Denied. Check your username and password.");
-		} else if (result != null) {
+			Window.alert(result == null ? "Error logging in" : result.getErrorMessage());
+		} else {
 			GWT.log("Correct login");
-			String sessionID = result;
+			String sessionID = result.getSessionId();
 			final long DURATION = 1000 * 60 * 60 * 24 * 14;
 			Date expires = new Date(System.currentTimeMillis() + DURATION);
 			Cookies.setCookie("sid", sessionID, expires, null, "/", false);
 			eventBus.fireEvent(new UserLoggedInEvent());
-
-		} else {
-			GWT.log("null result from login");
 		}
 	}
 

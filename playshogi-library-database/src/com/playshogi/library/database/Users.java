@@ -18,7 +18,7 @@ public class Users {
 		this.dbConnection = dbConnection;
 	}
 
-	public LoginResult authenticateUser(final String username, final String password) {
+	public AuthenticationResult authenticateUser(final String username, final String password) {
 		Connection connection = dbConnection.getConnection();
 		try (PreparedStatement preparedStatement = connection.prepareStatement(LOGIN_SQL)) {
 			preparedStatement.setString(1, username);
@@ -26,14 +26,14 @@ public class Users {
 			ResultSet rs = preparedStatement.executeQuery();
 			if (rs.next()) {
 				LOGGER.log(Level.INFO, "Found user: " + username + " with id: " + rs.getInt("id"));
-				return LoginResult.LOGIN_OK;
+				return AuthenticationResult.LOGIN_OK;
 			} else {
 				LOGGER.log(Level.INFO, "Did not find user: " + username);
-				return LoginResult.UNKNOWN;
+				return AuthenticationResult.UNKNOWN;
 			}
 		} catch (SQLException e) {
 			LOGGER.log(Level.SEVERE, "Error looking up the user in db", e);
-			return LoginResult.UNAVAILABLE;
+			return AuthenticationResult.UNAVAILABLE;
 		}
 	}
 

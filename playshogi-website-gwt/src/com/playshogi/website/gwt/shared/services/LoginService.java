@@ -2,13 +2,13 @@ package com.playshogi.website.gwt.shared.services;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import com.playshogi.website.gwt.shared.models.LoginResult;
 
 @RemoteServiceRelativePath("login")
 public interface LoginService extends RemoteService {
-	static String UNKNOWN_USERNAME = "UNKNOWN";
-	static String INVALID_PASSWORD = "INVALID";
-	static String LOGIN_OK = "LOGIN_OK";
 
-	String login(String username, String password);
+	LoginResult login(String username, String password);
+
+	LoginResult checkSession(String sessionId);
 
 }
