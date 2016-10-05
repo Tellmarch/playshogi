@@ -11,4 +11,8 @@ public interface LoginService extends RemoteService {
 
 	LoginResult checkSession(String sessionId);
 
+	LoginResult logout(String sessionId);
+
+	LoginResult register(String username, String password);
+
 }

@@ -23,8 +23,6 @@ import com.playshogi.website.gwt.client.place.TsumePlace;
 @Singleton
 public class NavigationBar extends Composite {
 
-	private static final String LOGIN_REGISTER = "Login/Register";
-
 	interface MyEventBinder extends EventBinder<NavigationBar> {
 	}
 
@@ -33,15 +31,18 @@ public class NavigationBar extends Composite {
 	private final AppPlaceHistoryMapper historyMapper;
 
 	private final Hyperlink loginHyperlink;
+	private final Hyperlink logoutHyperlink;
 
 	private final SessionInformation sessionInformation;
+
+	private final FlowPanel flowPanel;
 
 	@Inject
 	public NavigationBar(final AppPlaceHistoryMapper historyMapper, final SessionInformation sessionInformation,
 			final EventBus eventBus) {
 		this.historyMapper = historyMapper;
 		this.sessionInformation = sessionInformation;
-		FlowPanel flowPanel = new FlowPanel();
+		flowPanel = new FlowPanel();
 		flowPanel.setStyleName("contentButtons");
 
 		flowPanel.add(createHyperlink("Main page", new MainPagePlace()));
@@ -53,7 +54,8 @@ public class NavigationBar extends Composite {
 		flowPanel.add(createHyperlink("Play Online", new MainPagePlace()));
 		flowPanel.add(createHyperlink("About", new MainPagePlace()));
 
-		loginHyperlink = createHyperlink(LOGIN_REGISTER, new LoginPlace());
+		loginHyperlink = createHyperlink("Login/Register", new LoginPlace("login"));
+		logoutHyperlink = createHyperlink("Logout", new LoginPlace("logout"));
 		flowPanel.add(loginHyperlink);
 
 		eventBinder.bindEventHandlers(this, eventBus);
@@ -73,11 +75,14 @@ public class NavigationBar extends Composite {
 
 	@EventHandler
 	public void onUserLoggedIn(final UserLoggedInEvent event) {
-		loginHyperlink.setText(getLogoutText(sessionInformation));
+		logoutHyperlink.setText(getLogoutText(sessionInformation));
+		flowPanel.remove(loginHyperlink);
+		flowPanel.add(logoutHyperlink);
 	}
 
 	@EventHandler
 	public void onUserLoggedOut(final UserLoggedOutEvent event) {
-		loginHyperlink.setText(LOGIN_REGISTER);
+		flowPanel.remove(logoutHyperlink);
+		flowPanel.add(loginHyperlink);
 	}
 }

@@ -46,4 +46,17 @@ public class LoginServiceImpl extends RemoteServiceServlet implements LoginServi
 		LOGGER.log(Level.INFO, "checking sessionId");
 		return activeSessions.get(sessionId);
 	}
+
+	@Override
+	public LoginResult logout(final String sessionId) {
+		LOGGER.log(Level.INFO, "Logging out sessionId");
+		activeSessions.remove(sessionId);
+		return new LoginResult();
+	}
+
+	@Override
+	public LoginResult register(final String username, final String password) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

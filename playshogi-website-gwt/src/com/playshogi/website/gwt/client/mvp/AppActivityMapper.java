@@ -4,6 +4,7 @@ import com.google.gwt.activity.shared.Activity;
 import com.google.gwt.activity.shared.ActivityMapper;
 import com.google.gwt.place.shared.Place;
 import com.google.inject.Inject;
+import com.playshogi.website.gwt.client.SessionInformation;
 import com.playshogi.website.gwt.client.activity.FreeBoardActivity;
 import com.playshogi.website.gwt.client.activity.LoginActivity;
 import com.playshogi.website.gwt.client.activity.MainPageActivity;
@@ -25,6 +26,7 @@ public class AppActivityMapper implements ActivityMapper {
 	@Inject TsumeView tsumeView;
 	@Inject FreeBoardView freeBoardView;
 	@Inject LoginView loginView;
+	@Inject SessionInformation sessionInformation;
 
 	@Override
 	public Activity getActivity(final Place place) {
@@ -37,7 +39,7 @@ public class AppActivityMapper implements ActivityMapper {
 		} else if (place instanceof MyGamesPlace) {
 			return new MyGamesActivity(loginView);
 		} else if (place instanceof LoginPlace) {
-			return new LoginActivity(loginView);
+			return new LoginActivity((LoginPlace) place, loginView, sessionInformation);
 		}
 		return null;
 	}

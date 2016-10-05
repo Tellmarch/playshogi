@@ -6,7 +6,14 @@ import com.google.gwt.place.shared.Prefix;
 
 public class LoginPlace extends Place {
 
-	public LoginPlace() {
+	private final String action;
+
+	public LoginPlace(final String action) {
+		this.action = action;
+	}
+
+	public String getAction() {
+		return action;
 	}
 
 	@Prefix("Login")
@@ -14,12 +21,12 @@ public class LoginPlace extends Place {
 
 		@Override
 		public String getToken(final LoginPlace place) {
-			return null;
+			return place.getAction();
 		}
 
 		@Override
 		public LoginPlace getPlace(final String token) {
-			return new LoginPlace();
+			return new LoginPlace(token);
 		}
 
 	}
