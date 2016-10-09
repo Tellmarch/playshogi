@@ -28,6 +28,11 @@ public class KifuInformationPanel extends Composite implements ClickHandler {
 
 	private GameInformation gameInformation;
 
+	private final TextBox senteTextBox;
+	private final TextBox goteTextBox;
+	private final TextBox dateTextBox;
+	private final TextBox venueTextBox;
+
 	public KifuInformationPanel() {
 		FlowPanel verticalPanel = new FlowPanel();
 
@@ -37,10 +42,10 @@ public class KifuInformationPanel extends Composite implements ClickHandler {
 		grid.setHTML(2, 0, "Date:");
 		grid.setHTML(3, 0, "Venue:");
 
-		TextBox senteTextBox = createTextBox();
-		TextBox goteTextBox = createTextBox();
-		TextBox dateTextBox = createTextBox();
-		TextBox venueTextBox = createTextBox();
+		senteTextBox = createTextBox();
+		goteTextBox = createTextBox();
+		dateTextBox = createTextBox();
+		venueTextBox = createTextBox();
 
 		grid.setWidget(0, 1, senteTextBox);
 		grid.setWidget(1, 1, goteTextBox);
@@ -83,6 +88,17 @@ public class KifuInformationPanel extends Composite implements ClickHandler {
 	public void onGameInformationChangedEvent(final GameInformationChangedEvent event) {
 		GWT.log("Kifu editor: handle GameInformationChangedEvent");
 		gameInformation = event.getGameInformation();
+		refreshInformation();
+	}
+
+	private void refreshInformation() {
+		GWT.log("Displaying game information: " + gameInformation);
+		if (gameInformation != null) {
+			senteTextBox.setText(gameInformation.getSente());
+			goteTextBox.setText(gameInformation.getGote());
+			dateTextBox.setText(gameInformation.getDate());
+			venueTextBox.setText(gameInformation.getVenue());
+		}
 	}
 
 }

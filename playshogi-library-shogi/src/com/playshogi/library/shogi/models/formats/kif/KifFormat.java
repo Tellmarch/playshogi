@@ -86,9 +86,9 @@ public enum KifFormat implements GameRecordFormat {
 					// now");
 					return null;
 				}
-			} else if (field.equals("後手") || field.equals("上手")) {
+			} else if (field.equals("後手") || field.equals("上手")) { // gote / handicap giver
 				gote = value;
-			} else if (field.equals("先手") || field.equals("下手")) {
+			} else if (field.equals("先手") || field.equals("下手")) { // sente / handicap receiver
 				sente = value;
 			} else if (field.equals("備考")) {
 				// TODO : what is it?
@@ -182,6 +182,10 @@ public enum KifFormat implements GameRecordFormat {
 
 		gameNavigation.moveToStart();
 		GameInformation gameInformation = new GameInformation();
+		gameInformation.setSente(sente);
+		gameInformation.setGote(gote);
+		gameInformation.setVenue(place);
+		gameInformation.setDate(date);
 		GameResult gameResult = new GameResult();
 		return new GameRecord(gameInformation, gameTree, gameResult);
 	}
