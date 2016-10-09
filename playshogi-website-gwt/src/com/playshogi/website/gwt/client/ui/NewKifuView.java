@@ -15,6 +15,7 @@ public class NewKifuView extends Composite {
 	private static final String NEWKIFU = "newkifu";
 	private final ShogiBoard shogiBoard;
 	private final GameNavigator gameNavigator;
+	private final KifuEditorPanel kifuEditorPanel;
 
 	@Inject
 	public NewKifuView() {
@@ -22,7 +23,7 @@ public class NewKifuView extends Composite {
 		shogiBoard = new ShogiBoard(NEWKIFU);
 		gameNavigator = new GameNavigator(NEWKIFU);
 
-		KifuEditorPanel kifuEditorPanel = new KifuEditorPanel(gameNavigator);
+		kifuEditorPanel = new KifuEditorPanel(gameNavigator);
 
 		shogiBoard.setUpperRightPanel(kifuEditorPanel);
 
@@ -33,6 +34,7 @@ public class NewKifuView extends Composite {
 		GWT.log("Activating new kifu view");
 		shogiBoard.activate(eventBus);
 		gameNavigator.activate(eventBus);
+		kifuEditorPanel.activate(eventBus);
 	}
 
 }

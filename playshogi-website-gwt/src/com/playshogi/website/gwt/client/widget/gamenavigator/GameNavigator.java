@@ -149,4 +149,8 @@ public class GameNavigator extends Composite implements ClickHandler {
 		return navigatorConfiguration;
 	}
 
+	public GameNavigation<ShogiPosition> getGameNavigation() {
+		return gameNavigation;
+	}
+
 }

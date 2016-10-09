@@ -5,16 +5,13 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DialogBox;
-import com.google.gwt.user.client.ui.FileUpload;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
@@ -30,17 +27,19 @@ public class KifuEditorPanel extends Composite implements ClickHandler {
 
 	private final MyEventBinder eventBinder = GWT.create(MyEventBinder.class);
 
-	SafeHtml chooseHtml = SafeHtmlUtils
-			.fromSafeConstant("Play the correct move!<br>(Ctrl+click to play without promotion)");
+	SafeHtml chooseHtml = SafeHtmlUtils.fromSafeConstant("Editing kifu");
 	SafeHtml wrongHtml = SafeHtmlUtils.fromSafeConstant("<p style=\"font-size:20px;color:red\">Wrong!</p>");
 	SafeHtml correctHtml = SafeHtmlUtils.fromSafeConstant("<p style=\"font-size:20px;color:green\">Correct!</p>");
 
 	private EventBus eventBus;
 	private final Button importButton;
+	private final Button saveButton;
 
 	private final HTML messagePanel;
 
 	private DialogBox importDialogBox;
+
+	private final ImportKifuPanel importKifuPanel = new ImportKifuPanel();
 
 	public KifuEditorPanel(final GameNavigator gameNavigator) {
 
@@ -54,6 +53,13 @@ public class KifuEditorPanel extends Composite implements ClickHandler {
 		verticalPanel.add(new HTML(SafeHtmlUtils.fromSafeConstant("<br>")));
 
 		verticalPanel.add(gameNavigator);
+
+		verticalPanel.add(new HTML(SafeHtmlUtils.fromSafeConstant("<br>")));
+
+		saveButton = new Button("Save kifu");
+		saveButton.addClickHandler(this);
+
+		verticalPanel.add(saveButton);
 
 		verticalPanel.add(new HTML(SafeHtmlUtils.fromSafeConstant("<br>")));
 
@@ -76,34 +82,9 @@ public class KifuEditorPanel extends Composite implements ClickHandler {
 			}
 			importDialogBox.center();
 			importDialogBox.show();
+		} else if (source == saveButton) {
+			GWT.log("Kifu editor: saving kifu");
 		}
-	}
-
-	public Widget onUploadFile() {
-		VerticalPanel vPanel = new VerticalPanel();
-
-		vPanel.add(new HTML("Choose file"));
-
-		final FileUpload fileUpload = new FileUpload();
-		fileUpload.ensureDebugId("cwFileUpload");
-		vPanel.add(fileUpload);
-
-		Button uploadButton = new Button("Upload");
-		uploadButton.addClickHandler(new ClickHandler() {
-			@Override
-			public void onClick(final ClickEvent event) {
-				String filename = fileUpload.getFilename();
-				if (filename.length() == 0) {
-					Window.alert("Please select a file");
-				} else {
-					Window.alert("File upload successful");
-				}
-			}
-		});
-		vPanel.add(new HTML("<br>"));
-		vPanel.add(uploadButton);
-
-		return vPanel;
 	}
 
 	@EventHandler
@@ -125,6 +106,7 @@ public class KifuEditorPanel extends Composite implements ClickHandler {
 		GWT.log("Activating kifu editor panel");
 		this.eventBus = eventBus;
 		eventBinder.bindEventHandlers(this, eventBus);
+		importKifuPanel.activate(eventBus);
 	}
 
 	private DialogBox createImportDialogBox() {
@@ -136,7 +118,6 @@ public class KifuEditorPanel extends Composite implements ClickHandler {
 		dialogContents.setSpacing(4);
 		dialogBox.setWidget(dialogContents);
 
-		ImportKifuPanel importKifuPanel = new ImportKifuPanel();
 		dialogContents.add(importKifuPanel);
 		dialogContents.setCellHorizontalAlignment(importKifuPanel, HasHorizontalAlignment.ALIGN_CENTER);
 
