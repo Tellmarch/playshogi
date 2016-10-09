@@ -56,7 +56,8 @@ public class ShogiBoardStateImpl extends ShogiBoardState {
 	@Override
 	public boolean hasPlayerPawnOnColumn(final boolean isPlayerSente, final int column) {
 		for (Piece piece : board[column - 1]) {
-			if (piece != null && (piece.isSentePiece() == isPlayerSente) && piece.getPieceType() == PieceType.PAWN) {
+			if (piece != null && (piece.isSentePiece() == isPlayerSente) && piece.getPieceType() == PieceType.PAWN
+					&& !piece.isPromoted()) {
 				return true;
 			}
 		}
