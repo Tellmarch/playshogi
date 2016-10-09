@@ -16,6 +16,7 @@ import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.website.gwt.client.events.EndOfVariationReachedEvent;
+import com.playshogi.website.gwt.client.events.GameRecordSaveRequestedEvent;
 import com.playshogi.website.gwt.client.events.NewVariationPlayedEvent;
 import com.playshogi.website.gwt.client.events.UserNavigatedBackEvent;
 import com.playshogi.website.gwt.client.widget.gamenavigator.GameNavigator;
@@ -83,7 +84,8 @@ public class KifuEditorPanel extends Composite implements ClickHandler {
 			importDialogBox.center();
 			importDialogBox.show();
 		} else if (source == saveButton) {
-			GWT.log("Kifu editor: saving kifu");
+			GWT.log("Kifu editor: request saving kifu");
+			eventBus.fireEvent(new GameRecordSaveRequestedEvent());
 		}
 	}
 

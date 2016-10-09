@@ -13,6 +13,7 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.google.web.bindery.event.shared.EventBus;
 import com.playshogi.library.models.record.GameRecord;
 import com.playshogi.library.shogi.models.formats.kif.KifFormat;
+import com.playshogi.library.shogi.models.formats.usf.UsfFormat;
 import com.playshogi.website.gwt.client.events.GameRecordChangedEvent;
 
 public class ImportKifuPanel extends Composite implements ClickHandler {
@@ -70,7 +71,15 @@ public class ImportKifuPanel extends Composite implements ClickHandler {
 
 	private void importGame() {
 		GWT.log("Importing game...");
-		GameRecord gameRecord = KifFormat.INSTANCE.read(textArea.getText());
+		String gameText = textArea.getText();
+		GameRecord gameRecord;
+		if (gameText.startsWith("USF")) {
+			GWT.log("Will parse as USF game");
+			gameRecord = UsfFormat.INSTANCE.read(gameText);
+		} else {
+			GWT.log("Will parse as KIF game");
+			gameRecord = KifFormat.INSTANCE.read(gameText);
+		}
 		GWT.log("Firing game record changed event...");
 		eventBus.fireEvent(new GameRecordChangedEvent(gameRecord));
 	}

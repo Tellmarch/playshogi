@@ -6,6 +6,7 @@ import com.playshogi.library.shogi.models.moves.CaptureMove;
 import com.playshogi.library.shogi.models.moves.DropMove;
 import com.playshogi.library.shogi.models.moves.NormalMove;
 import com.playshogi.library.shogi.models.moves.ShogiMove;
+import com.playshogi.library.shogi.models.moves.SpecialMove;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
 
 public class UsfMoveConverter {
@@ -70,6 +71,8 @@ public class UsfMoveConverter {
 			return toUsfString((DropMove) move);
 		} else if (move instanceof NormalMove) {
 			return toUsfString((NormalMove) move);
+		} else if (move instanceof SpecialMove) {
+			return toUsfString((SpecialMove) move);
 		} else {
 			return null;
 		}
@@ -86,5 +89,23 @@ public class UsfMoveConverter {
 				+ UsfUtil.rowNumber2Char(move.getFromSquare().getRow())
 				+ UsfUtil.columnNumber2Char(move.getToSquare().getColumn())
 				+ UsfUtil.rowNumber2Char(move.getToSquare().getRow(), move.isPromote());
+	}
+
+	private static String toUsfString(final SpecialMove move) {
+		switch (move.getSpecialMoveType()) {
+		case BREAK:
+			return "BREK";
+		case ILLEGAL_MOVE:
+			return "FOUL";
+		case JISHOGI:
+			return "JISO";
+		case RESIGN:
+			return "RSGN";
+		case SENNICHITE:
+			return "REPT";
+		default:
+			return "SLNT";
+		}
+
 	}
 }

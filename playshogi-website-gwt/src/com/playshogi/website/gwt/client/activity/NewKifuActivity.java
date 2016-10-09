@@ -6,8 +6,10 @@ import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.library.models.record.GameRecord;
+import com.playshogi.library.shogi.models.formats.usf.UsfFormat;
 import com.playshogi.website.gwt.client.events.GameInformationChangedEvent;
 import com.playshogi.website.gwt.client.events.GameRecordChangedEvent;
+import com.playshogi.website.gwt.client.events.GameRecordSaveRequestedEvent;
 import com.playshogi.website.gwt.client.events.GameTreeChangedEvent;
 import com.playshogi.website.gwt.client.place.NewKifuPlace;
 import com.playshogi.website.gwt.client.ui.NewKifuView;
@@ -46,9 +48,17 @@ public class NewKifuActivity extends MyAbstractActivity {
 
 	@EventHandler
 	public void onGameRecordChanged(final GameRecordChangedEvent gameRecordChangedEvent) {
+		GWT.log("New Kifu Activity Handling GameRecordChangedEvent");
 		gameRecord = gameRecordChangedEvent.getGameRecord();
 		eventBus.fireEvent(new GameTreeChangedEvent(gameRecord.getGameTree()));
 		eventBus.fireEvent(new GameInformationChangedEvent(gameRecord.getGameInformation()));
+	}
+
+	@EventHandler
+	public void onGameRecordSaveRequested(final GameRecordSaveRequestedEvent gameRecordSaveRequestedEvent) {
+		GWT.log("New Kifu Activity Handling GameRecordSaveRequestedEvent");
+		String usfString = UsfFormat.INSTANCE.write(gameRecord);
+		GWT.log(usfString);
 	}
 
 }
