@@ -201,8 +201,7 @@ public enum UsfFormat implements GameRecordFormat {
 	}
 
 	/**
-	 * plays a move sequence represented by a String, with each move occupying 4
-	 * characters.
+	 * plays a move sequence represented by a String, with each move occupying 4 characters.
 	 */
 	private static void playMoveSequence(final GameNavigation<ShogiPosition> gameNavigation, final String moves) {
 		// each move takes exactly 4 characters
@@ -216,29 +215,54 @@ public enum UsfFormat implements GameRecordFormat {
 
 	@Override
 	public String write(final GameRecord gameRecord) {
-		GameTree gameTree = gameRecord.getGameTree();
-		return write(gameTree);
+		return toUSFString(gameRecord);
 	}
 
 	@Override
 	public String write(final GameTree gameTree) {
-		return "USF:1.0\n" + toUSFString(gameTree);
+		return write(new GameRecord(null, gameTree, null));
 	}
 
-	private static String toUSFString(final GameTree gameTree) {
-		String res = "^*";
+	private static String toUSFString(final GameRecord gameRecord) {
+		GameTree gameTree = gameRecord.getGameTree();
+		GameInformation gameInformation = gameRecord.getGameInformation();
+
+		StringBuilder builder = new StringBuilder("USF:1.0\n");
+		builder.append("^*");
 		Node n = gameTree.getRootNode();
 		if (n.getMove() instanceof EditMove) {
 			EditMove editMove = (EditMove) n.getMove();
 			ShogiPosition position = (ShogiPosition) editMove.getPosition();
-			res += SfenConverter.toSFEN(position);
+			builder.append(SfenConverter.toSFEN(position));
 		}
-		res += ":";
+		builder.append(":");
 		while (n.hasChildren()) {
 			n = n.getChildren().get(0);
-			res += UsfMoveConverter.toUsfString((ShogiMove) n.getMove());
+			builder.append(UsfMoveConverter.toUsfString((ShogiMove) n.getMove()));
 		}
-		return res;
+		if (gameInformation != null) {
+			String sente = gameInformation.getSente();
+			if (sente != null && !sente.isEmpty()) {
+				builder.append("\nBN:").append(sente);
+			}
+
+			String gote = gameInformation.getGote();
+			if (gote != null && !gote.isEmpty()) {
+				builder.append("\nWN:").append(gote);
+			}
+
+			String date = gameInformation.getDate();
+			if (date != null && !date.isEmpty()) {
+				builder.append("\nGD:").append(date);
+			}
+
+			String venue = gameInformation.getVenue();
+			if (venue != null && !venue.isEmpty()) {
+				builder.append("\nGQ:").append(venue);
+			}
+
+		}
+		return builder.toString();
 	}
 
 	/**

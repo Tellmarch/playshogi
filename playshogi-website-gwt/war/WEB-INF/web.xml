@@ -35,6 +35,16 @@
 		<servlet-name>problems</servlet-name>
 		<url-pattern>/playshogi_website_gwt/problems</url-pattern>
 	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>kifus</servlet-name>
+		<servlet-class>com.playshogi.website.gwt.server.KifuServiceImpl</servlet-class>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>kifus</servlet-name>
+		<url-pattern>/playshogi_website_gwt/kifus</url-pattern>
+	</servlet-mapping>
 
 	<!-- Default page to serve -->
 	<welcome-file-list>
