@@ -14,5 +14,6 @@
 	<classpathentry kind="lib" path="/home/jean/gwt/gin-2.1.2/guice-assistedinject-3.0.jar"/>
 	<classpathentry kind="lib" path="/home/jean/gwt/gin-2.1.2/javax.inject.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/playshogi-library-database"/>
+	<classpathentry kind="lib" path="/home/jean/java/gwt-2.7.0/gwt-elemental.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>
