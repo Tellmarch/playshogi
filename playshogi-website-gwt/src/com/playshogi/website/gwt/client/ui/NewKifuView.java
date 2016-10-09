@@ -8,6 +8,7 @@ import com.google.web.bindery.event.shared.EventBus;
 import com.playshogi.website.gwt.client.widget.board.ShogiBoard;
 import com.playshogi.website.gwt.client.widget.gamenavigator.GameNavigator;
 import com.playshogi.website.gwt.client.widget.kifu.KifuEditorPanel;
+import com.playshogi.website.gwt.client.widget.kifu.KifuInformationPanel;
 
 @Singleton
 public class NewKifuView extends Composite {
@@ -16,6 +17,7 @@ public class NewKifuView extends Composite {
 	private final ShogiBoard shogiBoard;
 	private final GameNavigator gameNavigator;
 	private final KifuEditorPanel kifuEditorPanel;
+	private final KifuInformationPanel kifuInformationPanel;
 
 	@Inject
 	public NewKifuView() {
@@ -24,8 +26,10 @@ public class NewKifuView extends Composite {
 		gameNavigator = new GameNavigator(NEWKIFU);
 
 		kifuEditorPanel = new KifuEditorPanel(gameNavigator);
+		kifuInformationPanel = new KifuInformationPanel();
 
 		shogiBoard.setUpperRightPanel(kifuEditorPanel);
+		shogiBoard.setLowerLeftPanel(kifuInformationPanel);
 
 		initWidget(shogiBoard);
 	}
@@ -35,6 +39,7 @@ public class NewKifuView extends Composite {
 		shogiBoard.activate(eventBus);
 		gameNavigator.activate(eventBus);
 		kifuEditorPanel.activate(eventBus);
+		kifuInformationPanel.activate(eventBus);
 	}
 
 }

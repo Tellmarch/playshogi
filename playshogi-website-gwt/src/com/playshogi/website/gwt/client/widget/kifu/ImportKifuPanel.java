@@ -14,7 +14,6 @@ import com.google.web.bindery.event.shared.EventBus;
 import com.playshogi.library.models.record.GameRecord;
 import com.playshogi.library.shogi.models.formats.kif.KifFormat;
 import com.playshogi.website.gwt.client.events.GameRecordChangedEvent;
-import com.playshogi.website.gwt.client.events.GameTreeChangedEvent;
 
 public class ImportKifuPanel extends Composite implements ClickHandler {
 
@@ -72,8 +71,7 @@ public class ImportKifuPanel extends Composite implements ClickHandler {
 	private void importGame() {
 		GWT.log("Importing game...");
 		GameRecord gameRecord = KifFormat.INSTANCE.read(textArea.getText());
-		GWT.log("Firing game tree changed event...");
-		eventBus.fireEvent(new GameTreeChangedEvent(gameRecord.getGameTree()));
+		GWT.log("Firing game record changed event...");
 		eventBus.fireEvent(new GameRecordChangedEvent(gameRecord));
 	}
 }

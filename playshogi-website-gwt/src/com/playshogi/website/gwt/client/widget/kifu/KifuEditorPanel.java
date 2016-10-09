@@ -113,6 +113,7 @@ public class KifuEditorPanel extends Composite implements ClickHandler {
 		final DialogBox dialogBox = new DialogBox();
 		dialogBox.ensureDebugId("cwDialogBox");
 		dialogBox.setText("Import kifu");
+		dialogBox.setGlassEnabled(true);
 
 		VerticalPanel dialogContents = new VerticalPanel();
 		dialogContents.setSpacing(4);

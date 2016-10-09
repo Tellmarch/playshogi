@@ -42,6 +42,7 @@ public class ShogiBoard extends Composite implements ClickHandler {
 
 	private final MyEventBinder eventBinder = GWT.create(MyEventBinder.class);
 
+	private static final BoardBundle boardResources = GWT.create(BoardBundle.class);
 	private static final String STYLE_PIECE_SELECTED = "gwt-piece-selected";
 	private static final String STYLE_PIECE_UNSELECTED = "gwt-piece-unselected";
 	private static final int TATAMI_LEFT_MARGIN = 10;
@@ -70,8 +71,14 @@ public class ShogiBoard extends Composite implements ClickHandler {
 	private final int senteKomadaiX;
 	private final int senteKomadaiY;
 
-	private static final BoardBundle boardResources = GWT.create(BoardBundle.class);
 	private Widget upperRightPanel;
+	private final int upperRightPanelX;
+	private final int upperRightPanelY;
+
+	private Widget lowerLeftPanel;
+	private final int lowerLeftPanelX;
+	private final int lowerLeftPanelY;
+
 	private EventBus eventBus;
 
 	private final String activityId;
@@ -114,6 +121,12 @@ public class ShogiBoard extends Composite implements ClickHandler {
 		if (boardConfiguration.isShowSenteKomadai()) {
 			absolutePanel.add(senteKomadaiImage, senteKomadaiX, senteKomadaiY);
 		}
+
+		upperRightPanelX = senteKomadaiX;
+		upperRightPanelY = TATAMI_TOP_MARGIN;
+
+		lowerLeftPanelX = TATAMI_LEFT_MARGIN;
+		lowerLeftPanelY = TATAMI_TOP_MARGIN + goteKomadaiImage.getHeight() + TATAMI_INSIDE_MARGIN;
 
 		position = new ShogiInitialPositionFactory().createInitialPosition();
 
@@ -495,7 +508,20 @@ public class ShogiBoard extends Composite implements ClickHandler {
 			this.upperRightPanel = panel;
 			panel.setWidth(senteKomadaiImage.getWidth() + "px");
 			panel.setHeight((senteKomadaiY - boardTop - BOARD_TOP_MARGIN) + "px");
-			absolutePanel.add(panel, senteKomadaiX, boardTop);
+			absolutePanel.add(panel, upperRightPanelX, upperRightPanelY);
+		}
+	}
+
+	public void setLowerLeftPanel(final Widget panel) {
+		if (lowerLeftPanel != null) {
+			absolutePanel.remove(lowerLeftPanel);
+		}
+
+		if (panel != null) {
+			this.lowerLeftPanel = panel;
+			panel.setWidth(senteKomadaiImage.getWidth() + "px");
+			panel.setHeight((senteKomadaiY - boardTop - BOARD_TOP_MARGIN) + "px");
+			absolutePanel.add(panel, lowerLeftPanelX, lowerLeftPanelY);
 		}
 	}
 
