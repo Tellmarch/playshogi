@@ -1,5 +1,8 @@
 package com.playshogi.library.shogi.models.formats.usf;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import com.playshogi.library.models.EditMove;
 import com.playshogi.library.models.Move;
 import com.playshogi.library.models.record.GameInformation;
@@ -19,6 +22,8 @@ import com.playshogi.library.shogi.rules.ShogiRulesEngine;
 
 public enum UsfFormat implements GameRecordFormat {
 	INSTANCE;
+
+	private static final Logger LOGGER = Logger.getLogger(UsfFormat.class.getName());
 
 	@Override
 	public GameRecord read(final String usfString) {
@@ -207,8 +212,12 @@ public enum UsfFormat implements GameRecordFormat {
 		// each move takes exactly 4 characters
 		int numberOfMoves = moves.length() / 4;
 		for (int i = 0; i < numberOfMoves; i++) {
-			Move curMove = UsfMoveConverter.fromUsfString(moves.substring(4 * i, 4 * i + 4),
-					gameNavigation.getPosition());
+			String move = moves.substring(4 * i, 4 * i + 4);
+			LOGGER.log(Level.FINE, "Parsing move: " + move);
+			Move curMove = UsfMoveConverter.fromUsfString(move, gameNavigation.getPosition());
+			if (curMove == null || !move.equals(curMove.toString())) {
+				LOGGER.log(Level.SEVERE, "Error parsing move: " + move + " resulted in move: " + curMove);
+			}
 			gameNavigation.addMove(curMove);
 		}
 	}

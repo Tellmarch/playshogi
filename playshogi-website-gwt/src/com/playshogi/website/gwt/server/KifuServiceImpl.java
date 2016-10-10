@@ -9,13 +9,16 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.playshogi.library.models.record.GameInformation;
 import com.playshogi.library.models.record.GameRecord;
 import com.playshogi.library.shogi.models.formats.usf.UsfFormat;
 import com.playshogi.website.gwt.shared.models.KifuDetails;
 import com.playshogi.website.gwt.shared.services.KifuService;
 
-public class KifuServiceImpl implements KifuService {
+public class KifuServiceImpl extends RemoteServiceServlet implements KifuService {
+
+	private static final long serialVersionUID = 1L;
 
 	private static final Logger LOGGER = Logger.getLogger(KifuServiceImpl.class.getName());
 

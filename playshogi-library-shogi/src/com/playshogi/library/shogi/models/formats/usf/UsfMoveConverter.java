@@ -7,12 +7,17 @@ import com.playshogi.library.shogi.models.moves.DropMove;
 import com.playshogi.library.shogi.models.moves.NormalMove;
 import com.playshogi.library.shogi.models.moves.ShogiMove;
 import com.playshogi.library.shogi.models.moves.SpecialMove;
+import com.playshogi.library.shogi.models.moves.SpecialMoveType;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
 
 public class UsfMoveConverter {
 
 	public static final String[] specialStrings = { "", "DUMY", "SLNT", "RSGN", "BREK", "JISO", "TIME", "FOUL", "VICT",
 			"MATE", "REPT", "NMAT", "++++", "++..", "+...", "====", "-...", "--..", "----", "=88=", "+88-" };
+
+	public static final SpecialMoveType[] specialTypes = { null, null, null, SpecialMoveType.RESIGN, null,
+			SpecialMoveType.JISHOGI, null, SpecialMoveType.ILLEGAL_MOVE, null, null, SpecialMoveType.SENNICHITE, null,
+			null, null, null, null, null, null, null, null, null };
 
 	/**
 	 * Create a move from a 4 character long USF String.
@@ -26,8 +31,11 @@ public class UsfMoveConverter {
 		// Is it a special move?
 		for (int i = 1; i < specialStrings.length; i++) {
 			if (usfMove.equalsIgnoreCase(specialStrings[i])) {
-				// TODO
-				return null;
+				if (specialTypes[i] != null) {
+					return new SpecialMove(shogiPosition.isSenteToPlay(), specialTypes[i]);
+				} else {
+					return new SpecialMove(shogiPosition.isSenteToPlay(), SpecialMoveType.OTHER);
+				}
 			}
 		}
 
