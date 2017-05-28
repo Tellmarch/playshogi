@@ -6,7 +6,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/playshogi-library-common"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/playshogi-library-shogi"/>
 	<classpathentry kind="con" path="com.google.gwt.eclipse.core.GWT_CONTAINER/gwt-2.7.0"/>
-	<classpathentry kind="lib" path="/home/jean/gwt/google-gwteventbinder-46d3e72/eventbinder/target/eventbinder-1.1.1-SNAPSHOT.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/playshogi-library-shogi-files"/>
 	<classpathentry kind="lib" path="/home/jean/gwt/gin-2.1.2/gin-2.1.2.jar"/>
 	<classpathentry kind="lib" path="/home/jean/gwt/gin-2.1.2/aopalliance.jar"/>
@@ -15,5 +14,7 @@
 	<classpathentry kind="lib" path="/home/jean/gwt/gin-2.1.2/javax.inject.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/playshogi-library-database"/>
 	<classpathentry kind="lib" path="/home/jean/java/gwt-2.7.0/gwt-elemental.jar"/>
+	<classpathentry kind="lib" path="/home/jean/gwt/gwteventbinder/eventbinder/target/eventbinder-1.1.1-SNAPSHOT.jar"/>
+	<classpathentry kind="con" path="com.gwtplugins.gwt.eclipse.core.GWT_CONTAINER"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>
