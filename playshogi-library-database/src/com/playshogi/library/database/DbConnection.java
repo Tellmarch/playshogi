@@ -13,7 +13,8 @@ public class DbConnection {
 	private final String database = "playshogi";
 	private final String host = "localhost";
 	private final int port = 3306;
-	private final String url = "jdbc:mysql://" + host + ":" + port + "/" + database;
+	private final String parameters ="?useSSL=false";
+	private final String url = "jdbc:mysql://" + host + ":" + port + "/" + database + parameters;
 	private final String user = "playshogi";
 	private final String password = "playshogiDB1";
 
