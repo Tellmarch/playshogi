@@ -6,15 +6,19 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Date;
 import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.playshogi.library.database.models.PersistentKifu;
+import com.playshogi.library.database.models.PersistentKifu.KifuType;
 import com.playshogi.library.models.record.GameRecord;
 import com.playshogi.library.shogi.files.GameRecordFileReaderTest;
+import com.playshogi.library.shogi.models.GameRecordUtils;
 import com.playshogi.library.shogi.models.formats.usf.UsfFormat;
 
-public class Kifus {
+public class KifuRepository {
 
 	private static final Logger LOGGER = Logger.getLogger(Users.class.getName());
 
@@ -24,7 +28,7 @@ public class Kifus {
 
 	private final DbConnection dbConnection;
 
-	public Kifus(final DbConnection dbConnection) {
+	public KifuRepository(final DbConnection dbConnection) {
 		this.dbConnection = dbConnection;
 	}
 
@@ -55,7 +59,7 @@ public class Kifus {
 		return key;
 	}
 
-	public GameRecord getKifuById(final int kifuId) {
+	public PersistentKifu getKifuById(final int kifuId) {
 		Connection connection = dbConnection.getConnection();
 		try (PreparedStatement preparedStatement = connection.prepareStatement(SELECT_KIFU)) {
 			preparedStatement.setInt(1, kifuId);
@@ -64,9 +68,14 @@ public class Kifus {
 				LOGGER.log(Level.INFO, "Found kifu: " + rs.getString("name") + " with id: " + rs.getInt("id"));
 				String name = rs.getString("name");
 				int authorId = rs.getInt("author_id");
-				String usf = rs.getString("usf");
+				String usfString = rs.getString("usf");
 				int type = rs.getInt("type_id");
-				return null;
+				KifuType kifuType = KifuType.fromDbInt(type);
+				Date creationDate = rs.getDate("create_time");
+				Date updateDate = rs.getDate("update_time");
+				GameRecord gameRecord = UsfFormat.INSTANCE.read(usfString);
+
+				return new PersistentKifu(kifuId, name, gameRecord, creationDate, updateDate, kifuType, authorId);
 			} else {
 				LOGGER.log(Level.INFO, "Did not find kifu: " + kifuId);
 				return null;
@@ -94,9 +103,10 @@ public class Kifus {
 
 	public static void main(final String[] args) throws IOException {
 		GameRecord gameRecord = GameRecordFileReaderTest.getExampleTsumeGameRecord();
-		Kifus kifus = new Kifus(new DbConnection());
+		KifuRepository kifus = new KifuRepository(new DbConnection());
 		int kifuId = kifus.saveKifu(gameRecord, "test", 1, 2);
-		GameRecord kifuById = kifus.getKifuById(kifuId);
+		GameRecord kifuById = kifus.getKifuById(kifuId).getKifu();
+		GameRecordUtils.print(kifuById);
 		System.out.println(Objects.equals(gameRecord, kifuById));
 		kifus.deleteKifuById(kifuId);
 	}

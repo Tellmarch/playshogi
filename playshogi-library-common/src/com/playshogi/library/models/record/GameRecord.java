@@ -23,4 +23,9 @@ public class GameRecord {
 		return gameResult;
 	}
 
+	@Override
+	public String toString() {
+		return "GameRecord [gameInformation=" + gameInformation + "]";
+	}
+
 }
