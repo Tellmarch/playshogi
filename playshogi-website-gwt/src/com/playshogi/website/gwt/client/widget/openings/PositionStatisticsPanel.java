@@ -32,6 +32,8 @@ public class PositionStatisticsPanel extends Composite implements ClickHandler {
 
 		verticalPanel.add(new HTML(SafeHtmlUtils.fromSafeConstant("<br>")));
 
+		verticalPanel.getElement().getStyle().setBackgroundColor("#DBCBCB");
+
 		initWidget(verticalPanel);
 	}
 
@@ -70,15 +72,19 @@ public class PositionStatisticsPanel extends Composite implements ClickHandler {
 
 			PositionMoveDetails[] positionMoveDetails = positionDetails.getPositionMoveDetails();
 
-			Grid grid = new Grid(positionMoveDetails.length, 3);
+			Grid grid = new Grid(positionMoveDetails.length + 1, 3);
+
+			grid.setHTML(0, 0, SafeHtmlUtils.fromSafeConstant("Move"));
+			grid.setHTML(0, 1, SafeHtmlUtils.fromSafeConstant("# kifus"));
+			grid.setHTML(0, 2, SafeHtmlUtils.fromSafeConstant("Win rate"));
 
 			for (int i = 0; i < positionMoveDetails.length; i++) {
 				PositionMoveDetails moveDetails = positionMoveDetails[i];
-				grid.setHTML(i, 0, moveDetails.getMove());
-				grid.setHTML(i, 1, String.valueOf(moveDetails.getTotal()));
+				grid.setHTML(i + 1, 0, moveDetails.getMove());
+				grid.setHTML(i + 1, 1, String.valueOf(moveDetails.getTotal()));
 
 				int moveRate = (moveDetails.getSente_wins() * 1000) / moveDetails.getTotal();
-				grid.setHTML(i, 2, String.valueOf(moveRate / 10.));
+				grid.setHTML(i + 1, 2, String.valueOf(moveRate / 10.));
 			}
 
 			verticalPanel.add(grid);
