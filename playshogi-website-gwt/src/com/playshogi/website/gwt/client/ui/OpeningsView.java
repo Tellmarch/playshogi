@@ -7,6 +7,7 @@ import com.google.inject.Singleton;
 import com.google.web.bindery.event.shared.EventBus;
 import com.playshogi.website.gwt.client.widget.board.ShogiBoard;
 import com.playshogi.website.gwt.client.widget.gamenavigator.GameNavigator;
+import com.playshogi.website.gwt.client.widget.openings.PositionStatisticsPanel;
 
 @Singleton
 public class OpeningsView extends Composite {
@@ -14,13 +15,17 @@ public class OpeningsView extends Composite {
 	private static final String OPENINGS = "openings";
 	private final ShogiBoard shogiBoard;
 	private final GameNavigator gameNavigator;
+	private final PositionStatisticsPanel positionStatisticsPanel;
 
 	@Inject
 	public OpeningsView() {
 		GWT.log("Creating openings view");
 		shogiBoard = new ShogiBoard(OPENINGS);
 		gameNavigator = new GameNavigator(OPENINGS);
-		shogiBoard.setUpperRightPanel(null);
+
+		positionStatisticsPanel = new PositionStatisticsPanel();
+
+		shogiBoard.setUpperRightPanel(positionStatisticsPanel);
 
 		initWidget(shogiBoard);
 	}
@@ -29,6 +34,7 @@ public class OpeningsView extends Composite {
 		GWT.log("Activating openings view");
 		shogiBoard.activate(eventBus);
 		gameNavigator.activate(eventBus);
+		positionStatisticsPanel.activate(eventBus);
 	}
 
 }

@@ -6,10 +6,13 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.playshogi.library.database.models.PersistentGameSet;
+import com.playshogi.library.database.models.PersistentGameSetMove;
 import com.playshogi.library.database.models.PersistentGameSetPos;
 import com.playshogi.library.models.Move;
 import com.playshogi.library.models.record.GameNavigation;
@@ -42,6 +45,10 @@ public class GameSetRepository {
 
 	private static final String INCREMENT_GAMESET_MOVE = "INSERT INTO `playshogi`.`ps_gamesetmove` (`position_id`, `move`, `new_position_id`, `gameset_id`, `num_total`)"
 			+ " VALUES (?, ?, ?, ?, 1) ON DUPLICATE KEY UPDATE num_total=num_total+1;";
+
+	private static final String SELECT_GAMESET_MOVES = "SELECT * FROM ps_gamesetmove"
+			+ " LEFT JOIN ps_gamesetpos ON ps_gamesetmove.new_position_id = ps_gamesetpos.position_id AND ps_gamesetmove.gameset_id = ps_gamesetpos.gameset_id"
+			+ " WHERE ps_gamesetmove.position_id = ? AND ps_gamesetmove.gameset_id = ?";
 
 	private final DbConnection dbConnection;
 
@@ -219,6 +226,38 @@ public class GameSetRepository {
 		System.out.println(rep.getGameSetById(id).getName());
 		rep.deleteGamesetById(id);
 
+	}
+
+	public List<PersistentGameSetMove> getGameSetPositionMoveStats(final int positionId, final int gameSetId) {
+		Connection connection = dbConnection.getConnection();
+		try (PreparedStatement preparedStatement = connection.prepareStatement(SELECT_GAMESET_MOVES)) {
+			preparedStatement.setInt(1, positionId);
+			preparedStatement.setInt(2, gameSetId);
+			ResultSet rs = preparedStatement.executeQuery();
+
+			ArrayList<PersistentGameSetMove> result = new ArrayList<PersistentGameSetMove>();
+
+			while (rs.next()) {
+				int total = rs.getInt("ps_gamesetmove.num_total");
+				String move = rs.getString("move");
+				int posTotal = rs.getInt("ps_gamesetpos.num_total");
+				int senteWins = rs.getInt("num_sente_win");
+				int goteWins = rs.getInt("num_gote_win");
+
+				LOGGER.log(Level.INFO, "Found position move: " + total);
+
+				result.add(new PersistentGameSetMove(move, total, positionId, gameSetId, posTotal, senteWins, goteWins));
+			}
+
+			return result;
+			//
+			// LOGGER.log(Level.INFO, "Did not find moves for position: " +
+			// positionId);
+			// return null;
+		} catch (SQLException e) {
+			LOGGER.log(Level.SEVERE, "Error looking up the gameset in db", e);
+			return null;
+		}
 	}
 
 }

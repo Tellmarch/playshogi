@@ -12,12 +12,15 @@ import java.util.logging.Logger;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.playshogi.library.database.DbConnection;
 import com.playshogi.library.database.GameSetRepository;
+import com.playshogi.library.database.PositionRepository;
+import com.playshogi.library.database.models.PersistentGameSetMove;
 import com.playshogi.library.database.models.PersistentGameSetPos;
 import com.playshogi.library.models.record.GameInformation;
 import com.playshogi.library.models.record.GameRecord;
 import com.playshogi.library.shogi.models.formats.usf.UsfFormat;
 import com.playshogi.website.gwt.shared.models.KifuDetails;
 import com.playshogi.website.gwt.shared.models.PositionDetails;
+import com.playshogi.website.gwt.shared.models.PositionMoveDetails;
 import com.playshogi.website.gwt.shared.services.KifuService;
 
 public class KifuServiceImpl extends RemoteServiceServlet implements KifuService {
@@ -28,7 +31,14 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
 
 	private final Map<String, GameRecord> gameRecords = new ConcurrentHashMap<>();
 
-	private final GameSetRepository gameSetRepository = new GameSetRepository(new DbConnection());
+	private final GameSetRepository gameSetRepository;
+	private final PositionRepository positionRepository;
+
+	public KifuServiceImpl() {
+		DbConnection dbConnection = new DbConnection();
+		gameSetRepository = new GameSetRepository(dbConnection);
+		positionRepository = new PositionRepository(dbConnection);
+	}
 
 	@Override
 	public String saveKifu(final String sessionId, final String kifuUsf) {
@@ -74,10 +84,25 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
 
 	@Override
 	public PositionDetails getPositionDetails(final String sfen, final int gameSetId) {
+		LOGGER.log(Level.INFO, "querying position details:\n" + sfen + " " + gameSetId);
 		// TODO validate permissions
 
-		PersistentGameSetPos stats = gameSetRepository.getGameSetPositionStats(sfen, gameSetId);
+		int positionId = positionRepository.getPositionIdBySfen(sfen);
 
-		return new PositionDetails(stats.getTotal(), stats.getSenteWins(), stats.getGoteWins(), null);
+		if (positionId == -1) {
+			LOGGER.log(Level.INFO, "position not in database: \n" + sfen);
+			return null;
+		}
+
+		PersistentGameSetPos stats = gameSetRepository.getGameSetPositionStats(positionId, gameSetId);
+		List<PersistentGameSetMove> moveStats = gameSetRepository.getGameSetPositionMoveStats(positionId, gameSetId);
+
+		PositionMoveDetails[] details = new PositionMoveDetails[moveStats.size()];
+		for (int i = 0; i < details.length; i++) {
+			PersistentGameSetMove move = moveStats.get(i);
+			details[i] = new PositionMoveDetails(move.getMoveUsf(), move.getMoveOccurrences(), move.getSenteWins(), move.getGoteWins());
+		}
+
+		return new PositionDetails(stats.getTotal(), stats.getSenteWins(), stats.getGoteWins(), details);
 	}
 }

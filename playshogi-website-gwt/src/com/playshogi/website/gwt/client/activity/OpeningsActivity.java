@@ -8,6 +8,7 @@ import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.library.shogi.models.formats.sfen.SfenConverter;
 import com.playshogi.website.gwt.client.events.PositionChangedEvent;
+import com.playshogi.website.gwt.client.events.PositionStatisticsEvent;
 import com.playshogi.website.gwt.client.place.OpeningsPlace;
 import com.playshogi.website.gwt.client.ui.OpeningsView;
 import com.playshogi.website.gwt.shared.models.PositionDetails;
@@ -26,6 +27,8 @@ public class OpeningsActivity extends MyAbstractActivity {
 	private final String boardId;
 	private final OpeningsView openingsView;
 
+	private EventBus eventBus;
+
 	public OpeningsActivity(final OpeningsPlace place, final OpeningsView freeBoardView) {
 		this.openingsView = freeBoardView;
 		this.boardId = place.getBoardId();
@@ -33,6 +36,7 @@ public class OpeningsActivity extends MyAbstractActivity {
 
 	@Override
 	public void start(final AcceptsOneWidget containerWidget, final EventBus eventBus) {
+		this.eventBus = eventBus;
 		GWT.log("Starting openings activity");
 		eventBinder.bindEventHandlers(this, eventBus);
 		openingsView.activate(eventBus);
@@ -54,6 +58,7 @@ public class OpeningsActivity extends MyAbstractActivity {
 			@Override
 			public void onSuccess(final PositionDetails result) {
 				GWT.log("OPENINGS - GOT POSITION DETAILS " + result);
+				eventBus.fireEvent(new PositionStatisticsEvent(result));
 			}
 
 			@Override
