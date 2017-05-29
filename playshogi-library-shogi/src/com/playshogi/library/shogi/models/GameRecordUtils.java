@@ -1,5 +1,7 @@
 package com.playshogi.library.shogi.models;
 
+import java.util.Iterator;
+
 import com.playshogi.library.models.record.GameNavigation;
 import com.playshogi.library.models.record.GameRecord;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
@@ -9,13 +11,52 @@ import com.playshogi.library.shogi.rules.ShogiRulesEngine;
 public class GameRecordUtils {
 
 	public static void print(final GameRecord gameRecord) {
-		GameNavigation<ShogiPosition> gameNavigation = new GameNavigation<>(new ShogiRulesEngine(),
-				gameRecord.getGameTree(), new ShogiInitialPositionFactory().createInitialPosition());
+		GameNavigation<ShogiPosition> gameNavigation = new GameNavigation<>(new ShogiRulesEngine(), gameRecord.getGameTree(),
+				new ShogiInitialPositionFactory().createInitialPosition());
 
 		System.out.println(gameNavigation.getPosition().toString());
 		while (gameNavigation.canMoveForward()) {
 			gameNavigation.moveForward();
 			System.out.println(gameNavigation.getPosition().toString());
 		}
+	}
+
+	public static Iterable<ShogiPosition> getMainVariation(final GameRecord gameRecord) {
+
+		return new Iterable<ShogiPosition>() {
+
+			@Override
+			public Iterator<ShogiPosition> iterator() {
+				return new Iterator<ShogiPosition>() {
+
+					GameNavigation<ShogiPosition> gameNavigation = new GameNavigation<>(new ShogiRulesEngine(), gameRecord.getGameTree(),
+							new ShogiInitialPositionFactory().createInitialPosition());
+
+					boolean first = true;
+
+					@Override
+					public boolean hasNext() {
+						if (first) {
+							return true;
+						} else {
+							return gameNavigation.canMoveForward();
+						}
+					}
+
+					@Override
+					public ShogiPosition next() {
+						if (first) {
+							first = false;
+							return gameNavigation.getPosition();
+						} else {
+							gameNavigation.moveForward();
+							return gameNavigation.getPosition();
+						}
+					}
+				};
+
+			}
+		};
+
 	}
 }

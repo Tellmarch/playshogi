@@ -11,7 +11,7 @@ public class GameRecordFileReaderTest {
 	public static void main(final String[] args) throws IOException {
 		GameRecordUtils.print(getExampleTsumeGameRecord());
 
-		GameRecordUtils.print(getExampleGameRecord());
+		// GameRecordUtils.print(getExampleGameRecord());
 	}
 
 	public static GameRecord getExampleGameRecord() throws IOException {
