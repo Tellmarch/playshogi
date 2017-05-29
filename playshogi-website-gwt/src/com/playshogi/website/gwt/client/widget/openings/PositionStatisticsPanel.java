@@ -58,8 +58,9 @@ public class PositionStatisticsPanel extends Composite implements ClickHandler {
 
 	private void refreshInformation() {
 		GWT.log("Displaying position details: " + positionDetails);
+		verticalPanel.clear();
+
 		if (positionDetails != null) {
-			verticalPanel.clear();
 
 			int senteRate = (positionDetails.getSente_wins() * 100) / positionDetails.getTotal();
 			String winRate = "Sente win rate: " + senteRate;

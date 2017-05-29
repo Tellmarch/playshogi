@@ -84,7 +84,8 @@ public class GameNavigator extends Composite implements ClickHandler {
 		Scheduler.get().scheduleDeferred(new ScheduledCommand() {
 			@Override
 			public void execute() {
-				firePositionChanged();
+				GWT.log(activityId + ": Game Navigator defered execution");
+				firePositionChanged(false);
 			}
 		});
 	}
@@ -93,7 +94,7 @@ public class GameNavigator extends Composite implements ClickHandler {
 	public void onGameTreeChanged(final GameTreeChangedEvent gameTreeChangedEvent) {
 		GWT.log(activityId + ": Handling game tree changed event");
 		gameNavigation.setGameTree(gameTreeChangedEvent.getGameTree());
-		firePositionChanged();
+		firePositionChanged(false);
 	}
 
 	@EventHandler
@@ -116,7 +117,7 @@ public class GameNavigator extends Composite implements ClickHandler {
 			gameNavigation.moveForward();
 		}
 
-		firePositionChanged();
+		firePositionChanged(true);
 	}
 
 	private boolean isSenteToPlay() {
@@ -137,12 +138,12 @@ public class GameNavigator extends Composite implements ClickHandler {
 		} else if (source == lastButton) {
 			gameNavigation.moveToEndOfVariation();
 		}
-		firePositionChanged();
+		firePositionChanged(true);
 	}
 
-	private void firePositionChanged() {
+	private void firePositionChanged(final boolean triggeredByUser) {
 		GWT.log(activityId + ": firing position changed");
-		eventBus.fireEvent(new PositionChangedEvent(gameNavigation.getPosition()));
+		eventBus.fireEvent(new PositionChangedEvent(gameNavigation.getPosition(), triggeredByUser));
 	}
 
 	public NavigatorConfiguration getNavigatorConfiguration() {

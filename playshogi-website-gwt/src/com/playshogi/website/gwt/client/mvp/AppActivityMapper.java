@@ -3,6 +3,7 @@ package com.playshogi.website.gwt.client.mvp;
 import com.google.gwt.activity.shared.Activity;
 import com.google.gwt.activity.shared.ActivityMapper;
 import com.google.gwt.place.shared.Place;
+import com.google.gwt.place.shared.PlaceController;
 import com.google.inject.Inject;
 import com.playshogi.website.gwt.client.SessionInformation;
 import com.playshogi.website.gwt.client.activity.FreeBoardActivity;
@@ -45,6 +46,8 @@ public class AppActivityMapper implements ActivityMapper {
 	OpeningsView openingsView;
 	@Inject
 	SessionInformation sessionInformation;
+	@Inject
+	PlaceController placeController;
 
 	@Override
 	public Activity getActivity(final Place place) {
@@ -55,7 +58,7 @@ public class AppActivityMapper implements ActivityMapper {
 		} else if (place instanceof FreeBoardPlace) {
 			return new FreeBoardActivity((FreeBoardPlace) place, freeBoardView);
 		} else if (place instanceof OpeningsPlace) {
-			return new OpeningsActivity((OpeningsPlace) place, openingsView);
+			return new OpeningsActivity((OpeningsPlace) place, openingsView, placeController);
 		} else if (place instanceof MyGamesPlace) {
 			return new MyGamesActivity(myGamesView);
 		} else if (place instanceof LoginPlace) {

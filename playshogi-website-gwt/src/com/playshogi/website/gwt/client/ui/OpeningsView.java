@@ -5,6 +5,8 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.web.bindery.event.shared.EventBus;
+import com.playshogi.library.models.record.GameTree;
+import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.website.gwt.client.widget.board.ShogiBoard;
 import com.playshogi.website.gwt.client.widget.gamenavigator.GameNavigator;
 import com.playshogi.website.gwt.client.widget.openings.PositionStatisticsPanel;
@@ -30,9 +32,10 @@ public class OpeningsView extends Composite {
 		initWidget(shogiBoard);
 	}
 
-	public void activate(final EventBus eventBus) {
+	public void activate(final ShogiPosition position, final EventBus eventBus) {
 		GWT.log("Activating openings view");
 		shogiBoard.activate(eventBus);
+		gameNavigator.getGameNavigation().setGameTree(new GameTree(position));
 		gameNavigator.activate(eventBus);
 		positionStatisticsPanel.activate(eventBus);
 	}
