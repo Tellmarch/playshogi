@@ -243,10 +243,11 @@ public class GameSetRepository {
 				int posTotal = rs.getInt("ps_gamesetpos.num_total");
 				int senteWins = rs.getInt("num_sente_win");
 				int goteWins = rs.getInt("num_gote_win");
+				int newPositionId = rs.getInt("new_position_id");
 
 				LOGGER.log(Level.INFO, "Found position move: " + total);
 
-				result.add(new PersistentGameSetMove(move, total, positionId, gameSetId, posTotal, senteWins, goteWins));
+				result.add(new PersistentGameSetMove(move, total, positionId, newPositionId, gameSetId, posTotal, senteWins, goteWins));
 			}
 
 			return result;

@@ -9,15 +9,17 @@ public class PositionMoveDetails implements Serializable {
 	private int total;
 	private int sente_wins;
 	private int gote_wins;
+	private String newSfen;
 
 	public PositionMoveDetails() {
 	}
 
-	public PositionMoveDetails(final String move, final int total, final int sente_wins, final int gote_wins) {
+	public PositionMoveDetails(final String move, final int total, final int sente_wins, final int gote_wins, final String newSfen) {
 		this.move = move;
 		this.total = total;
 		this.sente_wins = sente_wins;
 		this.gote_wins = gote_wins;
+		this.newSfen = newSfen;
 	}
 
 	public String getMove() {
@@ -50,6 +52,10 @@ public class PositionMoveDetails implements Serializable {
 
 	public void setGote_wins(final int gote_wins) {
 		this.gote_wins = gote_wins;
+	}
+
+	public String getNewSfen() {
+		return newSfen;
 	}
 
 	@Override
