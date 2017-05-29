@@ -15,6 +15,22 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/playshogi-library-database"/>
 	<classpathentry kind="lib" path="/home/jean/java/gwt-2.7.0/gwt-elemental.jar"/>
 	<classpathentry kind="lib" path="/home/jean/gwt/gwteventbinder/eventbinder/target/eventbinder-1.1.1-SNAPSHOT.jar"/>
-	<classpathentry kind="con" path="com.gwtplugins.gwt.eclipse.core.GWT_CONTAINER"/>
+	<classpathentry kind="lib" path="/home/jean/gwt/gwt-2.7.0/gwt-user.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="file:/home/jean/gwt/gwt-2.7.0/doc/javadoc/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/home/jean/gwt/gwt-2.7.0/gwt-codeserver.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="file:/home/jean/gwt/gwt-2.7.0/doc/javadoc/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/home/jean/gwt/gwt-2.7.0/gwt-dev.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="file:/home/jean/gwt/gwt-2.7.0/doc/javadoc/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/home/jean/gwt/gwt-2.7.0/validation-api-1.0.0.GA.jar" sourcepath="/home/jean/gwt/gwt-2.7.0/validation-api-1.0.0.GA-sources.jar"/>
+	<classpathentry kind="lib" path="/home/jean/gwt/gwt-2.7.0/validation-api-1.0.0.GA-sources.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>
