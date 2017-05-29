@@ -7,14 +7,14 @@ import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class Users {
+public class UserRepository {
 
-	private static final Logger LOGGER = Logger.getLogger(Users.class.getName());
+	private static final Logger LOGGER = Logger.getLogger(UserRepository.class.getName());
 
 	private static final String LOGIN_SQL = "SELECT * FROM ps_user WHERE username = ? AND password_hash = ? ";
 	private final DbConnection dbConnection;
 
-	public Users(final DbConnection dbConnection) {
+	public UserRepository(final DbConnection dbConnection) {
 		this.dbConnection = dbConnection;
 	}
 
@@ -38,7 +38,7 @@ public class Users {
 	}
 
 	public static void main(final String[] args) {
-		new Users(new DbConnection()).authenticateUser("Tellmarch", "test");
-		new Users(new DbConnection()).authenticateUser("Tellmarch", "test2");
+		new UserRepository(new DbConnection()).authenticateUser("Tellmarch", "test");
+		new UserRepository(new DbConnection()).authenticateUser("Tellmarch", "test2");
 	}
 }

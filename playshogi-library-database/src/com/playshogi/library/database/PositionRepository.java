@@ -17,7 +17,7 @@ import com.playshogi.library.shogi.models.position.ShogiPosition;
 
 public class PositionRepository {
 
-	private static final Logger LOGGER = Logger.getLogger(Users.class.getName());
+	private static final Logger LOGGER = Logger.getLogger(UserRepository.class.getName());
 
 	private static final String INSERT_POSITION = "INSERT INTO `playshogi`.`ps_position` (`code`)" + " VALUES (?);";
 	private static final String SELECT_POSITION_BY_ID = "SELECT * FROM `playshogi`.`ps_position` WHERE id = ?";

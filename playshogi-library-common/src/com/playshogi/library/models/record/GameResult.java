@@ -1,5 +1,5 @@
 package com.playshogi.library.models.record;
 
-public class GameResult {
-
+public enum GameResult {
+	SENTE_WIN, GOTE_WIN, OTHER, UNKNOWN
 }

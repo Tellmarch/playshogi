@@ -10,10 +10,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
+import com.playshogi.library.database.DbConnection;
+import com.playshogi.library.database.GameSetRepository;
 import com.playshogi.library.models.record.GameInformation;
 import com.playshogi.library.models.record.GameRecord;
 import com.playshogi.library.shogi.models.formats.usf.UsfFormat;
 import com.playshogi.website.gwt.shared.models.KifuDetails;
+import com.playshogi.website.gwt.shared.models.PositionDetails;
 import com.playshogi.website.gwt.shared.services.KifuService;
 
 public class KifuServiceImpl extends RemoteServiceServlet implements KifuService {
@@ -23,6 +26,8 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
 	private static final Logger LOGGER = Logger.getLogger(KifuServiceImpl.class.getName());
 
 	private final Map<String, GameRecord> gameRecords = new ConcurrentHashMap<>();
+
+	private final GameSetRepository gameSetRepository = new GameSetRepository(new DbConnection());
 
 	@Override
 	public String saveKifu(final String sessionId, final String kifuUsf) {
@@ -64,5 +69,12 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
 		kifuDetails.setVenue(gameInformation.getVenue());
 		kifuDetails.setDate(gameInformation.getDate());
 		return kifuDetails;
+	}
+
+	@Override
+	public PositionDetails getPositionDetails(final String sfen, final int gameSetId) {
+		// TODO validate permissions
+
+		return null;
 	}
 }

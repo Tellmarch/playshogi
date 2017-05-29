@@ -20,7 +20,7 @@ import com.playshogi.library.shogi.models.formats.usf.UsfFormat;
 
 public class KifuRepository {
 
-	private static final Logger LOGGER = Logger.getLogger(Users.class.getName());
+	private static final Logger LOGGER = Logger.getLogger(UserRepository.class.getName());
 
 	private static final String INSERT_KIFU = "INSERT INTO `playshogi`.`ps_kifu` (`name`, `author_id`, `usf`, `type_id`)" + " VALUES (?, ?, ?,  ?);";
 	private static final String SELECT_KIFU = "SELECT * FROM ps_kifu WHERE id = ?";

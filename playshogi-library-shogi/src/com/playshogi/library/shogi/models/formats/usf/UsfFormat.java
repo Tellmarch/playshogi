@@ -76,8 +76,7 @@ public enum UsfFormat implements GameRecordFormat {
 			gameTree = new GameTree(startingPosition);
 		}
 
-		GameNavigation<ShogiPosition> gameNavigation = new GameNavigation<ShogiPosition>(new ShogiRulesEngine(),
-				gameTree, startingPosition);
+		GameNavigation<ShogiPosition> gameNavigation = new GameNavigation<ShogiPosition>(new ShogiRulesEngine(), gameTree, startingPosition);
 
 		// What follows is the move sequence
 		String moves = l.substring(l.indexOf(':') + 1);
@@ -142,8 +141,7 @@ public enum UsfFormat implements GameRecordFormat {
 			if (l.charAt(0) == '#') {
 				// we just add the comment line to the current node's
 				// comment
-				gameNavigation.getCurrentNode()
-						.setComment(gameNavigation.getCurrentNode().getComment() + "\n" + l.substring(1));
+				gameNavigation.getCurrentNode().setComment(gameNavigation.getCurrentNode().getComment() + "\n" + l.substring(1));
 				continue;
 			}
 
@@ -201,12 +199,13 @@ public enum UsfFormat implements GameRecordFormat {
 
 		gameNavigation.moveToStart();
 		GameInformation gameInformation = new GameInformation();
-		GameResult gameResult = new GameResult();
+		GameResult gameResult = GameResult.UNKNOWN;
 		return new GameRecord(gameInformation, gameTree, gameResult);
 	}
 
 	/**
-	 * plays a move sequence represented by a String, with each move occupying 4 characters.
+	 * plays a move sequence represented by a String, with each move occupying 4
+	 * characters.
 	 */
 	private static void playMoveSequence(final GameNavigation<ShogiPosition> gameNavigation, final String moves) {
 		// each move takes exactly 4 characters

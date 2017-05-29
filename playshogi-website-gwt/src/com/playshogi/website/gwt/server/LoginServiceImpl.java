@@ -9,7 +9,7 @@ import java.util.logging.Logger;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.playshogi.library.database.AuthenticationResult;
 import com.playshogi.library.database.DbConnection;
-import com.playshogi.library.database.Users;
+import com.playshogi.library.database.UserRepository;
 import com.playshogi.website.gwt.shared.models.LoginResult;
 import com.playshogi.website.gwt.shared.services.LoginService;
 
@@ -19,7 +19,7 @@ public class LoginServiceImpl extends RemoteServiceServlet implements LoginServi
 
 	private static final long serialVersionUID = 1L;
 
-	private final Users users = new Users(new DbConnection());
+	private final UserRepository users = new UserRepository(new DbConnection());
 	private final Map<String, LoginResult> activeSessions = new HashMap<>();
 
 	@Override

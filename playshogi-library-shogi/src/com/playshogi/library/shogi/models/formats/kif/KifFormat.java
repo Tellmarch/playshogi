@@ -47,7 +47,7 @@ public enum KifFormat implements GameRecordFormat {
 		String l = lineReader.nextLine();
 		while (!l.startsWith("手数")) {
 			l = l.trim();
-			if (l.startsWith("#")) {
+			if (l.isEmpty() || l.startsWith("#")) {
 				l = lineReader.nextLine();
 				continue;
 			}
@@ -86,9 +86,13 @@ public enum KifFormat implements GameRecordFormat {
 					// now");
 					return null;
 				}
-			} else if (field.equals("後手") || field.equals("上手")) { // gote / handicap giver
+			} else if (field.equals("後手") || field.equals("上手")) { // gote /
+																	// handicap
+																	// giver
 				gote = value;
-			} else if (field.equals("先手") || field.equals("下手")) { // sente / handicap receiver
+			} else if (field.equals("先手") || field.equals("下手")) { // sente /
+																	// handicap
+																	// receiver
 				sente = value;
 			} else if (field.equals("備考")) {
 				// TODO : what is it?
@@ -121,8 +125,7 @@ public enum KifFormat implements GameRecordFormat {
 					for (int column = 9; column >= 1; column--) {
 						PieceParsingResult pieceParsingResult = readPiece(l, pos, true);
 						pos = pieceParsingResult.nextPosition;
-						startingPosition.getShogiBoardState().setPieceAt(Square.of(column, row),
-								pieceParsingResult.piece);
+						startingPosition.getShogiBoardState().setPieceAt(Square.of(column, row), pieceParsingResult.piece);
 					}
 				}
 				l = lineReader.nextLine();
@@ -142,10 +145,11 @@ public enum KifFormat implements GameRecordFormat {
 			startingPosition = new ShogiInitialPositionFactory().createInitialPosition();
 		}
 		GameTree gameTree = new GameTree(startingPosition);
-		GameNavigation<ShogiPosition> gameNavigation = new GameNavigation<ShogiPosition>(new ShogiRulesEngine(),
-				gameTree, startingPosition);
+		GameNavigation<ShogiPosition> gameNavigation = new GameNavigation<ShogiPosition>(new ShogiRulesEngine(), gameTree, startingPosition);
 
-		boolean bsente = true;
+		GameResult gameResult = GameResult.UNKNOWN;
+
+		boolean senteToMove = true;
 		ShogiMove curMove = null;
 		ShogiMove prevMove = null;
 		int moveNumber = 1;
@@ -169,14 +173,22 @@ public enum KifFormat implements GameRecordFormat {
 			}
 			moveNumber++;
 			String move = ts[1];
-			curMove = fromKifString(move, gameNavigation.getPosition(), prevMove, bsente);
-			// System.out.println(curMove.getPiece());
+			curMove = fromKifString(move, gameNavigation.getPosition(), prevMove, senteToMove);
+
 			if (curMove == null) {
 				System.out.println("Error parsing move in line " + line + "in file " + "???");
 				break;
 			}
+
+			if (curMove instanceof SpecialMove) {
+				SpecialMove specialMove = (SpecialMove) curMove;
+				if (specialMove.getSpecialMoveType() == SpecialMoveType.RESIGN) {
+					gameResult = senteToMove ? GameResult.SENTE_WIN : GameResult.GOTE_WIN;
+				}
+			}
+
 			gameNavigation.addMove(curMove);
-			bsente = !bsente;
+			senteToMove = !senteToMove;
 			prevMove = curMove;
 		}
 
@@ -186,7 +198,6 @@ public enum KifFormat implements GameRecordFormat {
 		gameInformation.setGote(gote);
 		gameInformation.setVenue(place);
 		gameInformation.setDate(date);
-		GameResult gameResult = new GameResult();
 		return new GameRecord(gameInformation, gameTree, gameResult);
 	}
 
@@ -212,8 +223,7 @@ public enum KifFormat implements GameRecordFormat {
 		}
 	}
 
-	public static ShogiMove fromKifString(final String str, final ShogiPosition shogiPosition,
-			final ShogiMove previousMove, final boolean sente) {
+	public static ShogiMove fromKifString(final String str, final ShogiPosition shogiPosition, final ShogiMove previousMove, final boolean sente) {
 
 		if (str.startsWith("投了")) {
 			return new SpecialMove(sente, SpecialMoveType.RESIGN);
@@ -223,6 +233,8 @@ public enum KifFormat implements GameRecordFormat {
 			return new SpecialMove(sente, SpecialMoveType.JISHOGI);
 		} else if (str.startsWith("中断")) {
 			return new SpecialMove(sente, SpecialMoveType.BREAK);
+		} else if (str.startsWith("反則勝ち")) { // what is this?
+			return new SpecialMove(sente, SpecialMoveType.OTHER);
 		}
 
 		int pos = 0;
@@ -257,6 +269,16 @@ public enum KifFormat implements GameRecordFormat {
 			promote = true;
 			c = str.charAt(++pos);
 		}
+		if (c == '不') {
+			c = str.charAt(++pos);
+			if (c == '成') {
+				// Not Promote
+				promote = false;
+				c = str.charAt(++pos);
+			} else {
+				throw new IllegalArgumentException("Error reading the move " + str);
+			}
+		}
 		if (c == '打') {
 			// Drop
 			return new DropMove(sente, piece.getPieceType(), toSquare);
@@ -269,8 +291,7 @@ public enum KifFormat implements GameRecordFormat {
 			if (shogiPosition.getShogiBoardState().getPieceAt(toSquare) == null) {
 				return new NormalMove(piece, fromSquare, toSquare, promote);
 			} else {
-				return new CaptureMove(piece, fromSquare, toSquare, promote,
-						shogiPosition.getShogiBoardState().getPieceAt(toSquare));
+				return new CaptureMove(piece, fromSquare, toSquare, promote, shogiPosition.getShogiBoardState().getPieceAt(toSquare));
 			}
 
 		} else {
