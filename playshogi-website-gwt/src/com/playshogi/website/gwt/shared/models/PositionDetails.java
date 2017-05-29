@@ -1,15 +1,19 @@
 package com.playshogi.website.gwt.shared.models;
 
 import java.io.Serializable;
+import java.util.Arrays;
 
 public class PositionDetails implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	private final int total;
-	private final int sente_wins;
-	private final int gote_wins;
+	private int total;
+	private int sente_wins;
+	private int gote_wins;
 
-	private final PositionMoveDetails[] positionMoveDetails;
+	private PositionMoveDetails[] positionMoveDetails;
+
+	public PositionDetails() {
+	}
 
 	public PositionDetails(final int total, final int sente_wins, final int gote_wins, final PositionMoveDetails[] positionMoveDetails) {
 		this.total = total;
@@ -32,6 +36,28 @@ public class PositionDetails implements Serializable {
 
 	public PositionMoveDetails[] getPositionMoveDetails() {
 		return positionMoveDetails;
+	}
+
+	public void setTotal(final int total) {
+		this.total = total;
+	}
+
+	public void setSente_wins(final int sente_wins) {
+		this.sente_wins = sente_wins;
+	}
+
+	public void setGote_wins(final int gote_wins) {
+		this.gote_wins = gote_wins;
+	}
+
+	public void setPositionMoveDetails(final PositionMoveDetails[] positionMoveDetails) {
+		this.positionMoveDetails = positionMoveDetails;
+	}
+
+	@Override
+	public String toString() {
+		return "PositionDetails [total=" + total + ", sente_wins=" + sente_wins + ", gote_wins=" + gote_wins + ", positionMoveDetails="
+				+ Arrays.toString(positionMoveDetails) + "]";
 	}
 
 }

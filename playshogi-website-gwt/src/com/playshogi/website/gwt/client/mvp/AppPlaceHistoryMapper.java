@@ -8,10 +8,11 @@ import com.playshogi.website.gwt.client.place.LoginPlace;
 import com.playshogi.website.gwt.client.place.MainPagePlace;
 import com.playshogi.website.gwt.client.place.MyGamesPlace;
 import com.playshogi.website.gwt.client.place.NewKifuPlace;
+import com.playshogi.website.gwt.client.place.OpeningsPlace;
 import com.playshogi.website.gwt.client.place.TsumePlace;
 
 @Singleton
-@WithTokenizers({ MainPagePlace.Tokenizer.class, TsumePlace.Tokenizer.class, FreeBoardPlace.Tokenizer.class,
-		MyGamesPlace.Tokenizer.class, LoginPlace.Tokenizer.class, NewKifuPlace.Tokenizer.class })
+@WithTokenizers({ MainPagePlace.Tokenizer.class, TsumePlace.Tokenizer.class, FreeBoardPlace.Tokenizer.class, MyGamesPlace.Tokenizer.class,
+		LoginPlace.Tokenizer.class, NewKifuPlace.Tokenizer.class, OpeningsPlace.Tokenizer.class })
 public interface AppPlaceHistoryMapper extends PlaceHistoryMapper {
 }

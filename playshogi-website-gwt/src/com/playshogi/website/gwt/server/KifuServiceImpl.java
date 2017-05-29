@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.playshogi.library.database.DbConnection;
 import com.playshogi.library.database.GameSetRepository;
+import com.playshogi.library.database.models.PersistentGameSetPos;
 import com.playshogi.library.models.record.GameInformation;
 import com.playshogi.library.models.record.GameRecord;
 import com.playshogi.library.shogi.models.formats.usf.UsfFormat;
@@ -75,6 +76,8 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
 	public PositionDetails getPositionDetails(final String sfen, final int gameSetId) {
 		// TODO validate permissions
 
-		return null;
+		PersistentGameSetPos stats = gameSetRepository.getGameSetPositionStats(sfen, gameSetId);
+
+		return new PositionDetails(stats.getTotal(), stats.getSenteWins(), stats.getGoteWins(), null);
 	}
 }

@@ -5,10 +5,13 @@ import java.io.Serializable;
 public class PositionMoveDetails implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	private final String move;
-	private final int total;
-	private final int sente_wins;
-	private final int gote_wins;
+	private String move;
+	private int total;
+	private int sente_wins;
+	private int gote_wins;
+
+	public PositionMoveDetails() {
+	}
 
 	public PositionMoveDetails(final String move, final int total, final int sente_wins, final int gote_wins) {
 		this.move = move;
@@ -31,6 +34,27 @@ public class PositionMoveDetails implements Serializable {
 
 	public int getGote_wins() {
 		return gote_wins;
+	}
+
+	public void setMove(final String move) {
+		this.move = move;
+	}
+
+	public void setTotal(final int total) {
+		this.total = total;
+	}
+
+	public void setSente_wins(final int sente_wins) {
+		this.sente_wins = sente_wins;
+	}
+
+	public void setGote_wins(final int gote_wins) {
+		this.gote_wins = gote_wins;
+	}
+
+	@Override
+	public String toString() {
+		return "PositionMoveDetails [move=" + move + ", total=" + total + ", sente_wins=" + sente_wins + ", gote_wins=" + gote_wins + "]";
 	}
 
 }

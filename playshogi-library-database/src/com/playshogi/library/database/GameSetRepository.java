@@ -139,6 +139,11 @@ public class GameSetRepository {
 
 	}
 
+	public PersistentGameSetPos getGameSetPositionStats(final String sfen, final int gameSetId) {
+		int positionId = new PositionRepository(dbConnection).getPositionIdBySfen(sfen);
+		return getGameSetPositionStats(positionId, gameSetId);
+	}
+
 	public PersistentGameSetPos getGameSetPositionStats(final int positionId, final int gameSetId) {
 		Connection connection = dbConnection.getConnection();
 		try (PreparedStatement preparedStatement = connection.prepareStatement(SELECT_GAMESET_POSITION)) {
