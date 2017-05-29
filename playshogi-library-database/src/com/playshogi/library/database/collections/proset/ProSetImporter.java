@@ -27,7 +27,7 @@ public class ProSetImporter {
 
 		Set<String> errors = new HashSet<>();
 
-		for (int i = 1; i < 1000; i++) {
+		for (int i = 1; i < 2; i++) {
 			String fileName = PATH + "kif" + i + ".kif";
 			File file = new File(fileName);
 			if (file.exists() && file.length() > 10) {

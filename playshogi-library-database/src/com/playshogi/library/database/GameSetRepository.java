@@ -11,10 +11,15 @@ import java.util.logging.Logger;
 
 import com.playshogi.library.database.models.PersistentGameSet;
 import com.playshogi.library.database.models.PersistentGameSetPos;
+import com.playshogi.library.models.Move;
+import com.playshogi.library.models.record.GameNavigation;
 import com.playshogi.library.models.record.GameRecord;
 import com.playshogi.library.models.record.GameResult;
-import com.playshogi.library.shogi.models.GameRecordUtils;
+import com.playshogi.library.shogi.models.formats.usf.UsfMoveConverter;
+import com.playshogi.library.shogi.models.moves.ShogiMove;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
+import com.playshogi.library.shogi.models.shogivariant.ShogiInitialPositionFactory;
+import com.playshogi.library.shogi.rules.ShogiRulesEngine;
 
 public class GameSetRepository {
 
@@ -34,6 +39,9 @@ public class GameSetRepository {
 			+ " VALUES (?, ?, 1, 0, 0) ON DUPLICATE KEY UPDATE num_total=num_total+1;";
 
 	private static final String SELECT_GAMESET_POSITION = "SELECT * FROM `playshogi`.`ps_gamesetpos` WHERE position_id = ? AND gameset_id = ?";
+
+	private static final String INCREMENT_GAMESET_MOVE = "INSERT INTO `playshogi`.`ps_gamesetmove` (`position_id`, `move`, `new_position_id`, `gameset_id`, `num_total`)"
+			+ " VALUES (?, ?, ?, ?, 1) ON DUPLICATE KEY UPDATE num_total=num_total+1;";
 
 	private final DbConnection dbConnection;
 
@@ -106,12 +114,23 @@ public class GameSetRepository {
 		boolean senteWin = gameRecord.getGameResult() == GameResult.SENTE_WIN;
 		boolean goteWin = gameRecord.getGameResult() == GameResult.GOTE_WIN;
 
-		Iterable<ShogiPosition> mainVariation = GameRecordUtils.getMainVariation(gameRecord);
+		GameNavigation<ShogiPosition> gameNavigation = new GameNavigation<>(new ShogiRulesEngine(), gameRecord.getGameTree(),
+				new ShogiInitialPositionFactory().createInitialPosition());
 
-		for (ShogiPosition shogiPosition : mainVariation) {
-			int positionId = rep.getOrSavePosition(shogiPosition);
+		int lastPositionId = rep.getOrSavePosition(gameNavigation.getPosition());
+		incrementGameSetPosition(gameSetId, lastPositionId, senteWin, goteWin);
 
+		while (gameNavigation.canMoveForward()) {
+			Move move = gameNavigation.getMainVariationMove();
+
+			gameNavigation.moveForward();
+
+			int positionId = rep.getOrSavePosition(gameNavigation.getPosition());
 			incrementGameSetPosition(gameSetId, positionId, senteWin, goteWin);
+
+			incrementGameSetMove(gameSetId, lastPositionId, UsfMoveConverter.toUsfString((ShogiMove) move), positionId);
+
+			lastPositionId = positionId;
 		}
 
 	}
@@ -135,6 +154,29 @@ public class GameSetRepository {
 			}
 		} catch (SQLException e) {
 			LOGGER.log(Level.SEVERE, "Error inserting the gameset position in db", e);
+		}
+
+	}
+
+	public void incrementGameSetMove(final int gameSetId, final int positionId, final String moveUsf, final int newPositionId) {
+
+		Connection connection = dbConnection.getConnection();
+		try (PreparedStatement preparedStatement = connection.prepareStatement(INCREMENT_GAMESET_MOVE)) {
+			preparedStatement.setInt(1, positionId);
+			preparedStatement.setString(2, moveUsf);
+			preparedStatement.setInt(3, newPositionId);
+			preparedStatement.setInt(4, gameSetId);
+			int updateResult = preparedStatement.executeUpdate();
+
+			if (updateResult == 1) {
+				LOGGER.log(Level.INFO, "Inserted gameset move");
+			} else if (updateResult == 2) {
+				LOGGER.log(Level.INFO, "Incremented gameset move");
+			} else {
+				LOGGER.log(Level.SEVERE, "Could not insert gameset move");
+			}
+		} catch (SQLException e) {
+			LOGGER.log(Level.SEVERE, "Error inserting the gameset move in db", e);
 		}
 
 	}

@@ -48,6 +48,14 @@ public class GameNavigation<P extends Position<P>> {
 		}
 	}
 
+	public Move getMainVariationMove() {
+		if (canMoveForward()) {
+			return currentNode.getChildren().get(0).getMove();
+		} else {
+			return null;
+		}
+	}
+
 	public void moveForward() {
 		if (canMoveForward()) {
 			currentNode = currentNode.getChildren().get(0);
