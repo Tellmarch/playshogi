@@ -48,7 +48,7 @@ public class GameSetRepository {
 
 	private static final String SELECT_GAMESET_MOVES = "SELECT * FROM ps_gamesetmove"
 			+ " LEFT JOIN ps_gamesetpos ON ps_gamesetmove.new_position_id = ps_gamesetpos.position_id AND ps_gamesetmove.gameset_id = ps_gamesetpos.gameset_id"
-			+ " WHERE ps_gamesetmove.position_id = ? AND ps_gamesetmove.gameset_id = ?";
+			+ " WHERE ps_gamesetmove.position_id = ? AND ps_gamesetmove.gameset_id = ? ORDER BY ps_gamesetmove.num_total DESC";
 
 	private final DbConnection dbConnection;
 

@@ -122,8 +122,8 @@ public class PositionStatisticsPanel extends Composite implements ClickHandler {
 				int senteMoveRate = (moveDetails.getSente_wins() * 1000) / moveDetails.getTotal();
 				int goteMoveRate = (moveDetails.getGote_wins() * 1000) / moveDetails.getTotal();
 
-				int sentePixels = moveDetails.getSente_wins() * 75 / moveDetails.getTotal();
-				int gotePixels = moveDetails.getGote_wins() * 75 / moveDetails.getTotal();
+				int sentePixels = Math.max(15, moveDetails.getSente_wins() * 75 / moveDetails.getTotal());
+				int gotePixels = Math.max(15, moveDetails.getGote_wins() * 75 / moveDetails.getTotal());
 				int otherPixels = 75 - sentePixels - gotePixels;
 
 				String bar = "<table bgcolor=\"#666666\" border=\"0\" cellpadding=\"0\" cellspacing=\"1\" class=\"percent\"><tr><td>"
