@@ -13,6 +13,7 @@ import com.playshogi.website.gwt.client.activity.MyGamesActivity;
 import com.playshogi.website.gwt.client.activity.NewKifuActivity;
 import com.playshogi.website.gwt.client.activity.OpeningsActivity;
 import com.playshogi.website.gwt.client.activity.TsumeActivity;
+import com.playshogi.website.gwt.client.activity.ViewKifuActivity;
 import com.playshogi.website.gwt.client.place.FreeBoardPlace;
 import com.playshogi.website.gwt.client.place.LoginPlace;
 import com.playshogi.website.gwt.client.place.MainPagePlace;
@@ -20,6 +21,7 @@ import com.playshogi.website.gwt.client.place.MyGamesPlace;
 import com.playshogi.website.gwt.client.place.NewKifuPlace;
 import com.playshogi.website.gwt.client.place.OpeningsPlace;
 import com.playshogi.website.gwt.client.place.TsumePlace;
+import com.playshogi.website.gwt.client.place.ViewKifuPlace;
 import com.playshogi.website.gwt.client.ui.FreeBoardView;
 import com.playshogi.website.gwt.client.ui.LoginView;
 import com.playshogi.website.gwt.client.ui.MainPageView;
@@ -27,6 +29,7 @@ import com.playshogi.website.gwt.client.ui.MyGamesView;
 import com.playshogi.website.gwt.client.ui.NewKifuView;
 import com.playshogi.website.gwt.client.ui.OpeningsView;
 import com.playshogi.website.gwt.client.ui.TsumeView;
+import com.playshogi.website.gwt.client.ui.ViewKifuView;
 
 public class AppActivityMapper implements ActivityMapper {
 
@@ -40,6 +43,8 @@ public class AppActivityMapper implements ActivityMapper {
 	LoginView loginView;
 	@Inject
 	NewKifuView newKifuView;
+	@Inject
+	ViewKifuView viewKifuView;
 	@Inject
 	MyGamesView myGamesView;
 	@Inject
@@ -65,6 +70,8 @@ public class AppActivityMapper implements ActivityMapper {
 			return new LoginActivity((LoginPlace) place, loginView, sessionInformation);
 		} else if (place instanceof NewKifuPlace) {
 			return new NewKifuActivity((NewKifuPlace) place, newKifuView, sessionInformation);
+		} else if (place instanceof ViewKifuPlace) {
+			return new ViewKifuActivity((ViewKifuPlace) place, viewKifuView, sessionInformation);
 		}
 		return null;
 	}

@@ -11,15 +11,20 @@ public class PositionDetails implements Serializable {
 	private int gote_wins;
 
 	private PositionMoveDetails[] positionMoveDetails;
+	private String[] kifuIds;
+	private String[] kifuDesc;
 
 	public PositionDetails() {
 	}
 
-	public PositionDetails(final int total, final int sente_wins, final int gote_wins, final PositionMoveDetails[] positionMoveDetails) {
+	public PositionDetails(final int total, final int sente_wins, final int gote_wins, final PositionMoveDetails[] positionMoveDetails, final String[] kifuIds,
+			final String[] kifuDesc) {
 		this.total = total;
 		this.sente_wins = sente_wins;
 		this.gote_wins = gote_wins;
 		this.positionMoveDetails = positionMoveDetails;
+		this.kifuIds = kifuIds;
+		this.kifuDesc = kifuDesc;
 	}
 
 	public int getTotal() {
@@ -54,10 +59,18 @@ public class PositionDetails implements Serializable {
 		this.positionMoveDetails = positionMoveDetails;
 	}
 
+	public String[] getKifuIds() {
+		return kifuIds;
+	}
+
+	public String[] getKifuDesc() {
+		return kifuDesc;
+	}
+
 	@Override
 	public String toString() {
 		return "PositionDetails [total=" + total + ", sente_wins=" + sente_wins + ", gote_wins=" + gote_wins + ", positionMoveDetails="
-				+ Arrays.toString(positionMoveDetails) + "]";
+				+ Arrays.toString(positionMoveDetails) + ", kifuIds=" + Arrays.toString(kifuIds) + ", kifuDesc=" + Arrays.toString(kifuDesc) + "]";
 	}
 
 }

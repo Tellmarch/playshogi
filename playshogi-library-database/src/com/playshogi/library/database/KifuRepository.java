@@ -6,11 +6,14 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.playshogi.library.database.models.PersistentGame;
 import com.playshogi.library.database.models.PersistentKifu;
 import com.playshogi.library.database.models.PersistentKifu.KifuType;
 import com.playshogi.library.models.record.GameRecord;
@@ -23,6 +26,11 @@ public class KifuRepository {
 	private static final Logger LOGGER = Logger.getLogger(UserRepository.class.getName());
 
 	private static final String INSERT_KIFU = "INSERT INTO `playshogi`.`ps_kifu` (`name`, `author_id`, `usf`, `type_id`)" + " VALUES (?, ?, ?,  ?);";
+
+	private static final String INSERT_KIFU_POSITION = "INSERT INTO `playshogi`.`ps_kifupos` (`kifu_id`, `position_id`)" + " VALUES (?, ?);";
+
+	private static final String SELECT_KIFU_POSITION = "SELECT * FROM ps_kifupos LEFT JOIN ps_game ON ps_kifupos.kifu_id = ps_game.kifu_id WHERE position_id = ? LIMIT 10";
+
 	private static final String SELECT_KIFU = "SELECT * FROM ps_kifu WHERE id = ?";
 	private static final String DELETE_KIFU = "DELETE FROM ps_kifu WHERE id = ?";
 
@@ -32,7 +40,7 @@ public class KifuRepository {
 		this.dbConnection = dbConnection;
 	}
 
-	public int saveKifu(final GameRecord gameRecord, final String name, final int authorId, final int type) {
+	public int saveKifu(final GameRecord gameRecord, final String name, final int authorId, final KifuType kifuType) {
 
 		int key = -1;
 
@@ -41,7 +49,7 @@ public class KifuRepository {
 			preparedStatement.setString(1, name);
 			preparedStatement.setInt(2, authorId);
 			preparedStatement.setString(3, UsfFormat.INSTANCE.write(gameRecord));
-			preparedStatement.setInt(4, type);
+			preparedStatement.setInt(4, kifuType.getDbInt());
 			preparedStatement.executeUpdate();
 
 			ResultSet rs = preparedStatement.getGeneratedKeys();
@@ -104,11 +112,58 @@ public class KifuRepository {
 	public static void main(final String[] args) throws IOException {
 		GameRecord gameRecord = GameRecordFileReaderTest.getExampleTsumeGameRecord();
 		KifuRepository kifus = new KifuRepository(new DbConnection());
-		int kifuId = kifus.saveKifu(gameRecord, "test", 1, 2);
+		int kifuId = kifus.saveKifu(gameRecord, "test", 1, KifuType.PROBLEM);
 		GameRecord kifuById = kifus.getKifuById(kifuId).getKifu();
 		GameRecordUtils.print(kifuById);
 		System.out.println(Objects.equals(gameRecord, kifuById));
 		kifus.deleteKifuById(kifuId);
+	}
+
+	public void saveKifuPosition(final int kifuId, final int positionId) {
+		Connection connection = dbConnection.getConnection();
+		try (PreparedStatement preparedStatement = connection.prepareStatement(INSERT_KIFU_POSITION)) {
+			preparedStatement.setInt(1, kifuId);
+			preparedStatement.setInt(2, positionId);
+			if (preparedStatement.executeUpdate() == 1) {
+				LOGGER.log(Level.INFO, "Inserted kifu position");
+			} else {
+				LOGGER.log(Level.SEVERE, "Could not insert kifu position");
+			}
+		} catch (SQLException e) {
+			LOGGER.log(Level.SEVERE, "Error saving the kifu in db", e);
+		}
+	}
+
+	public List<PersistentGame> getGamesForPosition(final int positionId) {
+		Connection connection = dbConnection.getConnection();
+		try (PreparedStatement preparedStatement = connection.prepareStatement(SELECT_KIFU_POSITION)) {
+			preparedStatement.setInt(1, positionId);
+			ResultSet rs = preparedStatement.executeQuery();
+			List<PersistentGame> result = new ArrayList<>();
+
+			while (rs.next()) {
+
+				int gameId = rs.getInt("ps_game.id");
+				int kifuId = rs.getInt("ps_game.kifu_id");
+				int senteId = rs.getInt("ps_game.sente_id");
+				int goteId = rs.getInt("ps_game.gote_id");
+				String senteName = rs.getString("ps_game.sente_name");
+				String goteName = rs.getString("ps_game.gote_name");
+				int venueId = rs.getInt("ps_game.venue");
+				String description = rs.getString("ps_game.description");
+				Date datePlayed = rs.getDate("ps_game.date_played");
+
+				result.add(new PersistentGame(gameId, kifuId, senteId, goteId, senteName, goteName, datePlayed, venueId, description));
+
+			}
+
+			LOGGER.log(Level.INFO, "Found kifus: " + result);
+
+			return result;
+		} catch (SQLException e) {
+			LOGGER.log(Level.SEVERE, "Error looking up the kifus for position in db", e);
+			return null;
+		}
 	}
 
 }

@@ -10,6 +10,7 @@ import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.website.gwt.client.mvp.AppPlaceHistoryMapper;
 import com.playshogi.website.gwt.client.widget.board.ShogiBoard;
 import com.playshogi.website.gwt.client.widget.gamenavigator.GameNavigator;
+import com.playshogi.website.gwt.client.widget.openings.PositionKifusPanel;
 import com.playshogi.website.gwt.client.widget.openings.PositionStatisticsPanel;
 
 @Singleton
@@ -19,6 +20,7 @@ public class OpeningsView extends Composite {
 	private final ShogiBoard shogiBoard;
 	private final GameNavigator gameNavigator;
 	private final PositionStatisticsPanel positionStatisticsPanel;
+	private final PositionKifusPanel positionKifusPanel;
 
 	@Inject
 	public OpeningsView(final AppPlaceHistoryMapper historyMapper) {
@@ -27,8 +29,10 @@ public class OpeningsView extends Composite {
 		gameNavigator = new GameNavigator(OPENINGS);
 
 		positionStatisticsPanel = new PositionStatisticsPanel(historyMapper);
+		positionKifusPanel = new PositionKifusPanel(historyMapper);
 
 		shogiBoard.setUpperRightPanel(positionStatisticsPanel);
+		shogiBoard.setLowerLeftPanel(positionKifusPanel);
 
 		initWidget(shogiBoard);
 	}
@@ -39,6 +43,7 @@ public class OpeningsView extends Composite {
 		gameNavigator.getGameNavigation().setGameTree(new GameTree(position));
 		gameNavigator.activate(eventBus);
 		positionStatisticsPanel.activate(eventBus);
+		positionKifusPanel.activate(eventBus);
 	}
 
 }

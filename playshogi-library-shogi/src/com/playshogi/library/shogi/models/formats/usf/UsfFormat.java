@@ -46,19 +46,9 @@ public enum UsfFormat implements GameRecordFormat {
 		// This line contains the "preview" line
 
 		// Reads the result
-		// TODO : do something with it
 		char resultc = l.charAt(1);
-		switch (resultc) {
-		case 's':
-		case 'b':
-		case 'g':
-		case 'w':
-		case 'd':
-		case '*':
-			break;
-		default:
-			throw (new IllegalArgumentException("Error parsing the USF File (not a valid result)"));
-		}
+
+		GameResult gameResult = getResult(resultc);
 
 		// We will know start building the game tree
 
@@ -82,6 +72,8 @@ public enum UsfFormat implements GameRecordFormat {
 		String moves = l.substring(l.indexOf(':') + 1);
 
 		playMoveSequence(gameNavigation, moves);
+
+		GameInformation gameInformation = new GameInformation();
 
 		// Now, we read tag lines. We read every lines until the end of the
 		// file,
@@ -153,6 +145,24 @@ public enum UsfFormat implements GameRecordFormat {
 				continue;
 			}
 
+			if (l.startsWith("BN:")) {
+				String blackName = l.substring(3);
+				gameInformation.setSente(blackName);
+				continue;
+			} else if (l.startsWith("WN:")) {
+				String whiteName = l.substring(3);
+				gameInformation.setGote(whiteName);
+				continue;
+			} else if (l.startsWith("GD:")) {
+				String gameDate = l.substring(3);
+				gameInformation.setDate(gameDate);
+				continue;
+			} else if (l.startsWith("GQ:")) {
+				String gameVenue = l.substring(3);
+				gameInformation.setVenue(gameVenue);
+				continue;
+			}
+
 			// A line starting with ~ is an object
 			if (l.charAt(0) == '~') {
 				// USFObject object = new USFObject(l.substring(1));
@@ -168,16 +178,6 @@ public enum UsfFormat implements GameRecordFormat {
 			}
 		}
 
-		String date = "1000-1-1";
-		String tournament = "UNKNOWN";
-		String opening = "UNKNOWN";
-		String place = "UNKNOWN";
-		String time = "UNKNOWN";
-		String handicap = "UNKNOWN";
-		String gote = "UNKNOWN";
-		String sente = "UNKNOWN";
-
-		int result = 0;
 		// TODO
 		// switch (gameTree.getCurrent().getMove().getSpecialType()) {
 		// case Move.SPECIAL_BREK:
@@ -198,9 +198,32 @@ public enum UsfFormat implements GameRecordFormat {
 		// }
 
 		gameNavigation.moveToStart();
-		GameInformation gameInformation = new GameInformation();
-		GameResult gameResult = GameResult.UNKNOWN;
+
 		return new GameRecord(gameInformation, gameTree, gameResult);
+	}
+
+	private GameResult getResult(final char resultc) {
+		GameResult gameResult = GameResult.UNKNOWN;
+
+		// TODO : do something with it
+		switch (resultc) {
+		case 's':
+		case 'b':
+			gameResult = GameResult.SENTE_WIN;
+			break;
+		case 'g':
+		case 'w':
+			gameResult = GameResult.GOTE_WIN;
+			break;
+		case 'd':
+			gameResult = GameResult.OTHER;
+			break;
+		case '*':
+			break;
+		default:
+			throw (new IllegalArgumentException("Error parsing the USF File (not a valid result)"));
+		}
+		return gameResult;
 	}
 
 	/**

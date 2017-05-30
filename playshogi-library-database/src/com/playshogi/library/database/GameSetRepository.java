@@ -6,7 +6,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -14,6 +17,7 @@ import java.util.logging.Logger;
 import com.playshogi.library.database.models.PersistentGameSet;
 import com.playshogi.library.database.models.PersistentGameSetMove;
 import com.playshogi.library.database.models.PersistentGameSetPos;
+import com.playshogi.library.database.models.PersistentKifu.KifuType;
 import com.playshogi.library.models.Move;
 import com.playshogi.library.models.record.GameNavigation;
 import com.playshogi.library.models.record.GameRecord;
@@ -115,8 +119,15 @@ public class GameSetRepository {
 		}
 	}
 
-	public void addGameToGameSet(final GameRecord gameRecord, final int gameSetId) {
+	public void addGameToGameSet(final GameRecord gameRecord, final int gameSetId, final int venueId, final String gameName, final int authorId) {
 		PositionRepository rep = new PositionRepository(dbConnection);
+		KifuRepository kifuRep = new KifuRepository(dbConnection);
+		GameRepository gameRep = new GameRepository(dbConnection);
+
+		int kifuId = kifuRep.saveKifu(gameRecord, gameName, authorId, KifuType.GAME);
+
+		gameRep.saveGame(kifuId, null, null, gameRecord.getGameInformation().getSente(), gameRecord.getGameInformation().getGote(),
+				parseDate(gameRecord.getGameInformation().getDate()), venueId, gameName);
 
 		boolean senteWin = gameRecord.getGameResult() == GameResult.SENTE_WIN;
 		boolean goteWin = gameRecord.getGameResult() == GameResult.GOTE_WIN;
@@ -125,6 +136,8 @@ public class GameSetRepository {
 				new ShogiInitialPositionFactory().createInitialPosition());
 
 		int lastPositionId = rep.getOrSavePosition(gameNavigation.getPosition());
+
+		kifuRep.saveKifuPosition(kifuId, lastPositionId);
 		incrementGameSetPosition(gameSetId, lastPositionId, senteWin, goteWin);
 
 		while (gameNavigation.canMoveForward()) {
@@ -133,13 +146,25 @@ public class GameSetRepository {
 			gameNavigation.moveForward();
 
 			int positionId = rep.getOrSavePosition(gameNavigation.getPosition());
-			incrementGameSetPosition(gameSetId, positionId, senteWin, goteWin);
 
+			kifuRep.saveKifuPosition(kifuId, positionId);
+			incrementGameSetPosition(gameSetId, positionId, senteWin, goteWin);
 			incrementGameSetMove(gameSetId, lastPositionId, UsfMoveConverter.toUsfString((ShogiMove) move), positionId);
 
 			lastPositionId = positionId;
 		}
 
+	}
+
+	private Date parseDate(final String date) {
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/mm/dd");
+		try {
+			return simpleDateFormat.parse(date);
+		} catch (ParseException e) {
+			LOGGER.log(Level.SEVERE, "Couldn't parse date: " + date);
+		}
+
+		return null;
 	}
 
 	public void incrementGameSetPosition(final int gameSetId, final int positionId, final boolean senteWin, final boolean goteWin) {
@@ -251,10 +276,7 @@ public class GameSetRepository {
 			}
 
 			return result;
-			//
-			// LOGGER.log(Level.INFO, "Did not find moves for position: " +
-			// positionId);
-			// return null;
+
 		} catch (SQLException e) {
 			LOGGER.log(Level.SEVERE, "Error looking up the gameset in db", e);
 			return null;

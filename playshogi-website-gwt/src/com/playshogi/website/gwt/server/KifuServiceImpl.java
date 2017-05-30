@@ -1,20 +1,24 @@
 package com.playshogi.website.gwt.server;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.playshogi.library.database.DbConnection;
 import com.playshogi.library.database.GameSetRepository;
+import com.playshogi.library.database.KifuRepository;
 import com.playshogi.library.database.PositionRepository;
+import com.playshogi.library.database.models.PersistentGame;
 import com.playshogi.library.database.models.PersistentGameSetMove;
 import com.playshogi.library.database.models.PersistentGameSetPos;
+import com.playshogi.library.database.models.PersistentKifu.KifuType;
 import com.playshogi.library.models.record.GameInformation;
 import com.playshogi.library.models.record.GameRecord;
 import com.playshogi.library.shogi.models.formats.usf.UsfFormat;
@@ -29,8 +33,7 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
 
 	private static final Logger LOGGER = Logger.getLogger(KifuServiceImpl.class.getName());
 
-	private final Map<String, GameRecord> gameRecords = new ConcurrentHashMap<>();
-
+	private final KifuRepository kifuRepository;
 	private final GameSetRepository gameSetRepository;
 	private final PositionRepository positionRepository;
 
@@ -38,31 +41,38 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
 		DbConnection dbConnection = new DbConnection();
 		gameSetRepository = new GameSetRepository(dbConnection);
 		positionRepository = new PositionRepository(dbConnection);
+		kifuRepository = new KifuRepository(dbConnection);
 	}
 
 	@Override
 	public String saveKifu(final String sessionId, final String kifuUsf) {
 		LOGGER.log(Level.INFO, "saving kifu:\n" + kifuUsf);
 		GameRecord gameRecord = UsfFormat.INSTANCE.read(kifuUsf);
-		String id = UUID.randomUUID().toString();
-		gameRecords.put(id, gameRecord);
-		return id;
+		String name = UUID.randomUUID().toString();
+		int kifuId = kifuRepository.saveKifu(gameRecord, name, 1, KifuType.GAME);
+		return String.valueOf(kifuId);
 	}
 
 	@Override
 	public String getKifuUsf(final String sessionId, final String kifuId) {
 		LOGGER.log(Level.INFO, "querying kifu:\n" + kifuId);
-		GameRecord gameRecord = gameRecords.get(kifuId);
+
+		// TODO validate session
+
+		GameRecord gameRecord = kifuRepository.getKifuById(Integer.parseInt(kifuId)).getKifu();
 		if (gameRecord == null) {
 			LOGGER.log(Level.INFO, "invalid kifu id:\n" + kifuId);
 			return null;
 		} else {
-			return UsfFormat.INSTANCE.write(gameRecord);
+			String usf = UsfFormat.INSTANCE.write(gameRecord);
+			LOGGER.log(Level.INFO, "found kifu:\n" + usf);
+			return usf;
 		}
 	}
 
 	@Override
 	public KifuDetails[] getAvailableKifuDetails(final String sessionId) {
+		Map<String, GameRecord> gameRecords = Collections.emptyMap();
 		List<KifuDetails> result = new ArrayList<>(gameRecords.size());
 		for (Entry<String, GameRecord> entry : gameRecords.entrySet()) {
 			result.add(createKifuDetails(entry.getKey(), entry.getValue()));
@@ -104,6 +114,21 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
 			details[i] = new PositionMoveDetails(move.getMoveUsf(), move.getMoveOccurrences(), move.getSenteWins(), move.getGoteWins(), newSfen);
 		}
 
-		return new PositionDetails(stats.getTotal(), stats.getSenteWins(), stats.getGoteWins(), details);
+		List<PersistentGame> gamesForPosition = kifuRepository.getGamesForPosition(positionId);
+
+		SimpleDateFormat yearDateFormat = new SimpleDateFormat("yyyy");
+
+		String[] kifuIds = new String[gamesForPosition.size()];
+		String[] kifuDescs = new String[gamesForPosition.size()];
+		for (int i = 0; i < kifuIds.length; i++) {
+			PersistentGame persistentGame = gamesForPosition.get(i);
+			kifuIds[i] = String.valueOf(persistentGame.getKifuId());
+			kifuDescs[i] = persistentGame.getSenteName() + " - " + persistentGame.getGoteName();
+			if (persistentGame.getDatePlayed() != null) {
+				kifuDescs[i] += " (" + yearDateFormat.format(persistentGame.getDatePlayed()) + ")";
+			}
+		}
+
+		return new PositionDetails(stats.getTotal(), stats.getSenteWins(), stats.getGoteWins(), details, kifuIds, kifuDescs);
 	}
 }
