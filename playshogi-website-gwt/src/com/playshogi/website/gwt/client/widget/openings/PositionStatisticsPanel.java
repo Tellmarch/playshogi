@@ -14,6 +14,7 @@ import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
+import com.playshogi.library.shogi.models.formats.kif.KifMoveConverter;
 import com.playshogi.library.shogi.models.formats.usf.UsfMoveConverter;
 import com.playshogi.library.shogi.models.moves.ShogiMove;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
@@ -98,7 +99,10 @@ public class PositionStatisticsPanel extends Composite implements ClickHandler {
 
 				String moveUsf = moveDetails.getMove();
 				final ShogiMove move = UsfMoveConverter.fromUsfString(moveUsf, shogiPosition);
-				Hyperlink hyperlink = new Hyperlink(moveUsf, historyMapper.getToken(new OpeningsPlace(moveDetails.getNewSfen())));
+				Hyperlink hyperlink = new Hyperlink(KifMoveConverter.toKifStringShort(move),
+						historyMapper.getToken(new OpeningsPlace(moveDetails.getNewSfen())));
+
+				hyperlink.setStyleName("movelink");
 
 				hyperlink.addDomHandler(new MouseOverHandler() {
 
@@ -118,9 +122,9 @@ public class PositionStatisticsPanel extends Composite implements ClickHandler {
 				int senteMoveRate = (moveDetails.getSente_wins() * 1000) / moveDetails.getTotal();
 				int goteMoveRate = (moveDetails.getGote_wins() * 1000) / moveDetails.getTotal();
 
-				int sentePixels = moveDetails.getSente_wins() * 220 / moveDetails.getTotal();
-				int gotePixels = moveDetails.getGote_wins() * 220 / moveDetails.getTotal();
-				int otherPixels = 220 - sentePixels - gotePixels;
+				int sentePixels = moveDetails.getSente_wins() * 75 / moveDetails.getTotal();
+				int gotePixels = moveDetails.getGote_wins() * 75 / moveDetails.getTotal();
+				int otherPixels = 75 - sentePixels - gotePixels;
 
 				String bar = "<table bgcolor=\"#666666\" border=\"0\" cellpadding=\"0\" cellspacing=\"1\" class=\"percent\"><tr><td>"
 						+ "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tr height=\"13\">"

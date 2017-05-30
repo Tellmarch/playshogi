@@ -6,18 +6,13 @@ import com.playshogi.library.models.record.GameNavigation;
 import com.playshogi.library.models.record.GameRecord;
 import com.playshogi.library.models.record.GameResult;
 import com.playshogi.library.models.record.GameTree;
-import com.playshogi.library.shogi.models.Piece;
-import com.playshogi.library.shogi.models.PieceType;
+import com.playshogi.library.shogi.models.formats.kif.KifUtils.PieceParsingResult;
 import com.playshogi.library.shogi.models.formats.sfen.GameRecordFormat;
 import com.playshogi.library.shogi.models.formats.sfen.LineReader;
 import com.playshogi.library.shogi.models.formats.sfen.StringLineReader;
-import com.playshogi.library.shogi.models.moves.CaptureMove;
-import com.playshogi.library.shogi.models.moves.DropMove;
-import com.playshogi.library.shogi.models.moves.NormalMove;
 import com.playshogi.library.shogi.models.moves.ShogiMove;
 import com.playshogi.library.shogi.models.moves.SpecialMove;
 import com.playshogi.library.shogi.models.moves.SpecialMoveType;
-import com.playshogi.library.shogi.models.moves.ToSquareMove;
 import com.playshogi.library.shogi.models.position.KomadaiState;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.library.shogi.models.shogivariant.ShogiInitialPositionFactory;
@@ -123,7 +118,7 @@ public enum KifFormat implements GameRecordFormat {
 					l = lineReader.nextLine();
 					int pos = 1;
 					for (int column = 9; column >= 1; column--) {
-						PieceParsingResult pieceParsingResult = readPiece(l, pos, true);
+						PieceParsingResult pieceParsingResult = KifUtils.readPiece(l, pos, true);
 						pos = pieceParsingResult.nextPosition;
 						startingPosition.getShogiBoardState().setPieceAt(Square.of(column, row), pieceParsingResult.piece);
 					}
@@ -173,7 +168,7 @@ public enum KifFormat implements GameRecordFormat {
 			}
 			moveNumber++;
 			String move = ts[1];
-			curMove = fromKifString(move, gameNavigation.getPosition(), prevMove, senteToMove);
+			curMove = KifMoveConverter.fromKifString(move, gameNavigation.getPosition(), prevMove, senteToMove);
 
 			if (curMove == null) {
 				System.out.println("Error parsing move in line " + line + "in file " + "???");
@@ -208,94 +203,18 @@ public enum KifFormat implements GameRecordFormat {
 		}
 		String[] piecesInHandStrings = value.split("　");
 		for (String pieceString : piecesInHandStrings) {
-			PieceParsingResult pieceParsingResult = readPiece(pieceString, 0, true);
+			PieceParsingResult pieceParsingResult = KifUtils.readPiece(pieceString, 0, true);
 			int number;
 			if (pieceString.length() == 1) {
 				number = 1;
 			} else if (pieceString.length() == 2) {
-				number = getNumberFromJapanese(pieceString.charAt(1));
+				number = KifUtils.getNumberFromJapanese(pieceString.charAt(1));
 			} else if (pieceString.length() == 3 && pieceString.charAt(1) == '十') {
-				number = 10 + getNumberFromJapanese(pieceString.charAt(2));
+				number = 10 + KifUtils.getNumberFromJapanese(pieceString.charAt(2));
 			} else {
 				throw new IllegalArgumentException("Error reading pieces in hand: " + value);
 			}
 			komadai.setPiecesOfType(pieceParsingResult.piece.getPieceType(), number);
-		}
-	}
-
-	public static ShogiMove fromKifString(final String str, final ShogiPosition shogiPosition, final ShogiMove previousMove, final boolean sente) {
-
-		if (str.startsWith("投了")) {
-			return new SpecialMove(sente, SpecialMoveType.RESIGN);
-		} else if (str.startsWith("千日手")) {
-			return new SpecialMove(sente, SpecialMoveType.SENNICHITE);
-		} else if (str.startsWith("持将棋")) {
-			return new SpecialMove(sente, SpecialMoveType.JISHOGI);
-		} else if (str.startsWith("中断")) {
-			return new SpecialMove(sente, SpecialMoveType.BREAK);
-		} else if (str.startsWith("反則勝ち")) { // what is this?
-			return new SpecialMove(sente, SpecialMoveType.OTHER);
-		}
-
-		int pos = 0;
-		// First, read destination coordinates
-		Square toSquare;
-		char firstChar = str.charAt(0);
-		if (firstChar == '同') {
-			// capture
-			toSquare = ((ToSquareMove) previousMove).getToSquare();
-			pos++;
-		} else if (firstChar >= '１' && firstChar <= '９') {
-			int column = firstChar - '１' + 1;
-			int row = getNumberFromJapanese(str.charAt(1));
-			toSquare = Square.of(column, row);
-			pos += 2;
-		} else {
-			throw new IllegalArgumentException("Unrecognized move: " + str);
-		}
-
-		if (str.charAt(pos) == '　') {
-			pos++;
-		}
-
-		PieceParsingResult pieceParsingResult = readPiece(str, pos, sente);
-		Piece piece = pieceParsingResult.piece;
-		pos = pieceParsingResult.nextPosition;
-
-		boolean promote = false;
-		char c = str.charAt(pos);
-		if (c == '成') {
-			// Promote
-			promote = true;
-			c = str.charAt(++pos);
-		}
-		if (c == '不') {
-			c = str.charAt(++pos);
-			if (c == '成') {
-				// Not Promote
-				promote = false;
-				c = str.charAt(++pos);
-			} else {
-				throw new IllegalArgumentException("Error reading the move " + str);
-			}
-		}
-		if (c == '打') {
-			// Drop
-			return new DropMove(sente, piece.getPieceType(), toSquare);
-		} else if (c == '(') {
-			// Reading the destination square
-			int column2 = str.charAt(++pos) - '0';
-			int row2 = str.charAt(++pos) - '0';
-			Square fromSquare = Square.of(column2, row2);
-
-			if (shogiPosition.getShogiBoardState().getPieceAt(toSquare) == null) {
-				return new NormalMove(piece, fromSquare, toSquare, promote);
-			} else {
-				return new CaptureMove(piece, fromSquare, toSquare, promote, shogiPosition.getShogiBoardState().getPieceAt(toSquare));
-			}
-
-		} else {
-			throw new IllegalArgumentException("Error reading the move " + str);
 		}
 	}
 
@@ -307,126 +226,6 @@ public enum KifFormat implements GameRecordFormat {
 	@Override
 	public String write(final GameTree gameTree) {
 		throw new UnsupportedOperationException();
-	}
-
-	private static PieceParsingResult readPiece(final String str, int pos, boolean sente) {
-
-		while (str.charAt(pos) == ' ') {
-			pos++;
-		}
-
-		if (str.charAt(pos) == 'v') {
-			sente = false;
-			pos++;
-		}
-
-		Piece piece;
-		switch (str.charAt(pos)) {
-		case '・':
-			piece = null;
-			break;
-		case '歩':
-			piece = Piece.getPiece(PieceType.PAWN, sente);
-			break;
-		case '香':
-			piece = Piece.getPiece(PieceType.LANCE, sente);
-			break;
-		case '桂':
-			piece = Piece.getPiece(PieceType.KNIGHT, sente);
-			break;
-		case '銀':
-			piece = Piece.getPiece(PieceType.SILVER, sente);
-			break;
-		case '金':
-			piece = Piece.getPiece(PieceType.GOLD, sente);
-			break;
-		case '角':
-			piece = Piece.getPiece(PieceType.BISHOP, sente);
-			break;
-		case '飛':
-			piece = Piece.getPiece(PieceType.ROOK, sente);
-			break;
-		case '王':
-		case '玉':
-			piece = Piece.getPiece(PieceType.KING, sente);
-			break;
-		case 'と':
-			piece = Piece.getPiece(PieceType.PAWN, sente, true);
-			break;
-		case '馬':
-			piece = Piece.getPiece(PieceType.BISHOP, sente, true);
-			break;
-		case '竜':
-		case '龍':
-			piece = Piece.getPiece(PieceType.ROOK, sente, true);
-			break;
-		case '杏':
-			piece = Piece.getPiece(PieceType.LANCE, sente, true);
-			break;
-		case '圭':
-			piece = Piece.getPiece(PieceType.KNIGHT, sente, true);
-			break;
-		case '全':
-			piece = Piece.getPiece(PieceType.SILVER, sente, true);
-			break;
-		case '成': {
-			// Special case : promoted piece...
-			pos++;
-			switch (str.charAt(pos)) {
-			case '香':
-				piece = Piece.getPiece(PieceType.LANCE, sente, true);
-				break;
-			case '桂':
-				piece = Piece.getPiece(PieceType.KNIGHT, sente, true);
-				break;
-			case '銀':
-				piece = Piece.getPiece(PieceType.SILVER, sente, true);
-				break;
-			default:
-				throw new IllegalArgumentException("Error reading the move " + str);
-			}
-			break;
-		}
-		default:
-			throw new IllegalArgumentException("Error reading the piece " + str);
-		}
-		return new PieceParsingResult(piece, pos + 1);
-	}
-
-	private static class PieceParsingResult {
-		public Piece piece;
-		public int nextPosition;
-
-		public PieceParsingResult(final Piece piece, final int nextPosition) {
-			this.piece = piece;
-			this.nextPosition = nextPosition;
-		}
-	}
-
-	public static int getNumberFromJapanese(final char rowChar) {
-		switch (rowChar) {
-		case '一':
-			return 1;
-		case '二':
-			return 2;
-		case '三':
-			return 3;
-		case '四':
-			return 4;
-		case '五':
-			return 5;
-		case '六':
-			return 6;
-		case '七':
-			return 7;
-		case '八':
-			return 8;
-		case '九':
-			return 9;
-		case '十':
-			return 10;
-		}
-		throw new IllegalArgumentException("Illegal row number: " + rowChar);
 	}
 
 }
