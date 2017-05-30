@@ -3,6 +3,8 @@ package com.playshogi.website.gwt.client.widget.openings;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.MouseOverEvent;
+import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -12,6 +14,10 @@ import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
+import com.playshogi.library.shogi.models.formats.usf.UsfMoveConverter;
+import com.playshogi.library.shogi.models.moves.ShogiMove;
+import com.playshogi.library.shogi.models.position.ShogiPosition;
+import com.playshogi.website.gwt.client.events.HighlightMoveEvent;
 import com.playshogi.website.gwt.client.events.PositionStatisticsEvent;
 import com.playshogi.website.gwt.client.mvp.AppPlaceHistoryMapper;
 import com.playshogi.website.gwt.client.place.OpeningsPlace;
@@ -31,6 +37,8 @@ public class PositionStatisticsPanel extends Composite implements ClickHandler {
 	private final FlowPanel verticalPanel;
 
 	private final AppPlaceHistoryMapper historyMapper;
+
+	private ShogiPosition shogiPosition;
 
 	public PositionStatisticsPanel(final AppPlaceHistoryMapper historyMapper) {
 		this.historyMapper = historyMapper;
@@ -61,6 +69,7 @@ public class PositionStatisticsPanel extends Composite implements ClickHandler {
 	public void onGameInformationChangedEvent(final PositionStatisticsEvent event) {
 		GWT.log("Position statistics: handle PositionStatisticsEvent");
 		positionDetails = event.getPositionDetails();
+		shogiPosition = event.getShogiPosition();
 		refreshInformation();
 	}
 
@@ -87,7 +96,19 @@ public class PositionStatisticsPanel extends Composite implements ClickHandler {
 			for (int i = 0; i < positionMoveDetails.length; i++) {
 				PositionMoveDetails moveDetails = positionMoveDetails[i];
 
-				Hyperlink hyperlink = new Hyperlink(moveDetails.getMove(), historyMapper.getToken(new OpeningsPlace(moveDetails.getNewSfen())));
+				String moveUsf = moveDetails.getMove();
+				final ShogiMove move = UsfMoveConverter.fromUsfString(moveUsf, shogiPosition);
+				Hyperlink hyperlink = new Hyperlink(moveUsf, historyMapper.getToken(new OpeningsPlace(moveDetails.getNewSfen())));
+
+				hyperlink.addDomHandler(new MouseOverHandler() {
+
+					@Override
+					public void onMouseOver(final MouseOverEvent event) {
+						GWT.log("mouse over");
+						eventBus.fireEvent(new HighlightMoveEvent(move));
+
+					}
+				}, MouseOverEvent.getType());
 
 				grid.setWidget(i + 1, 0, hyperlink);
 
@@ -97,11 +118,16 @@ public class PositionStatisticsPanel extends Composite implements ClickHandler {
 				int senteMoveRate = (moveDetails.getSente_wins() * 1000) / moveDetails.getTotal();
 				int goteMoveRate = (moveDetails.getGote_wins() * 1000) / moveDetails.getTotal();
 
+				int sentePixels = moveDetails.getSente_wins() * 220 / moveDetails.getTotal();
+				int gotePixels = moveDetails.getGote_wins() * 220 / moveDetails.getTotal();
+				int otherPixels = 220 - sentePixels - gotePixels;
+
 				String bar = "<table bgcolor=\"#666666\" border=\"0\" cellpadding=\"0\" cellspacing=\"1\" class=\"percent\"><tr><td>"
 						+ "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tr height=\"13\">"
-						+ "<td align=\"center\" background=\"green.gif\" width=\"84\">  " + (senteMoveRate / 10.) + " </td>"
-						+ "<td align=\"center\" background=\"gray.gif\" width=\"66\">   </td>" + "<td align=\"center\" background=\"red.gif\" width=\"70\">  "
-						+ (goteMoveRate / 10.) + " </td>" + "</tr></table>" + "</td></tr></table>";
+						+ "<td align=\"center\" background=\"green.gif\" width=\"" + sentePixels + "\">  " + (senteMoveRate / 10.) + " </td>"
+						+ "<td align=\"center\" background=\"gray.gif\" width=\"" + otherPixels + "\">   </td>"
+						+ "<td align=\"center\" background=\"red.gif\" width=\"" + gotePixels + "\">  " + (goteMoveRate / 10.) + " </td>" + "</tr></table>"
+						+ "</td></tr></table>";
 
 				grid.setHTML(i + 1, 2, bar);
 				// grid.setHTML(i + 1, 2, String.valueOf(moveRate / 10.));

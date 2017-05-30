@@ -44,7 +44,7 @@ public class OpeningsActivity extends MyAbstractActivity {
 		this.eventBus = eventBus;
 		GWT.log("Starting openings activity");
 		eventBinder.bindEventHandlers(this, eventBus);
-		ShogiPosition position = SfenConverter.fromSFEN(sfen);
+		final ShogiPosition position = SfenConverter.fromSFEN(sfen);
 		openingsView.activate(position, eventBus);
 		containerWidget.setWidget(openingsView.asWidget());
 
@@ -53,7 +53,7 @@ public class OpeningsActivity extends MyAbstractActivity {
 			@Override
 			public void onSuccess(final PositionDetails result) {
 				GWT.log("OPENINGS - GOT POSITION DETAILS " + result);
-				eventBus.fireEvent(new PositionStatisticsEvent(result));
+				eventBus.fireEvent(new PositionStatisticsEvent(result, position));
 			}
 
 			@Override
