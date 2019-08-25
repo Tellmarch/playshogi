@@ -1,15 +1,15 @@
 package com.playshogi.library.database.collections.proset;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
-
 import com.playshogi.library.database.DbConnection;
 import com.playshogi.library.database.GameSetRepository;
 import com.playshogi.library.models.record.GameRecord;
 import com.playshogi.library.shogi.files.GameRecordFileReader;
 import com.playshogi.library.shogi.models.formats.kif.KifFormat;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 
 public class ProSetImporter {
 
@@ -28,7 +28,7 @@ public class ProSetImporter {
 
 		Set<String> errors = new HashSet<>();
 
-		for (int i = 25; i < 50; i++) {
+        for (int i = 26; i < 27; i++) {
 			String fileName = PATH + "kif" + i + ".kif";
 			File file = new File(fileName);
 			if (file.exists() && file.length() > 10) {

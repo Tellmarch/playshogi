@@ -13,7 +13,7 @@ public class DbConnection {
 	private final String database = "playshogi";
 	private final String host = "localhost";
 	private final int port = 3306;
-	private final String parameters = "?useSSL=false&useUnicode=true&characterEncoding=UTF-8";
+    private final String parameters = "?useSSL=false&useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC";
 	private final String url = "jdbc:mysql://" + host + ":" + port + "/" + database + parameters;
 	private final String user = "playshogi";
 	private final String password = "playshogiDB1";
@@ -22,12 +22,6 @@ public class DbConnection {
 
 	public DbConnection() {
 		LOGGER.log(Level.INFO, "Initiating DbConnection");
-
-		try {
-			Class.forName("com.mysql.jdbc.Driver");
-		} catch (Exception e) {
-			LOGGER.log(Level.SEVERE, "Could not load JDBC driver", e);
-		}
 	}
 
 	public void start() {

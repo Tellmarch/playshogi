@@ -1,19 +1,5 @@
 package com.playshogi.library.database;
 
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import com.playshogi.library.database.models.PersistentGameSet;
 import com.playshogi.library.database.models.PersistentGameSetMove;
 import com.playshogi.library.database.models.PersistentGameSetPos;
@@ -28,9 +14,19 @@ import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.library.shogi.models.shogivariant.ShogiInitialPositionFactory;
 import com.playshogi.library.shogi.rules.ShogiRulesEngine;
 
+import java.io.IOException;
+import java.sql.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 public class GameSetRepository {
 
-	private static final Logger LOGGER = Logger.getLogger(UserRepository.class.getName());
+	private static final Logger LOGGER = Logger.getLogger(GameSetRepository.class.getName());
 
 	private static final String INSERT_GAMESET = "INSERT INTO `playshogi`.`ps_gameset` (`name`)" + " VALUES (?);";
 	private static final String SELECT_GAMESET = "SELECT * FROM `playshogi`.`ps_gameset` WHERE id = ?";

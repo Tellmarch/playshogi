@@ -1,16 +1,11 @@
 package com.playshogi.library.database;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Types;
+import com.playshogi.library.database.models.PersistentGame;
+
+import java.sql.*;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import com.playshogi.library.database.models.PersistentGame;
 
 public class GameRepository {
 
@@ -18,7 +13,7 @@ public class GameRepository {
 
 	private static final String INSERT_GAME = "INSERT INTO `playshogi`.`ps_game` "
 			+ "(`kifu_id`, `sente_id`, `gote_id`, `sente_name`, `gote_name`, `date_played`, `venue`, `description`)" + " VALUES ( ?, ?, ?, ?, ?, ?, ?, ?);";
-	private static final String SELECT_GAME = "SELECT * FROM ps_gamme WHERE id = ?";
+    private static final String SELECT_GAME = "SELECT * FROM ps_game WHERE id = ?";
 	private static final String DELETE_GAME = "DELETE FROM ps_game WHERE id = ?";
 
 	private final DbConnection dbConnection;
