@@ -1,0 +1,9 @@
+Compile:
+mvn war:exploded
+(First mvn install in libraries)
+
+Run in superdevmode:
+mvn gwt:devmode
+
+Build prod:
+mvn package
