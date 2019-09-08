@@ -22,13 +22,15 @@ public class GameRepository {
         this.dbConnection = dbConnection;
     }
 
-    public int saveGame(final int kifuId, final Integer senteId, final Integer goteId, final String senteName, final String goteName, final Date datePlayed,
+    public int saveGame(final int kifuId, final Integer senteId, final Integer goteId, final String senteName,
+                        final String goteName, final Date datePlayed,
                         final int venueId, final String description) {
 
         int key = -1;
 
         Connection connection = dbConnection.getConnection();
-        try (PreparedStatement preparedStatement = connection.prepareStatement(INSERT_GAME, Statement.RETURN_GENERATED_KEYS)) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(INSERT_GAME,
+                Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setInt(1, kifuId);
             setIntParameterOrNull(senteId, preparedStatement, 2);
             setIntParameterOrNull(goteId, preparedStatement, 3);
@@ -54,7 +56,8 @@ public class GameRepository {
         return key;
     }
 
-    private void setIntParameterOrNull(final Integer value, final PreparedStatement preparedStatement, final int parameterIndex) throws SQLException {
+    private void setIntParameterOrNull(final Integer value, final PreparedStatement preparedStatement,
+                                       final int parameterIndex) throws SQLException {
         if (value != null) {
             preparedStatement.setInt(parameterIndex, value);
         } else {
@@ -79,7 +82,8 @@ public class GameRepository {
                 String description = rs.getString("description");
                 Date datePlayed = rs.getDate("date_played");
 
-                return new PersistentGame(gameId, kifuId, senteId, goteId, senteName, goteName, datePlayed, venueId, description);
+                return new PersistentGame(gameId, kifuId, senteId, goteId, senteName, goteName, datePlayed, venueId,
+                        description);
             } else {
                 LOGGER.log(Level.INFO, "Did not find game: " + gameId);
                 return null;

@@ -32,23 +32,30 @@ public class GameSetRepository {
     private static final String SELECT_GAMESET = "SELECT * FROM `playshogi`.`ps_gameset` WHERE id = ?";
     private static final String DELETE_GAMESET = "DELETE FROM `playshogi`.`ps_gameset` WHERE id = ?";
 
-    private static final String INCREMENT_GAMESET_POSITION_SENTE_WIN = "INSERT INTO `playshogi`.`ps_gamesetpos` (`position_id`, `gameset_id`, `num_total`, `num_sente_win`, `num_gote_win`)"
+    private static final String INCREMENT_GAMESET_POSITION_SENTE_WIN = "INSERT INTO `playshogi`.`ps_gamesetpos` " +
+            "(`position_id`, `gameset_id`, `num_total`, `num_sente_win`, `num_gote_win`)"
             + " VALUES (?, ?, 1, 1, 0) ON DUPLICATE KEY UPDATE num_sente_win=num_sente_win+1,num_total=num_total+1;";
 
-    private static final String INCREMENT_GAMESET_POSITION_GOTE_WIN = "INSERT INTO `playshogi`.`ps_gamesetpos` (`position_id`, `gameset_id`, `num_total`, `num_sente_win`, `num_gote_win`)"
+    private static final String INCREMENT_GAMESET_POSITION_GOTE_WIN = "INSERT INTO `playshogi`.`ps_gamesetpos` " +
+            "(`position_id`, `gameset_id`, `num_total`, `num_sente_win`, `num_gote_win`)"
             + " VALUES (?, ?, 1, 0, 1) ON DUPLICATE KEY UPDATE num_gote_win=num_gote_win+1,num_total=num_total+1;";
 
-    private static final String INCREMENT_GAMESET_POSITION_OTHER = "INSERT INTO `playshogi`.`ps_gamesetpos` (`position_id`, `gameset_id`, `num_total`, `num_sente_win`, `num_gote_win`)"
+    private static final String INCREMENT_GAMESET_POSITION_OTHER = "INSERT INTO `playshogi`.`ps_gamesetpos` " +
+            "(`position_id`, `gameset_id`, `num_total`, `num_sente_win`, `num_gote_win`)"
             + " VALUES (?, ?, 1, 0, 0) ON DUPLICATE KEY UPDATE num_total=num_total+1;";
 
-    private static final String SELECT_GAMESET_POSITION = "SELECT * FROM `playshogi`.`ps_gamesetpos` WHERE position_id = ? AND gameset_id = ?";
+    private static final String SELECT_GAMESET_POSITION = "SELECT * FROM `playshogi`.`ps_gamesetpos` WHERE " +
+            "position_id = ? AND gameset_id = ?";
 
-    private static final String INCREMENT_GAMESET_MOVE = "INSERT INTO `playshogi`.`ps_gamesetmove` (`position_id`, `move`, `new_position_id`, `gameset_id`, `num_total`)"
+    private static final String INCREMENT_GAMESET_MOVE = "INSERT INTO `playshogi`.`ps_gamesetmove` (`position_id`, " +
+            "`move`, `new_position_id`, `gameset_id`, `num_total`)"
             + " VALUES (?, ?, ?, ?, 1) ON DUPLICATE KEY UPDATE num_total=num_total+1;";
 
     private static final String SELECT_GAMESET_MOVES = "SELECT * FROM ps_gamesetmove"
-            + " LEFT JOIN ps_gamesetpos ON ps_gamesetmove.new_position_id = ps_gamesetpos.position_id AND ps_gamesetmove.gameset_id = ps_gamesetpos.gameset_id"
-            + " WHERE ps_gamesetmove.position_id = ? AND ps_gamesetmove.gameset_id = ? ORDER BY ps_gamesetmove.num_total DESC";
+            + " LEFT JOIN ps_gamesetpos ON ps_gamesetmove.new_position_id = ps_gamesetpos.position_id AND " +
+            "ps_gamesetmove.gameset_id = ps_gamesetpos.gameset_id"
+            + " WHERE ps_gamesetmove.position_id = ? AND ps_gamesetmove.gameset_id = ? ORDER BY ps_gamesetmove" +
+            ".num_total DESC";
 
     private final DbConnection dbConnection;
 
@@ -61,7 +68,8 @@ public class GameSetRepository {
         int key = -1;
 
         Connection connection = dbConnection.getConnection();
-        try (PreparedStatement preparedStatement = connection.prepareStatement(INSERT_GAMESET, Statement.RETURN_GENERATED_KEYS)) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(INSERT_GAMESET,
+                Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setString(1, name);
             preparedStatement.executeUpdate();
 
@@ -115,20 +123,23 @@ public class GameSetRepository {
         }
     }
 
-    public void addGameToGameSet(final GameRecord gameRecord, final int gameSetId, final int venueId, final String gameName, final int authorId) {
+    public void addGameToGameSet(final GameRecord gameRecord, final int gameSetId, final int venueId,
+                                 final String gameName, final int authorId) {
         PositionRepository rep = new PositionRepository(dbConnection);
         KifuRepository kifuRep = new KifuRepository(dbConnection);
         GameRepository gameRep = new GameRepository(dbConnection);
 
         int kifuId = kifuRep.saveKifu(gameRecord, gameName, authorId, KifuType.GAME);
 
-        gameRep.saveGame(kifuId, null, null, gameRecord.getGameInformation().getSente(), gameRecord.getGameInformation().getGote(),
+        gameRep.saveGame(kifuId, null, null, gameRecord.getGameInformation().getSente(),
+                gameRecord.getGameInformation().getGote(),
                 parseDate(gameRecord.getGameInformation().getDate()), venueId, gameName);
 
         boolean senteWin = gameRecord.getGameResult() == GameResult.SENTE_WIN;
         boolean goteWin = gameRecord.getGameResult() == GameResult.GOTE_WIN;
 
-        GameNavigation<ShogiPosition> gameNavigation = new GameNavigation<>(new ShogiRulesEngine(), gameRecord.getGameTree(),
+        GameNavigation<ShogiPosition> gameNavigation = new GameNavigation<>(new ShogiRulesEngine(),
+                gameRecord.getGameTree(),
                 new ShogiInitialPositionFactory().createInitialPosition());
 
         int lastPositionId = rep.getOrSavePosition(gameNavigation.getPosition());
@@ -163,9 +174,11 @@ public class GameSetRepository {
         return null;
     }
 
-    public void incrementGameSetPosition(final int gameSetId, final int positionId, final boolean senteWin, final boolean goteWin) {
+    public void incrementGameSetPosition(final int gameSetId, final int positionId, final boolean senteWin,
+                                         final boolean goteWin) {
 
-        String statement = senteWin ? INCREMENT_GAMESET_POSITION_SENTE_WIN : (goteWin ? INCREMENT_GAMESET_POSITION_GOTE_WIN : INCREMENT_GAMESET_POSITION_OTHER);
+        String statement = senteWin ? INCREMENT_GAMESET_POSITION_SENTE_WIN : (goteWin ?
+                INCREMENT_GAMESET_POSITION_GOTE_WIN : INCREMENT_GAMESET_POSITION_OTHER);
 
         Connection connection = dbConnection.getConnection();
         try (PreparedStatement preparedStatement = connection.prepareStatement(statement)) {
@@ -186,7 +199,8 @@ public class GameSetRepository {
 
     }
 
-    public void incrementGameSetMove(final int gameSetId, final int positionId, final String moveUsf, final int newPositionId) {
+    public void incrementGameSetMove(final int gameSetId, final int positionId, final String moveUsf,
+                                     final int newPositionId) {
 
         Connection connection = dbConnection.getConnection();
         try (PreparedStatement preparedStatement = connection.prepareStatement(INCREMENT_GAMESET_MOVE)) {
@@ -225,7 +239,8 @@ public class GameSetRepository {
                 int senteWins = rs.getInt("num_sente_win");
                 int goteWins = rs.getInt("num_gote_win");
 
-                PersistentGameSetPos persistentGameSetPos = new PersistentGameSetPos(positionId, gameSetId, total, senteWins, goteWins);
+                PersistentGameSetPos persistentGameSetPos = new PersistentGameSetPos(positionId, gameSetId, total,
+                        senteWins, goteWins);
 
                 LOGGER.log(Level.INFO, "Found position stats: " + persistentGameSetPos);
 
@@ -268,7 +283,8 @@ public class GameSetRepository {
 
                 LOGGER.log(Level.INFO, "Found position move: " + total);
 
-                result.add(new PersistentGameSetMove(move, total, positionId, newPositionId, gameSetId, posTotal, senteWins, goteWins));
+                result.add(new PersistentGameSetMove(move, total, positionId, newPositionId, gameSetId, posTotal,
+                        senteWins, goteWins));
             }
 
             return result;

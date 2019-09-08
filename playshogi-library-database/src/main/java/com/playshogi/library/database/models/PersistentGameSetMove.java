@@ -11,7 +11,8 @@ public class PersistentGameSetMove {
     private final int senteWins;
     private final int goteWins;
 
-    public PersistentGameSetMove(final String moveUsf, final int moveOccurrences, final int positionId, final int newPositionId, final int gameSetId,
+    public PersistentGameSetMove(final String moveUsf, final int moveOccurrences, final int positionId,
+                                 final int newPositionId, final int gameSetId,
                                  final int positionOccurences, final int senteWins, final int goteWins) {
         this.moveUsf = moveUsf;
         this.moveOccurrences = moveOccurrences;
@@ -58,7 +59,8 @@ public class PersistentGameSetMove {
     @Override
     public String toString() {
         return "PersistentGameSetMove [moveUsf=" + moveUsf + ", moveOccurrences=" + moveOccurrences + ", positionId=" + positionId + ", newPositionId="
-                + newPositionId + ", gameSetId=" + gameSetId + ", positionOccurences=" + positionOccurences + ", senteWins=" + senteWins + ", goteWins="
+                + newPositionId + ", gameSetId=" + gameSetId + ", positionOccurences=" + positionOccurences + ", " +
+                "senteWins=" + senteWins + ", goteWins="
                 + goteWins + "]";
     }
 

@@ -8,7 +8,8 @@ import com.playshogi.library.shogi.models.position.ShogiPosition;
 
 public class KifMoveConverter {
 
-    public static ShogiMove fromKifString(final String str, final ShogiPosition shogiPosition, final ShogiMove previousMove, final boolean sente) {
+    public static ShogiMove fromKifString(final String str, final ShogiPosition shogiPosition,
+                                          final ShogiMove previousMove, final boolean sente) {
 
         if (str.startsWith("投了")) {
             return new SpecialMove(sente, SpecialMoveType.RESIGN);
@@ -76,7 +77,8 @@ public class KifMoveConverter {
             if (shogiPosition.getShogiBoardState().getPieceAt(toSquare) == null) {
                 return new NormalMove(piece, fromSquare, toSquare, promote);
             } else {
-                return new CaptureMove(piece, fromSquare, toSquare, promote, shogiPosition.getShogiBoardState().getPieceAt(toSquare));
+                return new CaptureMove(piece, fromSquare, toSquare, promote,
+                        shogiPosition.getShogiBoardState().getPieceAt(toSquare));
             }
 
         } else {

@@ -33,7 +33,8 @@ public class OpeningsActivity extends MyAbstractActivity {
 
     private final PlaceController placeController;
 
-    public OpeningsActivity(final OpeningsPlace place, final OpeningsView freeBoardView, final PlaceController placeController) {
+    public OpeningsActivity(final OpeningsPlace place, final OpeningsView freeBoardView,
+                            final PlaceController placeController) {
         this.openingsView = freeBoardView;
         this.placeController = placeController;
         this.sfen = place.getSfen();

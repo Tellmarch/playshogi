@@ -17,11 +17,14 @@ public class KifuRepository {
 
     private static final Logger LOGGER = Logger.getLogger(UserRepository.class.getName());
 
-    private static final String INSERT_KIFU = "INSERT INTO `playshogi`.`ps_kifu` (`name`, `author_id`, `usf`, `type_id`)" + " VALUES (?, ?, ?,  ?);";
+    private static final String INSERT_KIFU = "INSERT INTO `playshogi`.`ps_kifu` (`name`, `author_id`, `usf`, " +
+            "`type_id`)" + " VALUES (?, ?, ?,  ?);";
 
-    private static final String INSERT_KIFU_POSITION = "INSERT INTO `playshogi`.`ps_kifupos` (`kifu_id`, `position_id`)" + " VALUES (?, ?);";
+    private static final String INSERT_KIFU_POSITION = "INSERT INTO `playshogi`.`ps_kifupos` (`kifu_id`, " +
+            "`position_id`)" + " VALUES (?, ?);";
 
-    private static final String SELECT_KIFU_POSITION = "SELECT * FROM ps_kifupos LEFT JOIN ps_game ON ps_kifupos.kifu_id = ps_game.kifu_id WHERE position_id = ? LIMIT 10";
+    private static final String SELECT_KIFU_POSITION = "SELECT * FROM ps_kifupos LEFT JOIN ps_game ON ps_kifupos" +
+            ".kifu_id = ps_game.kifu_id WHERE position_id = ? LIMIT 10";
 
     private static final String SELECT_KIFU = "SELECT * FROM ps_kifu WHERE id = ?";
     private static final String DELETE_KIFU = "DELETE FROM ps_kifu WHERE id = ?";
@@ -37,7 +40,8 @@ public class KifuRepository {
         int key = -1;
 
         Connection connection = dbConnection.getConnection();
-        try (PreparedStatement preparedStatement = connection.prepareStatement(INSERT_KIFU, Statement.RETURN_GENERATED_KEYS)) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(INSERT_KIFU,
+                Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setString(1, name);
             preparedStatement.setInt(2, authorId);
             preparedStatement.setString(3, UsfFormat.INSTANCE.write(gameRecord));
@@ -135,7 +139,8 @@ public class KifuRepository {
                 String description = rs.getString("ps_game.description");
                 Date datePlayed = rs.getDate("ps_game.date_played");
 
-                result.add(new PersistentGame(gameId, kifuId, senteId, goteId, senteName, goteName, datePlayed, venueId, description));
+                result.add(new PersistentGame(gameId, kifuId, senteId, goteId, senteName, goteName, datePlayed,
+                        venueId, description));
 
             }
 

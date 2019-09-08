@@ -37,7 +37,8 @@ public class ViewKifuActivity extends MyAbstractActivity {
 
     private final String kifuId;
 
-    public ViewKifuActivity(final ViewKifuPlace place, final ViewKifuView viewKifuView, final SessionInformation sessionInformation) {
+    public ViewKifuActivity(final ViewKifuPlace place, final ViewKifuView viewKifuView,
+                            final SessionInformation sessionInformation) {
         this.viewKifuView = viewKifuView;
         this.sessionInformation = sessionInformation;
         kifuId = place.getKifuId();

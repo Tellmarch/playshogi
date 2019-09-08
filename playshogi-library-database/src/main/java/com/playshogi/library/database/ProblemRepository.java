@@ -21,12 +21,14 @@ public class ProblemRepository {
         this.dbConnection = dbConnection;
     }
 
-    public int saveProblem(final int kifuId, final Integer numMoves, final Integer elo, final PersistentProblem.ProblemType pbType) {
+    public int saveProblem(final int kifuId, final Integer numMoves, final Integer elo,
+                           final PersistentProblem.ProblemType pbType) {
 
         int key = -1;
 
         Connection connection = dbConnection.getConnection();
-        try (PreparedStatement preparedStatement = connection.prepareStatement(INSERT_PROBLEM, Statement.RETURN_GENERATED_KEYS)) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(INSERT_PROBLEM,
+                Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setInt(1, kifuId);
             setIntParameterOrNull(numMoves, preparedStatement, 2);
             setIntParameterOrNull(elo, preparedStatement, 3);
@@ -48,7 +50,8 @@ public class ProblemRepository {
         return key;
     }
 
-    private void setIntParameterOrNull(final Integer value, final PreparedStatement preparedStatement, final int parameterIndex) throws SQLException {
+    private void setIntParameterOrNull(final Integer value, final PreparedStatement preparedStatement,
+                                       final int parameterIndex) throws SQLException {
         if (value != null) {
             preparedStatement.setInt(parameterIndex, value);
         } else {
@@ -69,7 +72,8 @@ public class ProblemRepository {
                 int elo = rs.getInt("elo");
                 int pbType = rs.getInt("pb_type");
 
-                return new PersistentProblem(problemId, kifuId, numMoves, elo, PersistentProblem.ProblemType.fromDbInt(pbType));
+                return new PersistentProblem(problemId, kifuId, numMoves, elo,
+                        PersistentProblem.ProblemType.fromDbInt(pbType));
             } else {
                 LOGGER.log(Level.INFO, "Did not find problem: " + problemId);
                 return null;

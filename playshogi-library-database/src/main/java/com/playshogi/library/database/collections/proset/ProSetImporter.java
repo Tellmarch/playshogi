@@ -56,7 +56,8 @@ public class ProSetImporter {
 
     }
 
-    private static void processKifu(final String fileName, final GameSetRepository repository, final int setId, final int kifuId, final int venueId)
+    private static void processKifu(final String fileName, final GameSetRepository repository, final int setId,
+                                    final int kifuId, final int venueId)
             throws IOException {
         GameRecord gameRecord = GameRecordFileReader.read(KifFormat.INSTANCE, fileName, "windows-932");
         repository.addGameToGameSet(gameRecord, setId, venueId, "Pro Classic Games #" + kifuId, 1);

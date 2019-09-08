@@ -32,7 +32,8 @@ public class MyGamesView extends Composite {
         FlowPanel flowPanel = new FlowPanel();
 
         flowPanel.add(new HTML(SafeHtmlUtils.fromSafeConstant(
-                "On this page you can find all of your game records (kifu) saved on the server, or create/import new ones.<br>")));
+                "On this page you can find all of your game records (kifu) saved on the server, or create/import new " +
+                        "ones.<br>")));
 
         flowPanel.add(new HTML(SafeHtmlUtils.fromSafeConstant("<br>")));
 

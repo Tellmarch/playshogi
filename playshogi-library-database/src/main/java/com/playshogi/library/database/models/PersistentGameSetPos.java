@@ -8,7 +8,8 @@ public class PersistentGameSetPos {
     private final int senteWins;
     private final int goteWins;
 
-    public PersistentGameSetPos(final int positionId, final int gameSetId, final int total, final int senteWins, final int goteWins) {
+    public PersistentGameSetPos(final int positionId, final int gameSetId, final int total, final int senteWins,
+                                final int goteWins) {
         this.positionId = positionId;
         this.gameSetId = gameSetId;
         this.total = total;
@@ -38,7 +39,8 @@ public class PersistentGameSetPos {
 
     @Override
     public String toString() {
-        return "PersistentGameSetPos [positionId=" + positionId + ", gameSetId=" + gameSetId + ", total=" + total + ", senteWins=" + senteWins + ", goteWins="
+        return "PersistentGameSetPos [positionId=" + positionId + ", gameSetId=" + gameSetId + ", total=" + total +
+                ", senteWins=" + senteWins + ", goteWins="
                 + goteWins + "]";
     }
 

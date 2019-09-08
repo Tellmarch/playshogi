@@ -116,7 +116,8 @@ public enum KifFormat implements GameRecordFormat {
                     for (int column = 9; column >= 1; column--) {
                         PieceParsingResult pieceParsingResult = KifUtils.readPiece(l, pos, true);
                         pos = pieceParsingResult.nextPosition;
-                        startingPosition.getShogiBoardState().setPieceAt(Square.of(column, row), pieceParsingResult.piece);
+                        startingPosition.getShogiBoardState().setPieceAt(Square.of(column, row),
+                                pieceParsingResult.piece);
                     }
                 }
                 l = lineReader.nextLine();
@@ -136,7 +137,8 @@ public enum KifFormat implements GameRecordFormat {
             startingPosition = new ShogiInitialPositionFactory().createInitialPosition();
         }
         GameTree gameTree = new GameTree(startingPosition);
-        GameNavigation<ShogiPosition> gameNavigation = new GameNavigation<ShogiPosition>(new ShogiRulesEngine(), gameTree, startingPosition);
+        GameNavigation<ShogiPosition> gameNavigation = new GameNavigation<ShogiPosition>(new ShogiRulesEngine(),
+                gameTree, startingPosition);
 
         GameResult gameResult = GameResult.UNKNOWN;
 

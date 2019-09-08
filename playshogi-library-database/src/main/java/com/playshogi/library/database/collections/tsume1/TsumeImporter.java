@@ -56,10 +56,12 @@ public class TsumeImporter {
 
     }
 
-    private static void processTsume(final String fileName, final ProblemSetRepository repository, final int setId, final int kifuId)
+    private static void processTsume(final String fileName, final ProblemSetRepository repository, final int setId,
+                                     final int kifuId)
             throws IOException {
         GameRecord gameRecord = GameRecordFileReader.read(KifFormat.INSTANCE, fileName);
-        repository.addProblemToProblemSet(gameRecord, setId, "Tsume #" + kifuId, 1, 1000, PersistentProblem.ProblemType.TSUME);
+        repository.addProblemToProblemSet(gameRecord, setId, "Tsume #" + kifuId, 1, 1000,
+                PersistentProblem.ProblemType.TSUME);
         // System.out.println(UsfFormat.INSTANCE.write(gameRecord));
     }
 }

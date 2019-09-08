@@ -107,7 +107,8 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
         for (int i = 0; i < details.length; i++) {
             PersistentGameSetMove move = moveStats.get(i);
             String newSfen = positionRepository.getPositionSfenById(move.getNewPositionId());
-            details[i] = new PositionMoveDetails(move.getMoveUsf(), move.getMoveOccurrences(), move.getSenteWins(), move.getGoteWins(), newSfen);
+            details[i] = new PositionMoveDetails(move.getMoveUsf(), move.getMoveOccurrences(), move.getSenteWins(),
+                    move.getGoteWins(), newSfen);
         }
 
         List<PersistentGame> gamesForPosition = kifuRepository.getGamesForPosition(positionId);
@@ -125,6 +126,7 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
             }
         }
 
-        return new PositionDetails(stats.getTotal(), stats.getSenteWins(), stats.getGoteWins(), details, kifuIds, kifuDescs);
+        return new PositionDetails(stats.getTotal(), stats.getSenteWins(), stats.getGoteWins(), details, kifuIds,
+                kifuDescs);
     }
 }

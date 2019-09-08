@@ -21,13 +21,15 @@ public class ProblemSetRepository {
 
     private final DbConnection dbConnection;
 
-    private static final String INSERT_PROBLEM_TAG = "INSERT INTO `playshogi`.`ps_problemtag` (`problem_id`, `tag_id`) VALUES (?, ?);";
+    private static final String INSERT_PROBLEM_TAG = "INSERT INTO `playshogi`.`ps_problemtag` (`problem_id`, " +
+            "`tag_id`) VALUES (?, ?);";
 
     public ProblemSetRepository(final DbConnection dbConnection) {
         this.dbConnection = dbConnection;
     }
 
-    public void addProblemToProblemSet(final GameRecord gameRecord, final int problemSetId, final String problemName, final int authorId, final int elo, final PersistentProblem.ProblemType pbType) {
+    public void addProblemToProblemSet(final GameRecord gameRecord, final int problemSetId, final String problemName,
+                                       final int authorId, final int elo, final PersistentProblem.ProblemType pbType) {
         PositionRepository rep = new PositionRepository(dbConnection);
         KifuRepository kifuRep = new KifuRepository(dbConnection);
         ProblemRepository problemRep = new ProblemRepository(dbConnection);
@@ -35,7 +37,8 @@ public class ProblemSetRepository {
         int kifuId = kifuRep.saveKifu(gameRecord, problemName, authorId, PersistentKifu.KifuType.GAME);
         int problemId = problemRep.saveProblem(kifuId, 0, elo, pbType);
 
-        GameNavigation<ShogiPosition> gameNavigation = new GameNavigation<>(new ShogiRulesEngine(), gameRecord.getGameTree(),
+        GameNavigation<ShogiPosition> gameNavigation = new GameNavigation<>(new ShogiRulesEngine(),
+                gameRecord.getGameTree(),
                 new ShogiInitialPositionFactory().createInitialPosition());
 
         int lastPositionId = rep.getOrSavePosition(gameNavigation.getPosition());

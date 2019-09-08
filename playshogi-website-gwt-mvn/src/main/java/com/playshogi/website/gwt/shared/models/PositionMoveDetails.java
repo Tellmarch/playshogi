@@ -14,7 +14,8 @@ public class PositionMoveDetails implements Serializable {
     public PositionMoveDetails() {
     }
 
-    public PositionMoveDetails(final String move, final int total, final int sente_wins, final int gote_wins, final String newSfen) {
+    public PositionMoveDetails(final String move, final int total, final int sente_wins, final int gote_wins,
+                               final String newSfen) {
         this.move = move;
         this.total = total;
         this.sente_wins = sente_wins;
@@ -60,7 +61,8 @@ public class PositionMoveDetails implements Serializable {
 
     @Override
     public String toString() {
-        return "PositionMoveDetails [move=" + move + ", total=" + total + ", sente_wins=" + sente_wins + ", gote_wins=" + gote_wins + "]";
+        return "PositionMoveDetails [move=" + move + ", total=" + total + ", sente_wins=" + sente_wins + ", gote_wins" +
+                "=" + gote_wins + "]";
     }
 
 }

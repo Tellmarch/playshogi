@@ -11,7 +11,8 @@ import com.playshogi.library.shogi.models.shogivariant.ShogiInitialPositionFacto
  */
 public class OpeningsPlace extends Place {
 
-    private static final String DEFAULT_SFEN = SfenConverter.toSFEN(new ShogiInitialPositionFactory().createInitialPosition());
+    private static final String DEFAULT_SFEN =
+            SfenConverter.toSFEN(new ShogiInitialPositionFactory().createInitialPosition());
 
     private final String sfen;
 

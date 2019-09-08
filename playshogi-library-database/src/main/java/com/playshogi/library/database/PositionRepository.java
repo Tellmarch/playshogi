@@ -44,7 +44,8 @@ public class PositionRepository {
         int key = -1;
 
         Connection connection = dbConnection.getConnection();
-        try (PreparedStatement preparedStatement = connection.prepareStatement(INSERT_POSITION, Statement.RETURN_GENERATED_KEYS)) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(INSERT_POSITION,
+                Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setString(1, sfen);
             preparedStatement.executeUpdate();
 

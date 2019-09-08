@@ -46,7 +46,8 @@ public class PersistentKifu {
     private final KifuType type;
     private final int authorId;
 
-    public PersistentKifu(final int id, final String name, final GameRecord kifu, final Date creationDate, final Date updateDate, final KifuType type,
+    public PersistentKifu(final int id, final String name, final GameRecord kifu, final Date creationDate,
+                          final Date updateDate, final KifuType type,
                           final int authorId) {
         this.id = id;
         this.name = name;

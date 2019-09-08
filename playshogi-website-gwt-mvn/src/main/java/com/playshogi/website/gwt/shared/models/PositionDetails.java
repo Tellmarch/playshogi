@@ -17,7 +17,8 @@ public class PositionDetails implements Serializable {
     public PositionDetails() {
     }
 
-    public PositionDetails(final int total, final int sente_wins, final int gote_wins, final PositionMoveDetails[] positionMoveDetails, final String[] kifuIds,
+    public PositionDetails(final int total, final int sente_wins, final int gote_wins,
+                           final PositionMoveDetails[] positionMoveDetails, final String[] kifuIds,
                            final String[] kifuDesc) {
         this.total = total;
         this.sente_wins = sente_wins;
@@ -69,7 +70,8 @@ public class PositionDetails implements Serializable {
 
     @Override
     public String toString() {
-        return "PositionDetails [total=" + total + ", sente_wins=" + sente_wins + ", gote_wins=" + gote_wins + ", positionMoveDetails="
+        return "PositionDetails [total=" + total + ", sente_wins=" + sente_wins + ", gote_wins=" + gote_wins + ", " +
+                "positionMoveDetails="
                 + Arrays.toString(positionMoveDetails) + ", kifuIds=" + Arrays.toString(kifuIds) + ", kifuDesc=" + Arrays.toString(kifuDesc) + "]";
     }
 

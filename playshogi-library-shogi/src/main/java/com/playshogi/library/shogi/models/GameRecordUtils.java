@@ -11,7 +11,8 @@ import java.util.Iterator;
 public class GameRecordUtils {
 
     public static void print(final GameRecord gameRecord) {
-        GameNavigation<ShogiPosition> gameNavigation = new GameNavigation<>(new ShogiRulesEngine(), gameRecord.getGameTree(),
+        GameNavigation<ShogiPosition> gameNavigation = new GameNavigation<>(new ShogiRulesEngine(),
+                gameRecord.getGameTree(),
                 new ShogiInitialPositionFactory().createInitialPosition());
 
         System.out.println(gameNavigation.getPosition().toString());
@@ -29,7 +30,8 @@ public class GameRecordUtils {
             public Iterator<ShogiPosition> iterator() {
                 return new Iterator<ShogiPosition>() {
 
-                    GameNavigation<ShogiPosition> gameNavigation = new GameNavigation<>(new ShogiRulesEngine(), gameRecord.getGameTree(),
+                    GameNavigation<ShogiPosition> gameNavigation = new GameNavigation<>(new ShogiRulesEngine(),
+                            gameRecord.getGameTree(),
                             new ShogiInitialPositionFactory().createInitialPosition());
 
                     boolean first = true;

@@ -34,7 +34,8 @@ public class NavigationBar extends Composite {
     private final FlowPanel flowPanel;
 
     @Inject
-    public NavigationBar(final AppPlaceHistoryMapper historyMapper, final SessionInformation sessionInformation, final EventBus eventBus) {
+    public NavigationBar(final AppPlaceHistoryMapper historyMapper, final SessionInformation sessionInformation,
+                         final EventBus eventBus) {
         GWT.log("Creating navigation bar");
 
         this.historyMapper = historyMapper;

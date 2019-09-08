@@ -14,7 +14,8 @@ public class PersistentGame {
     private final int venueId;
     private final String description;
 
-    public PersistentGame(final int id, final int kifuId, final Integer senteId, final Integer goteId, final String senteName, final String goteName,
+    public PersistentGame(final int id, final int kifuId, final Integer senteId, final Integer goteId,
+                          final String senteName, final String goteName,
                           final Date datePlayed, final int venueId, final String description) {
         this.id = id;
         this.kifuId = kifuId;
@@ -65,7 +66,8 @@ public class PersistentGame {
 
     @Override
     public String toString() {
-        return "PersistentGame [id=" + id + ", kifuId=" + kifuId + ", senteId=" + senteId + ", goteId=" + goteId + ", senteName=" + senteName + ", goteName="
+        return "PersistentGame [id=" + id + ", kifuId=" + kifuId + ", senteId=" + senteId + ", goteId=" + goteId + "," +
+                " senteName=" + senteName + ", goteName="
                 + goteName + ", datePlayed=" + datePlayed + ", venueId=" + venueId + ", description=" + description + "]";
     }
 
