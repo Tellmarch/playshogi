@@ -13,6 +13,7 @@ import com.playshogi.website.gwt.client.events.GameTreeChangedEvent;
 import com.playshogi.website.gwt.client.events.UserSkippedProblemEvent;
 import com.playshogi.website.gwt.client.place.TsumePlace;
 import com.playshogi.website.gwt.client.ui.TsumeView;
+import com.playshogi.website.gwt.shared.models.ProblemDetails;
 import com.playshogi.website.gwt.shared.services.ProblemsService;
 import com.playshogi.website.gwt.shared.services.ProblemsServiceAsync;
 
@@ -66,22 +67,26 @@ public class TsumeActivity extends MyAbstractActivity {
     }
 
     private void requestTsume(final String tsumeId) {
-        problemsService.getRandomProblemUsf(getProblemRequestCallback(tsumeId));
+        problemsService.getRandomProblem(getProblemRequestCallback(tsumeId));
         //problemsService.getProblemUsf(tsumeId, getProblemRequestCallback(tsumeId));
     }
 
-    private AsyncCallback<String> getProblemRequestCallback(final String tsumeId) {
-        return new AsyncCallback<String>() {
+    private AsyncCallback<ProblemDetails> getProblemRequestCallback(final String tsumeId) {
+        return new AsyncCallback<ProblemDetails>() {
 
             @Override
-            public void onSuccess(final String resultUsf) {
-                if (resultUsf == null) {
+            public void onSuccess(final ProblemDetails result) {
+                if (result == null) {
                     GWT.log("Got null usf from server for problem request: " + tsumeId);
                 } else {
+                    GWT.log("Got problem details problem request: " + tsumeId + " : " + result);
+                    String resultUsf = result.getUsf();
                     GWT.log("Got usf from server for problem request: " + tsumeId + " : " + resultUsf);
                     GameRecord gameRecord = UsfFormat.INSTANCE.read(resultUsf);
                     GWT.log("Updating game navigator...");
-
+                    //TODO: how to update URL?
+                    //placeController.goTo(new TsumePlace(result.getId()));
+                    //History.newItem(new TsumePlace.Tokenizer().getToken(new TsumePlace(result.getId())), false);
                     eventBus.fireEvent(new GameTreeChangedEvent(gameRecord.getGameTree()));
                 }
             }

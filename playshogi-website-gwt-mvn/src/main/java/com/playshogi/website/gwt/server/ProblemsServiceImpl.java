@@ -10,6 +10,7 @@ import com.playshogi.library.models.record.GameRecord;
 import com.playshogi.library.shogi.files.GameRecordFileReader;
 import com.playshogi.library.shogi.models.formats.kif.KifFormat;
 import com.playshogi.library.shogi.models.formats.usf.UsfFormat;
+import com.playshogi.website.gwt.shared.models.ProblemDetails;
 import com.playshogi.website.gwt.shared.services.ProblemsService;
 
 import java.io.IOException;
@@ -48,7 +49,7 @@ public class ProblemsServiceImpl extends RemoteServiceServlet implements Problem
     }
 
     @Override
-    public String getRandomProblemUsf() {
+    public ProblemDetails getRandomProblem() {
         LOGGER.log(Level.INFO, "getting random problem: 101");
 
         PersistentProblem persistentProblem = problemRepository.getProblemById(101);
@@ -68,7 +69,20 @@ public class ProblemsServiceImpl extends RemoteServiceServlet implements Problem
         String usf = UsfFormat.INSTANCE.write(persistentKifu.getKifu());
         LOGGER.log(Level.INFO, "Sending problem:\n" + usf);
 
-        return usf;
+        ProblemDetails problemDetails = getProblemDetails(persistentProblem, usf);
+
+        return problemDetails;
+    }
+
+    private ProblemDetails getProblemDetails(PersistentProblem persistentProblem, String usf) {
+        ProblemDetails problemDetails = new ProblemDetails();
+        problemDetails.setId("" + persistentProblem.getId());
+        problemDetails.setKifuId(persistentProblem.getKifuId());
+        problemDetails.setNumMoves(persistentProblem.getNumMoves());
+        problemDetails.setElo(persistentProblem.getElo());
+        problemDetails.setPbType(persistentProblem.getPbType().getDescription());
+        problemDetails.setUsf(usf);
+        return problemDetails;
     }
 
 
