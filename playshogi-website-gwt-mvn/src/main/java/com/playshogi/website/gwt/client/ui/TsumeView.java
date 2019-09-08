@@ -8,14 +8,19 @@ import com.google.web.bindery.event.shared.EventBus;
 import com.playshogi.website.gwt.client.widget.board.ShogiBoard;
 import com.playshogi.website.gwt.client.widget.gamenavigator.GameNavigator;
 import com.playshogi.website.gwt.client.widget.problems.ProblemFeedbackPanel;
+import com.playshogi.website.gwt.client.widget.problems.ProblemOptionsPanel;
 
 @Singleton
 public class TsumeView extends Composite {
 
     private static final String TSUME = "tsume";
+
+    private static final int[] MOVES = {1, 3, 5, 7, 9, 11, 13, 15};
+
     private final ShogiBoard shogiBoard;
     private final GameNavigator gameNavigator;
     private final ProblemFeedbackPanel problemFeedbackPanel;
+    private final ProblemOptionsPanel problemOptionsPanel;
 
     @Inject
     public TsumeView() {
@@ -23,8 +28,10 @@ public class TsumeView extends Composite {
         shogiBoard = new ShogiBoard(TSUME);
         gameNavigator = new GameNavigator(TSUME);
         problemFeedbackPanel = new ProblemFeedbackPanel(gameNavigator);
+        problemOptionsPanel = new ProblemOptionsPanel(MOVES);
 
         shogiBoard.setUpperRightPanel(problemFeedbackPanel);
+        shogiBoard.setLowerLeftPanel(problemOptionsPanel);
 
         shogiBoard.getBoardConfiguration().setShowGoteKomadai(false);
         shogiBoard.getBoardConfiguration().setPlayGoteMoves(false);
@@ -39,6 +46,7 @@ public class TsumeView extends Composite {
         shogiBoard.activate(eventBus);
         gameNavigator.activate(eventBus);
         problemFeedbackPanel.activate(eventBus);
+        problemOptionsPanel.activate(eventBus);
     }
 
 }

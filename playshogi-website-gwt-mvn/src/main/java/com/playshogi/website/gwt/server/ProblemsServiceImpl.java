@@ -59,17 +59,7 @@ public class ProblemsServiceImpl extends RemoteServiceServlet implements Problem
             return null;
         }
 
-        PersistentKifu persistentKifu = kifuRepository.getKifuById(persistentProblem.getKifuId());
-
-        if (persistentKifu == null) {
-            LOGGER.log(Level.INFO, "Could not load the problem kifu for id " + persistentProblem.getKifuId());
-            return null;
-        }
-
-        String usf = UsfFormat.INSTANCE.write(persistentKifu.getKifu());
-        LOGGER.log(Level.INFO, "Sending problem:\n" + usf);
-
-        return getProblemDetails(persistentProblem, usf);
+        return queryProblemDetails(persistentProblem);
     }
 
 
@@ -84,6 +74,24 @@ public class ProblemsServiceImpl extends RemoteServiceServlet implements Problem
             return null;
         }
 
+        return queryProblemDetails(persistentProblem);
+    }
+
+    @Override
+    public ProblemDetails getRandomProblem(int numMoves) {
+        LOGGER.log(Level.INFO, "getting random problem of " + numMoves + " moves");
+
+        PersistentProblem persistentProblem = problemRepository.getRandomProblem(numMoves);
+
+        if (persistentProblem == null) {
+            LOGGER.log(Level.INFO, "Could not load a random problem of " + numMoves + " moves");
+            return null;
+        }
+
+        return queryProblemDetails(persistentProblem);
+    }
+
+    private ProblemDetails queryProblemDetails(PersistentProblem persistentProblem) {
         PersistentKifu persistentKifu = kifuRepository.getKifuById(persistentProblem.getKifuId());
 
         if (persistentKifu == null) {

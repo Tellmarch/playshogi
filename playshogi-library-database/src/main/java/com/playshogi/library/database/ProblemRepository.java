@@ -16,6 +16,10 @@ public class ProblemRepository {
     //TODO: improve performance if needed
     private static final String SELECT_RANDOM_PROBLEM = "SELECT * FROM `playshogi`.`ps_problem` ORDER BY RAND() limit" +
             " 1";
+    private static final String SELECT_RANDOM_PROBLEM_BY_NUM_MOVES = "SELECT * FROM `playshogi`.`ps_problem` WHERE " +
+            "num_moves = ? " +
+            "ORDER BY RAND() limit" +
+            " 1";
     private static final String DELETE_PROBLEM = "DELETE FROM `playshogi`.`ps_problem` WHERE id = ?";
 
     private final DbConnection dbConnection;
@@ -79,6 +83,33 @@ public class ProblemRepository {
                         PersistentProblem.ProblemType.fromDbInt(pbType));
             } else {
                 LOGGER.log(Level.INFO, "Did not find a random problem");
+                return null;
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error looking up the problem in db", e);
+            return null;
+        }
+    }
+
+    public PersistentProblem getRandomProblem(int requestedNumMoves) {
+        Connection connection = dbConnection.getConnection();
+        try (PreparedStatement preparedStatement = connection.prepareStatement(SELECT_RANDOM_PROBLEM_BY_NUM_MOVES)) {
+            preparedStatement.setInt(1, requestedNumMoves);
+            ResultSet rs = preparedStatement.executeQuery();
+            if (rs.next()) {
+                LOGGER.log(Level.INFO, "Found problem with id: " + rs.getInt("id"));
+
+                int id = rs.getInt("id");
+                int kifuId = rs.getInt("kifu_id");
+                int numMoves = rs.getInt("num_moves");
+                int elo = rs.getInt("elo");
+                int pbType = rs.getInt("pb_type");
+
+                return new PersistentProblem(id, kifuId, numMoves, elo,
+                        PersistentProblem.ProblemType.fromDbInt(pbType));
+            } else {
+                LOGGER.log(Level.INFO,
+                        "Did not find a random problem with the requested numMoves: " + requestedNumMoves);
                 return null;
             }
         } catch (SQLException e) {

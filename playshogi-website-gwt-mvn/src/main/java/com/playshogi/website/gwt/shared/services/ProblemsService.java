@@ -13,4 +13,6 @@ public interface ProblemsService extends RemoteService {
 
     ProblemDetails getRandomProblem();
 
+    ProblemDetails getRandomProblem(int numMoves);
+
 }

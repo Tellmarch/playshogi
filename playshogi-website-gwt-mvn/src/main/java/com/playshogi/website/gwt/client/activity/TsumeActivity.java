@@ -11,6 +11,7 @@ import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.library.models.record.GameRecord;
 import com.playshogi.library.shogi.models.formats.usf.UsfFormat;
 import com.playshogi.website.gwt.client.events.GameTreeChangedEvent;
+import com.playshogi.website.gwt.client.events.ProblemNumMovesSelectedEvent;
 import com.playshogi.website.gwt.client.events.UserSkippedProblemEvent;
 import com.playshogi.website.gwt.client.place.TsumePlace;
 import com.playshogi.website.gwt.client.ui.TsumeView;
@@ -28,6 +29,7 @@ public class TsumeActivity extends MyAbstractActivity {
     private final ProblemsServiceAsync problemsService = GWT.create(ProblemsService.class);
 
     private final String tsumeId;
+    private int numMoves = 0;
     private final PlaceController placeController;
     private final TsumeView tsumeView;
 
@@ -60,9 +62,19 @@ public class TsumeActivity extends MyAbstractActivity {
         setTsumeId(null);
     }
 
+    @EventHandler
+    void onProblemNumMovesSelectedEvent(final ProblemNumMovesSelectedEvent event) {
+        GWT.log("Setting number of moves: " + event.getNumMoves());
+        numMoves = event.getNumMoves();
+    }
+
     public void setTsumeId(final String tsumeId) {
         if (tsumeId == null || tsumeId.equalsIgnoreCase("null")) {
-            requestRandomTsume();
+            if (numMoves == 0) {
+                requestRandomTsume();
+            } else {
+                requestRandomTsume(numMoves);
+            }
         } else {
             requestTsume(tsumeId);
         }
@@ -71,6 +83,11 @@ public class TsumeActivity extends MyAbstractActivity {
     private void requestRandomTsume() {
         problemsService.getRandomProblem(getProblemRequestCallback(null));
     }
+
+    private void requestRandomTsume(int numMoves) {
+        problemsService.getRandomProblem(numMoves, getProblemRequestCallback(null));
+    }
+
 
     private void requestTsume(final String tsumeId) {
         problemsService.getProblem(tsumeId, getProblemRequestCallback(tsumeId));

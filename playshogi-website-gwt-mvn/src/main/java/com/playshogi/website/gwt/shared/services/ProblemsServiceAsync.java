@@ -11,4 +11,6 @@ public interface ProblemsServiceAsync {
 
     void getRandomProblem(AsyncCallback<ProblemDetails> callback);
 
+    void getRandomProblem(int numMoves, AsyncCallback<ProblemDetails> callback);
+
 }
