@@ -28,7 +28,7 @@ public class TsumeImporter {
 
         Set<String> errors = new HashSet<>();
 
-        for (int i = 51; i < 75; i++) {
+        for (int i = 71; i < 72; i++) {
             String fileName = PATH + "kif" + (1000 + i) + ".kif";
             File file = new File(fileName);
             if (file.exists() && file.length() > 10) {

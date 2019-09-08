@@ -33,6 +33,10 @@ public class GameNavigation<P extends Position<P>> {
         return currentNode;
     }
 
+    public Move getCurrentMove() {
+        return currentNode.getMove();
+    }
+
     public boolean canMoveBack() {
         return currentNode.getParent() != null;
     }

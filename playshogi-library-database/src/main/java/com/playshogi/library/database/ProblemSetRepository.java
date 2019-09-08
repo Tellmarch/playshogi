@@ -2,13 +2,9 @@ package com.playshogi.library.database;
 
 import com.playshogi.library.database.models.PersistentKifu;
 import com.playshogi.library.database.models.PersistentProblem;
-import com.playshogi.library.models.Move;
-import com.playshogi.library.models.Square;
 import com.playshogi.library.models.record.GameNavigation;
 import com.playshogi.library.models.record.GameRecord;
-import com.playshogi.library.shogi.models.Piece;
-import com.playshogi.library.shogi.models.PieceType;
-import com.playshogi.library.shogi.models.moves.DropMove;
+import com.playshogi.library.shogi.models.features.FeatureTag;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.library.shogi.models.shogivariant.ShogiInitialPositionFactory;
 import com.playshogi.library.shogi.rules.ShogiRulesEngine;
@@ -46,28 +42,22 @@ public class ProblemSetRepository {
 
         kifuRep.saveKifuPosition(kifuId, lastPositionId);
 
-        Move lastMove = null;
         while (gameNavigation.canMoveForward()) {
-            lastMove = gameNavigation.getMainVariationMove();
             gameNavigation.moveForward();
             int positionId = rep.getOrSavePosition(gameNavigation.getPosition());
             kifuRep.saveKifuPosition(kifuId, positionId);
         }
 
-        if (lastMove != null) {
-            if (lastMove instanceof DropMove) {
-                DropMove dropMove = (DropMove) lastMove;
-                if (dropMove.getPieceType() == PieceType.GOLD) {
-                    ShogiPosition position = gameNavigation.getPosition();
-                    Square dropSquare = dropMove.getToSquare();
-                    if (dropSquare.getRow() > 1 && position.getPieceAt(Square.of(dropSquare.getColumn(), dropSquare.getRow() - 1)) == Piece.GOTE_KING) {
-                        System.out.println("GOLD DROP AT THE HEAD!!!!!");
-                        insertProblemTag(problemId, 1);
-                    }
+        for (FeatureTag tag : FeatureTag.values()) {
+            try {
+                if (tag.getFeature().hasFeature(gameRecord)) {
+                    LOGGER.log(Level.INFO, "Found feature: " + tag.getFeature().getName());
+                    insertProblemTag(problemId, tag.getDbIndex());
                 }
+            } catch (Exception e) {
+                LOGGER.log(Level.SEVERE, "Error evaluating the feature " + tag.getFeature().getName(), e);
             }
         }
-
 
     }
 
