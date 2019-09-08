@@ -27,7 +27,7 @@ public enum GoldAtHeadFeature implements Feature {
                     ShogiPosition position = gameNavigation.getPosition();
                     Square dropSquare = dropMove.getToSquare();
                     return dropSquare.getRow() > 1 && position.getPieceAt(Square.of(dropSquare.getColumn(),
-                            dropSquare.getRow() - 1)) == Piece.GOTE_KING;
+                            dropSquare.getRow() - 1)) == Piece.GOTE_KING; //add sente's piece requirement and condition for sente king too.
                 }
             }
         }
