@@ -8,4 +8,6 @@ public interface ProblemsService extends RemoteService {
 
     String getProblemUsf(String problemId);
 
+    String getRandomProblemUsf();
+
 }

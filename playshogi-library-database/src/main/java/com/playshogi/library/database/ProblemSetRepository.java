@@ -4,10 +4,9 @@ import com.playshogi.library.database.models.PersistentKifu;
 import com.playshogi.library.database.models.PersistentProblem;
 import com.playshogi.library.models.record.GameNavigation;
 import com.playshogi.library.models.record.GameRecord;
+import com.playshogi.library.shogi.ShogiUtils;
 import com.playshogi.library.shogi.models.features.FeatureTag;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
-import com.playshogi.library.shogi.models.shogivariant.ShogiInitialPositionFactory;
-import com.playshogi.library.shogi.rules.ShogiRulesEngine;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -35,21 +34,21 @@ public class ProblemSetRepository {
         ProblemRepository problemRep = new ProblemRepository(dbConnection);
 
         int kifuId = kifuRep.saveKifu(gameRecord, problemName, authorId, PersistentKifu.KifuType.GAME);
-        int problemId = problemRep.saveProblem(kifuId, 0, elo, pbType);
 
-        GameNavigation<ShogiPosition> gameNavigation = new GameNavigation<>(new ShogiRulesEngine(),
-                gameRecord.getGameTree(),
-                new ShogiInitialPositionFactory().createInitialPosition());
+        GameNavigation<ShogiPosition> gameNavigation = ShogiUtils.getNavigation(gameRecord);
 
         int lastPositionId = rep.getOrSavePosition(gameNavigation.getPosition());
-
         kifuRep.saveKifuPosition(kifuId, lastPositionId);
 
+        int numMoves = 0;
         while (gameNavigation.canMoveForward()) {
+            numMoves++;
             gameNavigation.moveForward();
             int positionId = rep.getOrSavePosition(gameNavigation.getPosition());
             kifuRep.saveKifuPosition(kifuId, positionId);
         }
+
+        int problemId = problemRep.saveProblem(kifuId, numMoves, elo, pbType);
 
         for (FeatureTag tag : FeatureTag.values()) {
             try {

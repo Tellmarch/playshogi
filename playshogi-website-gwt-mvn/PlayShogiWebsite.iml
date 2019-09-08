@@ -74,6 +74,8 @@
     <orderEntry type="module" module-name="playshogi-library-shogi" />
     <orderEntry type="module" module-name="playshogi-library-shogi-files" />
     <orderEntry type="module" module-name="playshogi-library-database" />
+    <orderEntry type="library" name="Maven: mysql:mysql-connector-java:8.0.17" level="project" />
+    <orderEntry type="library" name="Maven: com.google.protobuf:protobuf-java:3.6.1" level="project" />
     <orderEntry type="library" name="Maven: com.google.gwt.inject:gin:2.1.2" level="project" />
     <orderEntry type="library" name="Maven: com.google.inject:guice:3.0" level="project" />
     <orderEntry type="library" name="Maven: javax.inject:javax.inject:1" level="project" />

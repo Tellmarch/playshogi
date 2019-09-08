@@ -66,7 +66,8 @@ public class TsumeActivity extends MyAbstractActivity {
     }
 
     private void requestTsume(final String tsumeId) {
-        problemsService.getProblemUsf(tsumeId, getProblemRequestCallback(tsumeId));
+        problemsService.getRandomProblemUsf(getProblemRequestCallback(tsumeId));
+        //problemsService.getProblemUsf(tsumeId, getProblemRequestCallback(tsumeId));
     }
 
     private AsyncCallback<String> getProblemRequestCallback(final String tsumeId) {
