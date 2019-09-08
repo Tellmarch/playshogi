@@ -38,7 +38,7 @@ public class AppActivityMapper implements ActivityMapper {
         if (place instanceof MainPagePlace) {
             return new MainPageActivity(mainPageView);
         } else if (place instanceof TsumePlace) {
-            return new TsumeActivity((TsumePlace) place, tsumeView);
+            return new TsumeActivity((TsumePlace) place, tsumeView, placeController);
         } else if (place instanceof FreeBoardPlace) {
             return new FreeBoardActivity((FreeBoardPlace) place, freeBoardView);
         } else if (place instanceof OpeningsPlace) {

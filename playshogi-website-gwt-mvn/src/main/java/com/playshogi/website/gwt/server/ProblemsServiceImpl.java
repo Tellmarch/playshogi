@@ -49,10 +49,35 @@ public class ProblemsServiceImpl extends RemoteServiceServlet implements Problem
     }
 
     @Override
-    public ProblemDetails getRandomProblem() {
-        LOGGER.log(Level.INFO, "getting random problem: 101");
+    public ProblemDetails getProblem(final String problemId) {
+        LOGGER.log(Level.INFO, "getting problem: " + problemId);
 
-        PersistentProblem persistentProblem = problemRepository.getProblemById(101);
+        PersistentProblem persistentProblem = problemRepository.getProblemById(Integer.parseInt(problemId));
+
+        if (persistentProblem == null) {
+            LOGGER.log(Level.INFO, "Could not load problem");
+            return null;
+        }
+
+        PersistentKifu persistentKifu = kifuRepository.getKifuById(persistentProblem.getKifuId());
+
+        if (persistentKifu == null) {
+            LOGGER.log(Level.INFO, "Could not load the problem kifu for id " + persistentProblem.getKifuId());
+            return null;
+        }
+
+        String usf = UsfFormat.INSTANCE.write(persistentKifu.getKifu());
+        LOGGER.log(Level.INFO, "Sending problem:\n" + usf);
+
+        return getProblemDetails(persistentProblem, usf);
+    }
+
+
+    @Override
+    public ProblemDetails getRandomProblem() {
+        LOGGER.log(Level.INFO, "getting random problem");
+
+        PersistentProblem persistentProblem = problemRepository.getRandomProblem();
 
         if (persistentProblem == null) {
             LOGGER.log(Level.INFO, "Could not load a random problem");
@@ -69,9 +94,7 @@ public class ProblemsServiceImpl extends RemoteServiceServlet implements Problem
         String usf = UsfFormat.INSTANCE.write(persistentKifu.getKifu());
         LOGGER.log(Level.INFO, "Sending problem:\n" + usf);
 
-        ProblemDetails problemDetails = getProblemDetails(persistentProblem, usf);
-
-        return problemDetails;
+        return getProblemDetails(persistentProblem, usf);
     }
 
     private ProblemDetails getProblemDetails(PersistentProblem persistentProblem, String usf) {

@@ -7,6 +7,8 @@ public interface ProblemsServiceAsync {
 
     void getProblemUsf(String problemId, AsyncCallback<String> callback);
 
+    void getProblem(String problemId, AsyncCallback<ProblemDetails> callback);
+
     void getRandomProblem(AsyncCallback<ProblemDetails> callback);
 
 }

@@ -1,7 +1,8 @@
 package com.playshogi.website.gwt.client.activity;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.Random;
+import com.google.gwt.place.shared.PlaceController;
+import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
 import com.google.web.bindery.event.shared.EventBus;
@@ -27,13 +28,15 @@ public class TsumeActivity extends MyAbstractActivity {
     private final ProblemsServiceAsync problemsService = GWT.create(ProblemsService.class);
 
     private final String tsumeId;
+    private final PlaceController placeController;
     private final TsumeView tsumeView;
 
     private EventBus eventBus;
 
-    public TsumeActivity(final TsumePlace place, final TsumeView tsumeView) {
+    public TsumeActivity(final TsumePlace place, final TsumeView tsumeView, final PlaceController placeController) {
         this.tsumeView = tsumeView;
         this.tsumeId = place.getTsumeId();
+        this.placeController = placeController;
     }
 
     @Override
@@ -59,16 +62,18 @@ public class TsumeActivity extends MyAbstractActivity {
 
     public void setTsumeId(final String tsumeId) {
         if (tsumeId == null || tsumeId.equalsIgnoreCase("null")) {
-            int number = Random.nextInt(800) + 100;
-            requestTsume(String.valueOf(number));
+            requestRandomTsume();
         } else {
             requestTsume(tsumeId);
         }
     }
 
+    private void requestRandomTsume() {
+        problemsService.getRandomProblem(getProblemRequestCallback(null));
+    }
+
     private void requestTsume(final String tsumeId) {
-        problemsService.getRandomProblem(getProblemRequestCallback(tsumeId));
-        //problemsService.getProblemUsf(tsumeId, getProblemRequestCallback(tsumeId));
+        problemsService.getProblem(tsumeId, getProblemRequestCallback(tsumeId));
     }
 
     private AsyncCallback<ProblemDetails> getProblemRequestCallback(final String tsumeId) {
@@ -81,12 +86,12 @@ public class TsumeActivity extends MyAbstractActivity {
                 } else {
                     GWT.log("Got problem details problem request: " + tsumeId + " : " + result);
                     String resultUsf = result.getUsf();
-                    GWT.log("Got usf from server for problem request: " + tsumeId + " : " + resultUsf);
                     GameRecord gameRecord = UsfFormat.INSTANCE.read(resultUsf);
                     GWT.log("Updating game navigator...");
                     //TODO: how to update URL?
                     //placeController.goTo(new TsumePlace(result.getId()));
-                    //History.newItem(new TsumePlace.Tokenizer().getToken(new TsumePlace(result.getId())), false);
+                    History.newItem("Tsume:" + new TsumePlace.Tokenizer().getToken(new TsumePlace(result.getId())),
+                            false);
                     eventBus.fireEvent(new GameTreeChangedEvent(gameRecord.getGameTree()));
                 }
             }

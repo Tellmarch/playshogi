@@ -12,8 +12,11 @@ public class ProblemRepository {
 
     private static final String INSERT_PROBLEM = "INSERT INTO `playshogi`.`ps_problem` "
             + "(`kifu_id`, `num_moves`, `elo`, `pb_type`)" + " VALUES ( ?, ?, ?, ?);";
-    private static final String SELECT_PROBLEM = "SELECT * FROM ps_problem WHERE id = ?";
-    private static final String DELETE_PROBLEM = "DELETE FROM ps_problem WHERE id = ?";
+    private static final String SELECT_PROBLEM = "SELECT * FROM `playshogi`.`ps_problem` WHERE id = ?";
+    //TODO: improve performance if needed
+    private static final String SELECT_RANDOM_PROBLEM = "SELECT * FROM `playshogi`.`ps_problem` ORDER BY RAND() limit" +
+            " 1";
+    private static final String DELETE_PROBLEM = "DELETE FROM `playshogi`.`ps_problem` WHERE id = ?";
 
     private final DbConnection dbConnection;
 
@@ -56,6 +59,31 @@ public class ProblemRepository {
             preparedStatement.setInt(parameterIndex, value);
         } else {
             preparedStatement.setNull(parameterIndex, Types.INTEGER);
+        }
+    }
+
+    public PersistentProblem getRandomProblem() {
+        Connection connection = dbConnection.getConnection();
+        try (PreparedStatement preparedStatement = connection.prepareStatement(SELECT_RANDOM_PROBLEM)) {
+            ResultSet rs = preparedStatement.executeQuery();
+            if (rs.next()) {
+                LOGGER.log(Level.INFO, "Found problem with id: " + rs.getInt("id"));
+
+                int id = rs.getInt("id");
+                int kifuId = rs.getInt("kifu_id");
+                int numMoves = rs.getInt("num_moves");
+                int elo = rs.getInt("elo");
+                int pbType = rs.getInt("pb_type");
+
+                return new PersistentProblem(id, kifuId, numMoves, elo,
+                        PersistentProblem.ProblemType.fromDbInt(pbType));
+            } else {
+                LOGGER.log(Level.INFO, "Did not find a random problem");
+                return null;
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error looking up the problem in db", e);
+            return null;
         }
     }
 
