@@ -27,6 +27,30 @@ public class Square {
         return new Square(column, row);
     }
 
+    public Square above() {
+        if (row == 1) return null;
+
+        return Square.of(column, row - 1);
+    }
+
+    public Square below() {
+        if (row == 9) return null;
+
+        return Square.of(column, row + 1);
+    }
+
+    public Square left() {
+        if (column == 9) return null;
+
+        return Square.of(column + 1, row);
+    }
+
+    public Square right() {
+        if (column == 1) return null;
+
+        return Square.of(column - 1, row);
+    }
+
     public Square opposite() {
         return of(10 - column, 10 - row);
     }

@@ -25,9 +25,9 @@ public enum GoldAtHeadFeature implements Feature {
                 DropMove dropMove = (DropMove) lastMove;
                 if (dropMove.getPieceType() == PieceType.GOLD) {
                     ShogiPosition position = gameNavigation.getPosition();
-                    Square dropSquare = dropMove.getToSquare();
-                    return dropSquare.getRow() > 1 && position.getPieceAt(Square.of(dropSquare.getColumn(),
-                            dropSquare.getRow() - 1)) == Piece.GOTE_KING; //add sente's piece requirement and condition for sente king too.
+                    Square aboveDropSquare = dropMove.getToSquare().above();
+                    // add sente's piece requirement and condition for sente king too.
+                    return aboveDropSquare != null && position.getPieceAt(aboveDropSquare) == Piece.GOTE_KING;
                 }
             }
         }
