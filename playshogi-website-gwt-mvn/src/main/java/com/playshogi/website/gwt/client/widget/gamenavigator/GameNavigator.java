@@ -103,7 +103,7 @@ public class GameNavigator extends Composite implements ClickHandler {
         if (!existingMove) {
             GWT.log("New variation");
             eventBus.fireEvent(new NewVariationPlayedEvent());
-        } else if (!gameNavigation.canMoveForward()) {
+        } else if (gameNavigation.isEndOfVariation()) {
             eventBus.fireEvent(new EndOfVariationReachedEvent());
             // } else if (isSenteToPlay() &&
             // !boardConfiguration.isPlaySenteMoves()) {

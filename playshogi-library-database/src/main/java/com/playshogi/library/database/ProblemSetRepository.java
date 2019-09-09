@@ -2,10 +2,12 @@ package com.playshogi.library.database;
 
 import com.playshogi.library.database.models.PersistentKifu;
 import com.playshogi.library.database.models.PersistentProblem;
+import com.playshogi.library.models.Move;
 import com.playshogi.library.models.record.GameNavigation;
 import com.playshogi.library.models.record.GameRecord;
 import com.playshogi.library.shogi.ShogiUtils;
 import com.playshogi.library.shogi.models.features.FeatureTag;
+import com.playshogi.library.shogi.models.moves.SpecialMove;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
 
 import java.sql.Connection;
@@ -42,8 +44,11 @@ public class ProblemSetRepository {
 
         int numMoves = 0;
         while (gameNavigation.canMoveForward()) {
-            numMoves++;
             gameNavigation.moveForward();
+            Move move = gameNavigation.getCurrentMove();
+            if (!(move instanceof SpecialMove)) {
+                numMoves++;
+            }
             int positionId = rep.getOrSavePosition(gameNavigation.getPosition());
             kifuRep.saveKifuPosition(kifuId, positionId);
         }

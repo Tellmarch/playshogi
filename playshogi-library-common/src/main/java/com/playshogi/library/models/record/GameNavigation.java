@@ -45,6 +45,10 @@ public class GameNavigation<P extends Position<P>> {
         return currentNode.hasChildren();
     }
 
+    public boolean isEndOfVariation() {
+        return !currentNode.hasChildren() || getMainVariationMove().isEndMove();
+    }
+
     public void moveBack() {
         if (canMoveBack()) {
             gameRulesEngine.undoMoveInPosition(position, currentNode.getMove());

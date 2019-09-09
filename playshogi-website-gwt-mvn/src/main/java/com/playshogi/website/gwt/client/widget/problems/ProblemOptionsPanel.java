@@ -41,7 +41,7 @@ public class ProblemOptionsPanel extends Composite implements ClickHandler {
         Object source = event.getSource();
         String text = ((RadioButton) source).getText();
         GWT.log("CLICK: " + text);
-        int numMoves = ("All".equals(text)) ? 0 : (text.charAt(0) - '0');
+        int numMoves = ("All".equals(text)) ? 0 : Integer.parseInt(text.substring(0, 2).trim());
         eventBus.fireEvent(new ProblemNumMovesSelectedEvent(numMoves));
     }
 

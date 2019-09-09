@@ -12,4 +12,9 @@ public class SpecialMove extends ShogiMove {
     public SpecialMoveType getSpecialMoveType() {
         return specialMoveType;
     }
+
+    @Override
+    public boolean isEndMove() {
+        return true;
+    }
 }
