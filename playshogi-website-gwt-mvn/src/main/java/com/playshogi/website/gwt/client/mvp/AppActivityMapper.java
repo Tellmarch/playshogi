@@ -27,6 +27,8 @@ public class AppActivityMapper implements ActivityMapper {
     @Inject
     MyGamesView myGamesView;
     @Inject
+    ProblemStatisticsView problemStatisticsView;
+    @Inject
     OpeningsView openingsView;
     @Inject
     SessionInformation sessionInformation;
@@ -45,6 +47,8 @@ public class AppActivityMapper implements ActivityMapper {
             return new OpeningsActivity((OpeningsPlace) place, openingsView, placeController);
         } else if (place instanceof MyGamesPlace) {
             return new MyGamesActivity(myGamesView);
+        } else if (place instanceof ProblemStatisticsPlace) {
+            return new ProblemStatisticsActivity(problemStatisticsView, sessionInformation);
         } else if (place instanceof LoginPlace) {
             return new LoginActivity((LoginPlace) place, loginView, sessionInformation);
         } else if (place instanceof NewKifuPlace) {

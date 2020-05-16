@@ -14,9 +14,12 @@ import com.playshogi.library.shogi.models.formats.kif.KifFormat;
 import com.playshogi.library.shogi.models.formats.usf.UsfFormat;
 import com.playshogi.website.gwt.shared.models.LoginResult;
 import com.playshogi.website.gwt.shared.models.ProblemDetails;
+import com.playshogi.website.gwt.shared.models.ProblemStatisticsDetails;
 import com.playshogi.website.gwt.shared.services.ProblemsService;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -133,6 +136,30 @@ public class ProblemsServiceImpl extends RemoteServiceServlet implements Problem
             LOGGER.log(Level.INFO, "Saved pb stats for the user: " + userProblemStats);
         } else {
             LOGGER.log(Level.INFO, "Not saving stats for guest user");
+        }
+    }
+
+    @Override
+    public ProblemStatisticsDetails[] getProblemStatisticsDetails(String sessionId) {
+        LOGGER.log(Level.INFO, "Retrieving pb stats for the user");
+
+        LoginResult loginResult = authenticator.checkSession(sessionId);
+        if (loginResult != null && loginResult.isLoggedIn()) {
+            List<PersistentUserProblemStats> userPbStats = userRepository.getUserPbStats(loginResult.getUserId());
+            ProblemStatisticsDetails[] stats = new ProblemStatisticsDetails[userPbStats.size()];
+            for (int i = 0; i < userPbStats.size(); i++) {
+                PersistentUserProblemStats problemStats = userPbStats.get(i);
+                stats[i] = new ProblemStatisticsDetails();
+                stats[i].setProblemId(problemStats.getProblemId());
+                stats[i].setAttemptedDate(problemStats.getAttemptedDate());
+                stats[i].setCorrect(problemStats.getCorrect());
+                stats[i].setTimeSpentMs(problemStats.getTimeSpentMs());
+            }
+            LOGGER.log(Level.INFO, "Retrieved pb stats for the user: " + Arrays.toString(stats));
+            return stats;
+        } else {
+            LOGGER.log(Level.INFO, "No stats for guest user");
+            return new ProblemStatisticsDetails[0];
         }
     }
 
