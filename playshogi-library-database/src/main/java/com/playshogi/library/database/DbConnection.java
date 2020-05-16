@@ -36,10 +36,23 @@ public class DbConnection {
     }
 
     public Connection getConnection() {
-        if (connection == null) {
+        if (!isValid()) {
             start();
         }
         return connection;
+    }
+
+    private boolean isValid() {
+        if (connection == null) return false;
+
+        try {
+            if (connection.isClosed()) return false;
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Connection error: ", e);
+            return false;
+        }
+
+        return true;
     }
 
     public static void main(final String[] args) {
