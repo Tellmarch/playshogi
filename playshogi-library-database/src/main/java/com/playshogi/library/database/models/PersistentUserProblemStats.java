@@ -7,14 +7,17 @@ public class PersistentUserProblemStats {
 
     private final int userId;
     private final int problemId;
-    private final Date lastSolved;
-    private final int lastSolvingTime;
+    private final Date attemptedDate;
+    private final Integer timeSpentMs;
+    private final Boolean correct;
 
-    public PersistentUserProblemStats(int userId, int problemId, Date lastSolved, int lastSolvingTime) {
+    public PersistentUserProblemStats(int userId, int problemId, Date attemptedDate, Integer timeSpentMs,
+                                      Boolean correct) {
         this.userId = userId;
         this.problemId = problemId;
-        this.lastSolved = lastSolved;
-        this.lastSolvingTime = lastSolvingTime;
+        this.attemptedDate = attemptedDate;
+        this.timeSpentMs = timeSpentMs;
+        this.correct = correct;
     }
 
     public int getUserId() {
@@ -25,12 +28,16 @@ public class PersistentUserProblemStats {
         return problemId;
     }
 
-    public Date getLastSolved() {
-        return lastSolved;
+    public Date getAttemptedDate() {
+        return attemptedDate;
     }
 
-    public int getLastSolvingTime() {
-        return lastSolvingTime;
+    public Integer getTimeSpentMs() {
+        return timeSpentMs;
+    }
+
+    public Boolean getCorrect() {
+        return correct;
     }
 
     @Override
@@ -38,8 +45,9 @@ public class PersistentUserProblemStats {
         return "PersistentUserProblemStats{" +
                 "userId=" + userId +
                 ", problemId=" + problemId +
-                ", lastSolved=" + lastSolved +
-                ", lastSolvingTime=" + lastSolvingTime +
+                ", attemptedDate=" + attemptedDate +
+                ", timeSpentMs=" + timeSpentMs +
+                ", correct=" + correct +
                 '}';
     }
 
@@ -50,12 +58,13 @@ public class PersistentUserProblemStats {
         PersistentUserProblemStats that = (PersistentUserProblemStats) o;
         return userId == that.userId &&
                 problemId == that.problemId &&
-                lastSolvingTime == that.lastSolvingTime &&
-                Objects.equals(lastSolved, that.lastSolved);
+                Objects.equals(attemptedDate, that.attemptedDate) &&
+                Objects.equals(timeSpentMs, that.timeSpentMs) &&
+                Objects.equals(correct, that.correct);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(userId, problemId, lastSolved, lastSolvingTime);
+        return Objects.hash(userId, problemId, attemptedDate, timeSpentMs, correct);
     }
 }
