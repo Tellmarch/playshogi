@@ -20,6 +20,10 @@ public class PersistentUserProblemStats {
         this.correct = correct;
     }
 
+    public PersistentUserProblemStats(int userId, int problemId, Integer timeSpentMs, Boolean correct) {
+        this(userId, problemId, null, timeSpentMs, correct);
+    }
+
     public int getUserId() {
         return userId;
     }

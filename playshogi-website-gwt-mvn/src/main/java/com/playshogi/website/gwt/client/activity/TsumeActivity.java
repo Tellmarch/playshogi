@@ -1,5 +1,6 @@
 package com.playshogi.website.gwt.client.activity;
 
+import com.google.gwt.core.client.Duration;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.place.shared.PlaceController;
 import com.google.gwt.user.client.History;
@@ -10,11 +11,14 @@ import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.library.models.record.GameRecord;
 import com.playshogi.library.shogi.models.formats.usf.UsfFormat;
+import com.playshogi.website.gwt.client.SessionInformation;
 import com.playshogi.website.gwt.client.events.GameTreeChangedEvent;
 import com.playshogi.website.gwt.client.events.ProblemNumMovesSelectedEvent;
+import com.playshogi.website.gwt.client.events.UserFinishedProblemEvent;
 import com.playshogi.website.gwt.client.events.UserSkippedProblemEvent;
 import com.playshogi.website.gwt.client.place.TsumePlace;
 import com.playshogi.website.gwt.client.ui.TsumeView;
+import com.playshogi.website.gwt.client.util.FireAndForgetCallback;
 import com.playshogi.website.gwt.shared.models.ProblemDetails;
 import com.playshogi.website.gwt.shared.services.ProblemsService;
 import com.playshogi.website.gwt.shared.services.ProblemsServiceAsync;
@@ -27,18 +31,25 @@ public class TsumeActivity extends MyAbstractActivity {
     private final MyEventBinder eventBinder = GWT.create(MyEventBinder.class);
 
     private final ProblemsServiceAsync problemsService = GWT.create(ProblemsService.class);
-
-    private final String tsumeId;
-    private int numMoves = 0;
     private final PlaceController placeController;
     private final TsumeView tsumeView;
-
+    private final SessionInformation sessionInformation;
     private EventBus eventBus;
 
-    public TsumeActivity(final TsumePlace place, final TsumeView tsumeView, final PlaceController placeController) {
+    private String tsumeId;
+    private int numMoves = 0;
+    private Duration duration = new Duration();
+
+    public TsumeActivity(final TsumePlace place, final TsumeView tsumeView, final PlaceController placeController,
+                         final SessionInformation sessionInformation) {
         this.tsumeView = tsumeView;
         this.tsumeId = place.getTsumeId();
         this.placeController = placeController;
+        this.sessionInformation = sessionInformation;
+    }
+
+    private void setTsumeId(String tsumeId) {
+        this.tsumeId = tsumeId;
     }
 
     @Override
@@ -47,7 +58,7 @@ public class TsumeActivity extends MyAbstractActivity {
         this.eventBus = eventBus;
         eventBinder.bindEventHandlers(this, eventBus);
         tsumeView.activate(eventBus);
-        setTsumeId(tsumeId);
+        loadTsume(tsumeId);
         containerWidget.setWidget(tsumeView.asWidget());
     }
 
@@ -59,7 +70,16 @@ public class TsumeActivity extends MyAbstractActivity {
 
     @EventHandler
     void onUserSkippedProblem(final UserSkippedProblemEvent event) {
-        setTsumeId(null);
+        loadTsume(null);
+    }
+
+    @EventHandler
+    void onUserFinishedProblemEvent(final UserFinishedProblemEvent event) {
+        GWT.log("Finished problem. Success: " + event.isSuccess());
+        problemsService.saveUserProblemAttempt(sessionInformation.getSessionId(), tsumeId, event.isSuccess(),
+                duration.elapsedMillis(),
+                new FireAndForgetCallback(
+                        "saveUserProblemAttempt"));
     }
 
     @EventHandler
@@ -68,7 +88,7 @@ public class TsumeActivity extends MyAbstractActivity {
         numMoves = event.getNumMoves();
     }
 
-    public void setTsumeId(final String tsumeId) {
+    private void loadTsume(final String tsumeId) {
         if (tsumeId == null || tsumeId.equalsIgnoreCase("null")) {
             if (numMoves == 0) {
                 requestRandomTsume();
@@ -93,6 +113,10 @@ public class TsumeActivity extends MyAbstractActivity {
         problemsService.getProblem(tsumeId, getProblemRequestCallback(tsumeId));
     }
 
+    private void initTimer() {
+        duration = new Duration();
+    }
+
     private AsyncCallback<ProblemDetails> getProblemRequestCallback(final String tsumeId) {
         return new AsyncCallback<ProblemDetails>() {
 
@@ -107,9 +131,11 @@ public class TsumeActivity extends MyAbstractActivity {
                     GWT.log("Updating game navigator...");
                     //TODO: how to update URL?
                     //placeController.goTo(new TsumePlace(result.getId()));
-                    History.newItem("Tsume:" + new TsumePlace.Tokenizer().getToken(new TsumePlace(result.getId())),
+                    setTsumeId(result.getId());
+                    History.newItem("Tsume:" + new TsumePlace.Tokenizer().getToken(getPlace()),
                             false);
                     eventBus.fireEvent(new GameTreeChangedEvent(gameRecord.getGameTree()));
+                    initTimer();
                 }
             }
 
@@ -118,5 +144,9 @@ public class TsumeActivity extends MyAbstractActivity {
                 GWT.log("Remote called failed for problem request: " + tsumeId);
             }
         };
+    }
+
+    private TsumePlace getPlace() {
+        return new TsumePlace(tsumeId);
     }
 }

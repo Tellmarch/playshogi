@@ -33,15 +33,16 @@ public class UserRepository {
             preparedStatement.setString(2, password);
             ResultSet rs = preparedStatement.executeQuery();
             if (rs.next()) {
-                LOGGER.log(Level.INFO, "Found user: " + username + " with id: " + rs.getInt("id"));
-                return AuthenticationResult.LOGIN_OK;
+                int userId = rs.getInt("id");
+                LOGGER.log(Level.INFO, "Found user: " + username + " with id: " + userId);
+                return new AuthenticationResult(AuthenticationResult.Status.LOGIN_OK, userId, username);
             } else {
                 LOGGER.log(Level.INFO, "Did not find user: " + username);
-                return AuthenticationResult.UNKNOWN;
+                return new AuthenticationResult(AuthenticationResult.Status.UNKNOWN, null, null);
             }
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error looking up the user in db", e);
-            return AuthenticationResult.UNAVAILABLE;
+            return new AuthenticationResult(AuthenticationResult.Status.UNAVAILABLE, null, null);
         }
     }
 

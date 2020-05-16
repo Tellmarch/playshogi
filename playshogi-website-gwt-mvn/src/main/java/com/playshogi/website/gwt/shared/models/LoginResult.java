@@ -8,16 +8,18 @@ public class LoginResult implements Serializable {
     private boolean loggedIn = false;
     private String sessionId = null;
     private String userName = null;
+    private int userId = 0;
     private String errorMessage = null;
 
     public LoginResult() {
     }
 
-    public LoginResult(final boolean loggedIn, final String sessionId, final String userName,
+    public LoginResult(final boolean loggedIn, final String sessionId, final String userName, final int userId,
                        final String errorMessage) {
         this.loggedIn = loggedIn;
         this.sessionId = sessionId;
         this.userName = userName;
+        this.userId = userId;
         this.errorMessage = errorMessage;
     }
 
@@ -53,10 +55,22 @@ public class LoginResult implements Serializable {
         this.errorMessage = errorMessage;
     }
 
-    @Override
-    public String toString() {
-        return "LoginResult [loggedIn=" + loggedIn + ", sessionId=" + sessionId + ", userName=" + userName
-                + ", errorMessage=" + errorMessage + "]";
+    public int getUserId() {
+        return userId;
     }
 
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
+
+    @Override
+    public String toString() {
+        return "LoginResult{" +
+                "loggedIn=" + loggedIn +
+                ", sessionId='" + sessionId + '\'' +
+                ", userName='" + userName + '\'' +
+                ", userId=" + userId +
+                ", errorMessage='" + errorMessage + '\'' +
+                '}';
+    }
 }

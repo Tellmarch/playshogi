@@ -4,12 +4,15 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.playshogi.library.database.DbConnection;
 import com.playshogi.library.database.KifuRepository;
 import com.playshogi.library.database.ProblemRepository;
+import com.playshogi.library.database.UserRepository;
 import com.playshogi.library.database.models.PersistentKifu;
 import com.playshogi.library.database.models.PersistentProblem;
+import com.playshogi.library.database.models.PersistentUserProblemStats;
 import com.playshogi.library.models.record.GameRecord;
 import com.playshogi.library.shogi.files.GameRecordFileReader;
 import com.playshogi.library.shogi.models.formats.kif.KifFormat;
 import com.playshogi.library.shogi.models.formats.usf.UsfFormat;
+import com.playshogi.website.gwt.shared.models.LoginResult;
 import com.playshogi.website.gwt.shared.models.ProblemDetails;
 import com.playshogi.website.gwt.shared.services.ProblemsService;
 
@@ -27,11 +30,14 @@ public class ProblemsServiceImpl extends RemoteServiceServlet implements Problem
     private static final String PATH = "/playshogi/tsume/7/";
     private final ProblemRepository problemRepository;
     private final KifuRepository kifuRepository;
+    private final UserRepository userRepository;
+    private final Authenticator authenticator = Authenticator.INSTANCE;
 
     public ProblemsServiceImpl() {
         DbConnection dbConnection = new DbConnection();
         problemRepository = new ProblemRepository(dbConnection);
         kifuRepository = new KifuRepository(dbConnection);
+        userRepository = new UserRepository(dbConnection);
     }
 
     @Override
@@ -116,6 +122,19 @@ public class ProblemsServiceImpl extends RemoteServiceServlet implements Problem
         return problemDetails;
     }
 
+    @Override
+    public void saveUserProblemAttempt(String sessionId, String problemId, boolean success, int timeMs) {
+        LOGGER.log(Level.INFO, "Saving pb stats for the user");
+        LoginResult loginResult = authenticator.checkSession(sessionId);
+        if (loginResult != null && loginResult.isLoggedIn()) {
+            PersistentUserProblemStats userProblemStats = new PersistentUserProblemStats(loginResult.getUserId(),
+                    Integer.parseInt(problemId), timeMs, success);
+            userRepository.insertUserPbStats(userProblemStats);
+            LOGGER.log(Level.INFO, "Saved pb stats for the user: " + userProblemStats);
+        } else {
+            LOGGER.log(Level.INFO, "Not saving stats for guest user");
+        }
+    }
 
     public static void main(final String[] args) {
         for (int i = 100; i <= 900; i++) {
