@@ -17,6 +17,8 @@ public class AppActivityMapper implements ActivityMapper {
     @Inject
     TsumeView tsumeView;
     @Inject
+    ByoYomiView byoYomiView;
+    @Inject
     FreeBoardView freeBoardView;
     @Inject
     LoginView loginView;
@@ -41,6 +43,8 @@ public class AppActivityMapper implements ActivityMapper {
             return new MainPageActivity(mainPageView);
         } else if (place instanceof TsumePlace) {
             return new TsumeActivity((TsumePlace) place, tsumeView, placeController, sessionInformation);
+        } else if (place instanceof ByoYomiPlace) {
+            return new ByoYomiActivity((ByoYomiPlace) place, byoYomiView, placeController, sessionInformation);
         } else if (place instanceof FreeBoardPlace) {
             return new FreeBoardActivity((FreeBoardPlace) place, freeBoardView);
         } else if (place instanceof OpeningsPlace) {

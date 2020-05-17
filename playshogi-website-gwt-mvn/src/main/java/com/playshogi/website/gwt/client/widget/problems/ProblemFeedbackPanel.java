@@ -28,19 +28,22 @@ public class ProblemFeedbackPanel extends Composite implements ClickHandler {
     SafeHtml correctHtml = SafeHtmlUtils.fromSafeConstant("<p style=\"font-size:20px;color:green\">Correct!</p>");
 
     private EventBus eventBus;
-    private final Button skipButton;
+    private Button skipButton;
 
     private final HTML messagePanel;
 
-    public ProblemFeedbackPanel(final GameNavigator gameNavigator) {
+    public ProblemFeedbackPanel(final GameNavigator gameNavigator, boolean allowSkip) {
 
         FlowPanel verticalPanel = new FlowPanel();
-        verticalPanel.add(gameNavigator);
+        if (gameNavigator != null) {
+            verticalPanel.add(gameNavigator);
+        }
 
-        skipButton = new Button("Skip/Next");
-        skipButton.addClickHandler(this);
-
-        verticalPanel.add(skipButton);
+        if (allowSkip) {
+            skipButton = new Button("Skip/Next");
+            skipButton.addClickHandler(this);
+            verticalPanel.add(skipButton);
+        }
 
         verticalPanel.add(new HTML(SafeHtmlUtils.fromSafeConstant("<br>")));
 
