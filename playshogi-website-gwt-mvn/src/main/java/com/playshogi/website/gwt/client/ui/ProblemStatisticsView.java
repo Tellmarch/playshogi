@@ -3,6 +3,7 @@ package com.playshogi.website.gwt.client.ui;
 import com.google.gwt.cell.client.DateCell;
 import com.google.gwt.cell.client.ImageResourceCell;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.place.shared.PlaceController;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
@@ -10,7 +11,6 @@ import com.google.gwt.user.cellview.client.CellTable;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.HasKeyboardSelectionPolicy;
 import com.google.gwt.user.cellview.client.TextColumn;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
@@ -21,7 +21,7 @@ import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.website.gwt.client.events.ProblemStatisticsEvent;
-import com.playshogi.website.gwt.client.mvp.AppPlaceHistoryMapper;
+import com.playshogi.website.gwt.client.place.TsumePlace;
 import com.playshogi.website.gwt.shared.models.ProblemStatisticsDetails;
 
 import java.util.Arrays;
@@ -49,7 +49,7 @@ public class ProblemStatisticsView extends Composite {
 
 
     @Inject
-    public ProblemStatisticsView(final AppPlaceHistoryMapper historyMapper) {
+    public ProblemStatisticsView(final PlaceController placeController) {
         GWT.log("Creating problem statistics view");
         FlowPanel flowPanel = new FlowPanel();
 
@@ -106,7 +106,8 @@ public class ProblemStatisticsView extends Composite {
         selectionModel.addSelectionChangeHandler(event -> {
             ProblemStatisticsDetails selected = selectionModel.getSelectedObject();
             if (selected != null) {
-                Window.alert("You selected: " + selected.getProblemId());
+                GWT.log("Going to problem " + selected.getProblemId());
+                placeController.goTo(new TsumePlace(String.valueOf(selected.getProblemId())));
             }
         });
 
