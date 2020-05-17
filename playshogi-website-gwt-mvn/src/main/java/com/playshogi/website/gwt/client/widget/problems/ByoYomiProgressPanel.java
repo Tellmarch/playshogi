@@ -3,15 +3,16 @@ package com.playshogi.website.gwt.client.widget.problems;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.ImageResource;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.safehtml.shared.SafeHtmlUtils;
+import com.google.gwt.user.client.ui.*;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
+import com.playshogi.website.gwt.client.events.ActivityTimerEvent;
 import com.playshogi.website.gwt.client.events.UserFinishedProblemEvent;
 
 public class ByoYomiProgressPanel extends Composite {
+
 
     interface MyEventBinder extends EventBinder<ByoYomiProgressPanel> {
     }
@@ -31,11 +32,25 @@ public class ByoYomiProgressPanel extends Composite {
     private EventBus eventBus;
 
     private final FlowPanel flowPanel;
-
+    private final HTML timerHTML;
 
     public ByoYomiProgressPanel() {
         flowPanel = new FlowPanel();
-        initWidget(flowPanel);
+
+        VerticalPanel verticalPanel = new VerticalPanel();
+        timerHTML = new HTML(getTimeHTML(300));
+        verticalPanel.add(timerHTML);
+        verticalPanel.add(flowPanel);
+
+        initWidget(verticalPanel);
+    }
+
+    private String getTimeHTML(int timeInSeconds) {
+        int minutes = timeInSeconds / 60;
+        int seconds = timeInSeconds % 60;
+        String minutesStr = minutes < 10 ? "0" + minutes : String.valueOf(minutes);
+        String secondsStr = seconds < 10 ? "0" + seconds : String.valueOf(seconds);
+        return "<p style=\"font-size:20px;color:blue\"><b>" + minutesStr + ":" + secondsStr + "</b></p>";
     }
 
     @EventHandler
@@ -46,6 +61,13 @@ public class ByoYomiProgressPanel extends Composite {
         } else {
             flowPanel.add(new Image(resources.wrongIcon()));
         }
+    }
+
+    @EventHandler
+    void onActivityTimerEvent(final ActivityTimerEvent event) {
+        GWT.log("ByoYomi progress: timer event " + event.getTimems());
+        int timeInSeconds = event.getTimems() / 1000;
+        timerHTML.setHTML(SafeHtmlUtils.fromTrustedString(getTimeHTML(timeInSeconds)));
     }
 
 

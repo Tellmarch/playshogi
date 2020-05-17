@@ -35,26 +35,26 @@ public class ProblemFeedbackPanel extends Composite implements ClickHandler {
 
     public ProblemFeedbackPanel(final GameNavigator gameNavigator, boolean allowSkip) {
 
-        FlowPanel verticalPanel = new FlowPanel();
+        FlowPanel flowPanel = new FlowPanel();
         if (gameNavigator != null) {
-            verticalPanel.add(gameNavigator);
+            flowPanel.add(gameNavigator);
         }
 
         if (allowSkip) {
             skipButton = new Button("Skip/Next");
             skipButton.addClickHandler(this);
-            verticalPanel.add(skipButton);
+            flowPanel.add(skipButton);
         }
 
-        verticalPanel.add(new HTML(SafeHtmlUtils.fromSafeConstant("<br>")));
+        flowPanel.add(new HTML(SafeHtmlUtils.fromSafeConstant("<br>")));
 
         messagePanel = new HTML();
         messagePanel.setHTML(chooseHtml);
         messagePanel.getElement().getStyle().setBackgroundColor("White");
 
-        verticalPanel.add(messagePanel);
+        flowPanel.add(messagePanel);
 
-        initWidget(verticalPanel);
+        initWidget(flowPanel);
     }
 
     @Override
