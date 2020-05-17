@@ -91,7 +91,7 @@ public class ProblemFeedbackPanel extends Composite implements ClickHandler {
     public void onByoYomiSurvivalFinishedEvent(final ByoYomiSurvivalFinishedEvent event) {
         GWT.log("Problem feedback: handle ByoYomiSurvivalFinishedEvent");
         messagePanel.setHTML(SafeHtmlUtils.fromTrustedString("<p style=\"font-size:20px;" +
-                "color:red\">Event complete! </br> Final Score: " + event.getFinalScore() +
+                "color:black\">Event complete! </br> Final Score: " + event.getFinalScore() +
                 " </br> Total time: " + event.getTotalTimeSec() + "s</p>"));
     }
 
