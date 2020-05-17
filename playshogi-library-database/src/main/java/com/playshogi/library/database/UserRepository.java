@@ -18,7 +18,8 @@ public class UserRepository {
 
     private static final String INSERT_USER_PB_STATS = "INSERT INTO `playshogi`.`ps_userpbstats` "
             + "(`user_id`, `problem_id`, `time_spent_ms`, `correct`)" + " VALUES ( ?, ?, ?, ?);";
-    private static final String GET_USER_PB_STATS = "SELECT * from playshogi.ps_userpbstats WHERE  user_id = ?;";
+    private static final String GET_USER_PB_STATS = "SELECT * from playshogi.ps_userpbstats WHERE  user_id = ? ORDER " +
+            "BY timestamp_attempted DESC;";
 
     private final DbConnection dbConnection;
 
