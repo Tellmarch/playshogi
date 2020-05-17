@@ -1,7 +1,10 @@
 package com.playshogi.website.gwt.client.ui;
 
 import com.google.gwt.cell.client.DateCell;
+import com.google.gwt.cell.client.ImageResourceCell;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.resources.client.ClientBundle;
+import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.cellview.client.CellTable;
 import com.google.gwt.user.cellview.client.Column;
@@ -33,6 +36,17 @@ public class ProblemStatisticsView extends Composite {
     }
 
     private final MyEventBinder eventBinder = GWT.create(MyEventBinder.class);
+
+    interface Resources extends ClientBundle {
+        @Source("com/playshogi/website/gwt/resources/icons/wrong_small.png")
+        ImageResource wrongIcon();
+
+        @Source("com/playshogi/website/gwt/resources/icons/right_small.png")
+        ImageResource rightIcon();
+    }
+
+    private final Resources resources = GWT.create(Resources.class);
+
 
     @Inject
     public ProblemStatisticsView(final AppPlaceHistoryMapper historyMapper) {
@@ -75,13 +89,15 @@ public class ProblemStatisticsView extends Composite {
         };
         table.addColumn(timeSpentColumn, "Time spent");
 
-        TextColumn<ProblemStatisticsDetails> resultColumn = new TextColumn<ProblemStatisticsDetails>() {
-            @Override
-            public String getValue(final ProblemStatisticsDetails object) {
-                return object.getCorrect() ? "correct" : "wrong";
-            }
-        };
-        table.addColumn(resultColumn, "Result");
+        Column<ProblemStatisticsDetails, ImageResource> imageColumn =
+                new Column<ProblemStatisticsDetails, ImageResource>(new ImageResourceCell()) {
+                    @Override
+                    public ImageResource getValue(ProblemStatisticsDetails object) {
+                        return (object.getCorrect() == Boolean.TRUE) ? resources.rightIcon() : resources.wrongIcon();
+                    }
+                };
+        table.addColumn(imageColumn, "Result");
+
 
         // Add a selection model to handle user selection.
         final SingleSelectionModel<ProblemStatisticsDetails> selectionModel =
