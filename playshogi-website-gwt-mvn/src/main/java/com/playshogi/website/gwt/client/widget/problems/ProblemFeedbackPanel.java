@@ -22,10 +22,11 @@ public class ProblemFeedbackPanel extends Composite implements ClickHandler {
 
     private final MyEventBinder eventBinder = GWT.create(MyEventBinder.class);
 
-    SafeHtml chooseHtml = SafeHtmlUtils
+    private SafeHtml chooseHtml = SafeHtmlUtils
             .fromSafeConstant("Play the correct move!<br>(Ctrl+click to play without promotion)");
-    SafeHtml wrongHtml = SafeHtmlUtils.fromSafeConstant("<p style=\"font-size:20px;color:red\">Wrong!</p>");
-    SafeHtml correctHtml = SafeHtmlUtils.fromSafeConstant("<p style=\"font-size:20px;color:green\">Correct!</p>");
+    private SafeHtml wrongHtml = SafeHtmlUtils.fromSafeConstant("<p style=\"font-size:20px;color:red\">Wrong!</p>");
+    private SafeHtml correctHtml = SafeHtmlUtils.fromSafeConstant("<p style=\"font-size:20px;" +
+            "color:green\">Correct!</p>");
 
     private EventBus eventBus;
     private Button skipButton;
@@ -86,9 +87,17 @@ public class ProblemFeedbackPanel extends Composite implements ClickHandler {
         messagePanel.setHTML(chooseHtml);
     }
 
+    @EventHandler
+    public void onByoYomiSurvivalFinishedEvent(final ByoYomiSurvivalFinishedEvent event) {
+        GWT.log("Problem feedback: handle ByoYomiSurvivalFinishedEvent");
+        messagePanel.setHTML(SafeHtmlUtils.fromTrustedString("<p style=\"font-size:20px;" +
+                "color:red\">Event complete! </br> Final Score: " + event.getFinalScore() + "</p>"));
+    }
+
     public void activate(final EventBus eventBus) {
         GWT.log("Activating Problem feedback panel");
         this.eventBus = eventBus;
         eventBinder.bindEventHandlers(this, eventBus);
+        messagePanel.setHTML(chooseHtml);
     }
 }

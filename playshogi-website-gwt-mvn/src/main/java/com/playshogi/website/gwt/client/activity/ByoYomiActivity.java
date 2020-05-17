@@ -11,6 +11,7 @@ import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.library.models.record.GameRecord;
 import com.playshogi.library.shogi.models.formats.usf.UsfFormat;
 import com.playshogi.website.gwt.client.SessionInformation;
+import com.playshogi.website.gwt.client.events.ByoYomiSurvivalFinishedEvent;
 import com.playshogi.website.gwt.client.events.GameTreeChangedEvent;
 import com.playshogi.website.gwt.client.events.UserFinishedProblemEvent;
 import com.playshogi.website.gwt.client.place.ByoYomiPlace;
@@ -37,7 +38,8 @@ public class ByoYomiActivity extends MyAbstractActivity {
     private int numMoves = 3;
     private int solved = 0;
     private int failed = 0;
-    private Duration duration = new Duration();
+    private Duration problemDuration = new Duration();
+    private Duration byoYomiDuration = new Duration();
 
     public ByoYomiActivity(final ByoYomiPlace place, final ByoYomiView byoYomiView,
                            final PlaceController placeController,
@@ -72,7 +74,7 @@ public class ByoYomiActivity extends MyAbstractActivity {
     void onUserFinishedProblemEvent(final UserFinishedProblemEvent event) {
         GWT.log("Finished problem. Success: " + event.isSuccess());
         problemsService.saveUserProblemAttempt(sessionInformation.getSessionId(), tsumeId, event.isSuccess(),
-                duration.elapsedMillis(), new FireAndForgetCallback("saveUserProblemAttempt"));
+                problemDuration.elapsedMillis(), new FireAndForgetCallback("saveUserProblemAttempt"));
         if (event.isSuccess()) {
             solved++;
             if (solved % 5 == 0 && numMoves < 13) {
@@ -83,6 +85,9 @@ public class ByoYomiActivity extends MyAbstractActivity {
         }
         if (failed < 3) {
             loadNextProblem();
+        } else {
+            eventBus.fireEvent(new ByoYomiSurvivalFinishedEvent(solved, solved, failed,
+                    byoYomiDuration.elapsedMillis() / 1000));
         }
     }
 
@@ -91,7 +96,7 @@ public class ByoYomiActivity extends MyAbstractActivity {
     }
 
     private void initTimer() {
-        duration = new Duration();
+        problemDuration = new Duration();
     }
 
     private AsyncCallback<ProblemDetails> getProblemRequestCallback() {
