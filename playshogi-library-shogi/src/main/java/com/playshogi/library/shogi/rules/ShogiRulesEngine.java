@@ -323,11 +323,28 @@ public class ShogiRulesEngine implements GameRulesEngine<ShogiPosition> {
         return false;  //no checks for all possible moves
     }
 
-    private boolean isPositionCheckmate(final ShogiPosition position) {
-        //check all moves for gote
-        //check if its check
+    /**
+     * did the player achieve checkmate?
+     * @param position actual position with eventual checkmate
+     * @param isSente true, checking if sente has a checkmate; false if checking gote has a checkmate
+     * @return true for checkmate, false for no checkmate
+     */
+    public boolean isPositionCheckmate(final ShogiPosition position, boolean isSente) {
         //if there is always check, checkmate
-        return false;
+        // isPositionCheck(forever);
+        if (!isPositionCheck(position, isSente)) {
+            return false;
+        }
+        for (ShogiMove everyMove : getAllPossibleMoves(position, !isSente)) {
+            this.playMoveInPosition(position, everyMove);
+            if (!isPositionCheck(position, isSente)) {
+                this.undoMoveInPosition(position, everyMove);
+                System.out.println("escape:" + everyMove);
+                return false;
+            }
+            this.undoMoveInPosition(position, everyMove);
+        }
+        return true;
     }
 
 }
