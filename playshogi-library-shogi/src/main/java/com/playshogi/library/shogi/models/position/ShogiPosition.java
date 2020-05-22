@@ -5,6 +5,10 @@ import com.playshogi.library.models.Square;
 import com.playshogi.library.shogi.models.Piece;
 import com.playshogi.library.shogi.models.shogivariant.ShogiVariant;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.List;
+
 public class ShogiPosition implements Position<ShogiPosition> {
 
     private boolean senteToPlay;
@@ -65,6 +69,20 @@ public class ShogiPosition implements Position<ShogiPosition> {
 
     public Piece getPieceAt(final Square square) {
         return shogiBoardState.getPieceAt(square);
+    }
+
+    /**
+     *
+     * @return list of squares of the board
+     */
+    public List<Square> getAllSquares(){
+        List<Square> squares = new ArrayList<>();
+        for (int row = 1; row <= shogiBoardState.getLastRow(); row++) {
+            for (int column = 1; column <= shogiBoardState.getLastColumn(); column++) {
+                squares.add(Square.of(column,row));
+            }
+        }
+        return squares;
     }
 
     @Override

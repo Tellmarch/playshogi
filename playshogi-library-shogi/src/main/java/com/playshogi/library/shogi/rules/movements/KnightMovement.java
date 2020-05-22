@@ -13,7 +13,7 @@ public class KnightMovement implements PieceMovement {
         List<Square> result = new ArrayList<>(2);
         int toRow = from.getRow() - 2;
         if (toRow < ShogiBoardState.FIRST_ROW) {
-            return result;
+            return result; //empty list
         }
         if (from.getColumn() != ShogiBoardState.FIRST_COLUMN) {
             Square square = Square.of(from.getColumn() - 1, toRow);

@@ -21,7 +21,7 @@
       <sourceFolder url="file://$USER_HOME$/git/playshogi/mysql" isTestSource="false" />
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="jdk" jdkName="1.8" jdkType="JavaSDK" />
+    <orderEntry type="inheritedJdk" />
     <orderEntry type="module" module-name="playshogi-library-common" />
     <orderEntry type="module" module-name="playshogi-library-shogi" />
     <orderEntry type="module" module-name="playshogi-library-shogi-files" />

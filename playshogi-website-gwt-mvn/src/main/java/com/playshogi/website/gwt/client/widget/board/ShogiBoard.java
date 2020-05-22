@@ -336,7 +336,7 @@ public class ShogiBoard extends Composite implements ClickHandler {
 
                             if (!pieceWrapper.isInKomadai()) {
                                 List<Square> possibleTargets =
-                                        shogiRulesEngine.getPossibleTargetSquaresFromSquareInPosition(position,
+                                        shogiRulesEngine.getPossibleTargetSquares(position,
                                         getSquare(pieceWrapper.getRow(), pieceWrapper.getColumn()));
                                 for (Square square : possibleTargets) {
                                     squareImages[square.getRow() - 1][8 - (square.getColumn() - 1)].setStyleName("gwt" +
@@ -361,7 +361,7 @@ public class ShogiBoard extends Composite implements ClickHandler {
                         if (!pieceWrapper.isInKomadai()) {
                             if (position.isSenteToPlay() == pieceWrapper.getPiece().isSentePiece()) {
                                 List<Square> possibleTargets =
-                                        shogiRulesEngine.getPossibleTargetSquaresFromSquareInPosition(position,
+                                        shogiRulesEngine.getPossibleTargetSquares(position,
                                         getSquare(pieceWrapper.getRow(), pieceWrapper.getColumn()));
                                 for (Square square : possibleTargets) {
                                     selectSquare(square);
