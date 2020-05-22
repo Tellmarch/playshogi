@@ -69,8 +69,14 @@ public class ProblemFeedbackPanel extends Composite implements ClickHandler {
     @EventHandler
     public void onNewVariation(final NewVariationPlayedEvent event) {
         GWT.log("Problem feedback: handle new variation played event");
-        messagePanel.setHTML(wrongHtml);
-        eventBus.fireEvent(new UserFinishedProblemEvent(false));
+        if (event.isPositionCheckmate()) {
+            GWT.log("Problem feedback: player found alternative checkmate");
+            messagePanel.setHTML(correctHtml);
+            eventBus.fireEvent(new UserFinishedProblemEvent(true));
+        } else {
+            messagePanel.setHTML(wrongHtml);
+            eventBus.fireEvent(new UserFinishedProblemEvent(false));
+        }
 
     }
 

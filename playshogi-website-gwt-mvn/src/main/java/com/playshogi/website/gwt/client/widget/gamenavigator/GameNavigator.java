@@ -32,6 +32,7 @@ public class GameNavigator extends Composite implements ClickHandler {
     private final Button nextButton;
     private final Button lastButton;
     private final GameNavigation<ShogiPosition> gameNavigation;
+    private ShogiRulesEngine shogiRulesEngine;
 
     private EventBus eventBus;
 
@@ -43,11 +44,11 @@ public class GameNavigator extends Composite implements ClickHandler {
         this(activityId, new NavigatorConfiguration());
     }
 
-    public GameNavigator(final String activityId, final NavigatorConfiguration navigatorConfiguration) {
+    private GameNavigator(final String activityId, final NavigatorConfiguration navigatorConfiguration) {
         GWT.log(activityId + ": Creating game navigator");
 
         this.activityId = activityId;
-        ShogiRulesEngine shogiRulesEngine = new ShogiRulesEngine();
+        shogiRulesEngine = new ShogiRulesEngine();
         GameNavigation<ShogiPosition> gameNavigation = new GameNavigation<>(shogiRulesEngine, new GameTree(),
                 new ShogiInitialPositionFactory().createInitialPosition());
 
@@ -102,7 +103,9 @@ public class GameNavigator extends Composite implements ClickHandler {
         gameNavigation.addMove(move);
         if (!existingMove) {
             GWT.log("New variation");
-            eventBus.fireEvent(new NewVariationPlayedEvent());
+            boolean positionCheckmate = shogiRulesEngine.isPositionCheckmate(gameNavigation.getPosition(), true);
+            GWT.log("Checkmate: " + positionCheckmate);
+            eventBus.fireEvent(new NewVariationPlayedEvent(positionCheckmate));
         } else if (gameNavigation.isEndOfVariation()) {
             eventBus.fireEvent(new EndOfVariationReachedEvent());
             // } else if (isSenteToPlay() &&
