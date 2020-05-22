@@ -17,6 +17,7 @@ import com.playshogi.library.shogi.rules.movements.*;
 import java.util.*;
 
 import static com.playshogi.library.shogi.models.Piece.GOTE_KING;
+import static com.playshogi.library.shogi.models.PieceType.KING;
 
 public class ShogiRulesEngine implements GameRulesEngine<ShogiPosition> {
 
@@ -227,26 +228,48 @@ public class ShogiRulesEngine implements GameRulesEngine<ShogiPosition> {
 
         List<ShogiMove> result = new ArrayList<>();
 
-        Square square = Square.of(1, 1);
+        result.addAll(getAllPossibleDropMoves(position, isSente));
+        result.addAll(getAllPossibleNormalAndCaptureMoves(position, isSente));
+        //putting all possible moves for given player, normal and captures (including promotions), and drops
 
-        //magical while list iterating through position
-        ShogiMove move = null; //includes all types of moves
+        return result;
+    }
 
-        //find a possible move for all the squares
-        //save the piece and movements to list
+    public List<ShogiMove> getAllPossibleNormalAndCaptureMoves(final ShogiPosition position, final boolean isSente) {
+        List<ShogiMove> result = new ArrayList<>();
 
-        getPossibleTargetSquares(position, square); //list squares
-        position.getPieceAt(square);
-        //list of squares turned into possible move list one by one
-        //by making subclasses for each type of move
 
-        CaptureMove captureMove = (CaptureMove) move;
-        NormalMove normalMove = (NormalMove) move;
-        DropMove dropMove = (DropMove) move;
+        for (Square everySquare : position.getAllSquares()) { //for every square on the board
+            if (position.getPieceAt(everySquare) != null && position.getPieceAt(everySquare).isSentePiece() == isSente) {
+                //check if there is sente's piece
+                List<Square> targetSquares = getPossibleTargetSquares(position, everySquare);
+                // find its possible squares to move
+                for (Square targetSquare : targetSquares) { //add each of those squares as a possible move
+                    if (position.getPieceAt(targetSquare) != null) { //check if it is a capturing move
+                        result.add(new CaptureMove(position.getPieceAt(everySquare), everySquare, targetSquare,
+                                false, position.getPieceAt(targetSquare)));
+                        if (canMoveWithPromotion(position, result.get(result.size() - 1))) {//if can promote,
+                            // capture
+                            // with promotion too
+                            result.add(new CaptureMove(position.getPieceAt(everySquare), everySquare,
+                                    targetSquare, true, position.getPieceAt(targetSquare)));
+                        }
 
-        for (Square possibleTargetSquare : getPossibleTargetSquares(position, square)) {
-            NormalMove normalMove1 = new NormalMove(position.getPieceAt(square), square, possibleTargetSquare, false);
-        } //list of unpromoted normal moves
+                    } else {
+                        result.add(new NormalMove(position.getPieceAt(everySquare), everySquare, targetSquare,
+                                false));
+                        if (canMoveWithPromotion(position, result.get(result.size() - 1))) {//if can promote,
+                            // move
+                            // with promotion too
+                            result.add(new NormalMove(position.getPieceAt(everySquare), everySquare,
+                                    targetSquare,
+                                    true));
+                        }
+                    }
+                }
+            }
+        }
+
         return result;
     }
 
@@ -255,7 +278,8 @@ public class ShogiRulesEngine implements GameRulesEngine<ShogiPosition> {
         List<ShogiMove> result = new ArrayList<>();
 
         if (isSente) {
-            for (PieceType pieceType : PieceType.values()) { //iterating enum; rook, bishop, generals, light pieces, pawns
+            for (PieceType pieceType : PieceType.values()) { //iterating enum; rook, bishop, generals, light pieces,
+                // pawns
                 if (position.getSenteKomadai().getPiecesOfType(pieceType) != 0) { //if have piece in hand
                     for (Square everySquare : position.getAllSquares()) { //check every squared of the board
                         if (position.getPieceAt(everySquare) == null) { //if its empty
@@ -287,18 +311,13 @@ public class ShogiRulesEngine implements GameRulesEngine<ShogiPosition> {
         return result; //include moves that would put you in check ***(1)
     }
 
-    private boolean isPositionCheck(final ShogiPosition position) {
-        //loop over list of shogimoves
-        //is piece sente
-        //is there king is taken by the piece
-
-        for (ShogiMove move : getAllPossibleMoves(position, true)) {
+    public boolean isPositionCheck(final ShogiPosition position, boolean isSente) {
+        for (ShogiMove move : getAllPossibleMoves(position, isSente)) { //generate all possible moves
             if (move instanceof CaptureMove) { //check only captures
                 CaptureMove captureMove = (CaptureMove) move;
-                if (captureMove.getCapturedPiece() == GOTE_KING) { //check if captured piece is a king
+                if (captureMove.getCapturedPiece().getPieceType() == KING) { //check if captured piece is a king
                     return true; //check found
                 }
-
             }
         }
         return false;  //no checks for all possible moves
@@ -309,14 +328,6 @@ public class ShogiRulesEngine implements GameRulesEngine<ShogiPosition> {
         //check if its check
         //if there is always check, checkmate
         return false;
-    }
-
-    public static void main(String[] args) {
-        ShogiRulesEngine shogiRulesEngine = new ShogiRulesEngine();
-        String sfenNoCheckmate = "lnsg3nl/2k2gr2/ppbp1p1pp/2p1P4/4s1S2/5B3/PPPP1P1PP/2S1GGR2/LN4KNL b 2Pp";
-        String sfenCheckmate = "4k4/4G4/4P4/9/9/9/9/9/9 w 2r2b3g4s4n4l17p";
-        System.out.println(shogiRulesEngine.isPositionCheckmate(SfenConverter.fromSFEN(sfenNoCheckmate)));
-        System.out.println(shogiRulesEngine.isPositionCheckmate(SfenConverter.fromSFEN(sfenCheckmate)));
     }
 
 }
