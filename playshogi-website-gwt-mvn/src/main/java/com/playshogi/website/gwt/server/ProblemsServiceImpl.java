@@ -15,11 +15,11 @@ import com.playshogi.library.shogi.models.formats.usf.UsfFormat;
 import com.playshogi.website.gwt.shared.models.LoginResult;
 import com.playshogi.website.gwt.shared.models.ProblemDetails;
 import com.playshogi.website.gwt.shared.models.ProblemStatisticsDetails;
+import com.playshogi.website.gwt.shared.models.SurvivalHighScore;
 import com.playshogi.website.gwt.shared.services.ProblemsService;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -35,6 +35,8 @@ public class ProblemsServiceImpl extends RemoteServiceServlet implements Problem
     private final KifuRepository kifuRepository;
     private final UserRepository userRepository;
     private final Authenticator authenticator = Authenticator.INSTANCE;
+
+    private Map<String, Integer> highScores = new HashMap<>();
 
     public ProblemsServiceImpl() {
         DbConnection dbConnection = new DbConnection();
@@ -161,6 +163,41 @@ public class ProblemsServiceImpl extends RemoteServiceServlet implements Problem
             LOGGER.log(Level.INFO, "No stats for guest user");
             return new ProblemStatisticsDetails[0];
         }
+    }
+
+    @Override
+    public void saveHighScore(String userName, int score) {
+        if (!highScores.containsKey(userName) || highScores.get(userName) < score) {
+            highScores.put(userName, score);
+        }
+    }
+
+    @Override
+    public SurvivalHighScore[] getHighScores() {
+
+        SurvivalHighScore[] survivalHighScores = new SurvivalHighScore[highScores.size()];
+
+        Map<String, Integer> map = sortByValue(highScores);
+        int i = 0;
+        for (Map.Entry<String, Integer> entry : map.entrySet()) {
+            survivalHighScores[i] = new SurvivalHighScore(entry.getKey(), entry.getValue());
+            i++;
+            if (i == 5) break;
+        }
+
+        return survivalHighScores;
+    }
+
+    private static <K, V extends Comparable<? super V>> Map<K, V> sortByValue(Map<K, V> map) {
+        List<Map.Entry<K, V>> list = new ArrayList<>(map.entrySet());
+        list.sort(Map.Entry.comparingByValue());
+
+        Map<K, V> result = new LinkedHashMap<>();
+        for (Map.Entry<K, V> entry : list) {
+            result.put(entry.getKey(), entry.getValue());
+        }
+
+        return result;
     }
 
     public static void main(final String[] args) {

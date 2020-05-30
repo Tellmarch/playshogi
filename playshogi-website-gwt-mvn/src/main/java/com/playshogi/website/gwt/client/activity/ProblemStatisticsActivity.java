@@ -5,9 +5,11 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
 import com.google.web.bindery.event.shared.EventBus;
 import com.playshogi.website.gwt.client.SessionInformation;
+import com.playshogi.website.gwt.client.events.HighScoreListEvent;
 import com.playshogi.website.gwt.client.events.ProblemStatisticsEvent;
 import com.playshogi.website.gwt.client.ui.ProblemStatisticsView;
 import com.playshogi.website.gwt.shared.models.ProblemStatisticsDetails;
+import com.playshogi.website.gwt.shared.models.SurvivalHighScore;
 import com.playshogi.website.gwt.shared.services.ProblemsService;
 import com.playshogi.website.gwt.shared.services.ProblemsServiceAsync;
 
@@ -46,6 +48,18 @@ public class ProblemStatisticsActivity extends MyAbstractActivity {
                         }
                     });
         }
+        problemsService.getHighScores(new AsyncCallback<SurvivalHighScore[]>() {
+            @Override
+            public void onFailure(Throwable throwable) {
+                GWT.log("Remote call failed to retrieve high scores");
+            }
+
+            @Override
+            public void onSuccess(SurvivalHighScore[] survivalHighScores) {
+                GWT.log("Received high scores: " + Arrays.toString(survivalHighScores));
+                eventBus.fireEvent(new HighScoreListEvent(survivalHighScores));
+            }
+        });
         containerWidget.setWidget(problemStatisticsView.asWidget());
     }
 

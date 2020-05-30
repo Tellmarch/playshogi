@@ -44,15 +44,15 @@ public class NavigationBar extends Composite {
         flowPanel.setStyleName("contentButtons");
 
         flowPanel.add(createHyperlink("Main page", new MainPagePlace()));
-        flowPanel.add(createHyperlink("How to Play", new MainPagePlace()));
+//        flowPanel.add(createHyperlink("How to Play", new MainPagePlace()));
         flowPanel.add(createHyperlink("Problems", new TsumePlace()));
         flowPanel.add(createHyperlink("ByoYomi Survival", new ByoYomiPlace()));
-        flowPanel.add(createHyperlink("Openings", new OpeningsPlace()));
+//        flowPanel.add(createHyperlink("Openings", new OpeningsPlace()));
         flowPanel.add(createHyperlink("Statistics", new ProblemStatisticsPlace()));
-        flowPanel.add(createHyperlink("My Games", new MyGamesPlace()));
-        flowPanel.add(createHyperlink("Free Board", new FreeBoardPlace()));
-        flowPanel.add(createHyperlink("Play Online", new MainPagePlace()));
-        flowPanel.add(createHyperlink("About", new MainPagePlace()));
+//        flowPanel.add(createHyperlink("My Games", new MyGamesPlace()));
+//        flowPanel.add(createHyperlink("Free Board", new FreeBoardPlace()));
+//        flowPanel.add(createHyperlink("Play Online", new MainPagePlace()));
+//        flowPanel.add(createHyperlink("About", new MainPagePlace()));
 
         loginHyperlink = createHyperlink("Login/Register", new LoginPlace("login"));
         logoutHyperlink = createHyperlink("Logout", new LoginPlace("logout"));

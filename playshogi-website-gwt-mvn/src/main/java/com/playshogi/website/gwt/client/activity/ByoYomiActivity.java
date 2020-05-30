@@ -4,6 +4,7 @@ import com.google.gwt.core.client.Duration;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.place.shared.PlaceController;
 import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
 import com.google.web.bindery.event.shared.EventBus;
@@ -127,6 +128,11 @@ public class ByoYomiActivity extends MyAbstractActivity {
         if (place.getMaxTimeSec() > 0 && timeSec > place.getMaxTimeSec()) {
             timeSec = place.getMaxTimeSec();
         }
+        String username = sessionInformation.getUsername();
+        if (username == null) {
+            username = Window.prompt("What is your name?", "Guest");
+        }
+        problemsService.saveHighScore(username, solved, new FireAndForgetCallback());
         eventBus.fireEvent(new ByoYomiSurvivalFinishedEvent(solved, solved, failed, timeSec));
         stopTimers();
         stopped = true;
