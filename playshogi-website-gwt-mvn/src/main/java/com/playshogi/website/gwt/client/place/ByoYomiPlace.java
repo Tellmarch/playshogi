@@ -15,6 +15,15 @@ public class ByoYomiPlace extends Place {
     public ByoYomiPlace() {
     }
 
+    public ByoYomiPlace(int maxFailures, int raiseDifficultyEveryN, int maxTimeSec, boolean minusForBadAnswers,
+                        int timePerMove) {
+        this.maxFailures = maxFailures;
+        this.raiseDifficultyEveryN = raiseDifficultyEveryN;
+        this.maxTimeSec = maxTimeSec;
+        this.minusForBadAnswers = minusForBadAnswers;
+        this.timePerMove = timePerMove;
+    }
+
     public int getMaxFailures() {
         return maxFailures;
     }
@@ -33,6 +42,10 @@ public class ByoYomiPlace extends Place {
 
     public int getTimePerMove() {
         return timePerMove;
+    }
+
+    public boolean isDefault() {
+        return maxFailures == 3 && raiseDifficultyEveryN == 5 && maxTimeSec == 300 && !minusForBadAnswers && timePerMove == 0;
     }
 
     @Prefix("ByoYomi")

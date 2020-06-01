@@ -128,11 +128,13 @@ public class ByoYomiActivity extends MyAbstractActivity {
         if (place.getMaxTimeSec() > 0 && timeSec > place.getMaxTimeSec()) {
             timeSec = place.getMaxTimeSec();
         }
-        String username = sessionInformation.getUsername();
-        if (username == null) {
-            username = Window.prompt("What is your name?", "Guest");
+        if (place.isDefault()) {
+            String username = sessionInformation.getUsername();
+            if (username == null) {
+                username = Window.prompt("What is your name?", "Guest");
+            }
+            problemsService.saveHighScore(username, solved, new FireAndForgetCallback());
         }
-        problemsService.saveHighScore(username, solved, new FireAndForgetCallback());
         eventBus.fireEvent(new ByoYomiSurvivalFinishedEvent(solved, solved, failed, timeSec));
         stopTimers();
         stopped = true;
@@ -172,7 +174,7 @@ public class ByoYomiActivity extends MyAbstractActivity {
         } else {
             failed++;
         }
-        if (failed < 3) {
+        if (failed < place.getMaxFailures()) {
             loadNextProblem();
         } else {
             stop();

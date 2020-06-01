@@ -7,8 +7,8 @@ import com.playshogi.website.gwt.client.place.*;
 
 @Singleton
 @WithTokenizers({MainPagePlace.Tokenizer.class, TsumePlace.Tokenizer.class, FreeBoardPlace.Tokenizer.class,
-        MyGamesPlace.Tokenizer.class, ProblemStatisticsPlace.Tokenizer.class, ByoYomiPlace.Tokenizer.class,
-        LoginPlace.Tokenizer.class, NewKifuPlace.Tokenizer.class, OpeningsPlace.Tokenizer.class,
-        ViewKifuPlace.Tokenizer.class})
+        MyGamesPlace.Tokenizer.class, ProblemStatisticsPlace.Tokenizer.class, ByoYomiLandingPlace.Tokenizer.class,
+        ByoYomiPlace.Tokenizer.class, LoginPlace.Tokenizer.class, NewKifuPlace.Tokenizer.class,
+        OpeningsPlace.Tokenizer.class, ViewKifuPlace.Tokenizer.class})
 public interface AppPlaceHistoryMapper extends PlaceHistoryMapper {
 }

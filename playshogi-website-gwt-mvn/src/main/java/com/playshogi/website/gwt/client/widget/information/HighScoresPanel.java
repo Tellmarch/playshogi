@@ -51,7 +51,7 @@ public class HighScoresPanel extends Composite {
         highScoreTable.addColumn(highScoreColumn, "Score");
 
         flowPanel.add(new HTML(SafeHtmlUtils.fromSafeConstant(
-                "ByoYomi Survival High Scores:<br>")));
+                "<b>High Scores:</b><br>")));
 
         flowPanel.add(new HTML(SafeHtmlUtils.fromSafeConstant("<br>")));
         flowPanel.add(highScoreTable);
