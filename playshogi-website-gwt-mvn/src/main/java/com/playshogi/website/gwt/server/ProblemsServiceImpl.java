@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 public class ProblemsServiceImpl extends RemoteServiceServlet implements ProblemsService {
 
@@ -175,29 +176,25 @@ public class ProblemsServiceImpl extends RemoteServiceServlet implements Problem
     @Override
     public SurvivalHighScore[] getHighScores() {
 
-        SurvivalHighScore[] survivalHighScores = new SurvivalHighScore[highScores.size()];
+        List<SurvivalHighScore> survivalHighScores = new ArrayList<>();
 
-        Map<String, Integer> map = sortByValue(highScores);
-        int i = 0;
+        Map<String, Integer> map = sortByValueDesc(highScores);
         for (Map.Entry<String, Integer> entry : map.entrySet()) {
-            survivalHighScores[i] = new SurvivalHighScore(entry.getKey(), entry.getValue());
-            i++;
-            if (i == 5) break;
+            if (entry.getValue() != null) {
+                survivalHighScores.add(new SurvivalHighScore(entry.getKey(), entry.getValue()));
+            }
+            if (survivalHighScores.size() >= 5) break;
         }
 
-        return survivalHighScores;
+        return survivalHighScores.toArray(new SurvivalHighScore[0]);
     }
 
-    private static <K, V extends Comparable<? super V>> Map<K, V> sortByValue(Map<K, V> map) {
-        List<Map.Entry<K, V>> list = new ArrayList<>(map.entrySet());
-        list.sort(Map.Entry.comparingByValue());
+    public static Map<String, Integer> sortByValueDesc(final Map<String, Integer> scores) {
+        return scores.entrySet()
+                .stream()
+                .sorted((Map.Entry.<String, Integer>comparingByValue().reversed()))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
 
-        Map<K, V> result = new LinkedHashMap<>();
-        for (Map.Entry<K, V> entry : list) {
-            result.put(entry.getKey(), entry.getValue());
-        }
-
-        return result;
     }
 
     public static void main(final String[] args) {

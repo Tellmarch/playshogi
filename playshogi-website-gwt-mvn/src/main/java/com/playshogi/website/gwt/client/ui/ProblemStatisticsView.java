@@ -20,11 +20,10 @@ import com.google.inject.Singleton;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
-import com.playshogi.website.gwt.client.events.HighScoreListEvent;
 import com.playshogi.website.gwt.client.events.ProblemStatisticsEvent;
 import com.playshogi.website.gwt.client.place.TsumePlace;
+import com.playshogi.website.gwt.client.widget.information.HighScoresPanel;
 import com.playshogi.website.gwt.shared.models.ProblemStatisticsDetails;
-import com.playshogi.website.gwt.shared.models.SurvivalHighScore;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -33,7 +32,7 @@ import java.util.Date;
 public class ProblemStatisticsView extends Composite {
 
     private final CellTable<ProblemStatisticsDetails> table;
-    private final CellTable<SurvivalHighScore> highScoreTable;
+    private final HighScoresPanel highScorePanel;
 
     interface MyEventBinder extends EventBinder<ProblemStatisticsView> {
     }
@@ -58,30 +57,9 @@ public class ProblemStatisticsView extends Composite {
 
         flowPanel.add(new HTML(SafeHtmlUtils.fromSafeConstant("<br>")));
 
-        highScoreTable = new CellTable<>();
+        highScorePanel = new HighScoresPanel();
+        flowPanel.add(highScorePanel);
 
-        TextColumn<SurvivalHighScore> highScoreNameColumn = new TextColumn<SurvivalHighScore>() {
-            @Override
-            public String getValue(final SurvivalHighScore object) {
-                return String.valueOf(object.getName());
-            }
-        };
-        highScoreTable.addColumn(highScoreNameColumn, "Name");
-
-
-        TextColumn<SurvivalHighScore> highScoreColumn = new TextColumn<SurvivalHighScore>() {
-            @Override
-            public String getValue(final SurvivalHighScore object) {
-                return String.valueOf(object.getScore());
-            }
-        };
-        highScoreTable.addColumn(highScoreColumn, "Score");
-
-        flowPanel.add(new HTML(SafeHtmlUtils.fromSafeConstant(
-                "ByoYomi Survival High Scores:<br>")));
-
-        flowPanel.add(new HTML(SafeHtmlUtils.fromSafeConstant("<br>")));
-        flowPanel.add(highScoreTable);
         flowPanel.add(new HTML(SafeHtmlUtils.fromSafeConstant("<br>")));
 
         flowPanel.add(new HTML(SafeHtmlUtils.fromSafeConstant(
@@ -149,6 +127,7 @@ public class ProblemStatisticsView extends Composite {
         com.google.gwt.core.shared.GWT.log("Activating problem statistics view");
         GWT.log("Activating Problem feedback panel");
         eventBinder.bindEventHandlers(this, eventBus);
+        highScorePanel.activate(eventBus);
     }
 
     @EventHandler
@@ -156,12 +135,5 @@ public class ProblemStatisticsView extends Composite {
         GWT.log("Problem statistics: handle ProblemStatisticsEvent");
         table.setRowCount(event.getDetails().length);
         table.setRowData(0, Arrays.asList(event.getDetails()));
-    }
-
-    @EventHandler
-    public void onHighScoreList(final HighScoreListEvent event) {
-        GWT.log("Problem statistics: handle HighScoreListEvent");
-        highScoreTable.setRowCount(event.getHighScores().length);
-        highScoreTable.setRowData(0, Arrays.asList(event.getHighScores()));
     }
 }
