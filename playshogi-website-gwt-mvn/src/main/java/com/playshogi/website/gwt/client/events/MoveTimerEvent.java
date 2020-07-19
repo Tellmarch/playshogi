@@ -12,7 +12,7 @@ public class MoveTimerEvent extends GenericEvent {
         this.countdown = countdown;
     }
 
-    public int getTimems() {
+    public int getTimeMs() {
         return timems;
     }
 

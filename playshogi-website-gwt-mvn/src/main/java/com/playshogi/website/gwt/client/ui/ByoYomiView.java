@@ -6,10 +6,11 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.web.bindery.event.shared.EventBus;
 import com.playshogi.website.gwt.client.mvp.AppPlaceHistoryMapper;
+import com.playshogi.website.gwt.client.place.ByoYomiPlace;
 import com.playshogi.website.gwt.client.widget.board.ShogiBoard;
 import com.playshogi.website.gwt.client.widget.gamenavigator.GameNavigator;
+import com.playshogi.website.gwt.client.widget.problems.ByoYomiFeedbackPanel;
 import com.playshogi.website.gwt.client.widget.problems.ByoYomiProgressPanel;
-import com.playshogi.website.gwt.client.widget.problems.ProblemFeedbackPanel;
 
 @Singleton
 public class ByoYomiView extends Composite {
@@ -20,7 +21,7 @@ public class ByoYomiView extends Composite {
 
     private final ShogiBoard shogiBoard;
     private final GameNavigator gameNavigator;
-    private final ProblemFeedbackPanel problemFeedbackPanel;
+    private final ByoYomiFeedbackPanel byoYomiFeedbackPanel;
     private final ByoYomiProgressPanel byoYomiProgressPanel;
 
     @Inject
@@ -28,10 +29,10 @@ public class ByoYomiView extends Composite {
         GWT.log("Creating byo yomi view");
         shogiBoard = new ShogiBoard(TSUME);
         gameNavigator = new GameNavigator(TSUME);
-        problemFeedbackPanel = new ProblemFeedbackPanel(null, false);
+        byoYomiFeedbackPanel = new ByoYomiFeedbackPanel();
         byoYomiProgressPanel = new ByoYomiProgressPanel(historyMapper);
 
-        shogiBoard.setUpperRightPanel(problemFeedbackPanel);
+        shogiBoard.setUpperRightPanel(byoYomiFeedbackPanel);
         shogiBoard.setLowerLeftPanel(byoYomiProgressPanel);
 
         shogiBoard.getBoardConfiguration().setShowGoteKomadai(false);
@@ -46,8 +47,12 @@ public class ByoYomiView extends Composite {
         GWT.log("Activating tsume view");
         shogiBoard.activate(eventBus);
         gameNavigator.activate(eventBus);
-        problemFeedbackPanel.activate(eventBus);
+        byoYomiFeedbackPanel.activate(eventBus);
         byoYomiProgressPanel.activate(eventBus);
     }
 
+    public void initUi(ByoYomiPlace place) {
+        byoYomiProgressPanel.setTimerVisible(place.getMaxTimeSec() != 0);
+        byoYomiFeedbackPanel.setTimerVisible(place.getTimePerMove() != 0);
+    }
 }

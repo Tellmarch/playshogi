@@ -1,25 +1,22 @@
 package com.playshogi.website.gwt.client.widget.problems;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
-import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
+import com.playshogi.website.gwt.client.events.ByoYomiSurvivalFinishedEvent;
 import com.playshogi.website.gwt.client.events.UserFinishedProblemEvent;
 import com.playshogi.website.gwt.client.events.UserNavigatedBackEvent;
-import com.playshogi.website.gwt.client.events.UserSkippedProblemEvent;
-import com.playshogi.website.gwt.client.widget.gamenavigator.GameNavigator;
+import com.playshogi.website.gwt.client.widget.timer.ByoYomiTimerPanel;
 
-public class ProblemFeedbackPanel extends Composite implements ClickHandler {
+public class ByoYomiFeedbackPanel extends Composite {
 
-    interface MyEventBinder extends EventBinder<ProblemFeedbackPanel> {
+    interface MyEventBinder extends EventBinder<ByoYomiFeedbackPanel> {
     }
 
     private final MyEventBinder eventBinder = GWT.create(MyEventBinder.class);
@@ -31,20 +28,16 @@ public class ProblemFeedbackPanel extends Composite implements ClickHandler {
             "color:green\">Correct!</p>");
 
     private EventBus eventBus;
-    private Button skipButton;
 
     private final HTML messagePanel;
+    private final ByoYomiTimerPanel byoTomiTimerPanel;
 
-    public ProblemFeedbackPanel(final GameNavigator gameNavigator) {
+    public ByoYomiFeedbackPanel() {
 
         FlowPanel flowPanel = new FlowPanel();
-        if (gameNavigator != null) {
-            flowPanel.add(gameNavigator);
-        }
 
-        skipButton = new Button("Skip/Next");
-        skipButton.addClickHandler(this);
-        flowPanel.add(skipButton);
+        byoTomiTimerPanel = new ByoYomiTimerPanel();
+        flowPanel.add(byoTomiTimerPanel);
 
         flowPanel.add(new HTML(SafeHtmlUtils.fromSafeConstant("<br>")));
 
@@ -55,15 +48,6 @@ public class ProblemFeedbackPanel extends Composite implements ClickHandler {
         flowPanel.add(messagePanel);
 
         initWidget(flowPanel);
-    }
-
-    @Override
-    public void onClick(final ClickEvent event) {
-        Object source = event.getSource();
-        if (source == skipButton) {
-            messagePanel.setHTML(chooseHtml);
-            eventBus.fireEvent(new UserSkippedProblemEvent());
-        }
     }
 
     @EventHandler
@@ -82,10 +66,23 @@ public class ProblemFeedbackPanel extends Composite implements ClickHandler {
         messagePanel.setHTML(chooseHtml);
     }
 
+    @EventHandler
+    public void onByoYomiSurvivalFinishedEvent(final ByoYomiSurvivalFinishedEvent event) {
+        GWT.log("Problem feedback: handle ByoYomiSurvivalFinishedEvent");
+        messagePanel.setHTML(SafeHtmlUtils.fromTrustedString("<p style=\"font-size:20px;" +
+                "color:black\">Event complete! </br> Final Score: " + event.getFinalScore() +
+                " </br> Total time: " + event.getTotalTimeSec() + "s</p>"));
+    }
+
     public void activate(final EventBus eventBus) {
-        GWT.log("Activating Problem feedback panel");
+        GWT.log("Activating Byo Yomi feedback panel");
         this.eventBus = eventBus;
         eventBinder.bindEventHandlers(this, eventBus);
         messagePanel.setHTML(chooseHtml);
+        byoTomiTimerPanel.activate(eventBus);
+    }
+
+    public void setTimerVisible(boolean visible) {
+        byoTomiTimerPanel.setVisible(visible);
     }
 }

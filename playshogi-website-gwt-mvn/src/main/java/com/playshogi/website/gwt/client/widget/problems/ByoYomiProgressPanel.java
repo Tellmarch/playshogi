@@ -91,6 +91,15 @@ public class ByoYomiProgressPanel extends Composite {
         GWT.log("Activating ByoYomi progress panel");
         this.eventBus = eventBus;
         eventBinder.bindEventHandlers(this, eventBus);
+        initUi();
+    }
+
+    private void initUi() {
+        timerHTML.setHTML(SafeHtmlUtils.fromTrustedString(getTimeHTML(300)));
         flowPanel.clear();
+    }
+
+    public void setTimerVisible(boolean visible) {
+        timerHTML.setVisible(visible);
     }
 }

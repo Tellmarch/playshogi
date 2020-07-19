@@ -72,6 +72,7 @@ public class ByoYomiActivity extends MyAbstractActivity {
         this.eventBus = eventBus;
         eventBinder.bindEventHandlers(this, eventBus);
         byoYomiView.activate(eventBus);
+        byoYomiView.initUi(place);
         problemController.activate(eventBus);
         loadNextProblem();
         containerWidget.setWidget(byoYomiView.asWidget());

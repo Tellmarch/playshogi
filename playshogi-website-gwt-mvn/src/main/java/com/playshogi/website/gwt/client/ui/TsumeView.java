@@ -27,7 +27,7 @@ public class TsumeView extends Composite {
         GWT.log("Creating tsume view");
         shogiBoard = new ShogiBoard(TSUME);
         gameNavigator = new GameNavigator(TSUME);
-        problemFeedbackPanel = new ProblemFeedbackPanel(gameNavigator, true);
+        problemFeedbackPanel = new ProblemFeedbackPanel(gameNavigator);
         problemOptionsPanel = new ProblemOptionsPanel(MOVES);
 
         shogiBoard.setUpperRightPanel(problemFeedbackPanel);
