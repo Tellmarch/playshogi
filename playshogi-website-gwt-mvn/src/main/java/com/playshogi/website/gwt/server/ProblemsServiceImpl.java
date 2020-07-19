@@ -197,11 +197,4 @@ public class ProblemsServiceImpl extends RemoteServiceServlet implements Problem
 
     }
 
-    public static void main(final String[] args) {
-        for (int i = 100; i <= 900; i++) {
-            // System.out.println("Reading problem " + i);
-            new ProblemsServiceImpl().getProblemUsf("" + i);
-        }
-    }
-
 }
