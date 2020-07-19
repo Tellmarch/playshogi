@@ -17,27 +17,34 @@ public class ProblemController {
 
     private EventBus eventBus;
 
+    private String problemId = null;
+
     @EventHandler
     public void onNewVariation(final NewVariationPlayedEvent event) {
         GWT.log("Problem controller: handle new variation played event");
         if (event.isPositionCheckmate()) {
             GWT.log("Problem controller: player found alternative checkmate");
-            eventBus.fireEvent(new UserFinishedProblemEvent(true));
+            eventBus.fireEvent(new UserFinishedProblemEvent(true, problemId));
         } else {
-            eventBus.fireEvent(new UserFinishedProblemEvent(false));
+            eventBus.fireEvent(new UserFinishedProblemEvent(false, problemId));
         }
 
     }
 
     @EventHandler
     public void onEndOfVariation(final EndOfVariationReachedEvent event) {
-        GWT.log("Problem feedback: handle end of variation reached event");
-        eventBus.fireEvent(new UserFinishedProblemEvent(true));
+        GWT.log("ProblemController: handle end of variation reached event");
+        eventBus.fireEvent(new UserFinishedProblemEvent(true, problemId));
     }
 
     public void activate(final EventBus eventBus) {
         GWT.log("Activating Problem controller");
         this.eventBus = eventBus;
         eventBinder.bindEventHandlers(this, eventBus);
+    }
+
+    public void setProblemId(String problemId) {
+        GWT.log("ProblemController: setting problemId to " + problemId);
+        this.problemId = problemId;
     }
 }

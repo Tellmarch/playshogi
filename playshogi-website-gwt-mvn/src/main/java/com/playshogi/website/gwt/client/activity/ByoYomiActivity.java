@@ -62,6 +62,7 @@ public class ByoYomiActivity extends MyAbstractActivity {
 
     private void setTsumeId(String tsumeId) {
         this.tsumeId = tsumeId;
+        problemController.setProblemId(tsumeId);
     }
 
     @Override
