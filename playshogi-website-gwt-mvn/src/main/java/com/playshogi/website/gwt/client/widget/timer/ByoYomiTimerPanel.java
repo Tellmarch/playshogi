@@ -21,6 +21,7 @@ public class ByoYomiTimerPanel extends Composite {
 
     public ByoYomiTimerPanel() {
         timerHTML = new HTML(getTimeHTML(30));
+        timerHTML.getElement().getStyle().setBackgroundColor("yellow");
         initWidget(timerHTML);
     }
 
@@ -29,6 +30,11 @@ public class ByoYomiTimerPanel extends Composite {
         GWT.log("ByoYomi timer panel: timer event " + event.getTimeMs());
         int timeInSeconds = event.getTimeMs() / 1000;
         timerHTML.setHTML(SafeHtmlUtils.fromTrustedString(getTimeHTML(timeInSeconds)));
+        if (timeInSeconds <= 10) {
+            timerHTML.getElement().getStyle().setBackgroundColor("red");
+        } else {
+            timerHTML.getElement().getStyle().setBackgroundColor("yellow");
+        }
     }
 
     public void activate(final EventBus eventBus) {
@@ -42,6 +48,6 @@ public class ByoYomiTimerPanel extends Composite {
         int seconds = timeInSeconds % 60;
         String minutesStr = minutes < 10 ? "0" + minutes : String.valueOf(minutes);
         String secondsStr = seconds < 10 ? "0" + seconds : String.valueOf(seconds);
-        return "<p style=\"font-size:20px;color:blue\"><b>" + minutesStr + ":" + secondsStr + "</b></p>";
+        return "<p style=\"font-size:20px;color:black\"><b>" + minutesStr + ":" + secondsStr + "</b></p>";
     }
 }
