@@ -12,6 +12,7 @@ import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.library.models.record.GameRecord;
 import com.playshogi.library.shogi.models.formats.usf.UsfFormat;
 import com.playshogi.website.gwt.client.SessionInformation;
+import com.playshogi.website.gwt.client.controller.ProblemController;
 import com.playshogi.website.gwt.client.events.GameTreeChangedEvent;
 import com.playshogi.website.gwt.client.events.ProblemNumMovesSelectedEvent;
 import com.playshogi.website.gwt.client.events.UserFinishedProblemEvent;
@@ -34,6 +35,7 @@ public class TsumeActivity extends MyAbstractActivity {
     private final PlaceController placeController;
     private final TsumeView tsumeView;
     private final SessionInformation sessionInformation;
+    private final ProblemController problemController = new ProblemController();
     private EventBus eventBus;
 
     private String tsumeId;
@@ -58,6 +60,7 @@ public class TsumeActivity extends MyAbstractActivity {
         this.eventBus = eventBus;
         eventBinder.bindEventHandlers(this, eventBus);
         tsumeView.activate(eventBus);
+        problemController.activate(eventBus);
         loadTsume(tsumeId);
         containerWidget.setWidget(tsumeView.asWidget());
     }

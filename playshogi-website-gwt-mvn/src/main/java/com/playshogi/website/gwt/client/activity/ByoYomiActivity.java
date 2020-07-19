@@ -13,6 +13,7 @@ import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.library.models.record.GameRecord;
 import com.playshogi.library.shogi.models.formats.usf.UsfFormat;
 import com.playshogi.website.gwt.client.SessionInformation;
+import com.playshogi.website.gwt.client.controller.ProblemController;
 import com.playshogi.website.gwt.client.events.*;
 import com.playshogi.website.gwt.client.place.ByoYomiPlace;
 import com.playshogi.website.gwt.client.ui.ByoYomiView;
@@ -32,6 +33,7 @@ public class ByoYomiActivity extends MyAbstractActivity {
     private final PlaceController placeController;
     private final ByoYomiView byoYomiView;
     private final SessionInformation sessionInformation;
+    private final ProblemController problemController = new ProblemController();
     private EventBus eventBus;
 
     private String tsumeId;
@@ -69,6 +71,7 @@ public class ByoYomiActivity extends MyAbstractActivity {
         this.eventBus = eventBus;
         eventBinder.bindEventHandlers(this, eventBus);
         byoYomiView.activate(eventBus);
+        problemController.activate(eventBus);
         loadNextProblem();
         containerWidget.setWidget(byoYomiView.asWidget());
 

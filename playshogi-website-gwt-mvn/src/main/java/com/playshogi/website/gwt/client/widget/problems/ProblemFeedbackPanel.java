@@ -12,7 +12,10 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
-import com.playshogi.website.gwt.client.events.*;
+import com.playshogi.website.gwt.client.events.ByoYomiSurvivalFinishedEvent;
+import com.playshogi.website.gwt.client.events.UserFinishedProblemEvent;
+import com.playshogi.website.gwt.client.events.UserNavigatedBackEvent;
+import com.playshogi.website.gwt.client.events.UserSkippedProblemEvent;
 import com.playshogi.website.gwt.client.widget.gamenavigator.GameNavigator;
 
 public class ProblemFeedbackPanel extends Composite implements ClickHandler {
@@ -67,24 +70,13 @@ public class ProblemFeedbackPanel extends Composite implements ClickHandler {
     }
 
     @EventHandler
-    public void onNewVariation(final NewVariationPlayedEvent event) {
-        GWT.log("Problem feedback: handle new variation played event");
-        if (event.isPositionCheckmate()) {
-            GWT.log("Problem feedback: player found alternative checkmate");
+    public void onUserFinishedProblemEvent(final UserFinishedProblemEvent event) {
+        GWT.log("Problem feedback: handle UserFinishedProblemEvent");
+        if (event.isSuccess()) {
             messagePanel.setHTML(correctHtml);
-            eventBus.fireEvent(new UserFinishedProblemEvent(true));
         } else {
             messagePanel.setHTML(wrongHtml);
-            eventBus.fireEvent(new UserFinishedProblemEvent(false));
         }
-
-    }
-
-    @EventHandler
-    public void onEndOfVariation(final EndOfVariationReachedEvent event) {
-        GWT.log("Problem feedback: handle end of variation reached event");
-        messagePanel.setHTML(correctHtml);
-        eventBus.fireEvent(new UserFinishedProblemEvent(true));
     }
 
     @EventHandler
