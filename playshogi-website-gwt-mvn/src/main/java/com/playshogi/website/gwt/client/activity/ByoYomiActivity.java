@@ -121,7 +121,7 @@ public class ByoYomiActivity extends MyAbstractActivity {
                 eventBus.fireEvent(new MoveTimerEvent(timeLeftMs, true));
             } else {
                 eventBus.fireEvent(new MoveTimerEvent(0, true));
-                stop();
+                eventBus.fireEvent(new UserFinishedProblemEvent(false, tsumeId));
             }
         } else {
             eventBus.fireEvent(new MoveTimerEvent(moveDuration.elapsedMillis(), false));
@@ -194,6 +194,11 @@ public class ByoYomiActivity extends MyAbstractActivity {
         problemDuration = new Duration();
     }
 
+    private void initMoveTimer() {
+        moveDuration = new Duration();
+    }
+
+
     private AsyncCallback<ProblemDetails> getProblemRequestCallback() {
         return new AsyncCallback<ProblemDetails>() {
 
@@ -209,6 +214,7 @@ public class ByoYomiActivity extends MyAbstractActivity {
                     setTsumeId(result.getId());
                     eventBus.fireEvent(new GameTreeChangedEvent(gameRecord.getGameTree()));
                     initProblemTimer();
+                    initMoveTimer();
                 }
             }
 

@@ -30,6 +30,8 @@ public class ByoYomiFeedbackPanel extends Composite {
     private EventBus eventBus;
 
     private final HTML messagePanel;
+    private final HTML summaryPanel;
+
     private final ByoYomiTimerPanel byoTomiTimerPanel;
 
     public ByoYomiFeedbackPanel() {
@@ -46,6 +48,11 @@ public class ByoYomiFeedbackPanel extends Composite {
         messagePanel.getElement().getStyle().setBackgroundColor("White");
 
         flowPanel.add(messagePanel);
+
+        summaryPanel = new HTML();
+        summaryPanel.getElement().getStyle().setBackgroundColor("White");
+
+        flowPanel.add(summaryPanel);
 
         initWidget(flowPanel);
     }
@@ -69,9 +76,10 @@ public class ByoYomiFeedbackPanel extends Composite {
     @EventHandler
     public void onByoYomiSurvivalFinishedEvent(final ByoYomiSurvivalFinishedEvent event) {
         GWT.log("Problem feedback: handle ByoYomiSurvivalFinishedEvent");
-        messagePanel.setHTML(SafeHtmlUtils.fromTrustedString("<p style=\"font-size:20px;" +
+        summaryPanel.setHTML(SafeHtmlUtils.fromTrustedString("<p style=\"font-size:20px;" +
                 "color:black\">Event complete! </br> Final Score: " + event.getFinalScore() +
                 " </br> Total time: " + event.getTotalTimeSec() + "s</p>"));
+        summaryPanel.setVisible(true);
     }
 
     public void activate(final EventBus eventBus) {
@@ -79,6 +87,7 @@ public class ByoYomiFeedbackPanel extends Composite {
         this.eventBus = eventBus;
         eventBinder.bindEventHandlers(this, eventBus);
         messagePanel.setHTML(chooseHtml);
+        summaryPanel.setVisible(false);
         byoTomiTimerPanel.activate(eventBus);
     }
 
