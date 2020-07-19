@@ -8,9 +8,6 @@ import com.playshogi.library.database.UserRepository;
 import com.playshogi.library.database.models.PersistentKifu;
 import com.playshogi.library.database.models.PersistentProblem;
 import com.playshogi.library.database.models.PersistentUserProblemStats;
-import com.playshogi.library.models.record.GameRecord;
-import com.playshogi.library.shogi.files.GameRecordFileReader;
-import com.playshogi.library.shogi.models.formats.kif.KifFormat;
 import com.playshogi.library.shogi.models.formats.usf.UsfFormat;
 import com.playshogi.website.gwt.shared.models.LoginResult;
 import com.playshogi.website.gwt.shared.models.ProblemDetails;
@@ -18,7 +15,6 @@ import com.playshogi.website.gwt.shared.models.ProblemStatisticsDetails;
 import com.playshogi.website.gwt.shared.models.SurvivalHighScore;
 import com.playshogi.website.gwt.shared.services.ProblemsService;
 
-import java.io.IOException;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -30,8 +26,6 @@ public class ProblemsServiceImpl extends RemoteServiceServlet implements Problem
 
     private static final Logger LOGGER = Logger.getLogger(ProblemsServiceImpl.class.getName());
 
-
-    private static final String PATH = "/playshogi/tsume/7/";
     private final ProblemRepository problemRepository;
     private final KifuRepository kifuRepository;
     private final UserRepository userRepository;
@@ -44,20 +38,6 @@ public class ProblemsServiceImpl extends RemoteServiceServlet implements Problem
         problemRepository = new ProblemRepository(dbConnection);
         kifuRepository = new KifuRepository(dbConnection);
         userRepository = new UserRepository(dbConnection);
-    }
-
-    @Override
-    public String getProblemUsf(final String problemId) {
-        try {
-            GameRecord gameRecord = GameRecordFileReader.read(KifFormat.INSTANCE,
-                    PATH + "tsume_07_" + problemId + ".kif");
-            String tsume = UsfFormat.INSTANCE.write(gameRecord.getGameTree());
-            System.out.println(tsume);
-            return tsume;
-        } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "Error loading the problem " + problemId, e);
-        }
-        return null;
     }
 
     @Override
@@ -189,7 +169,7 @@ public class ProblemsServiceImpl extends RemoteServiceServlet implements Problem
         return survivalHighScores.toArray(new SurvivalHighScore[0]);
     }
 
-    public static Map<String, Integer> sortByValueDesc(final Map<String, Integer> scores) {
+    private static Map<String, Integer> sortByValueDesc(final Map<String, Integer> scores) {
         return scores.entrySet()
                 .stream()
                 .sorted((Map.Entry.<String, Integer>comparingByValue().reversed()))

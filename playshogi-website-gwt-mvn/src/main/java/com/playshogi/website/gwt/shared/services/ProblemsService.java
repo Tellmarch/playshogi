@@ -9,8 +9,6 @@ import com.playshogi.website.gwt.shared.models.SurvivalHighScore;
 @RemoteServiceRelativePath("problems")
 public interface ProblemsService extends RemoteService {
 
-    String getProblemUsf(String problemId);
-
     ProblemDetails getProblem(String problemId);
 
     ProblemDetails getRandomProblem();
