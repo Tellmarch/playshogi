@@ -186,6 +186,12 @@ public class ByoYomiActivity extends MyAbstractActivity {
         }
     }
 
+    @EventHandler
+    public void onMovePlayed(final MovePlayedEvent movePlayedEvent) {
+        GWT.log("ByoYomiActivity: Handling move played event");
+        initMoveTimer();
+    }
+
     private void loadNextProblem() {
         problemsService.getRandomProblem(numMoves, getProblemRequestCallback());
     }
