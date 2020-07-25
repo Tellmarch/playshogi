@@ -44,7 +44,6 @@ public class Komadai {
 
         GWT.log("piece: " + piece + " ndisp " + ndispx[pieceNum] + " " + pieces[pieceNum]);
         if (pieces[pieceNum] >= ndispx[pieceNum]) {
-            GWT.log("DOES NOT FIT");
             offset = 10;
         }
 
