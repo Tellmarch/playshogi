@@ -34,7 +34,7 @@ public class ProblemController {
     @EventHandler
     public void onEndOfVariation(final EndOfVariationReachedEvent event) {
         GWT.log("ProblemController: handle end of variation reached event");
-        eventBus.fireEvent(new UserFinishedProblemEvent(true, problemId));
+        eventBus.fireEvent(new UserFinishedProblemEvent(event.isMainLine(), problemId));
     }
 
     public void activate(final EventBus eventBus) {

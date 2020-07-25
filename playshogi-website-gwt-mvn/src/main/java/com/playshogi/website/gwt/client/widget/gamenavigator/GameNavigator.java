@@ -2,7 +2,6 @@ package com.playshogi.website.gwt.client.widget.gamenavigator;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Button;
@@ -19,6 +18,8 @@ import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.library.shogi.models.shogivariant.ShogiInitialPositionFactory;
 import com.playshogi.library.shogi.rules.ShogiRulesEngine;
 import com.playshogi.website.gwt.client.events.*;
+
+import java.util.Objects;
 
 public class GameNavigator extends Composite implements ClickHandler {
 
@@ -77,12 +78,9 @@ public class GameNavigator extends Composite implements ClickHandler {
         GWT.log(activityId + ": Activating Game Navigator");
         this.eventBus = eventBus;
         eventBinder.bindEventHandlers(this, this.eventBus);
-        Scheduler.get().scheduleDeferred(new ScheduledCommand() {
-            @Override
-            public void execute() {
-                GWT.log(activityId + ": Game Navigator defered execution");
-                firePositionChanged(false);
-            }
+        Scheduler.get().scheduleDeferred(() -> {
+            GWT.log(activityId + ": Game Navigator defered execution");
+            firePositionChanged(false);
         });
     }
 
@@ -100,6 +98,8 @@ public class GameNavigator extends Composite implements ClickHandler {
         String usfMove = UsfMoveConverter.toUsfString(move);
         GWT.log("Move played: " + usfMove);
         boolean existingMove = gameNavigation.hasMoveInCurrentPosition(move);
+        boolean mainMove = Objects.equals(gameNavigation.getMainVariationMove(), move);
+
         gameNavigation.addMove(move);
         if (!existingMove) {
             GWT.log("New variation");
@@ -107,7 +107,7 @@ public class GameNavigator extends Composite implements ClickHandler {
             GWT.log("Checkmate: " + positionCheckmate);
             eventBus.fireEvent(new NewVariationPlayedEvent(positionCheckmate));
         } else if (gameNavigation.isEndOfVariation()) {
-            eventBus.fireEvent(new EndOfVariationReachedEvent());
+            eventBus.fireEvent(new EndOfVariationReachedEvent(mainMove));
             // } else if (isSenteToPlay() &&
             // !boardConfiguration.isPlaySenteMoves()) {
             // gameNavigation.moveForward();
