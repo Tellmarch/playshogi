@@ -53,6 +53,7 @@ public class ByoYomiActivity extends MyAbstractActivity {
     public ByoYomiActivity(final ByoYomiPlace place, final ByoYomiView byoYomiView,
                            final PlaceController placeController,
                            final SessionInformation sessionInformation) {
+        GWT.log("Creating byo yomi activity");
         this.place = place;
         this.byoYomiView = byoYomiView;
         this.tsumeId = null;
