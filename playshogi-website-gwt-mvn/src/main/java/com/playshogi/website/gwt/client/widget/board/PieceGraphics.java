@@ -3,6 +3,7 @@ package com.playshogi.website.gwt.client.widget.board;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.resources.client.ImageResource;
 import com.playshogi.library.shogi.models.Piece;
+import com.playshogi.library.shogi.models.PieceType;
 
 public class PieceGraphics {
 
@@ -69,6 +70,29 @@ public class PieceGraphics {
             default:
                 throw new IllegalArgumentException();
 
+        }
+    }
+
+    public static ImageResource getPieceImage(final PieceType pieceType, boolean promoted) {
+        switch (pieceType) {
+            case PAWN:
+                return promoted ? resources.sto() : resources.sfu();
+            case LANCE:
+                return promoted ? resources.snkyo() : resources.skyo();
+            case KNIGHT:
+                return promoted ? resources.snkei() : resources.skei();
+            case SILVER:
+                return promoted ? resources.sngin() : resources.sgin();
+            case GOLD:
+                return resources.skin();
+            case BISHOP:
+                return promoted ? resources.suma() : resources.skaku();
+            case ROOK:
+                return promoted ? resources.sryu() : resources.shi();
+            case KING:
+                return resources.sou();
+            default:
+                throw new IllegalArgumentException();
         }
     }
 }
