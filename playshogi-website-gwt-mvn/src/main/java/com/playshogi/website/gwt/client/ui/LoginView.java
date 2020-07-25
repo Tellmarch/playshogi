@@ -45,6 +45,7 @@ public class LoginView extends Composite implements ClickHandler {
         loginPanel.add(buttonPanel);
 
         VerticalPanel verticalPanel = new VerticalPanel();
+        verticalPanel.add(new HTML("<b>Not available yet - enjoy the website as a guest<b><br>"));
 
         verticalPanel.add(loginPanel);
         infoBox = new HTML("");

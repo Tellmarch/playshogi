@@ -163,7 +163,7 @@ public class ProblemsServiceImpl extends RemoteServiceServlet implements Problem
             if (entry.getValue() != null) {
                 survivalHighScores.add(new SurvivalHighScore(entry.getKey(), entry.getValue()));
             }
-            if (survivalHighScores.size() >= 5) break;
+            if (survivalHighScores.size() >= 20) break;
         }
 
         return survivalHighScores.toArray(new SurvivalHighScore[0]);
