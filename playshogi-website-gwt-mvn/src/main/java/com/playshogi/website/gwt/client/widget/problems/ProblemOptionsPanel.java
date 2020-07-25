@@ -18,6 +18,7 @@ public class ProblemOptionsPanel extends Composite implements ClickHandler {
     private final MyEventBinder eventBinder = GWT.create(MyEventBinder.class);
 
     private EventBus eventBus;
+    private RadioButton allButton;
 
     public ProblemOptionsPanel(int[] moves) {
 
@@ -28,7 +29,7 @@ public class ProblemOptionsPanel extends Composite implements ClickHandler {
             verticalPanel.add(button);
         }
 
-        RadioButton allButton = new RadioButton("moves", "All");
+        allButton = new RadioButton("moves", "All");
         allButton.addClickHandler(this);
         allButton.setValue(true);
         verticalPanel.add(allButton);
@@ -49,5 +50,6 @@ public class ProblemOptionsPanel extends Composite implements ClickHandler {
         GWT.log("Activating Problem feedback panel");
         this.eventBus = eventBus;
         eventBinder.bindEventHandlers(this, eventBus);
+        allButton.setValue(true);
     }
 }
