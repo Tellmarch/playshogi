@@ -8,5 +8,23 @@
     </ui:style>
     <g:HTMLPanel>
         Some interesting text should be here...
+        <p/>
+        Last updated: 2020-07-25
+        <p/>
+        New Features:
+        <ul>
+            <li>Added popup to confirm piece promotion</li>
+            <li>Added option to select the number of moves in custom mode</li>
+            <li>High scores now includes up to 20 names</li>
+            <li>Added change log and version check</li>
+        </ul>
+
+        Bugs fixed:
+        <ul>
+            <li>Display all the pieces of the same type in the sideboard</li>
+            <li>Number of moves selector shows the correct value</li>
+            <li>Trying an incorrect move twice doesn't display "CORRECT"</li>
+            <li>You can not move a piece from the board to the side in problems</li>
+        </ul>
     </g:HTMLPanel>
 </ui:UiBinder>

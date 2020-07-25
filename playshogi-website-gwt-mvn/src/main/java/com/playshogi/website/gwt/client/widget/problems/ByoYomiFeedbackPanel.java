@@ -22,7 +22,7 @@ public class ByoYomiFeedbackPanel extends Composite {
     private final MyEventBinder eventBinder = GWT.create(MyEventBinder.class);
 
     private SafeHtml chooseHtml = SafeHtmlUtils
-            .fromSafeConstant("Play the correct move!<br>(Ctrl+click to play without promotion)");
+            .fromSafeConstant("Play the correct move!<br>");
     private SafeHtml wrongHtml = SafeHtmlUtils.fromSafeConstant("<p style=\"font-size:20px;color:red\">Wrong!</p>");
     private SafeHtml correctHtml = SafeHtmlUtils.fromSafeConstant("<p style=\"font-size:20px;" +
             "color:green\">Correct!</p>");
