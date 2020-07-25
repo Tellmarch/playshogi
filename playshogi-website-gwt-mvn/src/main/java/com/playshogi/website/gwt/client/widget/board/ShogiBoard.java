@@ -4,7 +4,6 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.DomEvent;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
@@ -72,6 +71,8 @@ public class ShogiBoard extends Composite implements ClickHandler {
     private final int lowerLeftPanelX;
     private final int lowerLeftPanelY;
 
+    private final PromotionPopupController promotionPopupController;
+
     private EventBus eventBus;
 
     private final String activityId;
@@ -82,6 +83,7 @@ public class ShogiBoard extends Composite implements ClickHandler {
 
     public ShogiBoard(final String activityId, final BoardConfiguration boardConfiguration) {
         GWT.log(activityId + ": Creating shogi board");
+        promotionPopupController = new PromotionPopupController(this);
 
         this.activityId = activityId;
         this.boardConfiguration = boardConfiguration;
@@ -150,7 +152,6 @@ public class ShogiBoard extends Composite implements ClickHandler {
         for (int row = 0; row < rows; ++row) {
             for (int col = 0; col < columns; ++col) {
                 final Image image = new Image(boardResources.empty());
-                image.addClickHandler(this);
 
                 squareImages[row][col] = image;
                 image.setStyleName(STYLE_PIECE_UNSELECTED);
@@ -256,6 +257,7 @@ public class ShogiBoard extends Composite implements ClickHandler {
         return boardLeft + BOARD_LEFT_MARGIN + col * SQUARE_WIDTH;
     }
 
+
     private void setupSquareClickHandler(final Image image, final int row, final int col) {
         image.addMouseDownHandler(DomEvent::preventDefault);
 
@@ -273,32 +275,21 @@ public class ShogiBoard extends Composite implements ClickHandler {
                             selectedPiece.getColumn()), getSquare(row, col), false);
 
                     if (shogiRulesEngine.canMoveWithPromotion(position, move)) {
-                        if (Window.confirm("Do you want to promote?")) {
-                            move.setPromote(true);
-                        }
-                    }
-
-//                    if (!event.isControlKeyDown() && shogiRulesEngine.canMoveWithPromotion(position, move)) {
-//                        move.setPromote(true);
-//                    }
-
-                    if (!boardConfiguration.isAllowOnlyLegalMoves() || shogiRulesEngine.isMoveLegalInPosition(position, move)) {
-                        playMove(move);
+                        promotionPopupController.showPromotionPopup(image, move);
+                    } else {
+                        playNormalMoveIfAllowed(move);
                     }
                 }
-
-                // selectedPiece.setColumn(col);
-                // selectedPiece.setRow(row);
-                // selectedPiece.setInKomadai(false);
-
-                // absolutePanel.add(selectedPiece.getImage(), getX(col),
-                // getY(row));
-                // position.getShogiBoardState().setPieceAt(getSquare(row,
-                // col), piece);
 
                 unselect();
             }
         });
+    }
+
+    void playNormalMoveIfAllowed(NormalMove move) {
+        if (!boardConfiguration.isAllowOnlyLegalMoves() || shogiRulesEngine.isMoveLegalInPosition(position, move)) {
+            playMove(move);
+        }
     }
 
     private void setupPieceEventHandlers(final PieceWrapper pieceWrapper) {
@@ -318,9 +309,7 @@ public class ShogiBoard extends Composite implements ClickHandler {
                                     move)) {
                                 move.setPromote(true);
                             }
-                            if (!boardConfiguration.isAllowOnlyLegalMoves() || shogiRulesEngine.isMoveLegalInPosition(position, move)) {
-                                playMove(move);
-                            }
+                            playNormalMoveIfAllowed(move);
                             return;
                         } else {
                             unselect();
