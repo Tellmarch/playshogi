@@ -90,7 +90,7 @@ public class ByoYomiLandingView extends Composite {
         defaultPanelInternal.add(new HTML("<br>"));
         defaultPanelInternal.add(new Image(resources.puzzleBlue()));
         defaultPanelInternal.add(new Button("Play!",
-                (ClickHandler) clickEvent -> placeController.goTo(new ByoYomiPlace(3, 5, 0, false, 0))));
+                (ClickHandler) clickEvent -> placeController.goTo(new ByoYomiPlace(3, 5, 0, false, 0, 0))));
         defaultPanelInternal.add(new HTML("<br>"));
         defaultPanelInternal.add(new HTML("Solve problems with no time limit, until you get 3 wrong answers! The " +
                 "difficulty will " +
@@ -109,7 +109,7 @@ public class ByoYomiLandingView extends Composite {
         defaultPanelInternal.add(new HTML("<br>"));
         defaultPanelInternal.add(new Image(resources.speakerGreen()));
         defaultPanelInternal.add(new Button("Play!",
-                (ClickHandler) clickEvent -> placeController.goTo(new ByoYomiPlace(3, 5, 0, false, 30))));
+                (ClickHandler) clickEvent -> placeController.goTo(new ByoYomiPlace(3, 5, 0, false, 30, 0))));
         defaultPanelInternal.add(new HTML("<br>"));
         defaultPanelInternal.add(new HTML("You only have 30 seconds to make each move! Keep solving problems until " +
                 "you get 3 wrong answers. The difficulty will " +

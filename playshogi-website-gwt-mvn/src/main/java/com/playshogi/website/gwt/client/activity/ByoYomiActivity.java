@@ -37,7 +37,7 @@ public class ByoYomiActivity extends MyAbstractActivity {
     private EventBus eventBus;
 
     private String tsumeId;
-    private int numMoves = 3;
+    private int numMoves;
     private int solved = 0;
     private int failed = 0;
     private Duration problemDuration = new Duration();
@@ -58,6 +58,7 @@ public class ByoYomiActivity extends MyAbstractActivity {
         this.tsumeId = null;
         this.placeController = placeController;
         this.sessionInformation = sessionInformation;
+        numMoves = place.getNumberOfMoves() == 0 ? 3 : place.getNumberOfMoves();
     }
 
     private void setTsumeId(String tsumeId) {
@@ -173,7 +174,7 @@ public class ByoYomiActivity extends MyAbstractActivity {
         }
         if (event.isSuccess()) {
             solved++;
-            if (solved % 5 == 0 && numMoves < 13) {
+            if (solved % place.getRaiseDifficultyEveryN() == 0 && numMoves < 13 && place.getNumberOfMoves() == 0) {
                 numMoves += 2;
             }
         } else {
