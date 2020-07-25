@@ -4,6 +4,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.DomEvent;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
@@ -270,9 +271,17 @@ public class ShogiBoard extends Composite implements ClickHandler {
                 } else {
                     NormalMove move = new NormalMove(piece, getSquare(selectedPiece.getRow(),
                             selectedPiece.getColumn()), getSquare(row, col), false);
-                    if (!event.isControlKeyDown() && shogiRulesEngine.canMoveWithPromotion(position, move)) {
-                        move.setPromote(true);
+
+                    if (shogiRulesEngine.canMoveWithPromotion(position, move)) {
+                        if (Window.confirm("Do you want to promote?")) {
+                            move.setPromote(true);
+                        }
                     }
+
+//                    if (!event.isControlKeyDown() && shogiRulesEngine.canMoveWithPromotion(position, move)) {
+//                        move.setPromote(true);
+//                    }
+
                     if (!boardConfiguration.isAllowOnlyLegalMoves() || shogiRulesEngine.isMoveLegalInPosition(position, move)) {
                         playMove(move);
                     }
