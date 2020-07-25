@@ -1,6 +1,5 @@
 package com.playshogi.website.gwt.client.widget.board;
 
-import com.google.gwt.core.client.GWT;
 import com.playshogi.library.shogi.models.Piece;
 
 import static com.playshogi.website.gwt.client.widget.board.ShogiBoard.SQUARE_WIDTH;
@@ -42,7 +41,6 @@ public class Komadai {
         int ox = SQUARE_WIDTH;
         int offset = 0;
 
-        GWT.log("piece: " + piece + " ndisp " + ndispx[pieceNum] + " " + pieces[pieceNum]);
         if (pieces[pieceNum] >= ndispx[pieceNum]) {
             offset = 10;
         }
