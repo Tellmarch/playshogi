@@ -13,4 +13,6 @@ public interface LoginServiceAsync {
 
     void register(String username, String password, AsyncCallback<LoginResult> callback);
 
+    void getVersion(AsyncCallback<String> callback);
+
 }

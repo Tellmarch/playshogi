@@ -1,6 +1,7 @@
 package com.playshogi.website.gwt.server;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
+import com.playshogi.website.gwt.shared.Version;
 import com.playshogi.website.gwt.shared.models.LoginResult;
 import com.playshogi.website.gwt.shared.services.LoginService;
 
@@ -33,5 +34,10 @@ public class LoginServiceImpl extends RemoteServiceServlet implements LoginServi
     public LoginResult register(final String username, final String password) {
         // TODO Auto-generated method stub
         return null;
+    }
+
+    @Override
+    public String getVersion() {
+        return Version.VERSION;
     }
 }

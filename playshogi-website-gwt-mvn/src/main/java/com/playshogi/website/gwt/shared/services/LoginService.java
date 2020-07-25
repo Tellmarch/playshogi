@@ -15,4 +15,6 @@ public interface LoginService extends RemoteService {
 
     LoginResult register(String username, String password);
 
+    String getVersion();
+
 }
