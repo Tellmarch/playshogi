@@ -1,7 +1,9 @@
 package com.playshogi.website.gwt.client.widget.board;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.*;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.DomEvent;
 import com.google.gwt.user.client.ui.*;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
@@ -254,134 +256,108 @@ public class ShogiBoard extends Composite implements ClickHandler {
     }
 
     private void setupSquareClickHandler(final Image image, final int row, final int col) {
-        image.addMouseDownHandler(new MouseDownHandler() {
-            @Override
-            public void onMouseDown(final MouseDownEvent event) {
-                event.preventDefault();
-            }
-        });
+        image.addMouseDownHandler(DomEvent::preventDefault);
 
-        image.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(final ClickEvent event) {
-                if (selectedPiece != null) {
-                    Piece piece = selectedPiece.getPiece();
+        image.addClickHandler(event -> {
+            if (selectedPiece != null) {
+                Piece piece = selectedPiece.getPiece();
 
-                    if (selectedPiece.isInKomadai()) {
-                        DropMove move = new DropMove(piece.isSentePiece(), piece.getPieceType(), getSquare(row, col));
-                        if (!boardConfiguration.isAllowOnlyLegalMoves() || shogiRulesEngine.isMoveLegalInPosition(position, move)) {
-                            playMove(move);
-                        }
-                    } else {
-                        NormalMove move = new NormalMove(piece, getSquare(selectedPiece.getRow(),
-                                selectedPiece.getColumn()), getSquare(row, col), false);
-                        if (!event.isControlKeyDown() && shogiRulesEngine.canMoveWithPromotion(position, move)) {
-                            move.setPromote(true);
-                        }
-                        if (!boardConfiguration.isAllowOnlyLegalMoves() || shogiRulesEngine.isMoveLegalInPosition(position, move)) {
-                            playMove(move);
-                        }
+                if (selectedPiece.isInKomadai()) {
+                    DropMove move = new DropMove(piece.isSentePiece(), piece.getPieceType(), getSquare(row, col));
+                    if (!boardConfiguration.isAllowOnlyLegalMoves() || shogiRulesEngine.isMoveLegalInPosition(position, move)) {
+                        playMove(move);
                     }
-
-                    // selectedPiece.setColumn(col);
-                    // selectedPiece.setRow(row);
-                    // selectedPiece.setInKomadai(false);
-
-                    // absolutePanel.add(selectedPiece.getImage(), getX(col),
-                    // getY(row));
-                    // position.getShogiBoardState().setPieceAt(getSquare(row,
-                    // col), piece);
-
-                    unselect();
+                } else {
+                    NormalMove move = new NormalMove(piece, getSquare(selectedPiece.getRow(),
+                            selectedPiece.getColumn()), getSquare(row, col), false);
+                    if (!event.isControlKeyDown() && shogiRulesEngine.canMoveWithPromotion(position, move)) {
+                        move.setPromote(true);
+                    }
+                    if (!boardConfiguration.isAllowOnlyLegalMoves() || shogiRulesEngine.isMoveLegalInPosition(position, move)) {
+                        playMove(move);
+                    }
                 }
+
+                // selectedPiece.setColumn(col);
+                // selectedPiece.setRow(row);
+                // selectedPiece.setInKomadai(false);
+
+                // absolutePanel.add(selectedPiece.getImage(), getX(col),
+                // getY(row));
+                // position.getShogiBoardState().setPieceAt(getSquare(row,
+                // col), piece);
+
+                unselect();
             }
         });
     }
 
     private void setupPieceEventHandlers(final PieceWrapper pieceWrapper) {
-        pieceWrapper.getImage().addMouseDownHandler(new MouseDownHandler() {
-            @Override
-            public void onMouseDown(final MouseDownEvent event) {
-                event.preventDefault();
-            }
-        });
+        pieceWrapper.getImage().addMouseDownHandler(DomEvent::preventDefault);
 
-        pieceWrapper.getImage().addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(final ClickEvent event) {
-                if (canPlayMove()) {
-                    if (selectedPiece == pieceWrapper) {
-                        unselect();
-                    } else {
-                        if (selectedPiece != null) {
-                            if (!selectedPiece.isInKomadai() && selectedPiece.getPiece().isSentePiece() != pieceWrapper.getPiece().isSentePiece()) {
-                                CaptureMove move = new CaptureMove(selectedPiece.getPiece(),
-                                        selectedPiece.getSquare(), pieceWrapper.getSquare(), false,
-                                        pieceWrapper.getPiece());
-                                if (!event.isControlKeyDown() && shogiRulesEngine.canMoveWithPromotion(position,
-                                        move)) {
-                                    move.setPromote(true);
-                                }
-                                if (!boardConfiguration.isAllowOnlyLegalMoves() || shogiRulesEngine.isMoveLegalInPosition(position, move)) {
-                                    playMove(move);
-                                }
-                                return;
-                            } else {
-                                unselect();
+        pieceWrapper.getImage().addClickHandler(event -> {
+            if (canPlayMove()) {
+                if (selectedPiece == pieceWrapper) {
+                    unselect();
+                } else {
+                    if (selectedPiece != null) {
+                        if (!selectedPiece.isInKomadai() && selectedPiece.getPiece().isSentePiece() != pieceWrapper.getPiece().isSentePiece()) {
+                            CaptureMove move = new CaptureMove(selectedPiece.getPiece(),
+                                    selectedPiece.getSquare(), pieceWrapper.getSquare(), false,
+                                    pieceWrapper.getPiece());
+                            if (!event.isControlKeyDown() && shogiRulesEngine.canMoveWithPromotion(position,
+                                    move)) {
+                                move.setPromote(true);
                             }
+                            if (!boardConfiguration.isAllowOnlyLegalMoves() || shogiRulesEngine.isMoveLegalInPosition(position, move)) {
+                                playMove(move);
+                            }
+                            return;
+                        } else {
+                            unselect();
                         }
-                        if (position.isSenteToPlay() == pieceWrapper.getPiece().isSentePiece()) {
-                            selectedPiece = pieceWrapper;
-                            pieceWrapper.getImage().setStyleName(STYLE_PIECE_SELECTED);
+                    }
+                    if (position.isSenteToPlay() == pieceWrapper.getPiece().isSentePiece()) {
+                        selectedPiece = pieceWrapper;
+                        pieceWrapper.getImage().setStyleName(STYLE_PIECE_SELECTED);
 
-                            if (!pieceWrapper.isInKomadai()) {
-                                List<Square> possibleTargets =
-                                        shogiRulesEngine.getPossibleTargetSquares(position,
-                                        getSquare(pieceWrapper.getRow(), pieceWrapper.getColumn()));
-                                for (Square square : possibleTargets) {
-                                    squareImages[square.getRow() - 1][8 - (square.getColumn() - 1)].setStyleName("gwt" +
-                                            "-square-selected");
-                                }
+                        if (!pieceWrapper.isInKomadai()) {
+                            List<Square> possibleTargets =
+                                    shogiRulesEngine.getPossibleTargetSquares(position,
+                                            getSquare(pieceWrapper.getRow(), pieceWrapper.getColumn()));
+                            for (Square square : possibleTargets) {
+                                squareImages[square.getRow() - 1][8 - (square.getColumn() - 1)].setStyleName("gwt" +
+                                        "-square-selected");
                             }
                         }
                     }
                 }
             }
-
         });
 
         if (boardConfiguration.isShowPossibleMovesOnPieceMouseOver()) {
 
-            pieceWrapper.getImage().addMouseOverHandler(new MouseOverHandler() {
-
-                @Override
-                public void onMouseOver(final MouseOverEvent event) {
-                    // GWT.log("mouse over");
-                    if (selectedPiece == null) {
-                        if (!pieceWrapper.isInKomadai()) {
-                            if (position.isSenteToPlay() == pieceWrapper.getPiece().isSentePiece()) {
-                                List<Square> possibleTargets =
-                                        shogiRulesEngine.getPossibleTargetSquares(position,
-                                        getSquare(pieceWrapper.getRow(), pieceWrapper.getColumn()));
-                                for (Square square : possibleTargets) {
-                                    selectSquare(square);
-                                }
-                                selectPiece(pieceWrapper);
+            pieceWrapper.getImage().addMouseOverHandler(event -> {
+                // GWT.log("mouse over");
+                if (selectedPiece == null) {
+                    if (!pieceWrapper.isInKomadai()) {
+                        if (position.isSenteToPlay() == pieceWrapper.getPiece().isSentePiece()) {
+                            List<Square> possibleTargets =
+                                    shogiRulesEngine.getPossibleTargetSquares(position,
+                                            getSquare(pieceWrapper.getRow(), pieceWrapper.getColumn()));
+                            for (Square square : possibleTargets) {
+                                selectSquare(square);
                             }
+                            selectPiece(pieceWrapper);
                         }
                     }
-
                 }
 
             });
 
-            pieceWrapper.getImage().addMouseOutHandler(new MouseOutHandler() {
-
-                @Override
-                public void onMouseOut(final MouseOutEvent event) {
-                    if (selectedPiece == null) {
-                        unselectSquares();
-                    }
+            pieceWrapper.getImage().addMouseOutHandler(event -> {
+                if (selectedPiece == null) {
+                    unselectSquares();
                 }
             });
         }
@@ -415,7 +391,7 @@ public class ShogiBoard extends Composite implements ClickHandler {
     public void onClick(final ClickEvent event) {
 
         Object source = event.getSource();
-        if (source == senteKomadaiImage && selectedPiece != null) {
+        if (source == senteKomadaiImage && selectedPiece != null && boardConfiguration.isPositionEditingMode()) {
             Piece piece = selectedPiece.getPiece();
             selectedPiece.setInKomadai(true);
 
@@ -423,7 +399,7 @@ public class ShogiBoard extends Composite implements ClickHandler {
 
             absolutePanel.add(selectedPiece.getImage(), senteKomadaiX + point.x, senteKomadaiY + point.y);
             unselect();
-        } else if (source == goteKomadaiImage && selectedPiece != null) {
+        } else if (source == goteKomadaiImage && selectedPiece != null && boardConfiguration.isPositionEditingMode()) {
             Piece piece = selectedPiece.getPiece();
             selectedPiece.setInKomadai(true);
 
