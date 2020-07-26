@@ -7,9 +7,15 @@
         }
     </ui:style>
     <g:HTMLPanel>
-        Some interesting text should be here...
         <p/>
-        Last updated: 2020-07-25
+        <b>Last updated: 2020-07-26</b>
+        <p/>
+        Bug fixes:
+        <ul>
+            <li>Also show the promotion popup when taking a piece</li>
+        </ul>
+        <p/>
+        <b>Update: 2020-07-25</b>
         <p/>
         New Features:
         <ul>
@@ -19,7 +25,7 @@
             <li>Added change log and version check</li>
         </ul>
 
-        Bugs fixed:
+        Bug fixes:
         <ul>
             <li>Display all the pieces of the same type in the sideboard</li>
             <li>Number of moves selector shows the correct value</li>
