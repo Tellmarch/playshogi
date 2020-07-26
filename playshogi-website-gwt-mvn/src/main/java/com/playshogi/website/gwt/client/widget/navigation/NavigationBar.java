@@ -47,13 +47,13 @@ public class NavigationBar extends Composite {
 //        flowPanel.add(createHyperlink("How to Play", new MainPagePlace()));
         flowPanel.add(createHyperlink("Problems", new TsumePlace()));
         flowPanel.add(createHyperlink("ByoYomi Survival", new ByoYomiLandingPlace()));
-//        flowPanel.add(createHyperlink("Openings", new OpeningsPlace()));
         flowPanel.add(createHyperlink("Statistics", new ProblemStatisticsPlace()));
+        flowPanel.add(createHyperlink("Openings", new OpeningsPlace()));
 //        flowPanel.add(createHyperlink("My Games", new MyGamesPlace()));
 //        flowPanel.add(createHyperlink("Free Board", new FreeBoardPlace()));
 //        flowPanel.add(createHyperlink("Play Online", new MainPagePlace()));
 //        flowPanel.add(createHyperlink("About", new MainPagePlace()));
-
+        flowPanel.add(createHyperlink("Links", new LinksPlace()));
         loginHyperlink = createHyperlink("Login/Register", new LoginPlace("login"));
         logoutHyperlink = createHyperlink("Logout", new LoginPlace("logout"));
         flowPanel.add(loginHyperlink);

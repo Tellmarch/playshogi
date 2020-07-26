@@ -1,0 +1,55 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+             xmlns:g="urn:import:com.google.gwt.user.client.ui">
+    <ui:style>
+        .important {
+        font-weight: bold;
+        }
+    </ui:style>
+    <g:HTMLPanel>
+        <p/>
+        <b>Useful links</b>
+        <br/>
+        The links below are not affiliated with playshogi.com
+        <p/>
+
+        <b>Playing shogi online:</b>
+        <ul>
+            <li><a href="https://81dojo.com" target="_blank">81 Dojo</a>: Online shogi server, with English and Japanese
+                interface. Highly recommended.
+            </li>
+            <li><a href="https://www.shogidojo.net/eng/" target="_blank">Shogi club 24</a>: Online shogi server, with
+                basic English support. The interface is old (Java applet), a lot of strong players.
+            </li>
+            <li><a href="https://shogiwars.heroz.jp/?locale=en" target="_blank">HEROZ Shogi Wars</a>: Newer shogi
+                server, with basic English support. Fast and crazy games, easy to find opponents. You can only play 3
+                games per day for free. Recommended on mobile.
+            </li>
+        </ul>
+
+        <b>Shogi news:</b>
+        <ul>
+            <li><a href="http://shogihub.com/" target="_blank">ShogiHub</a>: News about the professional shogi world in
+                English.
+            </li>
+            <li><a href="http://shogi.net/fesa/" target="_blank">FESA</a>: Official website of the Federation of
+                European Shogi Associations. News about tournaments in Europe.
+            </li>
+            <li><a href="http://www.shogi.pl/" target="_blank">Shogi Harbour</a>: An English-language website dedicated
+                to Shogi promotion, including some tutorials.
+            </li>
+        </ul>
+
+        <b>YouTube channels:</b>
+        <ul>
+            <li><a href="https://www.youtube.com/user/HIDETCHI" target="_blank">HIDETCHI</a>: A lot of great videos in
+                English - Beginners will learn with "How to play Shogi", more experienced players can learn a lot from
+                "Shogi Openings" or "Famous Shogi Games".
+            </li>
+            <li><a href="https://www.youtube.com/channel/UCRnXG7CkKfEN6IINKcO_uBg" target="_blank">Shogi Harbour</a>: A
+                newer and active English shogi channel with tutorials and game commentaries by the only non-Japanese
+                Ladies Professional player.
+            </li>
+        </ul>
+    </g:HTMLPanel>
+</ui:UiBinder>

@@ -15,6 +15,8 @@ public class AppActivityMapper implements ActivityMapper {
     @Inject
     MainPageView mainPageView;
     @Inject
+    LinksView linksView;
+    @Inject
     TsumeView tsumeView;
     @Inject
     ByoYomiLandingView byoYomiLandingView;
@@ -43,6 +45,8 @@ public class AppActivityMapper implements ActivityMapper {
     public Activity getActivity(final Place place) {
         if (place instanceof MainPagePlace) {
             return new MainPageActivity(mainPageView);
+        } else if (place instanceof LinksPlace) {
+            return new LinksActivity(linksView);
         } else if (place instanceof TsumePlace) {
             return new TsumeActivity((TsumePlace) place, tsumeView, placeController, sessionInformation);
         } else if (place instanceof ByoYomiLandingPlace) {
