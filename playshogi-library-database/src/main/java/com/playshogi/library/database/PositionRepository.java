@@ -53,7 +53,7 @@ public class PositionRepository {
 
             if (rs.next()) {
                 key = rs.getInt(1);
-                LOGGER.log(Level.INFO, "Inserted position with index " + key);
+//                LOGGER.log(Level.INFO, "Inserted position with index " + key);
             } else {
                 LOGGER.log(Level.SEVERE, "Could not insert position");
             }
@@ -71,9 +71,8 @@ public class PositionRepository {
             ResultSet rs = preparedStatement.executeQuery();
             if (rs.next()) {
                 LOGGER.log(Level.INFO, "Found position: " + rs.getString("code") + " with id: " + rs.getInt("id"));
-                String sfen = rs.getString("code");
 
-                return sfen;
+                return rs.getString("code");
             } else {
                 LOGGER.log(Level.INFO, "Did not find position: " + positionId);
                 return null;
@@ -90,11 +89,11 @@ public class PositionRepository {
             preparedStatement.setString(1, sfen);
             ResultSet rs = preparedStatement.executeQuery();
             if (rs.next()) {
-                LOGGER.log(Level.INFO, "Found position: " + rs.getString("code") + " with id: " + rs.getInt("id"));
+//                LOGGER.log(Level.INFO, "Found position: " + rs.getString("code") + " with id: " + rs.getInt("id"));
 
                 return rs.getInt("id");
             } else {
-                LOGGER.log(Level.INFO, "Did not find position: " + sfen);
+//                LOGGER.log(Level.INFO, "Did not find position: " + sfen);
                 return -1;
             }
         } catch (SQLException e) {

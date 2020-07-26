@@ -14,7 +14,6 @@ import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.library.shogi.models.shogivariant.ShogiInitialPositionFactory;
 import com.playshogi.library.shogi.rules.ShogiRulesEngine;
 
-import java.io.IOException;
 import java.sql.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -186,11 +185,7 @@ public class GameSetRepository {
             preparedStatement.setInt(2, gameSetId);
             int updateResult = preparedStatement.executeUpdate();
 
-            if (updateResult == 1) {
-                LOGGER.log(Level.INFO, "Inserted gameset position");
-            } else if (updateResult == 2) {
-                LOGGER.log(Level.INFO, "Incremented gameset position");
-            } else {
+            if (updateResult != 1 && updateResult != 2) {
                 LOGGER.log(Level.SEVERE, "Could not insert gameset position");
             }
         } catch (SQLException e) {
@@ -210,11 +205,7 @@ public class GameSetRepository {
             preparedStatement.setInt(4, gameSetId);
             int updateResult = preparedStatement.executeUpdate();
 
-            if (updateResult == 1) {
-                LOGGER.log(Level.INFO, "Inserted gameset move");
-            } else if (updateResult == 2) {
-                LOGGER.log(Level.INFO, "Incremented gameset move");
-            } else {
+            if (updateResult != 1 && updateResult != 2) {
                 LOGGER.log(Level.SEVERE, "Could not insert gameset move");
             }
         } catch (SQLException e) {
@@ -255,15 +246,6 @@ public class GameSetRepository {
         }
     }
 
-    public static void main(final String[] args) throws IOException {
-        GameSetRepository rep = new GameSetRepository(new DbConnection());
-
-        int id = rep.saveGameSet("Test");
-        System.out.println(rep.getGameSetById(id).getName());
-        rep.deleteGamesetById(id);
-
-    }
-
     public List<PersistentGameSetMove> getGameSetPositionMoveStats(final int positionId, final int gameSetId) {
         Connection connection = dbConnection.getConnection();
         try (PreparedStatement preparedStatement = connection.prepareStatement(SELECT_GAMESET_MOVES)) {
@@ -271,7 +253,7 @@ public class GameSetRepository {
             preparedStatement.setInt(2, gameSetId);
             ResultSet rs = preparedStatement.executeQuery();
 
-            ArrayList<PersistentGameSetMove> result = new ArrayList<PersistentGameSetMove>();
+            ArrayList<PersistentGameSetMove> result = new ArrayList<>();
 
             while (rs.next()) {
                 int total = rs.getInt("ps_gamesetmove.num_total");

@@ -18,7 +18,7 @@ public class ProSetImporter {
     public static void main(final String[] args) {
         GameSetRepository rep = new GameSetRepository(new DbConnection());
 
-        // int setId = rep.saveGameSet("57k Pro Games");
+//         int setId = rep.saveGameSet("57k Pro Games");
         int setId = 1;
         int venueId = 1;
 
@@ -28,7 +28,9 @@ public class ProSetImporter {
 
         Set<String> errors = new HashSet<>();
 
-        for (int i = 26; i < 27; i++) {
+
+//        for (int i = 1; i <= 1; i++) {
+        for (int i = 1; i <= 77458; i++) {
             String fileName = PATH + "kif" + i + ".kif";
             File file = new File(fileName);
             if (file.exists() && file.length() > 10) {
@@ -37,12 +39,15 @@ public class ProSetImporter {
                 try {
                     processKifu(fileName, rep, setId, i, venueId);
                     ok++;
+//                    System.out.println("Success");
                 } catch (Exception ex) {
                     ex.printStackTrace();
                     error++;
                     errors.add(fileName);
                     break;
                 }
+            } else {
+                System.out.println("Not found: " + fileName);
             }
         }
 
@@ -61,6 +66,6 @@ public class ProSetImporter {
             throws IOException {
         GameRecord gameRecord = GameRecordFileReader.read(KifFormat.INSTANCE, fileName, "windows-932");
         repository.addGameToGameSet(gameRecord, setId, venueId, "Pro Classic Games #" + kifuId, 1);
-        // System.out.println(UsfFormat.INSTANCE.write(gameRecord));
+//         System.out.println(UsfFormat.INSTANCE.write(gameRecord));
     }
 }

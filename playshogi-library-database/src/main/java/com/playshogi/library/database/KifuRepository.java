@@ -21,7 +21,7 @@ public class KifuRepository {
             "`type_id`)" + " VALUES (?, ?, ?,  ?);";
 
     private static final String INSERT_KIFU_POSITION = "INSERT INTO `playshogi`.`ps_kifupos` (`kifu_id`, " +
-            "`position_id`)" + " VALUES (?, ?);";
+            "`position_id`) VALUES (?, ?) ON DUPLICATE KEY update kifu_id=kifu_id;";
 
     private static final String SELECT_KIFU_POSITION = "SELECT * FROM ps_kifupos LEFT JOIN ps_game ON ps_kifupos" +
             ".kifu_id = ps_game.kifu_id WHERE position_id = ? LIMIT 10";
@@ -110,9 +110,7 @@ public class KifuRepository {
         try (PreparedStatement preparedStatement = connection.prepareStatement(INSERT_KIFU_POSITION)) {
             preparedStatement.setInt(1, kifuId);
             preparedStatement.setInt(2, positionId);
-            if (preparedStatement.executeUpdate() == 1) {
-                LOGGER.log(Level.INFO, "Inserted kifu position");
-            } else {
+            if (preparedStatement.executeUpdate() != 1) {
                 LOGGER.log(Level.SEVERE, "Could not insert kifu position");
             }
         } catch (SQLException e) {
