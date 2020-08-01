@@ -8,7 +8,23 @@
     </ui:style>
     <g:HTMLPanel>
         <p/>
-        <b>Last updated: 2020-07-26</b>
+        <b>Contact: playshogi [at] hotmail.com</b>
+        <p/>
+        <p/>
+        <b>Last updated: 2020-08-01</b>
+        <p/>
+        New Features:
+        <ul>
+            <li>Added openings explorer</li>
+            <li>Added links</li>
+        </ul>
+        Bug fixes:
+        <ul>
+            <li>Do not allow pawn drop mate</li>
+        </ul>
+        <p/>
+        <p/>
+        <b>Update: 2020-07-26</b>
         <p/>
         Bug fixes:
         <ul>

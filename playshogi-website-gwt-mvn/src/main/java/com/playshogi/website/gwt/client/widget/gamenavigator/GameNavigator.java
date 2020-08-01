@@ -12,7 +12,9 @@ import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.library.models.record.GameNavigation;
 import com.playshogi.library.models.record.GameTree;
+import com.playshogi.library.shogi.models.PieceType;
 import com.playshogi.library.shogi.models.formats.usf.UsfMoveConverter;
+import com.playshogi.library.shogi.models.moves.DropMove;
 import com.playshogi.library.shogi.models.moves.ShogiMove;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.library.shogi.models.shogivariant.ShogiInitialPositionFactory;
@@ -104,6 +106,12 @@ public class GameNavigator extends Composite implements ClickHandler {
         if (!existingMove) {
             GWT.log("New variation");
             boolean positionCheckmate = shogiRulesEngine.isPositionCheckmate(gameNavigation.getPosition(), true);
+            if (move instanceof DropMove) {
+                DropMove dropMove = (DropMove) move;
+                if (dropMove.getPieceType() == PieceType.PAWN) {
+                    positionCheckmate = false;
+                }
+            }
             GWT.log("Checkmate: " + positionCheckmate);
             eventBus.fireEvent(new NewVariationPlayedEvent(positionCheckmate));
         } else if (gameNavigation.isEndOfVariation()) {

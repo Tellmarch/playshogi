@@ -5,7 +5,6 @@ import com.playshogi.library.models.Square;
 import com.playshogi.library.models.games.GameRulesEngine;
 import com.playshogi.library.shogi.models.Piece;
 import com.playshogi.library.shogi.models.PieceType;
-import com.playshogi.library.shogi.models.formats.sfen.SfenConverter;
 import com.playshogi.library.shogi.models.moves.CaptureMove;
 import com.playshogi.library.shogi.models.moves.DropMove;
 import com.playshogi.library.shogi.models.moves.NormalMove;
@@ -16,7 +15,6 @@ import com.playshogi.library.shogi.rules.movements.*;
 
 import java.util.*;
 
-import static com.playshogi.library.shogi.models.Piece.GOTE_KING;
 import static com.playshogi.library.shogi.models.PieceType.KING;
 
 public class ShogiRulesEngine implements GameRulesEngine<ShogiPosition> {
@@ -158,6 +156,9 @@ public class ShogiRulesEngine implements GameRulesEngine<ShogiPosition> {
 
     }
 
+    /**
+     * Doesn't check if the move is legal
+     */
     public boolean canMoveWithPromotion(final ShogiPosition position, final Move move) {
         if (move instanceof NormalMove) {
             NormalMove normalMove = (NormalMove) move;
