@@ -1,4 +1,5 @@
 Short guide on how to deploy the website on a clean install of ubuntu 20.04:
+Only follow this guide if you understand the commands - take special care with the iptables commands in the last section
 
 # Install MySQL
 
