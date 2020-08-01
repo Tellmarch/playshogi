@@ -42,15 +42,19 @@ public class ByoYomiLandingView extends Composite {
         this.placeController = placeController;
         GWT.log("Creating byo yomi landing view");
 
-        Grid grid = new Grid(2, 3);
+        Grid outerGrid = new Grid(1, 2);
+
+        Grid grid = new Grid(2, 2);
 
         grid.setWidget(0, 0, getDefaultPanel());
         grid.setWidget(0, 1, getSurvivalPanel());
         grid.setWidget(1, 0, getByoYomiPanel());
         grid.setWidget(1, 1, getCustomPanel());
 
+        outerGrid.setWidget(0, 0, grid);
+
         highScorePanel = new HighScoresPanel();
-        grid.setWidget(0, 2, highScorePanel);
+        outerGrid.setWidget(0, 1, highScorePanel);
 
         for (int i = 0; i < 2; i++) {
             for (int j = 0; j < 2; j++) {
@@ -61,7 +65,7 @@ public class ByoYomiLandingView extends Composite {
         }
 
 
-        initWidget(grid);
+        initWidget(outerGrid);
     }
 
     private Widget getDefaultPanel() {
