@@ -23,8 +23,8 @@ public class KifuRepository {
     private static final String INSERT_KIFU_POSITION = "INSERT INTO `playshogi`.`ps_kifupos` (`kifu_id`, " +
             "`position_id`) VALUES (?, ?) ON DUPLICATE KEY update kifu_id=kifu_id;";
 
-    private static final String SELECT_KIFU_POSITION = "SELECT * FROM ps_kifupos LEFT JOIN ps_game ON ps_kifupos" +
-            ".kifu_id = ps_game.kifu_id WHERE position_id = ? LIMIT 10";
+    private static final String SELECT_KIFU_POSITION = "SELECT * FROM ps_kifupos JOIN ps_game ON ps_kifupos" +
+            ".kifu_id = ps_game.kifu_id WHERE position_id = ? LIMIT 5";
 
     private static final String SELECT_KIFU = "SELECT * FROM ps_kifu WHERE id = ?";
     private static final String DELETE_KIFU = "DELETE FROM ps_kifu WHERE id = ?";

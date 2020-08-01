@@ -1,8 +1,6 @@
 package com.playshogi.website.gwt.client.widget.kifu;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.ui.*;
 import com.google.web.bindery.event.shared.EventBus;
@@ -11,7 +9,7 @@ import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.library.models.record.GameInformation;
 import com.playshogi.website.gwt.client.events.GameInformationChangedEvent;
 
-public class KifuInformationPanel extends Composite implements ClickHandler {
+public class KifuInformationPanel extends Composite {
     interface MyEventBinder extends EventBinder<KifuInformationPanel> {
     }
 
@@ -52,9 +50,9 @@ public class KifuInformationPanel extends Composite implements ClickHandler {
         verticalPanel.add(new HTML(SafeHtmlUtils.fromSafeConstant("<br>")));
 
         saveButton = new Button("Save");
-        saveButton.addClickHandler(this);
+//        saveButton.addClickHandler(this);
 
-        verticalPanel.add(saveButton);
+//        verticalPanel.add(saveButton);
 
         initWidget(verticalPanel);
     }
@@ -69,14 +67,6 @@ public class KifuInformationPanel extends Composite implements ClickHandler {
         GWT.log("Activating kifu information panel");
         this.eventBus = eventBus;
         eventBinder.bindEventHandlers(this, eventBus);
-    }
-
-    @Override
-    public void onClick(final ClickEvent event) {
-        Object source = event.getSource();
-        if (source == saveButton) {
-
-        }
     }
 
     @EventHandler

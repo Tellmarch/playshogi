@@ -1,8 +1,6 @@
 package com.playshogi.website.gwt.client.widget.openings;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.ui.*;
 import com.google.web.bindery.event.shared.EventBus;
@@ -13,7 +11,7 @@ import com.playshogi.website.gwt.client.mvp.AppPlaceHistoryMapper;
 import com.playshogi.website.gwt.client.place.ViewKifuPlace;
 import com.playshogi.website.gwt.shared.models.PositionDetails;
 
-public class PositionKifusPanel extends Composite implements ClickHandler {
+public class PositionKifusPanel extends Composite {
     interface MyEventBinder extends EventBinder<PositionKifusPanel> {
     }
 
@@ -44,16 +42,8 @@ public class PositionKifusPanel extends Composite implements ClickHandler {
         eventBinder.bindEventHandlers(this, eventBus);
     }
 
-    @Override
-    public void onClick(final ClickEvent event) {
-        Object source = event.getSource();
-        if (source == verticalPanel) {
-
-        }
-    }
-
     @EventHandler
-    public void onGameInformationChangedEvent(final PositionStatisticsEvent event) {
+    public void onPositionStatisticsEvent(final PositionStatisticsEvent event) {
         GWT.log("Position kifus panel: handle PositionStatisticsEvent");
         positionDetails = event.getPositionDetails();
         refreshInformation();
@@ -62,6 +52,8 @@ public class PositionKifusPanel extends Composite implements ClickHandler {
     private void refreshInformation() {
         GWT.log("Displaying position kifus: " + positionDetails);
         verticalPanel.clear();
+
+        verticalPanel.add(new HTML("<br/>Sample games from this position:<br/>"));
 
         if (positionDetails != null) {
 

@@ -29,7 +29,7 @@ public class ProSetImporter {
         Set<String> errors = new HashSet<>();
 
 
-//        for (int i = 1; i <= 1; i++) {
+//        for (int i = 1; i <= 77458; i++) {
         for (int i = 1; i <= 77458; i++) {
             String fileName = PATH + "kif" + i + ".kif";
             File file = new File(fileName);
@@ -65,7 +65,10 @@ public class ProSetImporter {
                                     final int kifuId, final int venueId)
             throws IOException {
         GameRecord gameRecord = GameRecordFileReader.read(KifFormat.INSTANCE, fileName, "windows-932");
-        repository.addGameToGameSet(gameRecord, setId, venueId, "Pro Classic Games #" + kifuId, 1);
+        // Currently handicap games return null
+        if (gameRecord != null) {
+            repository.addGameToGameSet(gameRecord, setId, venueId, "Pro Classic Games #" + kifuId, 1);
+        }
 //         System.out.println(UsfFormat.INSTANCE.write(gameRecord));
     }
 }

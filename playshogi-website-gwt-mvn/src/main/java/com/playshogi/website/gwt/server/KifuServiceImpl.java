@@ -73,7 +73,7 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
         for (Entry<String, GameRecord> entry : gameRecords.entrySet()) {
             result.add(createKifuDetails(entry.getKey(), entry.getValue()));
         }
-        return result.toArray(new KifuDetails[result.size()]);
+        return result.toArray(new KifuDetails[0]);
     }
 
     private KifuDetails createKifuDetails(final String key, final GameRecord value) {
@@ -107,8 +107,8 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
         for (int i = 0; i < details.length; i++) {
             PersistentGameSetMove move = moveStats.get(i);
             String newSfen = positionRepository.getPositionSfenById(move.getNewPositionId());
-            details[i] = new PositionMoveDetails(move.getMoveUsf(), move.getMoveOccurrences(), move.getSenteWins(),
-                    move.getGoteWins(), newSfen);
+            details[i] = new PositionMoveDetails(move.getMoveUsf(), move.getMoveOccurrences(),
+                    move.getPositionOccurences(), move.getSenteWins(), move.getGoteWins(), newSfen);
         }
 
         List<PersistentGame> gamesForPosition = kifuRepository.getGamesForPosition(positionId);

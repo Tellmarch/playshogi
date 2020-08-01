@@ -1,10 +1,7 @@
 package com.playshogi.website.gwt.client.widget.openings;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
-import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.ui.*;
 import com.google.web.bindery.event.shared.EventBus;
@@ -21,7 +18,7 @@ import com.playshogi.website.gwt.client.place.OpeningsPlace;
 import com.playshogi.website.gwt.shared.models.PositionDetails;
 import com.playshogi.website.gwt.shared.models.PositionMoveDetails;
 
-public class PositionStatisticsPanel extends Composite implements ClickHandler {
+public class PositionStatisticsPanel extends Composite {
     interface MyEventBinder extends EventBinder<PositionStatisticsPanel> {
     }
 
@@ -54,14 +51,6 @@ public class PositionStatisticsPanel extends Composite implements ClickHandler {
         eventBinder.bindEventHandlers(this, eventBus);
     }
 
-    @Override
-    public void onClick(final ClickEvent event) {
-        Object source = event.getSource();
-        if (source == verticalPanel) {
-
-        }
-    }
-
     @EventHandler
     public void onGameInformationChangedEvent(final PositionStatisticsEvent event) {
         GWT.log("Position statistics: handle PositionStatisticsEvent");
@@ -77,7 +66,7 @@ public class PositionStatisticsPanel extends Composite implements ClickHandler {
         if (positionDetails != null) {
 
             int senteRate = (positionDetails.getSente_wins() * 100) / positionDetails.getTotal();
-            String winRate = "Sente win rate: " + senteRate;
+            String winRate = "Sente win rate: " + senteRate + "%";
             verticalPanel.add(new HTML(SafeHtmlUtils.fromTrustedString(winRate)));
 
             verticalPanel.add(new HTML(SafeHtmlUtils.fromSafeConstant("<br>")));
@@ -90,7 +79,7 @@ public class PositionStatisticsPanel extends Composite implements ClickHandler {
             grid.setHTML(0, 1, SafeHtmlUtils.fromSafeConstant("#"));
             grid.setHTML(0, 2, SafeHtmlUtils.fromSafeConstant("Win rate"));
 
-            for (int i = 0; i < positionMoveDetails.length; i++) {
+            for (int i = 0; i < Math.min(positionMoveDetails.length, 8); i++) {
                 PositionMoveDetails moveDetails = positionMoveDetails[i];
 
                 String moveUsf = moveDetails.getMove();
@@ -100,34 +89,32 @@ public class PositionStatisticsPanel extends Composite implements ClickHandler {
 
                 hyperlink.setStyleName("movelink");
 
-                hyperlink.addDomHandler(new MouseOverHandler() {
+                hyperlink.addDomHandler(event -> {
+                    GWT.log("mouse over");
+                    eventBus.fireEvent(new HighlightMoveEvent(move));
 
-                    @Override
-                    public void onMouseOver(final MouseOverEvent event) {
-                        GWT.log("mouse over");
-                        eventBus.fireEvent(new HighlightMoveEvent(move));
-
-                    }
                 }, MouseOverEvent.getType());
 
                 grid.setWidget(i + 1, 0, hyperlink);
 
                 // grid.setHTML(i + 1, 0, moveDetails.getMove());
-                grid.setHTML(i + 1, 1, String.valueOf(moveDetails.getTotal()));
+                grid.setHTML(i + 1, 1, String.valueOf(moveDetails.getMoveOcurrences()));
 
-                int senteMoveRate = (moveDetails.getSente_wins() * 1000) / moveDetails.getTotal();
-                int goteMoveRate = (moveDetails.getGote_wins() * 1000) / moveDetails.getTotal();
+                GWT.log(moveDetails.toString());
 
-                int sentePixels = Math.max(15, moveDetails.getSente_wins() * 75 / moveDetails.getTotal());
-                int gotePixels = Math.max(15, moveDetails.getGote_wins() * 75 / moveDetails.getTotal());
-                int otherPixels = 75 - sentePixels - gotePixels;
+                int senteMoveRate = (moveDetails.getSente_wins() * 1000) / moveDetails.getPositionOccurences();
+                int goteMoveRate = (moveDetails.getGote_wins() * 1000) / moveDetails.getPositionOccurences();
 
-                String bar = "<table bgcolor=\"#666666\" border=\"0\" cellpadding=\"0\" cellspacing=\"1\" " +
+                int sentePixels = moveDetails.getSente_wins() * 100 / moveDetails.getPositionOccurences();
+                int gotePixels = moveDetails.getGote_wins() * 100 / moveDetails.getPositionOccurences();
+                int otherPixels = 100 - sentePixels - gotePixels;
+
+                String bar = "<table bgcolor=\"#555555\" border=\"0\" cellpadding=\"0\" cellspacing=\"1\" " +
                         "class=\"percent\"><tr><td>"
                         + "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tr height=\"13\">"
-                        + "<td align=\"center\" background=\"green.gif\" width=\"" + sentePixels + "\">  " + (senteMoveRate / 10.) + " </td>"
+                        + "<td align=\"center\" background=\"green.gif\" width=\"" + sentePixels + "\">  " + (senteMoveRate / 10.) + "% </td>"
                         + "<td align=\"center\" background=\"gray.gif\" width=\"" + otherPixels + "\">   </td>"
-                        + "<td align=\"center\" background=\"red.gif\" width=\"" + gotePixels + "\">  " + (goteMoveRate / 10.) + " </td>" + "</tr></table>"
+                        + "<td align=\"center\" background=\"red.gif\" width=\"" + gotePixels + "\">  " + (goteMoveRate / 10.) + "% </td>" + "</tr></table>"
                         + "</td></tr></table>";
 
                 grid.setHTML(i + 1, 2, bar);

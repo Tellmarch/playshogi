@@ -43,7 +43,7 @@ public class KifuEditorPanel extends Composite implements ClickHandler {
         importButton = new Button("Import kifu");
         importButton.addClickHandler(this);
 
-        verticalPanel.add(importButton);
+//        verticalPanel.add(importButton);
 
         verticalPanel.add(new HTML(SafeHtmlUtils.fromSafeConstant("<br>")));
 
@@ -54,7 +54,7 @@ public class KifuEditorPanel extends Composite implements ClickHandler {
         saveButton = new Button("Save kifu");
         saveButton.addClickHandler(this);
 
-        verticalPanel.add(saveButton);
+//        verticalPanel.add(saveButton);
 
         verticalPanel.add(new HTML(SafeHtmlUtils.fromSafeConstant("<br>")));
 
@@ -62,7 +62,7 @@ public class KifuEditorPanel extends Composite implements ClickHandler {
         messagePanel.setHTML(chooseHtml);
         messagePanel.getElement().getStyle().setBackgroundColor("White");
 
-        verticalPanel.add(messagePanel);
+//        verticalPanel.add(messagePanel);
 
         initWidget(verticalPanel);
     }
@@ -118,12 +118,7 @@ public class KifuEditorPanel extends Composite implements ClickHandler {
         dialogContents.add(importKifuPanel);
         dialogContents.setCellHorizontalAlignment(importKifuPanel, HasHorizontalAlignment.ALIGN_CENTER);
 
-        Button closeButton = new Button("Close", new ClickHandler() {
-            @Override
-            public void onClick(final ClickEvent event) {
-                dialogBox.hide();
-            }
-        });
+        Button closeButton = new Button("Close", (ClickHandler) event -> dialogBox.hide());
         dialogContents.add(closeButton);
 
         dialogContents.setCellHorizontalAlignment(closeButton, HasHorizontalAlignment.ALIGN_RIGHT);
