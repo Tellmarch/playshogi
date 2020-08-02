@@ -275,7 +275,12 @@ public class ShogiBoard extends Composite implements ClickHandler {
                             selectedPiece.getColumn()), getSquare(row, col), false);
 
                     if (shogiRulesEngine.canMoveWithPromotion(position, move)) {
-                        promotionPopupController.showPromotionPopup(image, move);
+                        if (shogiRulesEngine.canMoveWithUnpromotion(position, move)) {
+                            promotionPopupController.showPromotionPopup(image, move);
+                        } else {
+                            move.setPromote(true);
+                            playNormalMoveIfAllowed(move);
+                        }
                     } else {
                         playNormalMoveIfAllowed(move);
                     }
@@ -306,7 +311,12 @@ public class ShogiBoard extends Composite implements ClickHandler {
                                     selectedPiece.getSquare(), pieceWrapper.getSquare(), false,
                                     pieceWrapper.getPiece());
                             if (shogiRulesEngine.canMoveWithPromotion(position, move)) {
-                                promotionPopupController.showPromotionPopup(pieceWrapper.getImage(), move);
+                                if (shogiRulesEngine.canMoveWithUnpromotion(position, move)) {
+                                    promotionPopupController.showPromotionPopup(pieceWrapper.getImage(), move);
+                                } else {
+                                    move.setPromote(true);
+                                    playNormalMoveIfAllowed(move);
+                                }
                             } else {
                                 playNormalMoveIfAllowed(move);
                             }

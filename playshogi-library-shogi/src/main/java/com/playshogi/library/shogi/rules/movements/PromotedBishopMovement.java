@@ -33,4 +33,9 @@ public class PromotedBishopMovement extends AbstractPieceMovement {
     public boolean isDropValid(final ShogiBoardState boardState, final Square to) {
         return false;
     }
+
+    @Override
+    public boolean isUnpromoteValid(final ShogiBoardState boardState, final Square to) {
+        return true;
+    }
 }

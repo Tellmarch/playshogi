@@ -162,11 +162,9 @@ public class ShogiRulesEngine implements GameRulesEngine<ShogiPosition> {
     public boolean canMoveWithPromotion(final ShogiPosition position, final Move move) {
         if (move instanceof NormalMove) {
             NormalMove normalMove = (NormalMove) move;
-
             if (normalMove.getPiece().isPromoted() || !normalMove.getPiece().canPromote()) {
                 return false;
             }
-
             if (normalMove.isSenteMoving()) {
                 return (normalMove.getFromSquare().getRow() <= shogiVariant.getSentePromotionHeight()
                         || normalMove.getToSquare().getRow() <= shogiVariant.getSentePromotionHeight());
@@ -174,9 +172,30 @@ public class ShogiRulesEngine implements GameRulesEngine<ShogiPosition> {
                 return (normalMove.getFromSquare().getRow() >= shogiVariant.getGotePromotionHeight()
                         || normalMove.getToSquare().getRow() >= shogiVariant.getGotePromotionHeight());
             }
-
         }
+        return false;
+    }
 
+    /**
+     * Doesn't check if the move is legal
+     */
+    public boolean canMoveWithUnpromotion(final ShogiPosition position, final Move move) {
+        if (move instanceof NormalMove) {
+            NormalMove normalMove = (NormalMove) move;
+            if (normalMove.getPiece().isPromoted()) {
+                return false;
+            }
+            if (!normalMove.getPiece().canPromote()) {
+                return true;
+            }
+
+            PieceMovement pieceMovement = PIECE_MOVEMENTS.get(normalMove.getPiece().getSentePiece());
+            if (normalMove.isSenteMoving()) {
+                return pieceMovement.isUnpromoteValid(position.getShogiBoardState(), normalMove.getToSquare());
+            } else {
+                return pieceMovement.isUnpromoteValid(position.getShogiBoardState().opposite(), normalMove.getToSquare().opposite());
+            }
+        }
         return false;
     }
 
@@ -241,30 +260,29 @@ public class ShogiRulesEngine implements GameRulesEngine<ShogiPosition> {
 
 
         for (Square everySquare : position.getAllSquares()) { //for every square on the board
-            if (position.getPieceAt(everySquare) != null && position.getPieceAt(everySquare).isSentePiece() == isSente) {
+            Piece piece = position.getPieceAt(everySquare);
+            if (piece != null && piece.isSentePiece() == isSente) {
                 //check if there is sente's piece
                 List<Square> targetSquares = getPossibleTargetSquares(position, everySquare);
                 // find its possible squares to move
                 for (Square targetSquare : targetSquares) { //add each of those squares as a possible move
-                    if (position.getPieceAt(targetSquare) != null) { //check if it is a capturing move
-                        result.add(new CaptureMove(position.getPieceAt(everySquare), everySquare, targetSquare,
-                                false, position.getPieceAt(targetSquare)));
-                        if (canMoveWithPromotion(position, result.get(result.size() - 1))) {//if can promote,
-                            // capture
-                            // with promotion too
-                            result.add(new CaptureMove(position.getPieceAt(everySquare), everySquare,
-                                    targetSquare, true, position.getPieceAt(targetSquare)));
+                    Piece targetPiece = position.getPieceAt(targetSquare);
+                    if (targetPiece != null) { //check if it is a capturing move
+                        NormalMove capture = new CaptureMove(piece, everySquare, targetSquare, false, targetPiece);
+                        if (canMoveWithUnpromotion(position, capture)) {
+                             result.add(capture);
+                        }
+                        if (canMoveWithPromotion(position, capture)) {//if can promote, capture with promotion
+                            result.add(new CaptureMove(piece, everySquare, targetSquare, true, targetPiece));
                         }
 
                     } else {
-                        result.add(new NormalMove(position.getPieceAt(everySquare), everySquare, targetSquare,
-                                false));
-                        if (canMoveWithPromotion(position, result.get(result.size() - 1))) {//if can promote,
-                            // move
-                            // with promotion too
-                            result.add(new NormalMove(position.getPieceAt(everySquare), everySquare,
-                                    targetSquare,
-                                    true));
+                        NormalMove move = new NormalMove(piece, everySquare, targetSquare, false);
+                        if (canMoveWithUnpromotion(position, result.get(result.size() - 1))) {
+                            result.add(move);
+                        }
+                        if (canMoveWithPromotion(position, move)) {//if can promote, move with promotion
+                            result.add(new NormalMove(piece, everySquare, targetSquare, true));
                         }
                     }
                 }

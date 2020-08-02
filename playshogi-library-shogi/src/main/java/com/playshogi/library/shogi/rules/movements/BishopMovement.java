@@ -29,4 +29,9 @@ public class BishopMovement implements PieceMovement {
         return true;
     }
 
+    @Override
+    public boolean isUnpromoteValid(final ShogiBoardState boardState, final Square to) {
+        return true;
+    }
+
 }

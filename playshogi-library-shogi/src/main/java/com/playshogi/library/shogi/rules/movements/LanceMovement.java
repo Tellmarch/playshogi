@@ -36,4 +36,9 @@ public class LanceMovement implements PieceMovement {
         return to.getRow() != ShogiBoardState.FIRST_ROW;
     }
 
+    @Override
+    public boolean isUnpromoteValid(final ShogiBoardState boardState, final Square to) {
+        return isDropValid(boardState, to);
+    }
+
 }
