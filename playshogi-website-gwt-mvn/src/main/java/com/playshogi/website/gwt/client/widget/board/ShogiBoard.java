@@ -270,7 +270,7 @@ public class ShogiBoard extends Composite implements ClickHandler {
                     if (!boardConfiguration.isAllowOnlyLegalMoves() || shogiRulesEngine.isMoveLegalInPosition(position, move)) {
                         playMove(move);
                     }
-                } else {
+                } else if (shogiRulesEngine.getPossibleTargetSquares(position, selectedPiece.getSquare()).contains(getSquare(row, col))) {
                     NormalMove move = new NormalMove(piece, getSquare(selectedPiece.getRow(),
                             selectedPiece.getColumn()), getSquare(row, col), false);
 
@@ -306,10 +306,12 @@ public class ShogiBoard extends Composite implements ClickHandler {
                     unselect();
                 } else {
                     if (selectedPiece != null) {
-                        if (!selectedPiece.isInKomadai() && selectedPiece.getPiece().isSentePiece() != pieceWrapper.getPiece().isSentePiece()) {
+                        if (!selectedPiece.isInKomadai() && selectedPiece.getPiece().isSentePiece() != pieceWrapper.getPiece().isSentePiece() && shogiRulesEngine.getPossibleTargetSquares(position, selectedPiece.getSquare()).contains(pieceWrapper.getSquare())) {
+
                             CaptureMove move = new CaptureMove(selectedPiece.getPiece(),
                                     selectedPiece.getSquare(), pieceWrapper.getSquare(), false,
                                     pieceWrapper.getPiece());
+
                             if (shogiRulesEngine.canMoveWithPromotion(position, move)) {
                                 if (shogiRulesEngine.canMoveWithUnpromotion(position, move)) {
                                     promotionPopupController.showPromotionPopup(pieceWrapper.getImage(), move);
