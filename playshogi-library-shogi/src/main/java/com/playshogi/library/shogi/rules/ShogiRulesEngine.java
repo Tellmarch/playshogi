@@ -179,13 +179,11 @@ public class ShogiRulesEngine implements GameRulesEngine<ShogiPosition> {
     /**
      * Doesn't check if the move is legal
      */
-    public boolean canMoveWithUnpromotion(final ShogiPosition position, final Move move) {
+    public boolean canMoveWithoutPromotion(final ShogiPosition position, final Move move) {
         if (move instanceof NormalMove) {
+
             NormalMove normalMove = (NormalMove) move;
             if (normalMove.getPiece().isPromoted()) {
-                return false;
-            }
-            if (!normalMove.getPiece().canPromote()) {
                 return true;
             }
 
@@ -269,7 +267,7 @@ public class ShogiRulesEngine implements GameRulesEngine<ShogiPosition> {
                     Piece targetPiece = position.getPieceAt(targetSquare);
                     if (targetPiece != null) { //check if it is a capturing move
                         NormalMove capture = new CaptureMove(piece, everySquare, targetSquare, false, targetPiece);
-                        if (canMoveWithUnpromotion(position, capture)) {
+                        if (canMoveWithoutPromotion(position, capture)) {
                              result.add(capture);
                         }
                         if (canMoveWithPromotion(position, capture)) {//if can promote, capture with promotion
@@ -278,7 +276,7 @@ public class ShogiRulesEngine implements GameRulesEngine<ShogiPosition> {
 
                     } else {
                         NormalMove move = new NormalMove(piece, everySquare, targetSquare, false);
-                        if (canMoveWithUnpromotion(position, result.get(result.size() - 1))) {
+                        if (canMoveWithoutPromotion(position, result.get(result.size() - 1))) {
                             result.add(move);
                         }
                         if (canMoveWithPromotion(position, move)) {//if can promote, move with promotion

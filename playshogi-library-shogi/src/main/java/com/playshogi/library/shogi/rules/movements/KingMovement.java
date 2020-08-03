@@ -20,4 +20,5 @@ public class KingMovement extends AbstractPieceMovement {
     public boolean isUnpromoteValid(final ShogiBoardState boardState, final Square to) {
         return true;
     }
+
 }

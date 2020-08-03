@@ -36,6 +36,7 @@ public class PromotedRookMovement extends AbstractPieceMovement {
 
     @Override
     public boolean isUnpromoteValid(final ShogiBoardState boardState, final Square to) {
-        return true;
+        return false;
     }
+
 }
