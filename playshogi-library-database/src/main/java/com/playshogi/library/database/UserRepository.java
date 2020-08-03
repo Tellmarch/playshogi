@@ -120,13 +120,4 @@ public class UserRepository {
             return new ArrayList<>();
         }
     }
-
-    public static void main(final String[] args) {
-        UserRepository userRepository = new UserRepository(new DbConnection());
-        userRepository.insertUser("Tellmarch", "test");
-        userRepository.insertUserPbStats(new PersistentUserProblemStats(1, 1, null, 10, true));
-        userRepository.authenticateUser("Tellmarch", "test");
-        userRepository.authenticateUser("Tellmarch", "test2");
-        userRepository.getUserPbStats(1);
-    }
 }
