@@ -64,7 +64,7 @@ public class UsfMoveConverter {
             if (capturedPiece == null) {
                 return new NormalMove(piece, Square.of(col1, row1), Square.of(col2, row2), promotion);
             } else {
-                return new CaptureMove(piece, Square.of(col1, row1), Square.of(col2, row2), promotion, capturedPiece);
+                return new CaptureMove(piece, Square.of(col1, row1), Square.of(col2, row2), capturedPiece, promotion);
             }
         }
     }

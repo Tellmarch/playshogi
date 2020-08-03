@@ -3,19 +3,34 @@ package com.playshogi.library.shogi.models.moves;
 import com.playshogi.library.models.Square;
 import com.playshogi.library.shogi.models.Piece;
 
+import java.util.Optional;
+
 public class NormalMove extends ShogiMove implements ToSquareMove {
 
-    private final Piece piece;
-    private final Square fromSquare;
-    private final Square toSquare;
-    private boolean promote;
+    protected final Piece piece;
+    protected final Square fromSquare;
+    protected final Square toSquare;
+    protected final Piece promotionPiece;
 
-    public NormalMove(final Piece piece, final Square fromSquare, final Square toSquare, final boolean promote) {
+    public NormalMove(Piece piece, Square fromSquare, Square toSquare) {
+        this(piece, fromSquare, toSquare, null);
+    }
+
+    public NormalMove(Piece piece, Square fromSquare, Square toSquare, Piece promotionPiece) {
         super(piece.isSentePiece());
         this.piece = piece;
         this.fromSquare = fromSquare;
         this.toSquare = toSquare;
-        this.promote = promote;
+        this.promotionPiece = promotionPiece;
+    }
+
+    @Deprecated
+    public NormalMove(Piece piece, Square fromSquare, Square toSquare, boolean promote) {
+        this(piece, fromSquare, toSquare, promote ? piece.getPromotedPiece() : null);
+    }
+
+    public NormalMove withPromotionPiece(Piece promotionPiece) {
+        return new NormalMove(piece, fromSquare, toSquare, promotionPiece);
     }
 
     public Piece getPiece() {
@@ -32,12 +47,11 @@ public class NormalMove extends ShogiMove implements ToSquareMove {
     }
 
     public boolean isPromote() {
-        return promote;
+        return promotionPiece != null;
     }
 
-    public void setPromote(final boolean promote) {
-        this.promote = promote;
-
+    public Optional<Piece> getPromotionPiece() {
+        return Optional.ofNullable(promotionPiece);
     }
 
 }

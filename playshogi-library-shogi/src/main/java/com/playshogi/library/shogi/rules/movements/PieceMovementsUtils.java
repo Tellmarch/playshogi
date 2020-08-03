@@ -40,4 +40,5 @@ public class PieceMovementsUtils {
             return null;
         }
     }
+
 }

@@ -15,4 +15,10 @@ public class GoldMovement extends AbstractPieceMovement {
     public boolean isDropValid(final ShogiBoardState boardState, final Square to) {
         return true;
     }
+
+    @Override
+    public boolean isUnpromoteValid(final ShogiBoardState boardState, final Square to) {
+        return true;
+    }
+
 }

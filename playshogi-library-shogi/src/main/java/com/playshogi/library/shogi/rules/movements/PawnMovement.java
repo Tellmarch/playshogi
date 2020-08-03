@@ -32,6 +32,11 @@ public class PawnMovement implements PieceMovement {
                 && !checkMatePawnMove(position, to);
     }
 
+    @Override
+    public boolean isUnpromoteValid(final ShogiBoardState position, final Square to) {
+        return to.getRow() != ShogiBoardState.FIRST_ROW;
+    }
+
     private boolean checkMatePawnMove(final ShogiBoardState position, final Square to) {
         // TODO Auto-generated method stub
         return false;

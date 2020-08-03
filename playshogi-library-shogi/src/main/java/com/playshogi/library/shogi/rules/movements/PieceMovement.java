@@ -19,4 +19,9 @@ public interface PieceMovement {
      */
     boolean isDropValid(ShogiBoardState boardState, Square to);
 
+    /**
+     * Does not need to validate the empty square at to.
+     */
+    boolean isUnpromoteValid(ShogiBoardState boardState, Square to);
+
 }

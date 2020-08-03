@@ -9,7 +9,8 @@ import com.playshogi.library.shogi.models.moves.NormalMove;
 class PromotionPopupController {
 
     private final PopupPanel promotionPopupPanel = createPromotionPopupPanel();
-    private NormalMove promotionPopupMove;
+    private NormalMove move;
+    private NormalMove promotionMove;
     private Image unPromotedImage;
     private Image promotedImage;
 
@@ -19,8 +20,10 @@ class PromotionPopupController {
         this.shogiBoard = shogiBoard;
     }
 
-    void showPromotionPopup(final Image image, NormalMove move) {
-        promotionPopupMove = move;
+    void showPromotionPopup(final Image image, NormalMove move, NormalMove promotionMove) {
+        this.move = move;
+        this.promotionMove = promotionMove;
+        // promotionMove contains the promotion piece, so it may be possible to simplify this
         unPromotedImage.setResource(PieceGraphics.getPieceImage(move.getPiece().getPieceType(), false));
         promotedImage.setResource(PieceGraphics.getPieceImage(move.getPiece().getPieceType(), true));
         promotionPopupPanel.setPopupPosition(image.getAbsoluteLeft() - 5, image.getAbsoluteTop() - 5);
@@ -36,12 +39,11 @@ class PromotionPopupController {
         flowPanel.add(unPromotedImage);
         popup.add(flowPanel);
         promotedImage.addClickHandler(clickEvent -> {
-            promotionPopupMove.setPromote(true);
-            shogiBoard.playNormalMoveIfAllowed(promotionPopupMove);
+            shogiBoard.playNormalMoveIfAllowed(promotionMove);
             popup.hide();
         });
         unPromotedImage.addClickHandler(clickEvent -> {
-            shogiBoard.playNormalMoveIfAllowed(promotionPopupMove);
+            shogiBoard.playNormalMoveIfAllowed(move);
             popup.hide();
         });
         return popup;
