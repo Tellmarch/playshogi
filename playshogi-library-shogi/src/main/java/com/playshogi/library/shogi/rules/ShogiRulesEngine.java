@@ -159,42 +159,41 @@ public class ShogiRulesEngine implements GameRulesEngine<ShogiPosition> {
     /**
      * Doesn't check if the move is legal
      */
-    public boolean canMoveWithPromotion(final ShogiPosition position, final Move move) {
-        if (move instanceof NormalMove) {
-            NormalMove normalMove = (NormalMove) move;
-            if (normalMove.getPiece().isPromoted() || !normalMove.getPiece().canPromote()) {
-                return false;
-            }
-            if (normalMove.isSenteMoving()) {
-                return (normalMove.getFromSquare().getRow() <= shogiVariant.getSentePromotionHeight()
-                        || normalMove.getToSquare().getRow() <= shogiVariant.getSentePromotionHeight());
-            } else {
-                return (normalMove.getFromSquare().getRow() >= shogiVariant.getGotePromotionHeight()
-                        || normalMove.getToSquare().getRow() >= shogiVariant.getGotePromotionHeight());
-            }
+    public Optional<NormalMove> getPromotionMove(final ShogiPosition position, final NormalMove move) {
+        Piece promotedPiece = move.getPiece().getPromotedPiece();
+        if (promotedPiece != null && canMoveWithPromotion(position, move)) {
+            return Optional.of(move.withPromotionPiece(promotedPiece));
         }
-        return false;
+        return Optional.empty();
     }
 
     /**
      * Doesn't check if the move is legal
      */
-    public boolean canMoveWithoutPromotion(final ShogiPosition position, final Move move) {
-        if (move instanceof NormalMove) {
-
-            NormalMove normalMove = (NormalMove) move;
-            if (normalMove.getPiece().isPromoted()) {
-                return true;
-            }
-
-            PieceMovement pieceMovement = PIECE_MOVEMENTS.get(normalMove.getPiece().getSentePiece());
-            if (normalMove.isSenteMoving()) {
-                return pieceMovement.isUnpromoteValid(position.getShogiBoardState(), normalMove.getToSquare());
-            } else {
-                return pieceMovement.isUnpromoteValid(position.getShogiBoardState().opposite(), normalMove.getToSquare().opposite());
-            }
+    public boolean canMoveWithPromotion(final ShogiPosition position, final NormalMove move) {
+        if (move.isSenteMoving()) {
+            return (move.getFromSquare().getRow() <= shogiVariant.getSentePromotionHeight()
+                    || move.getToSquare().getRow() <= shogiVariant.getSentePromotionHeight());
+        } else {
+            return (move.getFromSquare().getRow() >= shogiVariant.getGotePromotionHeight()
+                    || move.getToSquare().getRow() >= shogiVariant.getGotePromotionHeight());
         }
-        return false;
+    }
+
+    /**
+     * Doesn't check if the move is legal
+     */
+    public boolean canMoveWithoutPromotion(final ShogiPosition position, final NormalMove move) {
+        if (move.getPiece().isPromoted()) {
+            return true;
+        }
+
+        PieceMovement pieceMovement = PIECE_MOVEMENTS.get(move.getPiece().getSentePiece());
+        if (move.isSenteMoving()) {
+            return pieceMovement.isUnpromoteValid(position.getShogiBoardState(), move.getToSquare());
+        } else {
+            return pieceMovement.isUnpromoteValid(position.getShogiBoardState().opposite(), move.getToSquare().opposite());
+        }
     }
 
     @Override
@@ -265,23 +264,18 @@ public class ShogiRulesEngine implements GameRulesEngine<ShogiPosition> {
                 // find its possible squares to move
                 for (Square targetSquare : targetSquares) { //add each of those squares as a possible move
                     Piece targetPiece = position.getPieceAt(targetSquare);
+                    NormalMove move;
                     if (targetPiece != null) { //check if it is a capturing move
-                        NormalMove capture = new CaptureMove(piece, everySquare, targetSquare, false, targetPiece);
-                        if (canMoveWithoutPromotion(position, capture)) {
-                             result.add(capture);
-                        }
-                        if (canMoveWithPromotion(position, capture)) {//if can promote, capture with promotion
-                            result.add(new CaptureMove(piece, everySquare, targetSquare, true, targetPiece));
-                        }
-
+                        move = new CaptureMove(piece, everySquare, targetSquare, targetPiece);
                     } else {
-                        NormalMove move = new NormalMove(piece, everySquare, targetSquare, false);
-                        if (canMoveWithoutPromotion(position, result.get(result.size() - 1))) {
-                            result.add(move);
-                        }
-                        if (canMoveWithPromotion(position, move)) {//if can promote, move with promotion
-                            result.add(new NormalMove(piece, everySquare, targetSquare, true));
-                        }
+                        move = new NormalMove(piece, everySquare, targetSquare);
+                    }
+                    if (canMoveWithoutPromotion(position, move)) {
+                        result.add(move);
+                    }
+                    Optional<NormalMove> promotionMove = getPromotionMove(position, move);
+                    if (promotionMove.isPresent()) {
+                        result.add(promotionMove.get());
                     }
                 }
             }

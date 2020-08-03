@@ -77,8 +77,8 @@ public class KifMoveConverter {
             if (shogiPosition.getShogiBoardState().getPieceAt(toSquare) == null) {
                 return new NormalMove(piece, fromSquare, toSquare, promote);
             } else {
-                return new CaptureMove(piece, fromSquare, toSquare, promote,
-                        shogiPosition.getShogiBoardState().getPieceAt(toSquare));
+                Piece capturedPiece = shogiPosition.getShogiBoardState().getPieceAt(toSquare);
+                return new CaptureMove(piece, fromSquare, toSquare, capturedPiece, promote);
             }
 
         } else {

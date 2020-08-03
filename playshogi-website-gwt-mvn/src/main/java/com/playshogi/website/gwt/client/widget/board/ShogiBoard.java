@@ -26,6 +26,7 @@ import com.playshogi.website.gwt.client.widget.board.Komadai.Point;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class ShogiBoard extends Composite implements ClickHandler {
 
@@ -274,12 +275,12 @@ public class ShogiBoard extends Composite implements ClickHandler {
                     NormalMove move = new NormalMove(piece, getSquare(selectedPiece.getRow(),
                             selectedPiece.getColumn()), getSquare(row, col), false);
 
-                    if (shogiRulesEngine.canMoveWithPromotion(position, move)) {
+                    Optional<NormalMove> promotionMove = shogiRulesEngine.getPromotionMove(position, move);
+                    if (promotionMove.isPresent()) {
                         if (shogiRulesEngine.canMoveWithoutPromotion(position, move)) {
-                            promotionPopupController.showPromotionPopup(image, move);
+                            promotionPopupController.showPromotionPopup(image, move, promotionMove.get());
                         } else {
-                            move.setPromote(true);
-                            playNormalMoveIfAllowed(move);
+                            playNormalMoveIfAllowed(promotionMove.get());
                         }
                     } else {
                         playNormalMoveIfAllowed(move);
@@ -304,41 +305,37 @@ public class ShogiBoard extends Composite implements ClickHandler {
             if (canPlayMove()) {
                 if (selectedPiece == pieceWrapper) {
                     unselect();
-                } else {
-                    if (selectedPiece != null) {
-                        if (!selectedPiece.isInKomadai() && selectedPiece.getPiece().isSentePiece() != pieceWrapper.getPiece().isSentePiece() && shogiRulesEngine.getPossibleTargetSquares(position, selectedPiece.getSquare()).contains(pieceWrapper.getSquare())) {
+                } else if (selectedPiece != null) {
+                    if (!selectedPiece.isInKomadai() && selectedPiece.getPiece().isSentePiece() != pieceWrapper.getPiece().isSentePiece() && (!boardConfiguration.isAllowOnlyLegalMoves() || shogiRulesEngine.getPossibleTargetSquares(position, selectedPiece.getSquare()).contains(pieceWrapper.getSquare()))) {
+                        NormalMove move = new CaptureMove(selectedPiece.getPiece(),
+                                    selectedPiece.getSquare(), pieceWrapper.getSquare(), pieceWrapper.getPiece());
 
-                            CaptureMove move = new CaptureMove(selectedPiece.getPiece(),
-                                    selectedPiece.getSquare(), pieceWrapper.getSquare(), false,
-                                    pieceWrapper.getPiece());
-
-                            if (shogiRulesEngine.canMoveWithPromotion(position, move)) {
-                                if (shogiRulesEngine.canMoveWithoutPromotion(position, move)) {
-                                    promotionPopupController.showPromotionPopup(pieceWrapper.getImage(), move);
-                                } else {
-                                    move.setPromote(true);
-                                    playNormalMoveIfAllowed(move);
-                                }
+                        Optional<NormalMove> promotionMove = shogiRulesEngine.getPromotionMove(position, move);
+                        if (promotionMove.isPresent()) {
+                            if (shogiRulesEngine.canMoveWithoutPromotion(position, move)) {
+                                Image image = pieceWrapper.getImage();
+                                promotionPopupController.showPromotionPopup(image, move, promotionMove.get());
                             } else {
-                                playNormalMoveIfAllowed(move);
+                                playNormalMoveIfAllowed(promotionMove.get());
                             }
-                            return;
                         } else {
-                            unselect();
+                            playNormalMoveIfAllowed(move);
                         }
+                        return;
+                    } else {
+                        unselect();
                     }
-                    if (position.isSenteToPlay() == pieceWrapper.getPiece().isSentePiece()) {
-                        selectedPiece = pieceWrapper;
-                        pieceWrapper.getImage().setStyleName(STYLE_PIECE_SELECTED);
+                }
+                if (position.isSenteToPlay() == pieceWrapper.getPiece().isSentePiece()) {
+                    selectedPiece = pieceWrapper;
+                    pieceWrapper.getImage().setStyleName(STYLE_PIECE_SELECTED);
 
-                        if (!pieceWrapper.isInKomadai()) {
-                            List<Square> possibleTargets =
-                                    shogiRulesEngine.getPossibleTargetSquares(position,
+                    if (!pieceWrapper.isInKomadai()) {
+                        List<Square> possibleTargets = shogiRulesEngine.getPossibleTargetSquares(position,
                                             getSquare(pieceWrapper.getRow(), pieceWrapper.getColumn()));
-                            for (Square square : possibleTargets) {
-                                squareImages[square.getRow() - 1][8 - (square.getColumn() - 1)].setStyleName("gwt" +
+                        for (Square square : possibleTargets) {
+                            squareImages[square.getRow() - 1][8 - (square.getColumn() - 1)].setStyleName("gwt" +
                                         "-square-selected");
-                            }
                         }
                     }
                 }
