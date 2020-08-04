@@ -10,14 +10,23 @@ import java.util.Scanner;
 public class GameRecordFileReader {
 
     public static GameRecord read(final GameRecordFormat gameRecordFormat, final String fileName) throws IOException {
-        try (Scanner scanner = new Scanner(new File(fileName))) {
+        return read(gameRecordFormat, new File(fileName));
+    }
+
+    public static GameRecord read(final GameRecordFormat gameRecordFormat, final File file) throws IOException {
+        try (Scanner scanner = new Scanner(file)) {
             return gameRecordFormat.read(new ScannerLineReader(scanner));
         }
     }
 
     public static GameRecord read(final GameRecordFormat gameRecordFormat, final String fileName, final String encoding)
             throws IOException {
-        try (Scanner scanner = new Scanner(new File(fileName), encoding)) {
+        return read(gameRecordFormat, new File(fileName), encoding);
+    }
+
+    public static GameRecord read(final GameRecordFormat gameRecordFormat, final File file, final String encoding)
+            throws IOException {
+        try (Scanner scanner = new Scanner(file, encoding)) {
             return gameRecordFormat.read(new ScannerLineReader(scanner));
         }
     }

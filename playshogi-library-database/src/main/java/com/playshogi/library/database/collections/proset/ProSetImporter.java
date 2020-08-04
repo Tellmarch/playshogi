@@ -29,17 +29,15 @@ public class ProSetImporter {
         Set<String> errors = new HashSet<>();
 
 
-//        for (int i = 1; i <= 77458; i++) {
         for (int i = 1; i <= 77458; i++) {
-            String fileName = PATH + "kif" + i + ".kif";
-            File file = new File(fileName);
+            String fileName = "kif" + i + ".kif";
+            File file = new File(PATH, fileName);
             if (file.exists() && file.length() > 10) {
                 total++;
-                System.out.println("Processing file " + fileName + " of length " + file.length());
+                System.out.println("Processing file " + file + " of length " + file.length());
                 try {
-                    processKifu(fileName, rep, setId, i, venueId);
+                    processKifu(file, rep, setId, i, venueId);
                     ok++;
-//                    System.out.println("Success");
                 } catch (Exception ex) {
                     ex.printStackTrace();
                     error++;
@@ -47,7 +45,7 @@ public class ProSetImporter {
                     break;
                 }
             } else {
-                System.out.println("Not found: " + fileName);
+                System.out.println("Not found: " + file);
             }
         }
 
@@ -61,10 +59,10 @@ public class ProSetImporter {
 
     }
 
-    private static void processKifu(final String fileName, final GameSetRepository repository, final int setId,
+    private static void processKifu(final File file, final GameSetRepository repository, final int setId,
                                     final int kifuId, final int venueId)
             throws IOException {
-        GameRecord gameRecord = GameRecordFileReader.read(KifFormat.INSTANCE, fileName, "windows-932");
+        GameRecord gameRecord = GameRecordFileReader.read(KifFormat.INSTANCE, file, "windows-932");
         // Currently handicap games return null
         if (gameRecord != null) {
             repository.addGameToGameSet(gameRecord, setId, venueId, "Pro Classic Games #" + kifuId, 1);
