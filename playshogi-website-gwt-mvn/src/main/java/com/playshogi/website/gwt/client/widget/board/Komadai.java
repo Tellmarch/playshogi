@@ -2,6 +2,8 @@ package com.playshogi.website.gwt.client.widget.board;
 
 import com.playshogi.library.shogi.models.Piece;
 
+import java.util.Arrays;
+
 import static com.playshogi.website.gwt.client.widget.board.ShogiBoard.SQUARE_WIDTH;
 
 public class Komadai {
@@ -13,23 +15,14 @@ public class Komadai {
      * Offset, in squares, to display the pieces of the given type.
      */
     private static final int[] sdispx = new int[]{0, 2, 0, 2, 0, 2, 0, 0};
-    private static final int[] gdispx = new int[]{0, 0, 2, 0, 2, 0, 2, 0};
     private static final int[] sdispy = new int[]{3, 2, 2, 1, 1, 0, 0, 4};
-    private static final int[] gdispy = new int[]{0, 1, 1, 2, 2, 3, 3, 4};
     /**
      * Number of pieces that can be displayed without overlapping.
      */
     private static final int[] ndispx = new int[]{4, 2, 2, 2, 2, 2, 2, 2};
-    private final boolean sente;
-
-    public Komadai(final boolean sente) {
-        this.sente = sente;
-    }
 
     public void removeAll() {
-        for (int i = 0; i < pieces.length; i++) {
-            pieces[i] = 0;
-        }
+        Arrays.fill(pieces, 0);
     }
 
     public Point addPiece(final Piece piece) {
@@ -38,23 +31,8 @@ public class Komadai {
 
         int pieceNum = piece.getPieceType().ordinal();
 
-        int ox = SQUARE_WIDTH;
-        int offset = 0;
-
-        if (pieces[pieceNum] >= ndispx[pieceNum]) {
-            offset = 10;
-        }
-
-        int x;
-        int y;
-
-        if (sente) {
-            x = (gdispx[pieceNum] * SQUARE_WIDTH) + (Math.min(pieces[pieceNum], ndispx[pieceNum] - 1) * ox) + offset;
-            y = (gdispy[pieceNum] * ShogiBoard.SQUARE_HEIGHT);
-        } else {
-            x = (sdispx[pieceNum] * SQUARE_WIDTH) + (pieces[pieceNum] * ox);
-            y = (sdispy[pieceNum] * ShogiBoard.SQUARE_HEIGHT);
-        }
+        int x = (sdispx[pieceNum] + pieces[pieceNum]) * SQUARE_WIDTH;
+        int y =  sdispy[pieceNum] * ShogiBoard.SQUARE_HEIGHT + KOMADAI_INSIDE_MARGIN;
 
         pieces[pieceNum]++;
 
