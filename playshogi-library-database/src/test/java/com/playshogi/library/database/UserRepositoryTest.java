@@ -1,10 +1,12 @@
 package com.playshogi.library.database;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
 
+@Ignore
 public class UserRepositoryTest {
 
     private UserRepository userRepository;
