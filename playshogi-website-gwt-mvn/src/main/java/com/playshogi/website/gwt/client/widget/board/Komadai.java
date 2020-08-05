@@ -1,6 +1,7 @@
 package com.playshogi.website.gwt.client.widget.board;
 
 import com.playshogi.library.shogi.models.Piece;
+import com.playshogi.library.shogi.models.PieceType;
 
 import java.util.Arrays;
 
@@ -8,7 +9,7 @@ import static com.playshogi.website.gwt.client.widget.board.ShogiBoard.SQUARE_WI
 
 public class Komadai {
 
-    private static final int KOMADAI_INSIDE_MARGIN = 5;
+    private static final int KOMADAI_TOP_MARGIN = 5;
     private final int[] pieces = new int[]{0, 0, 0, 0, 0, 0, 0, 0};
 
     /**
@@ -19,7 +20,7 @@ public class Komadai {
     /**
      * Number of pieces that can be displayed without overlapping.
      */
-    private static final int[] ndispx = new int[]{4, 2, 2, 2, 2, 2, 2, 2};
+    private static final int[] ndispx = new int[]{5, 2, 2, 2, 2, 2, 2, 2};
 
     public void removeAll() {
         Arrays.fill(pieces, 0);
@@ -30,10 +31,10 @@ public class Komadai {
         // GWT.log("Adding piece: " + piece.toString());
 
         int pieceNum = piece.getPieceType().ordinal();
-
-        int padding = SQUARE_WIDTH * 3 / 4;
-        int x = (sdispx[pieceNum] + pieces[pieceNum]) * padding;
-        int y =  sdispy[pieceNum] * ShogiBoard.SQUARE_HEIGHT + KOMADAI_INSIDE_MARGIN;
+        int leftMargin = (piece.getPieceType() == PieceType.PAWN ? -1 : 0);
+        int padding = (piece.getPieceType() == PieceType.PAWN ? SQUARE_WIDTH * 3 / 4 : SQUARE_WIDTH - 1);
+        int x = (sdispx[pieceNum] + pieces[pieceNum]) * padding + leftMargin;
+        int y =  sdispy[pieceNum] * ShogiBoard.SQUARE_HEIGHT + KOMADAI_TOP_MARGIN;
 
         pieces[pieceNum]++;
 
