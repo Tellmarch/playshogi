@@ -41,4 +41,9 @@ public class KnightMovement implements PieceMovement {
         return to.getRow() >= ShogiBoardState.FIRST_ROW + 2;
     }
 
+    @Override
+    public boolean isUnpromoteValid(final ShogiBoardState boardState, final Square to) {
+        return isDropValid(boardState, to);
+    }
+
 }

@@ -1,4 +1,5 @@
 Short guide on how to deploy the website on a clean install of ubuntu 20.04:
+Only follow this guide if you understand the commands - take special care with the iptables commands in the last section
 
 # Install MySQL
 
@@ -8,6 +9,7 @@ sudo apt-get install mysql-server
 sudo mysql_secure_installation
 
 # Allow root to connect by password:
+Replace "password" by your sql root password
 
 sudo mysql
 SELECT user,authentication_string,plugin,host FROM mysql.user;
@@ -45,9 +47,9 @@ sudo apt-get install tomcat9-admin
 
 sudo nano /etc/tomcat9/tomcat-users.xml
 
-Add:
+Add: !!! CHANGE THE USERNAME AND PASSWORD
 <role rolename="manager-gui"/>
-<user username="tomcat" password="s3cret" roles="manager-gui"/>
+<user username="tomcatplayshogi" password="s3cret" roles="manager-gui"/>
 
 # Install JDBC connector
 

@@ -20,13 +20,26 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 1.8
+
+    - name: Cache Maven packages
+      uses: actions/cache@v2
+      with:
+        path: ~/.m2
+        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+        restore-keys: ${{ runner.os }}-m2
+
     - name: Install playshogi-library-common
       run: mvn -B install --file playshogi-library-common/pom.xml
+
     - name: Install playshogi-library-shogi
       run: mvn -B install --file playshogi-library-shogi/pom.xml
+
     - name: Install playshogi-library-shogi-files
       run: mvn -B install --file playshogi-library-shogi-files/pom.xml
+
     - name: Install playshogi-library-database
       run: mvn -B install --file playshogi-library-database/pom.xml
+
     - name: Build playshogi-gwt-mvn
       run: mvn -B package --file playshogi-website-gwt-mvn/pom.xml
+
