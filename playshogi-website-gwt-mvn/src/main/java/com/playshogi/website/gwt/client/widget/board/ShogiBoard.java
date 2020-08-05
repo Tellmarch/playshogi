@@ -94,8 +94,8 @@ public class ShogiBoard extends Composite implements ClickHandler {
         goteKomadaiImage = new Image(boardResources.ghand());
         senteKomadaiImage = new Image(boardResources.shand());
 
-        senteKomadai = new Komadai(true);
-        goteKomadai = new Komadai(false);
+        senteKomadai = new Komadai();
+        goteKomadai = new Komadai();
 
         absolutePanel.setSize(tatami.getWidth() + "px", tatami.getHeight() + "px");
         absolutePanel.add(tatami, 0, 0);

@@ -31,7 +31,8 @@ public class Komadai {
 
         int pieceNum = piece.getPieceType().ordinal();
 
-        int x = (sdispx[pieceNum] + pieces[pieceNum]) * SQUARE_WIDTH;
+        int padding = SQUARE_WIDTH * 3 / 4;
+        int x = (sdispx[pieceNum] + pieces[pieceNum]) * padding;
         int y =  sdispy[pieceNum] * ShogiBoard.SQUARE_HEIGHT + KOMADAI_INSIDE_MARGIN;
 
         pieces[pieceNum]++;
