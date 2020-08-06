@@ -39,7 +39,7 @@ public class TsumeActivity extends MyAbstractActivity {
     private EventBus eventBus;
 
     private String tsumeId;
-    private int numMoves = 0;
+    private int numMoves = TsumeView.MOVES[0];
     private Duration duration = new Duration();
 
     public TsumeActivity(final TsumePlace place, final TsumeView tsumeView, final PlaceController placeController,
@@ -61,7 +61,7 @@ public class TsumeActivity extends MyAbstractActivity {
         eventBinder.bindEventHandlers(this, eventBus);
         tsumeView.activate(eventBus);
         problemController.activate(eventBus);
-        loadTsume(tsumeId);
+        loadTsume(tsumeId, numMoves);
         containerWidget.setWidget(tsumeView.asWidget());
     }
 
@@ -73,7 +73,7 @@ public class TsumeActivity extends MyAbstractActivity {
 
     @EventHandler
     void onUserSkippedProblem(final UserSkippedProblemEvent event) {
-        loadTsume(null);
+        loadTsume(null, numMoves);
     }
 
     @EventHandler
@@ -91,20 +91,12 @@ public class TsumeActivity extends MyAbstractActivity {
         numMoves = event.getNumMoves();
     }
 
-    private void loadTsume(final String tsumeId) {
+    private void loadTsume(final String tsumeId, int numMoves) {
         if (tsumeId == null || tsumeId.equalsIgnoreCase("null")) {
-            if (numMoves == 0) {
-                requestRandomTsume();
-            } else {
-                requestRandomTsume(numMoves);
-            }
+            requestRandomTsume(numMoves);
         } else {
             requestTsume(tsumeId);
         }
-    }
-
-    private void requestRandomTsume() {
-        problemsService.getRandomProblem(getProblemRequestCallback(null));
     }
 
     private void requestRandomTsume(int numMoves) {

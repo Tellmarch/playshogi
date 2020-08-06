@@ -14,8 +14,7 @@ import com.playshogi.website.gwt.client.widget.problems.ProblemOptionsPanel;
 public class TsumeView extends Composite {
 
     private static final String TSUME = "tsume";
-
-    private static final int[] MOVES = {3, 5, 7, 9, 11, 13};
+    public static final int[] MOVES = {3, 5, 7, 9, 11, 13};
 
     private final ShogiBoard shogiBoard;
     private final GameNavigator gameNavigator;

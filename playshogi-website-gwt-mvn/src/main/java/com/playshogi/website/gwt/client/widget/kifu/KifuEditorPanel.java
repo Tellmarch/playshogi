@@ -22,9 +22,7 @@ public class KifuEditorPanel extends Composite implements ClickHandler {
 
     private final MyEventBinder eventBinder = GWT.create(MyEventBinder.class);
 
-    SafeHtml chooseHtml = SafeHtmlUtils.fromSafeConstant("Editing kifu");
-    SafeHtml wrongHtml = SafeHtmlUtils.fromSafeConstant("<p style=\"font-size:20px;color:red\">Wrong!</p>");
-    SafeHtml correctHtml = SafeHtmlUtils.fromSafeConstant("<p style=\"font-size:20px;color:green\">Correct!</p>");
+    private SafeHtml chooseHtml = SafeHtmlUtils.fromSafeConstant("Editing kifu");
 
     private EventBus eventBus;
     private final Button importButton;

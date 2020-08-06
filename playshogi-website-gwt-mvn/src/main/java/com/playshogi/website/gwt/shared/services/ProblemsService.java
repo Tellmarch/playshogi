@@ -11,8 +11,6 @@ public interface ProblemsService extends RemoteService {
 
     ProblemDetails getProblem(String problemId);
 
-    ProblemDetails getRandomProblem();
-
     ProblemDetails getRandomProblem(int numMoves);
 
     void saveUserProblemAttempt(String sessionId, String problemId, boolean success, int timeMs);

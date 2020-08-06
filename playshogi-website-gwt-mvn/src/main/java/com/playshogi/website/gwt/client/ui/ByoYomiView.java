@@ -17,8 +17,6 @@ public class ByoYomiView extends Composite {
 
     private static final String TSUME = "byoyomi";
 
-    private static final int[] MOVES = {3, 5, 7, 9, 11, 13};
-
     private final ShogiBoard shogiBoard;
     private final GameNavigator gameNavigator;
     private final ByoYomiFeedbackPanel byoYomiFeedbackPanel;

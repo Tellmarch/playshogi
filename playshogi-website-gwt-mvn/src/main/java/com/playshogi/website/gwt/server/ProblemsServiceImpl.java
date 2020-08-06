@@ -54,21 +54,6 @@ public class ProblemsServiceImpl extends RemoteServiceServlet implements Problem
         return queryProblemDetails(persistentProblem);
     }
 
-
-    @Override
-    public ProblemDetails getRandomProblem() {
-        LOGGER.log(Level.INFO, "getting random problem");
-
-        PersistentProblem persistentProblem = problemRepository.getRandomProblem();
-
-        if (persistentProblem == null) {
-            LOGGER.log(Level.INFO, "Could not load a random problem");
-            return null;
-        }
-
-        return queryProblemDetails(persistentProblem);
-    }
-
     @Override
     public ProblemDetails getRandomProblem(int numMoves) {
         LOGGER.log(Level.INFO, "getting random problem of " + numMoves + " moves");

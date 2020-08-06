@@ -9,8 +9,6 @@ public interface ProblemsServiceAsync {
 
     void getProblem(String problemId, AsyncCallback<ProblemDetails> callback);
 
-    void getRandomProblem(AsyncCallback<ProblemDetails> callback);
-
     void getRandomProblem(int numMoves, AsyncCallback<ProblemDetails> callback);
 
     void saveUserProblemAttempt(String sessionId, String problemId, boolean success, int timeMs,
