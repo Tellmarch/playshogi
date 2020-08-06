@@ -348,20 +348,16 @@ public class ShogiBoard extends Composite implements ClickHandler {
 
             pieceWrapper.getImage().addMouseOverHandler(event -> {
                 // GWT.log("mouse over");
-                if (selectedPiece == null) {
-                    if (!pieceWrapper.isInKomadai()) {
-                        if (position.isSenteToPlay() == pieceWrapper.getPiece().isSentePiece()) {
-                            List<Square> possibleTargets =
-                                    shogiRulesEngine.getPossibleTargetSquares(position,
-                                            getSquare(pieceWrapper.getRow(), pieceWrapper.getColumn()));
-                            for (Square square : possibleTargets) {
-                                selectSquare(square);
-                            }
-                            selectPiece(pieceWrapper);
-                        }
-                    }
+                if (selectedPiece == null
+                        && !pieceWrapper.isInKomadai()
+                        &&  position.isSenteToPlay() == pieceWrapper.getPiece().isSentePiece()
+                        && !shogiRulesEngine.isPositionCheckmate(position)) {
+                    selectPiece(pieceWrapper);
+                    Iterable<Square> possibleTargets =
+                            shogiRulesEngine.getPossibleTargetSquares(position,
+                                    getSquare(pieceWrapper.getRow(), pieceWrapper.getColumn()));
+                    possibleTargets.forEach(this::selectSquare);
                 }
-
             });
 
             pieceWrapper.getImage().addMouseOutHandler(event -> {

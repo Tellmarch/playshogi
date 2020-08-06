@@ -377,7 +377,7 @@ public class ShogiRulesEngine implements GameRulesEngine<ShogiPosition> {
             this.playMoveInPosition(position, everyMove);
             if (!isPositionCheck(position, escapingPlayer)) {
                 this.undoMoveInPosition(position, everyMove);
-                System.out.println("escape:" + everyMove);
+                //System.out.println("escape:" + everyMove);
                 return false;
             }
             this.undoMoveInPosition(position, everyMove);
