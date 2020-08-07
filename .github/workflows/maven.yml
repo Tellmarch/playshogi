@@ -17,9 +17,6 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - name: Install JDBC driver
-      run: sudo apt-get install libmariadb-java && sudo dpkg -L libmariadb-java
-
     - name: Set up JDK 1.8
       uses: actions/setup-java@v1
       with:
