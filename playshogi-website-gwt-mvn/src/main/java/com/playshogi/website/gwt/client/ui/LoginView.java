@@ -3,13 +3,16 @@ package com.playshogi.website.gwt.client.ui;
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.playshogi.website.gwt.client.SessionInformation;
 
 @Singleton
-public class LoginView extends Composite implements ClickHandler {
+public class LoginView extends Composite implements ClickHandler, KeyUpHandler {
 
     private final Button loginButton;
 
@@ -28,9 +31,11 @@ public class LoginView extends Composite implements ClickHandler {
         Grid grid = new Grid(2, 2);
         grid.setWidget(0, 0, new HTML("Username:"));
         usernameTextBox = new TextBox();
+        usernameTextBox.addKeyUpHandler(this);
         grid.setWidget(0, 1, usernameTextBox);
         grid.setWidget(1, 0, new HTML("Password:"));
         passwordTextBox = new PasswordTextBox();
+        passwordTextBox.addKeyUpHandler(this);
         grid.setWidget(1, 1, passwordTextBox);
 
         HorizontalPanel buttonPanel = new HorizontalPanel();
@@ -66,8 +71,19 @@ public class LoginView extends Composite implements ClickHandler {
     public void onClick(final ClickEvent event) {
         Object source = event.getSource();
         if (source == loginButton) {
-            sessionInformation.login(usernameTextBox.getText(), passwordTextBox.getText());
+            login();
         }
+    }
+
+    @Override
+    public void onKeyUp(KeyUpEvent event) {
+        if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+            login();
+        }
+    }
+
+    private void login() {
+        sessionInformation.login(usernameTextBox.getText(), passwordTextBox.getText());
     }
 
 }
