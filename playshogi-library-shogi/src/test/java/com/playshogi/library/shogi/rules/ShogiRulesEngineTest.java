@@ -6,16 +6,16 @@ import com.playshogi.library.shogi.models.formats.sfen.SfenConverter;
 import com.playshogi.library.shogi.models.moves.DropMove;
 import com.playshogi.library.shogi.models.moves.ShogiMove;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.Assert.*;
 
-class ShogiRulesEngineTest {
+public class ShogiRulesEngineTest {
 
     @Test
-    void isMoveLegalInPosition() {
+    public void isMoveLegalInPosition() {
         ShogiRulesEngine engine = new ShogiRulesEngine();
         String sfen = "lnsg3nl/2k2gr2/ppbp1p1pp/2p1P4/4s1S2/5B3/PPPP1P1PP/2S1GGR2/LN4KNL b 2Pp";
         ShogiPosition position = SfenConverter.fromSFEN(sfen);
@@ -25,7 +25,7 @@ class ShogiRulesEngineTest {
     }
 
     @Test
-    void getAllPossibleDropMoves() {
+    public void getAllPossibleDropMoves() {
         ShogiRulesEngine engine = new ShogiRulesEngine();
         String sfen = "lnsg3nl/2k2gr2/ppbp1p1pp/2p1P4/4s1S2/5B3/PPPP1P1PP/2S1GGR2/LN4KNL b 2Pp";
         List<ShogiMove> allPossibleDropMoves = engine.getAllPossibleDropMoves(SfenConverter.fromSFEN(sfen), true);
@@ -37,7 +37,7 @@ class ShogiRulesEngineTest {
     }
 
     @Test
-    void getAllPossibleNormalAndCaptureMoves() {
+    public void getAllPossibleNormalAndCaptureMoves() {
         ShogiRulesEngine engine = new ShogiRulesEngine();
         String sfen = "lnsg3nl/2k2gr2/ppbp1p1pp/2p1P4/4s1S2/5B3/PPPP1P1PP/2S1GGR2/LN4KNL b 2Pp";
         List<ShogiMove> allPossibleNormalAndCaptureMoves = engine.getAllPossibleNormalAndCaptureMoves(SfenConverter.fromSFEN(sfen), true);
@@ -49,7 +49,7 @@ class ShogiRulesEngineTest {
     }
 
     @Test
-    void isPositionCheck() {
+    public void isPositionCheck() {
         ShogiRulesEngine engine = new ShogiRulesEngine();
         String sfen = "lnsg3nl/2k2gr2/ppbp1p1pp/2p1P4/4s1S2/5B3/PPPP1P1PP/2S1GGR2/LN4KNL b 2Pp";
         String sfenCheckmate = "4k4/4G4/4P4/9/9/9/9/9/9 w 2r2b3g4s4n4l17p";
@@ -63,7 +63,7 @@ class ShogiRulesEngineTest {
     }
 
     @Test
-    void isPositionCheckmate() {
+    public void isPositionCheckmate() {
         ShogiRulesEngine engine = new ShogiRulesEngine();
         String sfen = "lnsg3nl/2k2gr2/ppbp1p1pp/2p1P4/4s1S2/5B3/PPPP1P1PP/2S1GGR2/LN4KNL b 2Pp";
         String sfenCheckmate = "4k4/4G4/4P4/9/9/9/9/9/9 w 2r2b3g4s4n4l17p";
