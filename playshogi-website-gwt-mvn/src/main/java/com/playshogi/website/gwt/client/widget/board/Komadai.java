@@ -49,11 +49,11 @@ public class Komadai {
         int y;
 
         if (sente) {
-            x = (gdispx[pieceNum] * SQUARE_WIDTH) + (Math.min(pieces[pieceNum], ndispx[pieceNum] - 1) * ox) + offset;
-            y = (gdispy[pieceNum] * ShogiBoard.SQUARE_HEIGHT);
-        } else {
-            x = (sdispx[pieceNum] * SQUARE_WIDTH) + (pieces[pieceNum] * ox);
+            x = (sdispx[pieceNum] * SQUARE_WIDTH) + (Math.min(pieces[pieceNum], ndispx[pieceNum] - 1) * ox) + offset;
             y = (sdispy[pieceNum] * ShogiBoard.SQUARE_HEIGHT);
+        } else {
+            x = (gdispx[pieceNum] * SQUARE_WIDTH) + (pieces[pieceNum] * ox);
+            y = (gdispy[pieceNum] * ShogiBoard.SQUARE_HEIGHT);
         }
 
         pieces[pieceNum]++;
