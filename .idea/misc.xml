@@ -8,6 +8,7 @@
         <option value="$PROJECT_DIR$/playshogi-library-database/pom.xml" />
         <option value="$PROJECT_DIR$/playshogi-library-shogi-files/pom.xml" />
         <option value="$PROJECT_DIR$/playshogi-library-shogi/pom.xml" />
+        <option value="$PROJECT_DIR$/playshogi-library-shogi-engine/pom.xml" />
       </list>
     </option>
   </component>

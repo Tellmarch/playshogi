@@ -6,6 +6,7 @@
       <module fileurl="file://$PROJECT_DIR$/playshogi-library-common/playshogi-library-common.iml" filepath="$PROJECT_DIR$/playshogi-library-common/playshogi-library-common.iml" />
       <module fileurl="file://$PROJECT_DIR$/playshogi-library-database/playshogi-library-database.iml" filepath="$PROJECT_DIR$/playshogi-library-database/playshogi-library-database.iml" />
       <module fileurl="file://$PROJECT_DIR$/playshogi-library-shogi/playshogi-library-shogi.iml" filepath="$PROJECT_DIR$/playshogi-library-shogi/playshogi-library-shogi.iml" />
+      <module fileurl="file://$PROJECT_DIR$/playshogi-library-shogi-engine/playshogi-library-shogi-engine.iml" filepath="$PROJECT_DIR$/playshogi-library-shogi-engine/playshogi-library-shogi-engine.iml" />
       <module fileurl="file://$PROJECT_DIR$/playshogi-library-shogi-files/playshogi-library-shogi-files.iml" filepath="$PROJECT_DIR$/playshogi-library-shogi-files/playshogi-library-shogi-files.iml" />
     </modules>
   </component>

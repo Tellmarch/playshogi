@@ -8,15 +8,17 @@
         <outputRelativeToContentRoot value="true" />
         <module name="playshogi-library-shogi-files" />
         <module name="PlayShogiWebsite" />
+        <module name="playshogi-library-shogi" />
         <module name="playshogi-library-database" />
         <module name="playshogi-library-common" />
-        <module name="playshogi-library-shogi" />
+        <module name="playshogi-library-shogi-engine" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="playshogi-library-common" target="1.8" />
       <module name="playshogi-library-database" target="1.8" />
       <module name="playshogi-library-shogi" target="1.8" />
+      <module name="playshogi-library-shogi-engine" target="1.8" />
       <module name="playshogi-library-shogi-files" target="1.8" />
       <module name="PlayShogiWebsite" target="1.8" />
     </bytecodeTargetLevel>
