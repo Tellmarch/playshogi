@@ -11,7 +11,18 @@
         <b>Contact: playshogi [at] hotmail.com</b>
         <p/>
         <p/>
-        <b>Last updated: 2020-08-01</b>
+        <b>Last updated: 2020-08-08</b>
+        <p/>
+        Bug fixes:
+        <ul>
+            <li>Fit all pieces in komadai properly</li>
+            <li>Show pieces from strongest to weakest in komadai</li>
+            <li>Do not show promotion popup if the unpromote is mandatory, or if the move is illegal</li>
+            <li>Fix layout of the ByoYomi Survival page</li>
+        </ul>
+        <p/>
+        <p/>
+        <b>Update: 2020-08-01</b>
         <p/>
         New Features:
         <ul>
