@@ -14,4 +14,6 @@ public interface KifuServiceAsync {
 
     void getPositionDetails(String sfen, int gameSetId, AsyncCallback<PositionDetails> callback);
 
+    void analysePosition(String sessionId, String sfen, AsyncCallback<String> callback);
+
 }

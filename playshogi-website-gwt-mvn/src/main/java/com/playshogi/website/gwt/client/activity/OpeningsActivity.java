@@ -10,6 +10,7 @@ import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.library.shogi.models.formats.sfen.SfenConverter;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.website.gwt.client.events.PositionChangedEvent;
+import com.playshogi.website.gwt.client.events.PositionEvaluationEvent;
 import com.playshogi.website.gwt.client.events.PositionStatisticsEvent;
 import com.playshogi.website.gwt.client.place.OpeningsPlace;
 import com.playshogi.website.gwt.client.ui.OpeningsView;
@@ -60,6 +61,19 @@ public class OpeningsActivity extends MyAbstractActivity {
             @Override
             public void onFailure(final Throwable caught) {
                 GWT.log("OPENINGS - ERROR GETTING POSITION STATS");
+            }
+        });
+
+        kifuService.analysePosition("", SfenConverter.toSFEN(position), new AsyncCallback<String>() {
+            @Override
+            public void onFailure(Throwable throwable) {
+                GWT.log("OPENINGS - ERROR GETTING POSITION EVALUATION");
+            }
+
+            @Override
+            public void onSuccess(String result) {
+                GWT.log("OPENINGS - GOT POSITION EVALUATION\n" + result);
+                eventBus.fireEvent(new PositionEvaluationEvent(result));
             }
         });
     }

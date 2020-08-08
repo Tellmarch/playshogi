@@ -11,8 +11,11 @@ import com.playshogi.library.database.models.PersistentGameSetPos;
 import com.playshogi.library.database.models.PersistentKifu.KifuType;
 import com.playshogi.library.models.record.GameInformation;
 import com.playshogi.library.models.record.GameRecord;
+import com.playshogi.library.shogi.engine.PositionEvaluation;
+import com.playshogi.library.shogi.engine.USIConnector;
 import com.playshogi.library.shogi.models.formats.usf.UsfFormat;
 import com.playshogi.website.gwt.shared.models.KifuDetails;
+import com.playshogi.website.gwt.shared.models.LoginResult;
 import com.playshogi.website.gwt.shared.models.PositionDetails;
 import com.playshogi.website.gwt.shared.models.PositionMoveDetails;
 import com.playshogi.website.gwt.shared.services.KifuService;
@@ -32,6 +35,7 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
     private final KifuRepository kifuRepository;
     private final GameSetRepository gameSetRepository;
     private final PositionRepository positionRepository;
+    private final Authenticator authenticator = Authenticator.INSTANCE;
 
     public KifuServiceImpl() {
         DbConnection dbConnection = new DbConnection();
@@ -128,5 +132,21 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
 
         return new PositionDetails(stats.getTotal(), stats.getSenteWins(), stats.getGoteWins(), details, kifuIds,
                 kifuDescs);
+    }
+
+    @Override
+    public String analysePosition(String sessionId, String sfen) {
+        LOGGER.log(Level.INFO, "analyzing position:\n" + sfen);
+
+        LoginResult loginResult = authenticator.checkSession(sessionId);
+        if (loginResult != null && loginResult.isLoggedIn()) {
+            USIConnector usiConnector = new USIConnector();
+            PositionEvaluation evaluation = usiConnector.analysePosition(sfen);
+            LOGGER.log(Level.INFO, "Position analysis: " + evaluation);
+            return evaluation.toString();
+        } else {
+            LOGGER.log(Level.INFO, "Position analysis is only available for logged-in users");
+            return "";
+        }
     }
 }
