@@ -2,10 +2,12 @@ package com.playshogi.website.gwt.client.ui;
 
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.web.bindery.event.shared.EventBus;
 import com.playshogi.website.gwt.client.widget.board.ShogiBoard;
+import com.playshogi.website.gwt.client.widget.engine.PositionEvaluationDetailsPanel;
 import com.playshogi.website.gwt.client.widget.gamenavigator.GameNavigator;
 import com.playshogi.website.gwt.client.widget.kifu.KifuEditorPanel;
 import com.playshogi.website.gwt.client.widget.kifu.KifuInformationPanel;
@@ -18,6 +20,7 @@ public class ViewKifuView extends Composite {
     private final GameNavigator gameNavigator;
     private final KifuEditorPanel kifuEditorPanel;
     private final KifuInformationPanel kifuInformationPanel;
+    private final PositionEvaluationDetailsPanel positionEvaluationDetailsPanel;
 
     @Inject
     public ViewKifuView() {
@@ -31,7 +34,13 @@ public class ViewKifuView extends Composite {
         shogiBoard.setUpperRightPanel(kifuEditorPanel);
         shogiBoard.setLowerLeftPanel(kifuInformationPanel);
 
-        initWidget(shogiBoard);
+        positionEvaluationDetailsPanel = new PositionEvaluationDetailsPanel();
+
+        VerticalPanel verticalPanel = new VerticalPanel();
+        verticalPanel.add(shogiBoard);
+        verticalPanel.add(positionEvaluationDetailsPanel);
+
+        initWidget(verticalPanel);
     }
 
     public void activate(final EventBus eventBus) {
@@ -40,6 +49,10 @@ public class ViewKifuView extends Composite {
         gameNavigator.activate(eventBus);
         kifuEditorPanel.activate(eventBus);
         kifuInformationPanel.activate(eventBus);
+        positionEvaluationDetailsPanel.activate(eventBus);
     }
 
+    public GameNavigator getGameNavigator() {
+        return gameNavigator;
+    }
 }

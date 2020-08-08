@@ -46,14 +46,17 @@ public class USIConnector {
     private PositionEvaluation readEvaluation(Scanner input) {
         List<PrincipalVariation> principalVariationHistory = new ArrayList<>();
 
-        String nextLine = "";
+        String nextLine;
         do {
             nextLine = input.nextLine();
+            System.out.println("<< " + nextLine);
+
+            if (nextLine.startsWith("bestmove")) {
+                break;
+            }
 
             principalVariationHistory.add(parsePrincipalVariation(nextLine));
-
-            System.out.println("<< " + nextLine);
-        } while (!nextLine.startsWith("bestmove"));
+        } while (true);
 
         String[] split = nextLine.split(" ");
         if (!"bestmove".equals(split[0])) {
@@ -70,8 +73,59 @@ public class USIConnector {
     }
 
     private PrincipalVariation parsePrincipalVariation(String line) {
-
-        return null;
+        PrincipalVariation principalVariation = new PrincipalVariation();
+        String[] split = line.split(" ");
+        for (int i = 0; i < split.length; i++) {
+            switch (split[i]) {
+                case "info":
+                case "lowerbound":
+                case "upperbound":
+                    continue;
+                case "depth":
+                    principalVariation.setDepth(Integer.parseInt(split[++i]));
+                    continue;
+                case "seldepth":
+                    principalVariation.setSeldepth(Integer.parseInt(split[++i]));
+                    continue;
+                case "score":
+                    String type = split[++i];
+                    if ("cp".equals(type)) {
+                        principalVariation.setForcedMate(false);
+                        principalVariation.setEvaluationCP(Integer.parseInt(split[++i]));
+                    } else if ("mate".equals(type)) {
+                        principalVariation.setForcedMate(true);
+                        principalVariation.setNumMovesBeforeMate(Integer.parseInt(split[++i]));
+                    } else {
+                        throw new IllegalArgumentException("Could not parse line: " + line);
+                    }
+                    continue;
+                case "time":
+                    principalVariation.setTimeMs(Integer.parseInt(split[++i]));
+                    continue;
+                case "nodes":
+                    principalVariation.setNodes(Long.parseLong(split[++i]));
+                    continue;
+                case "nps":
+                case "hashfull":
+                case "multipv":
+                case "currmove":
+                case "currmovenumber":
+                case "cpuload":
+                case "string":
+                    ++i;
+                    continue;
+                case "pv":
+                    StringBuilder variation = new StringBuilder();
+                    for (int j = i + 1; j < split.length; j++) {
+                        variation.append(split[j]).append(" ");
+                    }
+                    principalVariation.setPrincipalVariation(variation.toString());
+                    return principalVariation;
+                default:
+                    throw new IllegalArgumentException("Could not parse line: " + line + " at token " + split[i]);
+            }
+        }
+        return principalVariation;
     }
 
     private void sendCommand(PrintWriter output, String command) {

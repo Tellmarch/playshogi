@@ -12,7 +12,6 @@ import com.playshogi.library.shogi.models.formats.usf.UsfMoveConverter;
 import com.playshogi.library.shogi.models.moves.ShogiMove;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.website.gwt.client.events.HighlightMoveEvent;
-import com.playshogi.website.gwt.client.events.PositionEvaluationEvent;
 import com.playshogi.website.gwt.client.events.PositionStatisticsEvent;
 import com.playshogi.website.gwt.client.mvp.AppPlaceHistoryMapper;
 import com.playshogi.website.gwt.client.place.OpeningsPlace;
@@ -28,7 +27,6 @@ public class PositionStatisticsPanel extends Composite {
     private EventBus eventBus;
 
     private PositionDetails positionDetails;
-    private String positionEvaluation = "";
 
     private final FlowPanel verticalPanel;
 
@@ -61,13 +59,6 @@ public class PositionStatisticsPanel extends Composite {
         refreshInformation();
     }
 
-    @EventHandler
-    public void onPositionEvaluationEvent(final PositionEvaluationEvent event) {
-        GWT.log("Position statistics: handle PositionEvaluationEvent");
-        positionEvaluation = event.getEvaluation();
-        refreshInformation();
-    }
-
     private void refreshInformation() {
         GWT.log("Displaying position details: " + positionDetails);
         verticalPanel.clear();
@@ -79,10 +70,6 @@ public class PositionStatisticsPanel extends Composite {
             verticalPanel.add(new HTML(SafeHtmlUtils.fromTrustedString(winRate)));
 
             verticalPanel.add(new HTML(SafeHtmlUtils.fromSafeConstant("<br>")));
-
-            if (positionEvaluation != null && !positionEvaluation.isEmpty()) {
-                verticalPanel.add(new HTML(SafeHtmlUtils.fromTrustedString(positionEvaluation + "<br>")));
-            }
 
             PositionMoveDetails[] positionMoveDetails = positionDetails.getPositionMoveDetails();
 

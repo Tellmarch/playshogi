@@ -7,14 +7,13 @@ import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.library.models.record.GameRecord;
+import com.playshogi.library.shogi.models.formats.sfen.SfenConverter;
 import com.playshogi.library.shogi.models.formats.usf.UsfFormat;
 import com.playshogi.website.gwt.client.SessionInformation;
-import com.playshogi.website.gwt.client.events.GameInformationChangedEvent;
-import com.playshogi.website.gwt.client.events.GameRecordChangedEvent;
-import com.playshogi.website.gwt.client.events.GameRecordSaveRequestedEvent;
-import com.playshogi.website.gwt.client.events.GameTreeChangedEvent;
+import com.playshogi.website.gwt.client.events.*;
 import com.playshogi.website.gwt.client.place.ViewKifuPlace;
 import com.playshogi.website.gwt.client.ui.ViewKifuView;
+import com.playshogi.website.gwt.shared.models.PositionEvaluationDetails;
 import com.playshogi.website.gwt.shared.services.KifuService;
 import com.playshogi.website.gwt.shared.services.KifuServiceAsync;
 
@@ -103,4 +102,22 @@ public class ViewKifuActivity extends MyAbstractActivity {
         });
     }
 
+    @EventHandler
+    public void onRequestPositionEvaluationEvent(final RequestPositionEvaluationEvent event) {
+        GWT.log("View Kifu Activity Handling RequestPositionEvaluationEvent");
+        String sfen = SfenConverter.toSFEN(viewKifuView.getGameNavigator().getGameNavigation().getPosition());
+        kifuService.analysePosition(sessionInformation.getSessionId(), sfen,
+                new AsyncCallback<PositionEvaluationDetails>() {
+                    @Override
+                    public void onFailure(Throwable throwable) {
+                        GWT.log("ViewKifu - ERROR GETTING POSITION EVALUATION");
+                    }
+
+                    @Override
+                    public void onSuccess(PositionEvaluationDetails result) {
+                        GWT.log("ViewKifu - received position evaluation\n" + result);
+                        eventBus.fireEvent(new PositionEvaluationEvent(result));
+                    }
+                });
+    }
 }

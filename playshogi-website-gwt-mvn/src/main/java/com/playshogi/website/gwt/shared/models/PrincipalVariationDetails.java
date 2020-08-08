@@ -1,6 +1,8 @@
-package com.playshogi.library.shogi.engine;
+package com.playshogi.website.gwt.shared.models;
 
-public class PrincipalVariation {
+import java.io.Serializable;
+
+public class PrincipalVariationDetails implements Serializable {
 
     private boolean forcedMate;
     private int numMovesBeforeMate;
@@ -9,9 +11,8 @@ public class PrincipalVariation {
     private int seldepth;
     private long nodes;
     private String principalVariation;
-    private int timeMs;
 
-    public PrincipalVariation() {
+    public PrincipalVariationDetails() {
     }
 
     public boolean isForcedMate() {
@@ -70,17 +71,9 @@ public class PrincipalVariation {
         this.principalVariation = principalVariation;
     }
 
-    public int getTimeMs() {
-        return timeMs;
-    }
-
-    public void setTimeMs(int timeMs) {
-        this.timeMs = timeMs;
-    }
-
     @Override
     public String toString() {
-        return "PrincipalVariation{" +
+        return "PrincipalVariationDetails{" +
                 "forcedMate=" + forcedMate +
                 ", numMovesBeforeMate=" + numMovesBeforeMate +
                 ", evaluationCP=" + evaluationCP +
@@ -88,7 +81,6 @@ public class PrincipalVariation {
                 ", seldepth=" + seldepth +
                 ", nodes=" + nodes +
                 ", principalVariation='" + principalVariation + '\'' +
-                ", timeMs=" + timeMs +
                 '}';
     }
 }

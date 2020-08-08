@@ -4,6 +4,7 @@ import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 import com.playshogi.website.gwt.shared.models.KifuDetails;
 import com.playshogi.website.gwt.shared.models.PositionDetails;
+import com.playshogi.website.gwt.shared.models.PositionEvaluationDetails;
 
 @RemoteServiceRelativePath("kifus")
 public interface KifuService extends RemoteService {
@@ -16,6 +17,6 @@ public interface KifuService extends RemoteService {
 
     PositionDetails getPositionDetails(String sfen, int gameSetId);
 
-    String analysePosition(String sessionId, String sfen);
+    PositionEvaluationDetails analysePosition(String sessionId, String sfen);
 
 }

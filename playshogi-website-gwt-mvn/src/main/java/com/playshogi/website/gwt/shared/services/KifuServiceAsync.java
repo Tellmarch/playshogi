@@ -3,6 +3,7 @@ package com.playshogi.website.gwt.shared.services;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.playshogi.website.gwt.shared.models.KifuDetails;
 import com.playshogi.website.gwt.shared.models.PositionDetails;
+import com.playshogi.website.gwt.shared.models.PositionEvaluationDetails;
 
 public interface KifuServiceAsync {
 
@@ -14,6 +15,6 @@ public interface KifuServiceAsync {
 
     void getPositionDetails(String sfen, int gameSetId, AsyncCallback<PositionDetails> callback);
 
-    void analysePosition(String sessionId, String sfen, AsyncCallback<String> callback);
+    void analysePosition(String sessionId, String sfen, AsyncCallback<PositionEvaluationDetails> callback);
 
 }

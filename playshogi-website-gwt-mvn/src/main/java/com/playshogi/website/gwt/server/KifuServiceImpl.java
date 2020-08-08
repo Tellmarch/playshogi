@@ -12,12 +12,10 @@ import com.playshogi.library.database.models.PersistentKifu.KifuType;
 import com.playshogi.library.models.record.GameInformation;
 import com.playshogi.library.models.record.GameRecord;
 import com.playshogi.library.shogi.engine.PositionEvaluation;
+import com.playshogi.library.shogi.engine.PrincipalVariation;
 import com.playshogi.library.shogi.engine.USIConnector;
 import com.playshogi.library.shogi.models.formats.usf.UsfFormat;
-import com.playshogi.website.gwt.shared.models.KifuDetails;
-import com.playshogi.website.gwt.shared.models.LoginResult;
-import com.playshogi.website.gwt.shared.models.PositionDetails;
-import com.playshogi.website.gwt.shared.models.PositionMoveDetails;
+import com.playshogi.website.gwt.shared.models.*;
 import com.playshogi.website.gwt.shared.services.KifuService;
 
 import java.text.SimpleDateFormat;
@@ -135,7 +133,7 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
     }
 
     @Override
-    public String analysePosition(String sessionId, String sfen) {
+    public PositionEvaluationDetails analysePosition(String sessionId, String sfen) {
         LOGGER.log(Level.INFO, "analyzing position:\n" + sfen);
 
         LoginResult loginResult = authenticator.checkSession(sessionId);
@@ -143,10 +141,32 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
             USIConnector usiConnector = new USIConnector();
             PositionEvaluation evaluation = usiConnector.analysePosition(sfen);
             LOGGER.log(Level.INFO, "Position analysis: " + evaluation);
-            return evaluation.toString();
+
+            return convertPositionEvaluation(evaluation);
         } else {
             LOGGER.log(Level.INFO, "Position analysis is only available for logged-in users");
-            return "";
+            return null;
         }
+    }
+
+    private PositionEvaluationDetails convertPositionEvaluation(final PositionEvaluation evaluation) {
+        PositionEvaluationDetails details = new PositionEvaluationDetails();
+        details.setBestMove(evaluation.getBestMove());
+        details.setPonderMove(evaluation.getPonderMove());
+        details.setPrincipalVariationHistory(Arrays.stream(evaluation.getPrincipalVariationHistory()).map(
+                this::convertPrincipalVariation).toArray(PrincipalVariationDetails[]::new));
+        return details;
+    }
+
+    private PrincipalVariationDetails convertPrincipalVariation(final PrincipalVariation principalVariation) {
+        PrincipalVariationDetails details = new PrincipalVariationDetails();
+        details.setDepth(principalVariation.getDepth());
+        details.setEvaluationCP(principalVariation.getEvaluationCP());
+        details.setForcedMate(principalVariation.isForcedMate());
+        details.setNodes(principalVariation.getNodes());
+        details.setNumMovesBeforeMate(principalVariation.getNumMovesBeforeMate());
+        details.setSeldepth(principalVariation.getSeldepth());
+        details.setPrincipalVariation(principalVariation.getPrincipalVariation());
+        return details;
     }
 }
