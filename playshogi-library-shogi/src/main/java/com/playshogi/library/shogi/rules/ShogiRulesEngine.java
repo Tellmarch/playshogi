@@ -15,8 +15,6 @@ import com.playshogi.library.shogi.rules.movements.*;
 
 import java.util.*;
 
-import static com.playshogi.library.shogi.models.PieceType.KING;
-
 public class ShogiRulesEngine implements GameRulesEngine<ShogiPosition> {
 
     private static final EnumMap<Piece, PieceMovement> PIECE_MOVEMENTS = new EnumMap<>(Piece.class);
@@ -146,6 +144,10 @@ public class ShogiRulesEngine implements GameRulesEngine<ShogiPosition> {
         if (piece == null) {
             return Collections.emptyList();
         }
+        return getPossibleTargetSquares(position, from, piece);
+    }
+
+    private List<Square> getPossibleTargetSquares(final ShogiPosition position, final Square from, Piece piece) {
         PieceMovement pieceMovement = PIECE_MOVEMENTS.get(piece.getSentePiece());
         if (piece.isSentePiece()) {
             return pieceMovement.getPossibleMoves(position.getShogiBoardState(), from);
@@ -153,7 +155,6 @@ public class ShogiRulesEngine implements GameRulesEngine<ShogiPosition> {
             return Square.opposite(
                     pieceMovement.getPossibleMoves(position.getShogiBoardState().opposite(), from.opposite()));
         }
-
     }
 
     /**
@@ -224,6 +225,16 @@ public class ShogiRulesEngine implements GameRulesEngine<ShogiPosition> {
     }
 
     private boolean isDropMoveLegalInPosition(final ShogiPosition position, final DropMove move) {
+        boolean result = isDropMoveValidInPosition(position, move);
+        if (result && move.getPieceType() == PieceType.PAWN) {
+            this.playMoveInPosition(position, move);
+            result = ! isPositionCheckmate(position, move.isSenteMoving());
+            this.undoMoveInPosition(position, move);
+        }
+        return result;
+    }
+
+    private boolean isDropMoveValidInPosition(final ShogiPosition position, final DropMove move) {
         PieceMovement pieceMovement = PIECE_MOVEMENTS.get(Piece.getPiece(move.getPieceType(), true));
         if (move.isSenteMoving()) {
             return pieceMovement.isDropValid(position.getShogiBoardState(), move.getToSquare());
@@ -323,15 +334,19 @@ public class ShogiRulesEngine implements GameRulesEngine<ShogiPosition> {
     }
 
     public boolean isPositionCheck(final ShogiPosition position, boolean isSente) {
-        for (ShogiMove move : getAllPossibleMoves(position, isSente)) { //generate all possible moves
-            if (move instanceof CaptureMove) { //check only captures
-                CaptureMove captureMove = (CaptureMove) move;
-                if (captureMove.getCapturedPiece().getPieceType() == KING) { //check if captured piece is a king
-                    return true; //check found
-                }
-            }
+        // Find the king square and determine if the king could move like a knight,
+        // would it attack an opposing knight, etc.
+        for (Square square : position.getAllSquares()) {
+            Piece occupant = position.getPieceAt(square);
+            if (occupant != null && occupant.isSentePiece() != isSente && occupant.getPieceType() == PieceType.KING)
+                for (Piece piece : Piece.values())
+                    if (piece.isSentePiece() == occupant.isSentePiece()) {
+                        for (Square to : getPossibleTargetSquares(position, square, piece))
+                            if (position.getPieceAt(to) == piece.opposite())
+                                return true;
+                    }
         }
-        return false;  //no checks for all possible moves
+        return false;
     }
 
     /**
