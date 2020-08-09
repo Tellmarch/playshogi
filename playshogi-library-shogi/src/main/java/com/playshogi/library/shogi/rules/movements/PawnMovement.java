@@ -28,18 +28,12 @@ public class PawnMovement implements PieceMovement {
 
     @Override
     public boolean isDropValid(final ShogiBoardState position, final Square to) {
-        return to.getRow() != ShogiBoardState.FIRST_ROW && !position.hasPlayerPawnOnColumn(true, to.getColumn())
-                && !checkMatePawnMove(position, to);
+        return to.getRow() != ShogiBoardState.FIRST_ROW && !position.hasPlayerPawnOnColumn(true, to.getColumn());
     }
 
     @Override
     public boolean isUnpromoteValid(final ShogiBoardState position, final Square to) {
         return to.getRow() != ShogiBoardState.FIRST_ROW;
-    }
-
-    private boolean checkMatePawnMove(final ShogiBoardState position, final Square to) {
-        // TODO Auto-generated method stub
-        return false;
     }
 
 }

@@ -225,11 +225,18 @@ public class ShogiRulesEngine implements GameRulesEngine<ShogiPosition> {
 
     private boolean isDropMoveLegalInPosition(final ShogiPosition position, final DropMove move) {
         PieceMovement pieceMovement = PIECE_MOVEMENTS.get(Piece.getPiece(move.getPieceType(), true));
+        boolean result;
         if (move.isSenteMoving()) {
-            return pieceMovement.isDropValid(position.getShogiBoardState(), move.getToSquare());
+            result = pieceMovement.isDropValid(position.getShogiBoardState(), move.getToSquare());
         } else {
-            return pieceMovement.isDropValid(position.getShogiBoardState().opposite(), move.getToSquare().opposite());
+            result = pieceMovement.isDropValid(position.getShogiBoardState().opposite(), move.getToSquare().opposite());
         }
+        if (result && move.getPieceType() == PieceType.PAWN) {
+            this.playMoveInPosition(position, move);
+            result = ! isPositionCheckmate(position, move.isSenteMoving());
+            this.undoMoveInPosition(position, move);
+        }
+        return result;
     }
 
     private boolean isCaptureMoveLegalInPosition(final ShogiPosition position, final CaptureMove move) {
