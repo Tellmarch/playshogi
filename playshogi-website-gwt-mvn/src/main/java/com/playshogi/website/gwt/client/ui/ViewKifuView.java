@@ -2,11 +2,13 @@ package com.playshogi.website.gwt.client.ui;
 
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.web.bindery.event.shared.EventBus;
 import com.playshogi.website.gwt.client.widget.board.ShogiBoard;
+import com.playshogi.website.gwt.client.widget.engine.KifuEvaluationChartPanel;
 import com.playshogi.website.gwt.client.widget.engine.PositionEvaluationDetailsPanel;
 import com.playshogi.website.gwt.client.widget.gamenavigator.GameNavigator;
 import com.playshogi.website.gwt.client.widget.kifu.KifuEditorPanel;
@@ -21,6 +23,7 @@ public class ViewKifuView extends Composite {
     private final KifuEditorPanel kifuEditorPanel;
     private final KifuInformationPanel kifuInformationPanel;
     private final PositionEvaluationDetailsPanel positionEvaluationDetailsPanel;
+    private final KifuEvaluationChartPanel kifuEvaluationChartPanel;
 
     @Inject
     public ViewKifuView() {
@@ -35,9 +38,14 @@ public class ViewKifuView extends Composite {
         shogiBoard.setLowerLeftPanel(kifuInformationPanel);
 
         positionEvaluationDetailsPanel = new PositionEvaluationDetailsPanel();
+        kifuEvaluationChartPanel = new KifuEvaluationChartPanel();
+
+        HorizontalPanel horizontalPanel = new HorizontalPanel();
+        horizontalPanel.add(shogiBoard);
+        horizontalPanel.add(kifuEvaluationChartPanel);
 
         VerticalPanel verticalPanel = new VerticalPanel();
-        verticalPanel.add(shogiBoard);
+        verticalPanel.add(horizontalPanel);
         verticalPanel.add(positionEvaluationDetailsPanel);
 
         initWidget(verticalPanel);
@@ -50,6 +58,7 @@ public class ViewKifuView extends Composite {
         kifuEditorPanel.activate(eventBus);
         kifuInformationPanel.activate(eventBus);
         positionEvaluationDetailsPanel.activate(eventBus);
+        kifuEvaluationChartPanel.activate(eventBus);
     }
 
     public GameNavigator getGameNavigator() {

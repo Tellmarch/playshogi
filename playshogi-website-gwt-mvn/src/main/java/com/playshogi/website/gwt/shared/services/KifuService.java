@@ -19,4 +19,8 @@ public interface KifuService extends RemoteService {
 
     PositionEvaluationDetails analysePosition(String sessionId, String sfen);
 
+    boolean requestKifuAnalysis(String sessionId, String kifuUsf);
+
+    PositionEvaluationDetails[] getKifUAnalysisResults(String sessionId, String kifuUsf);
+
 }

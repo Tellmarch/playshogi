@@ -1,6 +1,7 @@
 package com.playshogi.website.gwt.client.activity;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
 import com.google.web.bindery.event.shared.EventBus;
@@ -16,6 +17,8 @@ import com.playshogi.website.gwt.client.ui.ViewKifuView;
 import com.playshogi.website.gwt.shared.models.PositionEvaluationDetails;
 import com.playshogi.website.gwt.shared.services.KifuService;
 import com.playshogi.website.gwt.shared.services.KifuServiceAsync;
+
+import java.util.Arrays;
 
 public class ViewKifuActivity extends MyAbstractActivity {
 
@@ -119,5 +122,45 @@ public class ViewKifuActivity extends MyAbstractActivity {
                         eventBus.fireEvent(new PositionEvaluationEvent(result));
                     }
                 });
+    }
+
+    @EventHandler
+    public void onRequestKifuEvaluationEvent(final RequestKifuEvaluationEvent event) {
+        GWT.log("View Kifu Activity Handling RequestKifuEvaluationEvent");
+        String usf = UsfFormat.INSTANCE.write(viewKifuView.getGameNavigator().getGameNavigation().getGameTree());
+        Timer timer = new Timer() {
+            @Override
+            public void run() {
+                kifuService.getKifUAnalysisResults(sessionInformation.getSessionId(), usf,
+                        new AsyncCallback<PositionEvaluationDetails[]>() {
+                            @Override
+                            public void onFailure(Throwable throwable) {
+                                GWT.log("ViewKifu - error requesting kifu analysis results");
+                            }
+
+                            @Override
+                            public void onSuccess(PositionEvaluationDetails[] positionEvaluationDetails) {
+                                GWT.log("ViewKifu - got kifu analysis results: " + Arrays.toString(positionEvaluationDetails));
+                                eventBus.fireEvent(new KifuEvaluationEvent(positionEvaluationDetails));
+                            }
+                        });
+            }
+        };
+        timer.scheduleRepeating(1000);
+
+        kifuService.requestKifuAnalysis(sessionInformation.getSessionId(), usf, new AsyncCallback<Boolean>() {
+            @Override
+            public void onFailure(Throwable throwable) {
+                GWT.log("ViewKifu - error requesting kifu evaluation");
+                timer.cancel();
+            }
+
+            @Override
+            public void onSuccess(Boolean result) {
+                GWT.log("ViewKifu - kifu evaluation result: " + result);
+                timer.run();
+                timer.cancel();
+            }
+        });
     }
 }

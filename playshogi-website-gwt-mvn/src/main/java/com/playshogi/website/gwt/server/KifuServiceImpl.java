@@ -35,6 +35,8 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
     private final PositionRepository positionRepository;
     private final Authenticator authenticator = Authenticator.INSTANCE;
 
+    private final Map<String, List<PositionEvaluationDetails>> kifuEvaluations = new HashMap<>();
+
     public KifuServiceImpl() {
         DbConnection dbConnection = new DbConnection();
         gameSetRepository = new GameSetRepository(dbConnection);
@@ -139,7 +141,9 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
         LoginResult loginResult = authenticator.checkSession(sessionId);
         if (loginResult != null && loginResult.isLoggedIn()) {
             USIConnector usiConnector = new USIConnector();
+            usiConnector.connect();
             PositionEvaluation evaluation = usiConnector.analysePosition(sfen);
+            usiConnector.disconnect();
             LOGGER.log(Level.INFO, "Position analysis: " + evaluation);
 
             return convertPositionEvaluation(evaluation);
@@ -168,5 +172,54 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
         details.setSeldepth(principalVariation.getSeldepth());
         details.setPrincipalVariation(principalVariation.getPrincipalVariation());
         return details;
+    }
+
+    @Override
+    public boolean requestKifuAnalysis(String sessionId, String kifuUsf) {
+        LOGGER.log(Level.INFO, "requestKifuAnalysis:\n" + kifuUsf);
+
+        if (kifuEvaluations.containsKey(kifuUsf)) {
+            LOGGER.log(Level.INFO, "Kifu analysis was already requested");
+            return false;
+        }
+
+        LoginResult loginResult = authenticator.checkSession(sessionId);
+        if (loginResult != null && loginResult.isLoggedIn()) {
+
+            GameRecord gameRecord = UsfFormat.INSTANCE.read(kifuUsf);
+
+            kifuEvaluations.put(kifuUsf, new ArrayList<>());
+
+            USIConnector usiConnector = new USIConnector();
+            usiConnector.connect();
+            usiConnector.analyzeKifu(gameRecord.getGameTree(), evaluation -> {
+                LOGGER.log(Level.INFO, "New position evaluation for kifu analysis " + evaluation);
+                kifuEvaluations.get(kifuUsf).add(convertPositionEvaluation(evaluation));
+            });
+            usiConnector.disconnect();
+            LOGGER.log(Level.INFO, "Finished kifu analysis for " + kifuUsf);
+            return true;
+        } else {
+            LOGGER.log(Level.INFO, "Kifu analysis is only available for logged-in users");
+            return false;
+        }
+    }
+
+    @Override
+    public PositionEvaluationDetails[] getKifUAnalysisResults(String sessionId, String kifuUsf) {
+        LOGGER.log(Level.INFO, "getKifUAnalysisResults:\n" + kifuUsf);
+
+        if (!kifuEvaluations.containsKey(kifuUsf)) {
+            LOGGER.log(Level.INFO, "Kifu analysis was not requested");
+            return new PositionEvaluationDetails[0];
+        }
+
+        LoginResult loginResult = authenticator.checkSession(sessionId);
+        if (loginResult != null && loginResult.isLoggedIn()) {
+            return kifuEvaluations.get(kifuUsf).toArray(new PositionEvaluationDetails[0]);
+        } else {
+            LOGGER.log(Level.INFO, "Kifu analysis is only available for logged-in users");
+            return new PositionEvaluationDetails[0];
+        }
     }
 }
