@@ -41,6 +41,9 @@ jobs:
     - name: Install playshogi-library-database
       run: mvn -B install --file playshogi-library-database/pom.xml
 
+    - name: Install playshogi-library-shogi-engine
+      run: mvn -B install --file playshogi-library-shogi-engine/pom.xml
+
     - name: Build playshogi-gwt-mvn
       run: mvn -B package --file playshogi-website-gwt-mvn/pom.xml
 
