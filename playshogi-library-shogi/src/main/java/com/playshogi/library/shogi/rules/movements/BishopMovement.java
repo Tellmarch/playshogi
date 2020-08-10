@@ -20,8 +20,9 @@ public class BishopMovement implements PieceMovement {
 
     @Override
     public boolean isMoveDxDyValid(final ShogiBoardState boardState, final Square from, final Square to) {
-        // TODO write more efficient method?
-        return getPossibleMoves(boardState, from).contains(to);
+        int dRow = Math.abs(to.getRow() - from.getRow());
+        int dColumn = Math.abs(to.getColumn() - from.getColumn());
+        return dRow == dColumn && getPossibleMoves(boardState, from).contains(to);
     }
 
     @Override

@@ -20,39 +20,9 @@ public class RookMovement implements PieceMovement {
 
     @Override
     public boolean isMoveDxDyValid(final ShogiBoardState boardState, final Square from, final Square to) {
-
-        if (to.getColumn() == from.getColumn() && to.getRow() < from.getRow()) {
-            for (int row = from.getRow() - 1; row > to.getRow(); row--) {
-                if (boardState.getPieceAt(from.getColumn(), row) != null) {
-                    return false;
-                }
-            }
-            return true;
-        } else if (to.getColumn() == from.getColumn() && to.getRow() > from.getRow()) {
-            for (int row = from.getRow() + 1; row < to.getRow(); row++) {
-                if (boardState.getPieceAt(from.getColumn(), row) != null) {
-                    return false;
-                }
-            }
-            return true;
-        } else if (to.getColumn() < from.getColumn() && to.getRow() == from.getRow()) {
-            for (int col = from.getColumn() - 1; col > to.getColumn(); col--) {
-                if (boardState.getPieceAt(col, from.getRow()) != null) {
-                    return false;
-                }
-            }
-            return true;
-        } else if (to.getColumn() > from.getColumn() && to.getRow() == from.getRow()) {
-            for (int col = from.getColumn() + 1; col < to.getColumn(); col++) {
-                if (boardState.getPieceAt(col, from.getRow()) != null) {
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        return false;
-
+        int dRow = Math.abs(to.getRow() - from.getRow());
+        int dColumn = Math.abs(to.getColumn() - from.getColumn());
+        return (dRow == 0 || dColumn == 0) && getPossibleMoves(boardState, from).contains(to);
     }
 
     @Override

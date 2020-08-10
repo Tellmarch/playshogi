@@ -25,8 +25,9 @@ public class PromotedRookMovement extends AbstractPieceMovement {
 
     @Override
     public boolean isMoveDxDyValid(final ShogiBoardState boardState, final Square from, final Square to) {
-        // TODO write more efficient method?
-        return getPossibleMoves(boardState, from).contains(to);
+        int dRow = Math.abs(to.getRow() - from.getRow());
+        int dColumn = Math.abs(to.getColumn() - from.getColumn());
+        return (dRow + dColumn == 2 || dRow == 0 || dColumn == 0) && getPossibleMoves(boardState, from).contains(to);
     }
 
     @Override
