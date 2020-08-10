@@ -4,6 +4,8 @@ import com.playshogi.library.models.Square;
 import com.playshogi.library.shogi.models.Piece;
 import com.playshogi.library.shogi.models.PieceType;
 
+import java.util.Optional;
+
 public class ShogiBoardStateImpl extends ShogiBoardState {
 
     private ShogiBoardState invert;
@@ -24,12 +26,12 @@ public class ShogiBoardStateImpl extends ShogiBoardState {
     }
 
     @Override
-    public Piece getPieceAt(final int column, final int row) {
-        return board[column - 1][row - 1];
+    public Optional<Piece> getPieceAt(final int column, final int row) {
+        return Optional.ofNullable(board[column - 1][row - 1]);
     }
 
     @Override
-    public Piece getPieceAt(final Square square) {
+    public Optional<Piece> getPieceAt(final Square square) {
         return getPieceAt(square.getColumn(), square.getRow());
     }
 
@@ -74,7 +76,7 @@ public class ShogiBoardStateImpl extends ShogiBoardState {
 
     @Override
     public boolean isSquareEmptyOrGote(final Square square) {
-        Piece piece = getPieceAt(square);
-        return piece == null || !piece.isSentePiece();
+        Optional<Piece> piece = getPieceAt(square);
+        return !piece.isPresent() || piece.get().isSentePiece();
     }
 }

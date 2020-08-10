@@ -2,6 +2,7 @@ package com.playshogi.library.models;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Represents a square on the board. 1,1 is the top right, as in shogi.
@@ -27,28 +28,28 @@ public class Square {
         return new Square(column, row);
     }
 
-    public Square above() {
-        if (row == 1) return null;
+    public Optional<Square> above() {
+        if (row == 1) return Optional.empty();
 
-        return Square.of(column, row - 1);
+        return Optional.of(Square.of(column, row - 1));
     }
 
-    public Square below() {
-        if (row == 9) return null;
+    public Optional<Square> below() {
+        if (row == 9) return Optional.empty();
 
-        return Square.of(column, row + 1);
+        return Optional.of(Square.of(column, row + 1));
     }
 
-    public Square left() {
-        if (column == 9) return null;
+    public Optional<Square> left() {
+        if (column == 9) return Optional.empty();
 
-        return Square.of(column + 1, row);
+        return Optional.of(Square.of(column + 1, row));
     }
 
-    public Square right() {
-        if (column == 1) return null;
+    public Optional<Square> right() {
+        if (column == 1) return Optional.empty();
 
-        return Square.of(column - 1, row);
+        return Optional.of(Square.of(column - 1, row));
     }
 
     public Square opposite() {
@@ -88,4 +89,8 @@ public class Square {
         return true;
     }
 
+    @Override
+    public String toString() {
+        return column + String.valueOf(Character.toChars('a' + row - 1));
+    }
 }

@@ -140,11 +140,11 @@ public class ShogiRulesEngine implements GameRulesEngine<ShogiPosition> {
 
     // what are target squares of a piece from 'from' square
     public List<Square> getPossibleTargetSquares(final ShogiPosition position, final Square from) {
-        Piece piece = position.getPieceAt(from);
-        if (piece == null) {
-            return Collections.emptyList();
+        Optional<Piece> piece = position.getPieceAt(from);
+        if (piece.isPresent()) {
+            return getPossibleTargetSquares(position, from, piece.get());
         }
-        return getPossibleTargetSquares(position, from, piece);
+        return Collections.emptyList();
     }
 
     private List<Square> getPossibleTargetSquares(final ShogiPosition position, final Square from, Piece piece) {
@@ -244,11 +244,11 @@ public class ShogiRulesEngine implements GameRulesEngine<ShogiPosition> {
     }
 
     private boolean isCaptureMoveLegalInPosition(final ShogiPosition position, final CaptureMove move) {
-        Piece capturedPiece = position.getPieceAt(move.getToSquare());
-        if (capturedPiece == null || capturedPiece.isSentePiece() == move.isSenteMoving()) {
-            return false;
-        } else {
+        Optional<Piece> capturedPiece = position.getPieceAt(move.getToSquare());
+        if (capturedPiece.isPresent() && capturedPiece.get().isSentePiece() != move.isSenteMoving()) {
             return isNormalMoveLegalInPosition(position, move);
+        } else {
+            return false;
         }
     }
 
@@ -267,19 +267,21 @@ public class ShogiRulesEngine implements GameRulesEngine<ShogiPosition> {
         List<ShogiMove> result = new ArrayList<>();
 
 
-        for (Square everySquare : position.getAllSquares()) { //for every square on the board
-            Piece piece = position.getPieceAt(everySquare);
-            if (piece != null && piece.isSentePiece() == isSente) {
+        for (Square square : position.getAllSquares()) { //for every square on the board
+            Optional<Piece> piece = position.getPieceAt(square);
+            if (piece.filter(p -> p.isSentePiece() == isSente).isPresent()) {
                 //check if there is sente's piece
-                List<Square> targetSquares = getPossibleTargetSquares(position, everySquare);
+                List<Square> targetSquares = getPossibleTargetSquares(position, square);
                 // find its possible squares to move
                 for (Square targetSquare : targetSquares) { //add each of those squares as a possible move
-                    Piece targetPiece = position.getPieceAt(targetSquare);
+                    Optional<Piece> targetPiece = position.getPieceAt(targetSquare);
                     NormalMove move;
-                    if (targetPiece != null) { //check if it is a capturing move
-                        move = new CaptureMove(piece, everySquare, targetSquare, targetPiece);
+                    if (targetPiece.isPresent()) { //check if it is a capturing move
+                        if (targetPiece.filter(p -> p.isSentePiece() == isSente).isPresent())
+                            continue;
+                        move = new CaptureMove(piece.get(), square, targetSquare, targetPiece.get());
                     } else {
-                        move = new NormalMove(piece, everySquare, targetSquare);
+                        move = new NormalMove(piece.get(), square, targetSquare);
                     }
                     if (canMoveWithoutPromotion(position, move)) {
                         result.add(move);
@@ -304,7 +306,7 @@ public class ShogiRulesEngine implements GameRulesEngine<ShogiPosition> {
                 // pawns
                 if (position.getSenteKomadai().getPiecesOfType(pieceType) != 0) { //if have piece in hand
                     for (Square everySquare : position.getAllSquares()) { //check every squared of the board
-                        if (position.getPieceAt(everySquare) == null) { //if its empty
+                        if (! position.getPieceAt(everySquare).isPresent()) { //if its empty
                             if (isDropMoveLegalInPosition(position, new DropMove(true, pieceType, everySquare))) {
                                 //can we drop it legally (like pawns/lance/knight)
                                 result.add(new DropMove(true, pieceType, everySquare)); //add it to possible moves
@@ -319,7 +321,7 @@ public class ShogiRulesEngine implements GameRulesEngine<ShogiPosition> {
             for (PieceType pieceType : PieceType.values()) { //iterating enum
                 if (position.getGoteKomadai().getPiecesOfType(pieceType) != 0) { //if have piece in hand
                     for (Square everySquare : position.getAllSquares()) { //check every squared of the board
-                        if (position.getPieceAt(everySquare) == null) { //if its empty
+                        if (! position.getPieceAt(everySquare).isPresent()) { //if its empty
                             if (isDropMoveLegalInPosition(position, new DropMove(false, pieceType, everySquare))) {
                                 //can we drop it legally (like pawns/lance/knight)
                                 result.add(new DropMove(false, pieceType, everySquare)); //add it to possible moves
@@ -337,12 +339,12 @@ public class ShogiRulesEngine implements GameRulesEngine<ShogiPosition> {
         // Find the king square and determine if the king could move like a knight,
         // would it attack an opposing knight, etc.
         for (Square square : position.getAllSquares()) {
-            Piece occupant = position.getPieceAt(square);
-            if (occupant != null && occupant.isSentePiece() != isSente && occupant.getPieceType() == PieceType.KING)
+            Optional<Piece> occupant = position.getPieceAt(square);
+            if (occupant.isPresent() && occupant.get().isSentePiece() != isSente && occupant.get().getPieceType() == PieceType.KING)
                 for (Piece piece : Piece.values())
-                    if (piece.isSentePiece() == occupant.isSentePiece()) {
+                    if (piece.isSentePiece() == occupant.get().isSentePiece()) {
                         for (Square to : getPossibleTargetSquares(position, square, piece))
-                            if (position.getPieceAt(to) == piece.opposite())
+                            if (position.getPieceAt(to).orElse(null) == piece.opposite())
                                 return true;
                     }
         }

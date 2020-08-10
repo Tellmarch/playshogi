@@ -10,6 +10,8 @@ import com.playshogi.library.shogi.models.position.ShogiPosition;
 import static com.playshogi.library.shogi.models.formats.usf.UsfUtil.pieceFromChar;
 import static com.playshogi.library.shogi.models.formats.usf.UsfUtil.pieceToString;
 
+import java.util.Optional;
+
 public class SfenConverter {
 
     private static final PieceType[] PIECE_TYPE_VALUES = PieceType.values();
@@ -20,15 +22,15 @@ public class SfenConverter {
         // First, the pieces on board
         for (int i = 0; i < 9; i++) {
             for (int j = 0; j < 9; j++) {
-                Piece piece = pos.getShogiBoardState().getPieceAt(1 + (8 - j), 1 + i);
-                if (piece == null) {
-                    numspace++;
-                } else {
+                Optional<Piece> piece = pos.getShogiBoardState().getPieceAt(1 + (8 - j), 1 + i);
+                if (piece.isPresent()) {
                     if (numspace != 0) {
                         res += numspace;
                     }
                     numspace = 0;
-                    res += pieceToString(piece);
+                    res += pieceToString(piece.get());
+                } else {
+                    numspace++;
                 }
             }
             if (numspace != 0) {

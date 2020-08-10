@@ -5,6 +5,7 @@ import com.playshogi.library.shogi.models.position.ShogiBoardState;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public abstract class AbstractPieceMovement implements PieceMovement {
 
@@ -19,10 +20,10 @@ public abstract class AbstractPieceMovement implements PieceMovement {
         List<Square> result = new ArrayList<>(allowedDColDRow.length);
 
         for (int[] dColRow : allowedDColDRow) {
-            Square square = PieceMovementsUtils.getSquare(boardState, from.getColumn() + dColRow[0],
+            Optional<Square> square = PieceMovementsUtils.getSquare(boardState, from.getColumn() + dColRow[0],
                     from.getRow() + dColRow[1]);
-            if (square != null && boardState.isSquareEmptyOrGote(square)) {
-                result.add(square);
+            if (square.isPresent() && boardState.isSquareEmptyOrGote(square.get())) {
+                result.add(square.get());
             }
         }
 
