@@ -10,7 +10,7 @@ public class RookMovement implements PieceMovement {
 
     @Override
     public List<Square> getPossibleMoves(final ShogiBoardState boardState, final Square from) {
-        List<Square> result = new ArrayList<Square>();
+        List<Square> result = new ArrayList<>();
         PieceMovementsUtils.addSquaresAlongDirection(boardState, from, 0, -1, result);
         PieceMovementsUtils.addSquaresAlongDirection(boardState, from, 0, +1, result);
         PieceMovementsUtils.addSquaresAlongDirection(boardState, from, -1, 0, result);
@@ -20,9 +20,7 @@ public class RookMovement implements PieceMovement {
 
     @Override
     public boolean isMoveDxDyValid(final ShogiBoardState boardState, final Square from, final Square to) {
-        int dRow = Math.abs(to.getRow() - from.getRow());
-        int dColumn = Math.abs(to.getColumn() - from.getColumn());
-        return (dRow == 0 || dColumn == 0) && getPossibleMoves(boardState, from).contains(to);
+        return PieceMovementsUtils.isAlongDirection(boardState, from, to);
     }
 
     @Override
