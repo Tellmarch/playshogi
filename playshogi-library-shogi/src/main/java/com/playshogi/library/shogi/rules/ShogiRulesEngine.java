@@ -269,7 +269,7 @@ public class ShogiRulesEngine implements GameRulesEngine<ShogiPosition> {
 
         for (Square square : position.getAllSquares()) { //for every square on the board
             Optional<Piece> piece = position.getPieceAt(square);
-            if (piece.filter(p -> p.isSentePiece() == isSente).isPresent()) {
+            if (piece.isPresent() && (piece.get().isSentePiece() == isSente)) {
                 //check if there is sente's piece
                 List<Square> targetSquares = getPossibleTargetSquares(position, square);
                 // find its possible squares to move
@@ -277,7 +277,7 @@ public class ShogiRulesEngine implements GameRulesEngine<ShogiPosition> {
                     Optional<Piece> targetPiece = position.getPieceAt(targetSquare);
                     NormalMove move;
                     if (targetPiece.isPresent()) { //check if it is a capturing move
-                        if (targetPiece.filter(p -> p.isSentePiece() == isSente).isPresent())
+                        if (targetPiece.get().isSentePiece() == isSente)
                             continue;
                         move = new CaptureMove(piece.get(), square, targetSquare, targetPiece.get());
                     } else {
