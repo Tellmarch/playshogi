@@ -20,7 +20,9 @@ public class BishopMovement implements PieceMovement {
 
     @Override
     public boolean isMoveDxDyValid(final ShogiBoardState boardState, final Square from, final Square to) {
-        return PieceMovementsUtils.isAlongDirection(boardState, from, to);
+        // Bishops move an equal number of squares horizontally and vertically
+        return (Math.abs(to.getColumn() - from.getColumn()) == Math.abs(to.getRow() - from.getRow()) &&
+                PieceMovementsUtils.isAlongDirection(boardState, from, to));
     }
 
     @Override

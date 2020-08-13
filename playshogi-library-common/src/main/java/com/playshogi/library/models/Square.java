@@ -7,7 +7,7 @@ import java.util.Optional;
 /**
  * Represents a square on the board. 1,1 is the top right, as in shogi.
  */
-public class Square {
+public class Square implements Comparable<Square> {
     private final int column;
     private final int row;
 
@@ -74,19 +74,19 @@ public class Square {
     }
 
     @Override
+    public int compareTo(Square s) {
+        if (column == s.column)
+            return row - s.row;
+        return column - s.column;
+    }
+
+    @Override
     public boolean equals(final Object obj) {
-        if (this == obj)
-            return true;
         if (obj == null)
             return false;
         if (getClass() != obj.getClass())
             return false;
-        Square other = (Square) obj;
-        if (column != other.column)
-            return false;
-        if (row != other.row)
-            return false;
-        return true;
+        return compareTo((Square) obj) == 0;
     }
 
     @Override

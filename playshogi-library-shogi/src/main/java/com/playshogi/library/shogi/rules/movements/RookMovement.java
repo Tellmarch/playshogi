@@ -20,7 +20,9 @@ public class RookMovement implements PieceMovement {
 
     @Override
     public boolean isMoveDxDyValid(final ShogiBoardState boardState, final Square from, final Square to) {
-        return PieceMovementsUtils.isAlongDirection(boardState, from, to);
+        // Rooks move either horizontally or vertically
+        return (Math.abs(to.getColumn() - from.getColumn()) * Math.abs(to.getRow() - from.getRow()) == 0) &&
+                PieceMovementsUtils.isAlongDirection(boardState, from, to);
     }
 
     @Override

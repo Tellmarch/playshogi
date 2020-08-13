@@ -25,7 +25,10 @@ public class PromotedRookMovement extends AbstractPieceMovement {
 
     @Override
     public boolean isMoveDxDyValid(final ShogiBoardState boardState, final Square from, final Square to) {
-        return (Math.abs(to.getRow() - from.getRow()) == 1 && Math.abs(to.getColumn() - from.getColumn()) == 1) ||
+        // Rooks move either horizontally or vertically
+        if (Math.abs(to.getColumn() - from.getColumn()) * Math.abs(to.getRow() - from.getRow()) == 1)
+            return true;
+        return (Math.abs(to.getColumn() - from.getColumn()) * Math.abs(to.getRow() - from.getRow()) == 0) &&
                 PieceMovementsUtils.isAlongDirection(boardState, from, to);
     }
 

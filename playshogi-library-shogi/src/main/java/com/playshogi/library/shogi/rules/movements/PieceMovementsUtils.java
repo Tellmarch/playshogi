@@ -19,21 +19,31 @@ public class PieceMovementsUtils {
         return addSquaresAlongDirection(boardState, from, dColumn, dRow, new ArrayList<>()).contains(to);
     }
 
+    /**
+     * Appends squares along the given direction to the given square list
+     * @param boardState Board which may have occupied squares
+     * @param from Origin square (not to be appended)
+     * @param dCol Horizontal step size
+     * @param dRow Vertical step size
+     * @param result Target list for append operation
+     * @return List of squares
+     */
     public static List<Square> addSquaresAlongDirection(final ShogiBoardState boardState, final Square from, final int dCol,
                                                 final int dRow, final List<Square> result) {
-        int row = from.getRow();
-        int col = from.getColumn();
-        Optional<Square> square;
+        if (dCol != 0 || dRow != 0) {
+            int row = from.getRow();
+            int col = from.getColumn();
+            Optional<Square> square;
 
-        while ((square = getSquare(boardState, col += dCol, row += dRow)).isPresent()) {
-            Optional<Piece> piece = boardState.getPieceAt(col, row);
-            if (piece.filter(Piece::isSentePiece).isPresent()) {
-                break;
-            }
-
-            result.add(square.get());
-            if (piece.isPresent() && !piece.get().isSentePiece()) {
-                break;
+            while ((square = getSquare(boardState, col += dCol, row += dRow)).isPresent()) {
+                Optional<Piece> piece = boardState.getPieceAt(col, row);
+                if (piece.filter(Piece::isSentePiece).isPresent()) {
+                    break;
+                }
+                result.add(square.get());
+                if (piece.isPresent() && !piece.get().isSentePiece()) {
+                    break;
+                }
             }
         }
         return result;
