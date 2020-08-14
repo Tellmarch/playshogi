@@ -51,14 +51,14 @@ public class TsumeImporter {
         for (PATH path : PATH.values()) {
             System.out.println("Processing path " + path.path);
             for (int i = path.min; i <= path.max; i++) {
-                String fileName = path.path + String.format("%0" + path.padding + "d", i) + ".kif";
-                File file = new File(fileName);
-                System.out.println("Trying file " + fileName);
+                String fileName =  String.format("%0" + path.padding + "d", i) + ".kif";
+                File file = new File(path.path, fileName);
+                System.out.println("Trying file " + file);
                 if (file.exists() && file.length() > 10) {
                     total++;
-                    System.out.println("Processing file " + fileName + " of length " + file.length());
+                    System.out.println("Processing file " + file + " of length " + file.length());
                     try {
-                        processTsume(fileName, rep, setId, i);
+                        processTsume(file, rep, setId, i);
                         ok++;
                     } catch (Exception ex) {
                         ex.printStackTrace();
@@ -66,6 +66,8 @@ public class TsumeImporter {
                         errors.add(fileName);
                         break;
                     }
+                } else {
+                    System.out.println("Not found: " + file);
                 }
             }
         }
@@ -82,10 +84,10 @@ public class TsumeImporter {
 
     }
 
-    private static void processTsume(final String fileName, final ProblemSetRepository repository, final int setId,
+    private static void processTsume(final File file, final ProblemSetRepository repository, final int setId,
                                      final int kifuId)
             throws IOException {
-        GameRecord gameRecord = GameRecordFileReader.read(KifFormat.INSTANCE, fileName);
+        GameRecord gameRecord = GameRecordFileReader.read(KifFormat.INSTANCE, file);
         repository.addProblemToProblemSet(gameRecord, setId, "Tsume #" + kifuId, 1, 1000,
                 PersistentProblem.ProblemType.TSUME);
         // System.out.println(UsfFormat.INSTANCE.write(gameRecord));
