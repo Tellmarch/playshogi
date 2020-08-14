@@ -6,6 +6,8 @@ import com.playshogi.library.shogi.models.formats.kif.KifUtils.PieceParsingResul
 import com.playshogi.library.shogi.models.moves.*;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
 
+import java.util.Optional;
+
 public class KifMoveConverter {
 
     public static ShogiMove fromKifString(final String str, final ShogiPosition shogiPosition,
@@ -74,13 +76,12 @@ public class KifMoveConverter {
             int row2 = str.charAt(++pos) - '0';
             Square fromSquare = Square.of(column2, row2);
 
-            if (shogiPosition.getShogiBoardState().getPieceAt(toSquare) == null) {
-                return new NormalMove(piece, fromSquare, toSquare, promote);
+            Optional<Piece> capturedPiece = shogiPosition.getShogiBoardState().getPieceAt(toSquare);
+            if (capturedPiece.isPresent()) {
+                return new CaptureMove(piece, fromSquare, toSquare, capturedPiece.get(), promote);
             } else {
-                Piece capturedPiece = shogiPosition.getShogiBoardState().getPieceAt(toSquare);
-                return new CaptureMove(piece, fromSquare, toSquare, capturedPiece, promote);
+                return new NormalMove(piece, fromSquare, toSquare, promote);
             }
-
         } else {
             throw new IllegalArgumentException("Error reading the move " + str);
         }

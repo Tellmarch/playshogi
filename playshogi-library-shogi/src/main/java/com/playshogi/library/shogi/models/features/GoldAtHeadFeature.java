@@ -10,6 +10,8 @@ import com.playshogi.library.shogi.models.PieceType;
 import com.playshogi.library.shogi.models.moves.DropMove;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
 
+import java.util.Optional;
+
 public enum GoldAtHeadFeature implements Feature {
     INSTANCE;
 
@@ -25,9 +27,9 @@ public enum GoldAtHeadFeature implements Feature {
                 DropMove dropMove = (DropMove) lastMove;
                 if (dropMove.getPieceType() == PieceType.GOLD) {
                     ShogiPosition position = gameNavigation.getPosition();
-                    Square aboveDropSquare = dropMove.getToSquare().above();
+                    Optional<Square> aboveDropSquare = dropMove.getToSquare().above();
                     // add sente's piece requirement and condition for sente king too.
-                    return aboveDropSquare != null && position.getPieceAt(aboveDropSquare) == Piece.GOTE_KING;
+                    return aboveDropSquare.isPresent() && position.getPieceAt(aboveDropSquare.get()).orElse(null) == Piece.GOTE_KING;
                 }
             }
         }

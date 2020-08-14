@@ -25,8 +25,11 @@ public class PromotedBishopMovement extends AbstractPieceMovement {
 
     @Override
     public boolean isMoveDxDyValid(final ShogiBoardState boardState, final Square from, final Square to) {
-        // TODO write more efficient method?
-        return getPossibleMoves(boardState, from).contains(to);
+        // Bishops move an equal number of squares horizontally and vertically
+        if (Math.abs(to.getColumn() - from.getColumn()) + Math.abs(to.getRow() - from.getRow()) == 1)
+            return true;
+        return (Math.abs(to.getColumn() - from.getColumn()) == Math.abs(to.getRow() - from.getRow()) &&
+                PieceMovementsUtils.isAlongDirection(boardState, from, to));
     }
 
     @Override

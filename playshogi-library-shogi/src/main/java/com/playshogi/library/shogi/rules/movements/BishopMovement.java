@@ -10,7 +10,7 @@ public class BishopMovement implements PieceMovement {
 
     @Override
     public List<Square> getPossibleMoves(final ShogiBoardState boardState, final Square from) {
-        List<Square> result = new ArrayList<Square>();
+        List<Square> result = new ArrayList<>();
         PieceMovementsUtils.addSquaresAlongDirection(boardState, from, -1, -1, result);
         PieceMovementsUtils.addSquaresAlongDirection(boardState, from, -1, +1, result);
         PieceMovementsUtils.addSquaresAlongDirection(boardState, from, +1, -1, result);
@@ -20,8 +20,9 @@ public class BishopMovement implements PieceMovement {
 
     @Override
     public boolean isMoveDxDyValid(final ShogiBoardState boardState, final Square from, final Square to) {
-        // TODO write more efficient method?
-        return getPossibleMoves(boardState, from).contains(to);
+        // Bishops move an equal number of squares horizontally and vertically
+        return (Math.abs(to.getColumn() - from.getColumn()) == Math.abs(to.getRow() - from.getRow()) &&
+                PieceMovementsUtils.isAlongDirection(boardState, from, to));
     }
 
     @Override

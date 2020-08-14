@@ -268,7 +268,7 @@ public class ShogiBoard extends Composite implements ClickHandler {
     }
 
     private Piece getPiece(final int row, final int col) {
-        return position.getShogiBoardState().getPieceAt(getSquare(row, col));
+        return position.getShogiBoardState().getPieceAt(getSquare(row, col)).orElse(null);
     }
 
     private Square getSquare(final int row, final int col) {

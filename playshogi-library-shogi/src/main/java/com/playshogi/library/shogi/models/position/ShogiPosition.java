@@ -8,6 +8,7 @@ import com.playshogi.library.shogi.models.shogivariant.ShogiVariant;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class ShogiPosition implements Position<ShogiPosition> {
 
@@ -67,7 +68,7 @@ public class ShogiPosition implements Position<ShogiPosition> {
         this.goteKomadai = goteKomadai;
     }
 
-    public Piece getPieceAt(final Square square) {
+    public Optional<Piece> getPieceAt(final Square square) {
         return shogiBoardState.getPieceAt(square);
     }
 

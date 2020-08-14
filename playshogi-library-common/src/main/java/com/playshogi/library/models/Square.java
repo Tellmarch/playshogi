@@ -2,11 +2,12 @@ package com.playshogi.library.models;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Represents a square on the board. 1,1 is the top right, as in shogi.
  */
-public class Square {
+public class Square implements Comparable<Square> {
     private final int column;
     private final int row;
 
@@ -27,28 +28,28 @@ public class Square {
         return new Square(column, row);
     }
 
-    public Square above() {
-        if (row == 1) return null;
+    public Optional<Square> above() {
+        if (row == 1) return Optional.empty();
 
-        return Square.of(column, row - 1);
+        return Optional.of(Square.of(column, row - 1));
     }
 
-    public Square below() {
-        if (row == 9) return null;
+    public Optional<Square> below() {
+        if (row == 9) return Optional.empty();
 
-        return Square.of(column, row + 1);
+        return Optional.of(Square.of(column, row + 1));
     }
 
-    public Square left() {
-        if (column == 9) return null;
+    public Optional<Square> left() {
+        if (column == 9) return Optional.empty();
 
-        return Square.of(column + 1, row);
+        return Optional.of(Square.of(column + 1, row));
     }
 
-    public Square right() {
-        if (column == 1) return null;
+    public Optional<Square> right() {
+        if (column == 1) return Optional.empty();
 
-        return Square.of(column - 1, row);
+        return Optional.of(Square.of(column - 1, row));
     }
 
     public Square opposite() {
@@ -73,19 +74,23 @@ public class Square {
     }
 
     @Override
+    public int compareTo(Square s) {
+        if (column == s.column)
+            return row - s.row;
+        return column - s.column;
+    }
+
+    @Override
     public boolean equals(final Object obj) {
-        if (this == obj)
-            return true;
         if (obj == null)
             return false;
         if (getClass() != obj.getClass())
             return false;
-        Square other = (Square) obj;
-        if (column != other.column)
-            return false;
-        if (row != other.row)
-            return false;
-        return true;
+        return compareTo((Square) obj) == 0;
     }
 
+    @Override
+    public String toString() {
+        return column + String.valueOf(Character.toChars('a' + row - 1));
+    }
 }

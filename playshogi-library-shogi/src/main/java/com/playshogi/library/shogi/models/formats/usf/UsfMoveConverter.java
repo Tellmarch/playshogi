@@ -5,6 +5,8 @@ import com.playshogi.library.shogi.models.Piece;
 import com.playshogi.library.shogi.models.moves.*;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
 
+import java.util.Optional;
+
 public class UsfMoveConverter {
 
     public static final String[] specialStrings = {"", "DUMY", "SLNT", "RSGN", "BREK", "JISO", "TIME", "FOUL", "VICT",
@@ -46,7 +48,7 @@ public class UsfMoveConverter {
         } else {
             col1 = UsfUtil.char2ColumnNumber(usfMove.charAt(0));
             row1 = UsfUtil.char2RowNumber(usfMove.charAt(1));
-            piece = shogiPosition.getPieceAt(Square.of(col1, row1));
+            piece = shogiPosition.getPieceAt(Square.of(col1, row1)).orElse(null);
         }
         if (usfMove.charAt(3) == '*') {
             // TODO
@@ -60,11 +62,11 @@ public class UsfMoveConverter {
         if (drop) {
             return new DropMove(piece.isSentePiece(), piece.getPieceType(), Square.of(col2, row2));
         } else {
-            Piece capturedPiece = shogiPosition.getPieceAt(Square.of(col2, row2));
-            if (capturedPiece == null) {
-                return new NormalMove(piece, Square.of(col1, row1), Square.of(col2, row2), promotion);
+            Optional<Piece> capturedPiece = shogiPosition.getPieceAt(Square.of(col2, row2));
+            if (capturedPiece.isPresent()) {
+                return new CaptureMove(piece, Square.of(col1, row1), Square.of(col2, row2), capturedPiece.get(), promotion);
             } else {
-                return new CaptureMove(piece, Square.of(col1, row1), Square.of(col2, row2), capturedPiece, promotion);
+                return new NormalMove(piece, Square.of(col1, row1), Square.of(col2, row2), promotion);
             }
         }
     }
