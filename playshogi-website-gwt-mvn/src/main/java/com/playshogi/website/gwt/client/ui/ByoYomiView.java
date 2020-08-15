@@ -35,7 +35,6 @@ public class ByoYomiView extends Composite {
         shogiBoard.setUpperRightPanel(byoYomiFeedbackPanel);
         shogiBoard.setLowerLeftPanel(byoYomiProgressPanel);
 
-        shogiBoard.getBoardConfiguration().setShowGoteKomadai(false);
         shogiBoard.getBoardConfiguration().setPlayGoteMoves(false);
 
         gameNavigator.getNavigatorConfiguration().setProblemMode(true);
