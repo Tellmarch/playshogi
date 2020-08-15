@@ -23,7 +23,7 @@ public class SfenConverter {
     private static final PieceType[] PIECE_TYPE_VALUES = PieceType.values();
 
     public static String toSFEN(final ShogiPosition pos) {
-        String res = "";
+        StringBuilder res = new StringBuilder();
         int numspace = 0;
         // First, the pieces on board
         for (int i = 0; i < 9; i++) {
@@ -31,42 +31,42 @@ public class SfenConverter {
                 Optional<Piece> piece = pos.getShogiBoardState().getPieceAt(1 + (8 - j), 1 + i);
                 if (piece.isPresent()) {
                     if (numspace != 0) {
-                        res += numspace;
+                        res.append(numspace);
                     }
                     numspace = 0;
-                    res += pieceToString(piece.get());
+                    res.append(pieceToString(piece.get()));
                 } else {
                     numspace++;
                 }
             }
             if (numspace != 0) {
-                res += numspace;
+                res.append(numspace);
             }
             numspace = 0;
             if (i != 8) {
 
-                res += "/";
+                res.append("/");
             }
         }
-        res += " ";
+        res.append(" ");
 
         // Which side to move?
         if (pos.isSenteToPlay()) {
-            res += "b";
+            res.append("b");
         } else {
-            res += "w";
+            res.append("w");
         }
 
         // Captured pieces
         int[] capture1 = pos.getSenteKomadai().getPieces();
-        String c = "";
+        StringBuilder c = new StringBuilder();
         for (int i = capture1.length - 1; i >= 0; i--) {
             int n = capture1[i];
             if (n != 0) {
                 if (n != 1) {
-                    c += n;
+                    c.append(n);
                 }
-                c += pieceToString(Piece.getPiece(PIECE_TYPE_VALUES[i], true));
+                c.append(pieceToString(Piece.getPiece(PIECE_TYPE_VALUES[i], true)));
             }
         }
         int[] capture2 = pos.getGoteKomadai().getPieces();
@@ -74,13 +74,13 @@ public class SfenConverter {
             int n = capture2[i];
             if (n != 0) {
                 if (n != 1) {
-                    c += n;
+                    c.append(n);
                 }
-                c += pieceToString(Piece.getPiece(PIECE_TYPE_VALUES[i], false));
+                c.append(pieceToString(Piece.getPiece(PIECE_TYPE_VALUES[i], false)));
             }
         }
-        if (c.equals("")) {
-            c = "-";
+        if (c.length() == 0) {
+            c.append('-');
         }
 
         // Should we add the move count?
@@ -183,6 +183,10 @@ public class SfenConverter {
                 } else {
                     s = 1;
                 }
+                if(p == null) {
+                    System.out.println("Error parsing SFEN " + sfen);
+                    return new ShogiPosition();
+                }
                 if (p.isSentePiece()) {
                     senteKomadai.setPiecesOfType(p.getPieceType(), s);
                 } else {
@@ -194,8 +198,10 @@ public class SfenConverter {
         // If this is a tsume problem (no sente king) put remaining pieces in gote hand
         if (pieces.contains(PieceType.KING)) {
             for (PieceType type : PieceType.values()) {
-                int pieceCount = Collections.frequency(pieces, type);
-                goteKomadai.setPiecesOfType(type, pieceCount - senteKomadai.getPiecesOfType(type));
+                if(type != PieceType.KING) {
+                    int pieceCount = Collections.frequency(pieces, type);
+                    goteKomadai.setPiecesOfType(type, pieceCount - senteKomadai.getPiecesOfType(type));
+                }
             }
         }
 
