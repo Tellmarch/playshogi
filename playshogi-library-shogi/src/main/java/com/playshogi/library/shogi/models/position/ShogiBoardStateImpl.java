@@ -77,6 +77,6 @@ public class ShogiBoardStateImpl extends ShogiBoardState {
     @Override
     public boolean isSquareEmptyOrGote(final Square square) {
         Optional<Piece> piece = getPieceAt(square);
-        return !piece.isPresent() || piece.get().isSentePiece();
+        return !piece.isPresent() || piece.get().isGotePiece();
     }
 }

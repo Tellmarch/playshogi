@@ -9,11 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class PieceMovementsUtils {
-    public static boolean isAlongDirection(final ShogiBoardState boardState, final Square from, final Square to) {
-        // If destination square is occupied by a friendly (sente) piece, destination square is invalid
-        if (boardState.getPieceAt(to).filter(Piece::isSentePiece).isPresent()) {
-            return false;
-        }
+    static boolean isAlongDirection(final ShogiBoardState boardState, final Square from, final Square to) {
         int dRow = Integer.compare(to.getRow(), from.getRow());
         int dColumn = Integer.compare(to.getColumn(), from.getColumn());
         return addSquaresAlongDirection(boardState, from, dColumn, dRow, new ArrayList<>()).contains(to);
@@ -28,8 +24,8 @@ public class PieceMovementsUtils {
      * @param result Target list for append operation
      * @return List of squares
      */
-    public static List<Square> addSquaresAlongDirection(final ShogiBoardState boardState, final Square from, final int dCol,
-                                                final int dRow, final List<Square> result) {
+    static List<Square> addSquaresAlongDirection(final ShogiBoardState boardState, final Square from, final int dCol,
+                                                 final int dRow, final List<Square> result) {
         if (dCol != 0 || dRow != 0) {
             int row = from.getRow();
             int col = from.getColumn();
@@ -37,11 +33,13 @@ public class PieceMovementsUtils {
 
             while ((square = getSquare(boardState, col += dCol, row += dRow)).isPresent()) {
                 Optional<Piece> piece = boardState.getPieceAt(col, row);
-                if (piece.filter(Piece::isSentePiece).isPresent()) {
+                // Our piece: we can not go there
+                if (piece.isPresent() && piece.get().isSentePiece()) {
                     break;
                 }
                 result.add(square.get());
-                if (piece.isPresent() && !piece.get().isSentePiece()) {
+                // Opponent piece: we can not go further
+                if (piece.isPresent()) {
                     break;
                 }
             }

@@ -10,7 +10,7 @@ public class LanceMovement implements PieceMovement {
 
     @Override
     public List<Square> getPossibleMoves(final ShogiBoardState boardState, final Square from) {
-        List<Square> result = new ArrayList<Square>();
+        List<Square> result = new ArrayList<>();
         PieceMovementsUtils.addSquaresAlongDirection(boardState, from, 0, -1, result);
         return result;
     }
@@ -22,7 +22,7 @@ public class LanceMovement implements PieceMovement {
         }
 
         for (int row = from.getRow() - 1; row > to.getRow(); row--) {
-            if (boardState.getPieceAt(from.getColumn(), row) != null) {
+            if (boardState.getPieceAt(from.getColumn(), row).isPresent()) {
                 return false;
             }
         }

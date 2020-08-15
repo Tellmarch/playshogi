@@ -193,7 +193,8 @@ public class ShogiRulesEngine implements GameRulesEngine<ShogiPosition> {
         if (move.isSenteMoving()) {
             return pieceMovement.isUnpromoteValid(position.getShogiBoardState(), move.getToSquare());
         } else {
-            return pieceMovement.isUnpromoteValid(position.getShogiBoardState().opposite(), move.getToSquare().opposite());
+            return pieceMovement.isUnpromoteValid(position.getShogiBoardState().opposite(),
+                    move.getToSquare().opposite());
         }
     }
 
@@ -204,6 +205,7 @@ public class ShogiRulesEngine implements GameRulesEngine<ShogiPosition> {
         } else if (move instanceof DropMove) {
             return isDropMoveLegalInPosition(position, (DropMove) move);
         } else if (move instanceof NormalMove) {
+            if (position.getPieceAt(((NormalMove) move).getToSquare()).isPresent()) return false;
             return isNormalMoveLegalInPosition(position, (NormalMove) move);
         } else {
             return false;
@@ -228,7 +230,7 @@ public class ShogiRulesEngine implements GameRulesEngine<ShogiPosition> {
         boolean result = isDropMoveValidInPosition(position, move);
         if (result && move.getPieceType() == PieceType.PAWN) {
             this.playMoveInPosition(position, move);
-            result = ! isPositionCheckmate(position, move.isSenteMoving());
+            result = !isPositionCheckmate(position, move.isSenteMoving());
             this.undoMoveInPosition(position, move);
         }
         return result;
@@ -306,7 +308,7 @@ public class ShogiRulesEngine implements GameRulesEngine<ShogiPosition> {
                 // pawns
                 if (position.getSenteKomadai().getPiecesOfType(pieceType) != 0) { //if have piece in hand
                     for (Square everySquare : position.getAllSquares()) { //check every squared of the board
-                        if (! position.getPieceAt(everySquare).isPresent()) { //if its empty
+                        if (!position.getPieceAt(everySquare).isPresent()) { //if its empty
                             if (isDropMoveLegalInPosition(position, new DropMove(true, pieceType, everySquare))) {
                                 //can we drop it legally (like pawns/lance/knight)
                                 result.add(new DropMove(true, pieceType, everySquare)); //add it to possible moves
@@ -321,7 +323,7 @@ public class ShogiRulesEngine implements GameRulesEngine<ShogiPosition> {
             for (PieceType pieceType : PieceType.values()) { //iterating enum
                 if (position.getGoteKomadai().getPiecesOfType(pieceType) != 0) { //if have piece in hand
                     for (Square everySquare : position.getAllSquares()) { //check every squared of the board
-                        if (! position.getPieceAt(everySquare).isPresent()) { //if its empty
+                        if (!position.getPieceAt(everySquare).isPresent()) { //if its empty
                             if (isDropMoveLegalInPosition(position, new DropMove(false, pieceType, everySquare))) {
                                 //can we drop it legally (like pawns/lance/knight)
                                 result.add(new DropMove(false, pieceType, everySquare)); //add it to possible moves
@@ -353,8 +355,9 @@ public class ShogiRulesEngine implements GameRulesEngine<ShogiPosition> {
 
     /**
      * did the player achieve checkmate?
+     *
      * @param position actual position with eventual checkmate
-     * @param isSente true, checking if sente has a checkmate; false if checking gote has a checkmate
+     * @param isSente  true, checking if sente has a checkmate; false if checking gote has a checkmate
      * @return true for checkmate, false for no checkmate
      */
     public boolean isPositionCheckmate(final ShogiPosition position, boolean isSente) {

@@ -53,6 +53,10 @@ public enum Piece {
         return sentePiece;
     }
 
+    public boolean isGotePiece() {
+        return !sentePiece;
+    }
+
     public boolean isPromoted() {
         return promoted;
     }

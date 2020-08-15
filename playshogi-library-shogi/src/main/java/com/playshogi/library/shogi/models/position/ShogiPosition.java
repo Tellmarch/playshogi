@@ -72,6 +72,14 @@ public class ShogiPosition implements Position<ShogiPosition> {
         return shogiBoardState.getPieceAt(square);
     }
 
+    public boolean hasSentePieceAt(final Square square) {
+        return shogiBoardState.getPieceAt(square).isPresent() && shogiBoardState.getPieceAt(square).get().isSentePiece();
+    }
+
+    public boolean hasGotePieceAt(final Square square) {
+        return shogiBoardState.getPieceAt(square).isPresent() && !shogiBoardState.getPieceAt(square).get().isSentePiece();
+    }
+
     /**
      *
      * @return list of squares of the board
