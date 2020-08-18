@@ -95,4 +95,9 @@ public class SessionInformation implements AsyncCallback<LoginResult> {
         GWT.log("Logging in as " + username);
         loginService.login(username, password, this);
     }
+
+    public void register(final String username, final String password) {
+        GWT.log("Registering as " + username);
+        loginService.register(username, password, this);
+    }
 }

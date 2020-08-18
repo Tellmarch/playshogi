@@ -12,6 +12,7 @@ public class UserRepository {
 
     private static final Logger LOGGER = Logger.getLogger(UserRepository.class.getName());
 
+    private static final String FIND_SQL = "SELECT * FROM ps_user WHERE username = ?";
     private static final String LOGIN_SQL = "SELECT * FROM ps_user WHERE username = ? AND password_hash = ? ";
     private static final String INSERT_USER = "INSERT INTO `playshogi`.`ps_user` "
             + "(`username`, `password_hash`)" + " VALUES ( ?, ?);";
@@ -39,15 +40,38 @@ public class UserRepository {
                 return new AuthenticationResult(AuthenticationResult.Status.LOGIN_OK, userId, username);
             } else {
                 LOGGER.log(Level.INFO, "Did not find user: " + username);
-                return new AuthenticationResult(AuthenticationResult.Status.UNKNOWN, null, null);
+                return new AuthenticationResult(AuthenticationResult.Status.INVALID);
             }
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error looking up the user in db", e);
-            return new AuthenticationResult(AuthenticationResult.Status.UNAVAILABLE, null, null);
+            return new AuthenticationResult(AuthenticationResult.Status.UNAVAILABLE);
         }
     }
 
-    public int insertUser(final String userName, final String password_hash) {
+    public AuthenticationResult registerUser(final String username, final String password) {
+        if (password == null || password.isEmpty()) {
+            return new AuthenticationResult(AuthenticationResult.Status.INVALID);
+        }
+        Connection connection = dbConnection.getConnection();
+        try (PreparedStatement preparedStatement = connection.prepareStatement(FIND_SQL)) {
+            preparedStatement.setString(1, username);
+            ResultSet rs = preparedStatement.executeQuery();
+            if (rs.next()) {
+                int userId = rs.getInt("id");
+                LOGGER.log(Level.INFO, "Found existing user: " + username + " with id: " + userId);
+                return new AuthenticationResult(AuthenticationResult.Status.INVALID);
+            } else {
+                int userId = insertUser(username, password);
+                LOGGER.log(Level.INFO, "Registered new user: " + username);
+                return new AuthenticationResult(AuthenticationResult.Status.LOGIN_OK, userId, username);
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error registering new user in db", e);
+            return new AuthenticationResult(AuthenticationResult.Status.UNAVAILABLE);
+        }
+    }
+
+    private int insertUser(final String userName, final String password_hash) throws SQLException {
 
         int key = -1;
 
@@ -66,8 +90,6 @@ public class UserRepository {
             } else {
                 LOGGER.log(Level.SEVERE, "Could not insert user");
             }
-        } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Error saving the user in db", e);
         }
 
         return key;

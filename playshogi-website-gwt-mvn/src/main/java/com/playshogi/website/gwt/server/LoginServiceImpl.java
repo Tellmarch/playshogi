@@ -32,8 +32,7 @@ public class LoginServiceImpl extends RemoteServiceServlet implements LoginServi
 
     @Override
     public LoginResult register(final String username, final String password) {
-        // TODO Auto-generated method stub
-        return null;
+        return authenticator.register(username, password);
     }
 
     @Override

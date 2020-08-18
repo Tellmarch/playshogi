@@ -24,6 +24,10 @@ public enum Authenticator {
     public LoginResult login(final String username, final String password) {
         LOGGER.log(Level.INFO, "Login for user " + username);
         AuthenticationResult authenticationResult = users.authenticateUser(username, password);
+        return login(username, authenticationResult);
+    }
+
+    private LoginResult login(final String username, final AuthenticationResult authenticationResult) {
         LoginResult loginResult = new LoginResult();
         AuthenticationResult.Status status = authenticationResult.getStatus();
         if (status == LOGIN_OK) {
@@ -33,12 +37,18 @@ public enum Authenticator {
             String sessionId = UUID.randomUUID().toString();
             loginResult.setSessionId(sessionId);
             activeSessions.put(sessionId, loginResult);
-        } else if (status == UNKNOWN) {
+        } else if (status == INVALID) {
             loginResult.setErrorMessage("Invalid username or password");
         } else if (status == UNAVAILABLE) {
             loginResult.setErrorMessage("An error occurred, please try again later");
         }
         return loginResult;
+    }
+
+    public LoginResult register(final String username, final String password) {
+        LOGGER.log(Level.INFO, "Register user " + username);
+        AuthenticationResult authenticationResult = users.registerUser(username, password);
+        return login(username, authenticationResult);
     }
 
     public LoginResult checkSession(final String sessionId) {
