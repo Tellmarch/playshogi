@@ -14,7 +14,7 @@ public class UserRepositoryTest {
     @Before
     public void setup() {
         userRepository = new UserRepository(new DbConnection());
-        userRepository.insertUser("admin", "test");
+        userRepository.registerUser("admin", "test");
         //userRepository.insertUserPbStats(new PersistentUserProblemStats(1, 1, null, 10, true));
     }
 

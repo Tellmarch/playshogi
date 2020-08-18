@@ -56,7 +56,7 @@ public class NavigationBar extends Composite {
         flowPanel.add(createHyperlink("Links", new LinksPlace()));
         loginHyperlink = createHyperlink("Login/Register", new LoginPlace("login"));
         logoutHyperlink = createHyperlink("Logout", new LoginPlace("logout"));
-//        flowPanel.add(loginHyperlink);
+        flowPanel.add(loginHyperlink);
 
         eventBinder.bindEventHandlers(this, eventBus);
 

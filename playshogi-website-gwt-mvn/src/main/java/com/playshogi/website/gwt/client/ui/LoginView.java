@@ -15,6 +15,7 @@ import com.playshogi.website.gwt.client.SessionInformation;
 public class LoginView extends Composite implements ClickHandler, KeyUpHandler {
 
     private final Button loginButton;
+    private final Button registerButton;
 
     private final TextBox usernameTextBox;
     private final PasswordTextBox passwordTextBox;
@@ -43,15 +44,15 @@ public class LoginView extends Composite implements ClickHandler, KeyUpHandler {
         loginButton = new Button("Login");
         loginButton.addClickHandler(this);
         buttonPanel.add(loginButton);
-        buttonPanel.add(new Button("Register"));
+        registerButton = new Button("Register");
+        registerButton.addClickHandler(this);
+        buttonPanel.add(registerButton);
 
         loginPanel = new VerticalPanel();
         loginPanel.add(grid);
         loginPanel.add(buttonPanel);
 
         VerticalPanel verticalPanel = new VerticalPanel();
-        verticalPanel.add(new HTML("<b>Not available yet - enjoy the website as a guest<b><br>"));
-
         verticalPanel.add(loginPanel);
         infoBox = new HTML("");
         verticalPanel.add(infoBox);
@@ -73,6 +74,9 @@ public class LoginView extends Composite implements ClickHandler, KeyUpHandler {
         if (source == loginButton) {
             login();
         }
+        if (source == registerButton) {
+            register();
+        }
     }
 
     @Override
@@ -84,6 +88,10 @@ public class LoginView extends Composite implements ClickHandler, KeyUpHandler {
 
     private void login() {
         sessionInformation.login(usernameTextBox.getText(), passwordTextBox.getText());
+    }
+
+    private void register() {
+        sessionInformation.register(usernameTextBox.getText(), passwordTextBox.getText());
     }
 
 }

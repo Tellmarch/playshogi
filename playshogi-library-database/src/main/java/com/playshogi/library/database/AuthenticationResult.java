@@ -3,12 +3,16 @@ package com.playshogi.library.database;
 
 public class AuthenticationResult {
     public enum Status {
-        LOGIN_OK, UNKNOWN, INVALID, UNAVAILABLE
+        LOGIN_OK, INVALID, UNAVAILABLE
     }
 
     private final Status status;
     private final Integer userId;
     private final String username;
+
+    AuthenticationResult(Status status) {
+        this(status, null, null);
+    }
 
     AuthenticationResult(Status status, Integer userId, String userName) {
         this.status = status;
