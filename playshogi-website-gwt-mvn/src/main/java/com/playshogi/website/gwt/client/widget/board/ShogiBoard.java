@@ -21,6 +21,7 @@ import com.playshogi.library.shogi.models.shogivariant.ShogiInitialPositionFacto
 import com.playshogi.library.shogi.rules.ShogiRulesEngine;
 import com.playshogi.website.gwt.client.events.HighlightMoveEvent;
 import com.playshogi.website.gwt.client.events.MovePlayedEvent;
+import com.playshogi.website.gwt.client.events.PieceStyleSelectedEvent;
 import com.playshogi.website.gwt.client.events.PositionChangedEvent;
 import com.playshogi.website.gwt.client.widget.board.KomadaiPositioning.Point;
 
@@ -52,6 +53,7 @@ public class ShogiBoard extends Composite implements ClickHandler {
     private final ShogiRulesEngine shogiRulesEngine = new ShogiRulesEngine();
     private ShogiPosition position;
     private PieceWrapper selectedPiece = null;
+    private PieceGraphics.Style style  = PieceGraphics.Style.RYOKO;
 
     private final List<PieceWrapper> boardPieceWrappers = new ArrayList<>();
     private final List<PieceWrapper> senteKomadaiPieceWrappers = new ArrayList<>();
@@ -128,7 +130,7 @@ public class ShogiBoard extends Composite implements ClickHandler {
         lowerLeftPanelX = TATAMI_LEFT_MARGIN;
         lowerLeftPanelY = TATAMI_TOP_MARGIN + goteKomadaiImage.getHeight() + TATAMI_INSIDE_MARGIN;
 
-        position = new ShogiInitialPositionFactory().createInitialPosition();
+        position = ShogiInitialPositionFactory.createInitialPosition();
 
         initSquareImages();
 
@@ -200,7 +202,7 @@ public class ShogiBoard extends Composite implements ClickHandler {
             for (int col = 0; col < columns; ++col) {
                 Piece piece = getPiece(row, col);
                 if (piece != null) {
-                    final Image image = new Image(PieceGraphics.getPieceImage(piece));
+                    final Image image = new Image(PieceGraphics.getPieceImage(piece, style));
 
                     PieceWrapper pieceWrapper = new PieceWrapper(piece, image, row, col);
                     boardPieceWrappers.add(pieceWrapper);
@@ -257,7 +259,7 @@ public class ShogiBoard extends Composite implements ClickHandler {
     }
 
     private Image createKomadaiPieceImage(Piece piece, boolean sente) {
-        final Image image = new Image(PieceGraphics.getPieceImage(piece));
+        final Image image = new Image(PieceGraphics.getPieceImage(piece, style));
         PieceWrapper pieceWrapper = new PieceWrapper(piece, image, sente ? -1 : -2, sente ? -1 : -2);
         pieceWrapper.setInKomadai(true);
         boardPieceWrappers.add(pieceWrapper);
@@ -396,7 +398,7 @@ public class ShogiBoard extends Composite implements ClickHandler {
         squareImages[pieceWrapper.getRow()][pieceWrapper.getColumn()].setStyleName("gwt-square-selected");
     }
 
-    private void selectSquare(final Square square) {
+    public void selectSquare(final Square square) {
         squareImages[square.getRow() - 1][8 - (square.getColumn() - 1)].setStyleName("gwt-square-selected");
     }
 
@@ -537,5 +539,12 @@ public class ShogiBoard extends Composite implements ClickHandler {
         }
 
     }
+
+    @EventHandler
+    public void onPieceStyleSelected(final PieceStyleSelectedEvent event) {
+        style = event.getStyle();
+        displayPosition();
+    }
+
 
 }

@@ -3,7 +3,7 @@ package com.playshogi.website.gwt.client.widget.board;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.ImageResource;
 
-public interface RyokoPieceBundle extends ClientBundle {
+public interface RyokoPieceBundle extends ClientBundle, PieceBundle {
 
     @Source("com/playshogi/website/gwt/resources/pieces_ryoko1/Gfu.png")
     ImageResource gfu();

@@ -7,9 +7,17 @@ import com.playshogi.library.shogi.models.PieceType;
 
 public class PieceGraphics {
 
-    private static RyokoPieceBundle resources = GWT.create(RyokoPieceBundle.class);
+    public enum Style {
+        RYOKO, HIDETCHI
+    }
 
-    public static ImageResource getPieceImage(final Piece piece) {
+    private static RyokoPieceBundle ryoko = GWT.create(RyokoPieceBundle.class);
+    private static HidetchiPieceBundle hidetchi = GWT.create(HidetchiPieceBundle.class);
+
+    public static ImageResource getPieceImage(final Piece piece, final Style style) {
+
+        PieceBundle resources = style == Style.RYOKO ? ryoko : hidetchi;
+
         switch (piece) {
             case GOTE_BISHOP:
                 return resources.gkaku();
@@ -74,6 +82,13 @@ public class PieceGraphics {
     }
 
     public static ImageResource getPieceImage(final PieceType pieceType, boolean promoted) {
+        return getPieceImage(pieceType, promoted, Style.RYOKO);
+    }
+
+    public static ImageResource getPieceImage(final PieceType pieceType, boolean promoted, final Style style) {
+
+        PieceBundle resources = style == Style.RYOKO ? ryoko : hidetchi;
+
         switch (pieceType) {
             case PAWN:
                 return promoted ? resources.sto() : resources.sfu();

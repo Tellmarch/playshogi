@@ -135,8 +135,7 @@ public class TsumeActivity extends MyAbstractActivity {
                     //TODO: how to update URL?
                     //placeController.goTo(new TsumePlace(result.getId()));
                     setTsumeId(result.getId());
-                    History.newItem("Tsume:" + new TsumePlace.Tokenizer().getToken(getPlace()),
-                            false);
+                    History.newItem("Tsume:" + new TsumePlace.Tokenizer().getToken(getPlace()), false);
                     eventBus.fireEvent(new GameTreeChangedEvent(gameRecord.getGameTree()));
                     initTimer();
                 }

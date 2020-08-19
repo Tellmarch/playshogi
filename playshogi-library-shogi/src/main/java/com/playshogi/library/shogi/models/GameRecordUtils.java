@@ -13,7 +13,7 @@ public class GameRecordUtils {
     public static void print(final GameRecord gameRecord) {
         GameNavigation<ShogiPosition> gameNavigation = new GameNavigation<>(new ShogiRulesEngine(),
                 gameRecord.getGameTree(),
-                new ShogiInitialPositionFactory().createInitialPosition());
+                ShogiInitialPositionFactory.createInitialPosition());
 
         System.out.println(gameNavigation.getPosition().toString());
         while (gameNavigation.canMoveForward()) {
@@ -24,39 +24,32 @@ public class GameRecordUtils {
 
     public static Iterable<ShogiPosition> getMainVariation(final GameRecord gameRecord) {
 
-        return new Iterable<ShogiPosition>() {
+        return () -> new Iterator<ShogiPosition>() {
+
+            GameNavigation<ShogiPosition> gameNavigation = new GameNavigation<>(new ShogiRulesEngine(),
+                    gameRecord.getGameTree(),
+                    ShogiInitialPositionFactory.createInitialPosition());
+
+            boolean first = true;
 
             @Override
-            public Iterator<ShogiPosition> iterator() {
-                return new Iterator<ShogiPosition>() {
+            public boolean hasNext() {
+                if (first) {
+                    return true;
+                } else {
+                    return gameNavigation.canMoveForward();
+                }
+            }
 
-                    GameNavigation<ShogiPosition> gameNavigation = new GameNavigation<>(new ShogiRulesEngine(),
-                            gameRecord.getGameTree(),
-                            new ShogiInitialPositionFactory().createInitialPosition());
-
-                    boolean first = true;
-
-                    @Override
-                    public boolean hasNext() {
-                        if (first) {
-                            return true;
-                        } else {
-                            return gameNavigation.canMoveForward();
-                        }
-                    }
-
-                    @Override
-                    public ShogiPosition next() {
-                        if (first) {
-                            first = false;
-                            return gameNavigation.getPosition();
-                        } else {
-                            gameNavigation.moveForward();
-                            return gameNavigation.getPosition();
-                        }
-                    }
-                };
-
+            @Override
+            public ShogiPosition next() {
+                if (first) {
+                    first = false;
+                    return gameNavigation.getPosition();
+                } else {
+                    gameNavigation.moveForward();
+                    return gameNavigation.getPosition();
+                }
             }
         };
 

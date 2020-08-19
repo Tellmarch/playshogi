@@ -139,7 +139,7 @@ public class GameSetRepository {
 
         GameNavigation<ShogiPosition> gameNavigation = new GameNavigation<>(new ShogiRulesEngine(),
                 gameRecord.getGameTree(),
-                new ShogiInitialPositionFactory().createInitialPosition());
+                ShogiInitialPositionFactory.createInitialPosition());
 
         int lastPositionId = rep.getOrSavePosition(gameNavigation.getPosition());
 
@@ -163,7 +163,7 @@ public class GameSetRepository {
     }
 
     private Date parseDate(final String date) {
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/mm/dd");
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd");
         try {
             return simpleDateFormat.parse(date);
         } catch (ParseException e) {

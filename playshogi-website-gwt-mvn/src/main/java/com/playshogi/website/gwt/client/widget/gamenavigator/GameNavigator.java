@@ -53,7 +53,7 @@ public class GameNavigator extends Composite implements ClickHandler {
         this.activityId = activityId;
         shogiRulesEngine = new ShogiRulesEngine();
         GameNavigation<ShogiPosition> gameNavigation = new GameNavigation<>(shogiRulesEngine, new GameTree(),
-                new ShogiInitialPositionFactory().createInitialPosition());
+                ShogiInitialPositionFactory.createInitialPosition());
 
         this.navigatorConfiguration = navigatorConfiguration;
         this.gameNavigation = gameNavigation;

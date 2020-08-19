@@ -29,7 +29,7 @@ public enum UsfFormat implements GameRecordFormat {
     public GameRecord read(final LineReader lineReader) {
         String l = lineReader.nextLine();
         // First, check that the file is indeed USF.
-        if (l.indexOf("USF:") == -1) {
+        if (!l.contains("USF:")) {
             throw (new IllegalArgumentException("Not a recognized USF File. Maybe wrong encoding?"));
         }
 
@@ -52,7 +52,7 @@ public enum UsfFormat implements GameRecordFormat {
         // If the next character is ":", the game is starting from start
         // position.
         if (l.charAt(2) == ':') {
-            startingPosition = new ShogiInitialPositionFactory().createInitialPosition();
+            startingPosition = ShogiInitialPositionFactory.createInitialPosition();
             gameTree = new GameTree();
         } else {
             // We read the starting position, in a SFEN that goes up to ":"
@@ -61,7 +61,7 @@ public enum UsfFormat implements GameRecordFormat {
             gameTree = new GameTree(startingPosition);
         }
 
-        GameNavigation<ShogiPosition> gameNavigation = new GameNavigation<ShogiPosition>(new ShogiRulesEngine(),
+        GameNavigation<ShogiPosition> gameNavigation = new GameNavigation<>(new ShogiRulesEngine(),
                 gameTree, startingPosition);
 
         // What follows is the move sequence

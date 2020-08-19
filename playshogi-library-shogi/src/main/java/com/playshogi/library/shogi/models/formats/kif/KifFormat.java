@@ -134,7 +134,7 @@ public enum KifFormat implements GameRecordFormat {
         // s.useDelimiter("[ \r\n]");
 
         if (startingPosition == null) {
-            startingPosition = new ShogiInitialPositionFactory().createInitialPosition();
+            startingPosition = ShogiInitialPositionFactory.createInitialPosition();
         }
         GameTree gameTree = new GameTree(startingPosition);
         GameNavigation<ShogiPosition> gameNavigation = new GameNavigation<ShogiPosition>(new ShogiRulesEngine(),

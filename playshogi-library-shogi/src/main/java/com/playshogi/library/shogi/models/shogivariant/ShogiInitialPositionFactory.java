@@ -5,14 +5,13 @@ import com.playshogi.library.shogi.models.Piece;
 import com.playshogi.library.shogi.models.position.ShogiBoardState;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
 
-public class ShogiInitialPositionFactory implements InitialPositionFactory {
+public class ShogiInitialPositionFactory {
 
-    public ShogiPosition createInitialPosition() {
+    public static ShogiPosition createInitialPosition() {
         return createInitialPosition(Handicap.HIRATE);
     }
 
-    @Override
-    public ShogiPosition createInitialPosition(final Handicap handicap) {
+    public static ShogiPosition createInitialPosition(final Handicap handicap) {
         ShogiPosition shogiPosition = new ShogiPosition(ShogiVariant.NORMAL_SHOGI);
         ShogiBoardState shogiBoardState = shogiPosition.getShogiBoardState();
         shogiBoardState.setPieceAt(Square.of(1, 1), Piece.GOTE_LANCE);

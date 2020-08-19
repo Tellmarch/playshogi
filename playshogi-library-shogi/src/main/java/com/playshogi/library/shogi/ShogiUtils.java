@@ -10,6 +10,6 @@ public class ShogiUtils {
 
     public static GameNavigation<ShogiPosition> getNavigation(GameRecord gameRecord) {
         return new GameNavigation<>(new ShogiRulesEngine(), gameRecord.getGameTree(),
-                new ShogiInitialPositionFactory().createInitialPosition());
+                ShogiInitialPositionFactory.createInitialPosition());
     }
 }

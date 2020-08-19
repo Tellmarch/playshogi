@@ -20,7 +20,7 @@ public class USIConnector {
     private static final Logger LOGGER = Logger.getLogger(USIConnector.class.getName());
 
     private static final String ENGINE_COMMAND = "./YaneuraOu-by-gcc";
-    private static final File ENGINE_PATH = new File("/home/jean/shogi/engines/YaneuraOu/source/");
+    private static final File ENGINE_PATH = new File("/home/jfortin/shogi/engines/YaneuraOu/source/");
 
     private Scanner input;
     private PrintWriter output;
@@ -82,7 +82,7 @@ public class USIConnector {
         ArrayList<PositionEvaluation> evaluations = new ArrayList<>();
 
         GameNavigation<ShogiPosition> gameNavigation = new GameNavigation<>(new ShogiRulesEngine(),
-                gameTree, new ShogiInitialPositionFactory().createInitialPosition());
+                gameTree, ShogiInitialPositionFactory.createInitialPosition());
 
         ShogiPosition position = gameNavigation.getPosition();
 
@@ -223,8 +223,7 @@ public class USIConnector {
 //        System.out.println(usiConnector.analysePosition("ln1g5/1ks2gs1l/1pp4p1/p2bpn2p/3p3P1/P1P1P1P1P/1P1P1PS2" +
 //                "/2KGGS1R1/LN6L b RNPbp"));
         String usf = "USF:1.0\n^*:7g7f3c3d";
-        usiConnector.analyzeKifu(UsfFormat.INSTANCE.read(usf).getGameTree(),
-                evaluation -> System.out.println(evaluation));
+        usiConnector.analyzeKifu(UsfFormat.INSTANCE.read(usf).getGameTree(), System.out::println);
         usiConnector.disconnect();
     }
 }
