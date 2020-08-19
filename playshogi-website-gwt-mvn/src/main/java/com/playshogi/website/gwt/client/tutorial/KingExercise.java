@@ -41,7 +41,7 @@ public class KingExercise implements Tutorial {
         position.getShogiBoardState().setPieceAt(2, 2, Piece.GOTE_PAWN);
         i = 2;
         shogiBoard.setPosition(position);
-        shogiBoard.getBoardConfiguration().setAllowOnlyLegalMoves(true);
+        shogiBoard.getBoardConfiguration().setAllowIllegalMoves(false);
         shogiBoard.getBoardConfiguration().setPlaySenteMoves(true);
         shogiBoard.getBoardConfiguration().setPlayGoteMoves(false);
 

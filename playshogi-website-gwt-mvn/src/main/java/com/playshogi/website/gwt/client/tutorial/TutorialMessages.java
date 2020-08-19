@@ -43,4 +43,23 @@ public interface TutorialMessages extends Messages {
             " no special movement for captures. Click \"Next\" to go to the next lesson.")
     String kingPracticeSuccess();
 
+    @DefaultMessage("The Rook is your strongest attacking piece.\n" +
+            "It can move any number of squares vertically or horizontally, but it can not jump above other pieces.")
+    String rookIntro();
+
+    @DefaultMessage("The Rook")
+    String rookTitle();
+
+    @DefaultMessage("Time to practice: this time, try to capture all the opponent pawns with your Rook - but do not " +
+            "let them capture you, or go too far down the board!")
+    String rookPractice();
+
+    @DefaultMessage("The pawn is able to capture your rook! It is better to save such a strong piece.\n" +
+            "Click \"Try again\" to give it another try.")
+    String rookPracticeFailed();
+
+    @DefaultMessage("The pawns are already at the last row! Try to capture them before that happens.\n" +
+            "Click \"Try again\" to give it another try.")
+    String rookPracticeFailed2();
+
 }

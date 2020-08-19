@@ -20,7 +20,9 @@ public class Tutorials {
         tutorials = new Tutorial[]{
                 new Introduction(shogiBoard, tutorialMessages),
                 new PieceMovementTutorial(shogiBoard, Piece.SENTE_KING, tutorialMessages),
-                new KingExercise(shogiBoard, tutorialMessages)
+                new KingExercise(shogiBoard, tutorialMessages),
+                new PieceMovementTutorial(shogiBoard, Piece.SENTE_ROOK, tutorialMessages),
+                new RookExercise(shogiBoard, tutorialMessages)
         };
     }
 

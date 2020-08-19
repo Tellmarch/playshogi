@@ -2,7 +2,7 @@ package com.playshogi.website.gwt.client.widget.board;
 
 public class BoardConfiguration {
     private boolean inverted = false;
-    private boolean allowOnlyLegalMoves = true;
+    private boolean allowIllegalMoves = false;
     private boolean showPossibleMovesOnPieceSelection = true;
     private boolean showPossibleMovesOnPieceMouseOver = true;
     private boolean alternateSenteAndGoteMoves = true;
@@ -11,6 +11,7 @@ public class BoardConfiguration {
     private boolean positionEditingMode = false;
     private boolean showGoteKomadai = true;
     private boolean showSenteKomadai = true;
+    private boolean allowPromotion = true;
 
     public BoardConfiguration() {
     }
@@ -23,12 +24,12 @@ public class BoardConfiguration {
         this.inverted = inverted;
     }
 
-    public boolean isAllowOnlyLegalMoves() {
-        return allowOnlyLegalMoves;
+    public boolean allowIllegalMoves() {
+        return allowIllegalMoves;
     }
 
-    public void setAllowOnlyLegalMoves(final boolean allowOnlyLegalMoves) {
-        this.allowOnlyLegalMoves = allowOnlyLegalMoves;
+    public void setAllowIllegalMoves(final boolean allowIllegalMoves) {
+        this.allowIllegalMoves = allowIllegalMoves;
     }
 
     public boolean isShowPossibleMovesOnPieceSelection() {
@@ -95,14 +96,28 @@ public class BoardConfiguration {
         this.showSenteKomadai = showSenteKomadai;
     }
 
-    @Override
-    public String toString() {
-        return "BoardConfiguration [inverted=" + inverted + ", allowOnlyLegalMoves=" + allowOnlyLegalMoves
-                + ", showPossibleMovesOnPieceSelection=" + showPossibleMovesOnPieceSelection
-                + ", showPossibleMovesOnPieceMouseOver=" + showPossibleMovesOnPieceMouseOver
-                + ", alternateSenteAndGoteMoves=" + alternateSenteAndGoteMoves + ", playSenteMoves=" + playSenteMoves
-                + ", playGoteMoves=" + playGoteMoves + ", positionEditingMode=" + positionEditingMode
-                + ", showGoteKomadai=" + showGoteKomadai + ", showSenteKomadai=" + showSenteKomadai + "]";
+    public boolean isAllowPromotion() {
+        return allowPromotion;
     }
 
+    public void setAllowPromotion(boolean allowPromotion) {
+        this.allowPromotion = allowPromotion;
+    }
+
+    @Override
+    public String toString() {
+        return "BoardConfiguration{" +
+                "inverted=" + inverted +
+                ", allowIllegalMoves=" + allowIllegalMoves +
+                ", showPossibleMovesOnPieceSelection=" + showPossibleMovesOnPieceSelection +
+                ", showPossibleMovesOnPieceMouseOver=" + showPossibleMovesOnPieceMouseOver +
+                ", alternateSenteAndGoteMoves=" + alternateSenteAndGoteMoves +
+                ", playSenteMoves=" + playSenteMoves +
+                ", playGoteMoves=" + playGoteMoves +
+                ", positionEditingMode=" + positionEditingMode +
+                ", showGoteKomadai=" + showGoteKomadai +
+                ", showSenteKomadai=" + showSenteKomadai +
+                ", allowPromotion=" + allowPromotion +
+                '}';
+    }
 }

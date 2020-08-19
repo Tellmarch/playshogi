@@ -67,7 +67,7 @@ public class PieceMovementTutorial implements Tutorial {
             case BISHOP:
                 return tutorialMessages.kingIntro();
             case ROOK:
-                return tutorialMessages.kingIntro();
+                return tutorialMessages.rookIntro();
             case KING:
                 return tutorialMessages.kingIntro();
         }
@@ -89,7 +89,7 @@ public class PieceMovementTutorial implements Tutorial {
             case BISHOP:
                 return tutorialMessages.kingTitle();
             case ROOK:
-                return tutorialMessages.kingTitle();
+                return tutorialMessages.rookTitle();
             case KING:
                 return tutorialMessages.kingTitle();
         }
