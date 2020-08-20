@@ -76,7 +76,7 @@ public class ShogiRulesEngineTest {
         ShogiPosition position = SfenConverter.fromSFEN(sfen);
         System.out.println(position);
         List<ShogiMove> allPossibleNormalAndCaptureMoves = engine.getAllPossibleNormalAndCaptureMoves(position, false);
-        System.out.println(allPossibleNormalAndCaptureMoves);
+        System.out.println("Moves: " + allPossibleNormalAndCaptureMoves);
         assertEquals(38, allPossibleNormalAndCaptureMoves.size());
     }
 

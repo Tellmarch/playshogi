@@ -56,7 +56,7 @@ public class ShogiRulesEngine implements GameRulesEngine<ShogiPosition> {
         } else if (move instanceof NormalMove) {
             playNormalMove(position, (NormalMove) move);
         }
-        position.setSenteToPlay(!position.isSenteToPlay());
+        position.incrementMoveCount();
     }
 
     private void playCaptureMove(final ShogiPosition position, final CaptureMove move) {
@@ -103,7 +103,7 @@ public class ShogiRulesEngine implements GameRulesEngine<ShogiPosition> {
         } else if (move instanceof NormalMove) {
             undoNormalMove(position, (NormalMove) move);
         }
-        position.setSenteToPlay(!position.isSenteToPlay());
+        position.decrementMoveCount();
     }
 
     private void undoNormalMove(final ShogiPosition position, final NormalMove move) {
