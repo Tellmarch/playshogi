@@ -9,7 +9,9 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
+import com.playshogi.library.shogi.models.formats.sfen.SfenConverter;
 import com.playshogi.website.gwt.client.events.ByoYomiSurvivalFinishedEvent;
+import com.playshogi.website.gwt.client.events.PositionChangedEvent;
 import com.playshogi.website.gwt.client.events.UserFinishedProblemEvent;
 import com.playshogi.website.gwt.client.events.UserNavigatedBackEvent;
 import com.playshogi.website.gwt.client.widget.timer.ByoYomiTimerPanel;
@@ -21,15 +23,16 @@ public class ByoYomiFeedbackPanel extends Composite {
 
     private final MyEventBinder eventBinder = GWT.create(MyEventBinder.class);
 
-    private SafeHtml chooseHtml = SafeHtmlUtils
+    private final SafeHtml chooseHtml = SafeHtmlUtils
             .fromSafeConstant("Play the correct move!<br>");
-    private SafeHtml wrongHtml = SafeHtmlUtils.fromSafeConstant("<p style=\"font-size:20px;color:red\">Wrong!</p>");
-    private SafeHtml correctHtml = SafeHtmlUtils.fromSafeConstant("<p style=\"font-size:20px;" +
+    private final SafeHtml wrongHtml = SafeHtmlUtils.fromSafeConstant("<p style=\"font-size:20px;color:red\">Wrong!</p>");
+    private final SafeHtml correctHtml = SafeHtmlUtils.fromSafeConstant("<p style=\"font-size:20px;" +
             "color:green\">Correct!</p>");
 
     private EventBus eventBus;
 
     private final HTML messagePanel;
+    private final HTML positionPanel;
     private final HTML summaryPanel;
 
     private final ByoYomiTimerPanel byoTomiTimerPanel;
@@ -48,6 +51,11 @@ public class ByoYomiFeedbackPanel extends Composite {
         messagePanel.getElement().getStyle().setBackgroundColor("White");
 
         flowPanel.add(messagePanel);
+
+        positionPanel = new HTML();
+        positionPanel.getElement().getStyle().setBackgroundColor("White");
+
+        flowPanel.add(positionPanel);
 
         summaryPanel = new HTML();
         summaryPanel.getElement().getStyle().setBackgroundColor("White");
@@ -87,11 +95,20 @@ public class ByoYomiFeedbackPanel extends Composite {
         this.eventBus = eventBus;
         eventBinder.bindEventHandlers(this, eventBus);
         messagePanel.setHTML(chooseHtml);
+        positionPanel.setVisible(false);
         summaryPanel.setVisible(false);
         byoTomiTimerPanel.activate(eventBus);
     }
 
     public void setTimerVisible(boolean visible) {
         byoTomiTimerPanel.setVisible(visible);
+    }
+
+    @EventHandler
+    public void onPositionChanged(final PositionChangedEvent event) {
+        GWT.log("Problem feedback: position changed");
+        SafeHtml html = SafeHtmlUtils.fromTrustedString("<nobr>" + SfenConverter.toSFENWithMoveCount(event.getPosition()) + "</nobr>");
+        positionPanel.setHTML(html);
+        positionPanel.setVisible(true);
     }
 }

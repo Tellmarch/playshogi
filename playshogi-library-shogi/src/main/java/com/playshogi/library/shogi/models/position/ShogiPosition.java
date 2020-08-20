@@ -5,13 +5,13 @@ import com.playshogi.library.models.Square;
 import com.playshogi.library.shogi.models.Piece;
 import com.playshogi.library.shogi.models.shogivariant.ShogiVariant;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 public class ShogiPosition implements Position<ShogiPosition> {
 
+    private int moveCount;
     private boolean senteToPlay;
     private ShogiBoardState shogiBoardState;
     private KomadaiState senteKomadai;
@@ -22,26 +22,27 @@ public class ShogiPosition implements Position<ShogiPosition> {
     }
 
     public ShogiPosition(final ShogiVariant shogiVariant) {
-        shogiBoardState = new ShogiBoardStateImpl(shogiVariant.getBoardWidth(), shogiVariant.getBoardHeight());
-        senteToPlay = true;
-        goteKomadai = new KomadaiState();
-        senteKomadai = new KomadaiState();
+        this(1, true, new ShogiBoardStateImpl(shogiVariant.getBoardWidth(), shogiVariant.getBoardHeight()), new KomadaiState(), new KomadaiState());
     }
 
-    public ShogiPosition(final boolean senteToPlay, final ShogiBoardState shogiBoardState,
+    public ShogiPosition(int moveCount, final boolean senteToPlay, final ShogiBoardState shogiBoardState,
                          final KomadaiState senteKomadai, final KomadaiState goteKomadai) {
+        this.moveCount = moveCount;
         this.senteToPlay = senteToPlay;
         this.shogiBoardState = shogiBoardState;
         this.senteKomadai = senteKomadai;
         this.goteKomadai = goteKomadai;
     }
 
-    public boolean isSenteToPlay() {
-        return senteToPlay;
+    public int getMoveCount() {
+        return moveCount;
     }
 
-    public void setSenteToPlay(final boolean senteToPlay) {
-        this.senteToPlay = senteToPlay;
+    public void decrementMoveCount() { this.moveCount = this.moveCount - 1; this.senteToPlay = !this.senteToPlay; }
+    public void incrementMoveCount() { this.moveCount = this.moveCount + 1; this.senteToPlay = !this.senteToPlay; }
+
+    public boolean isSenteToPlay() {
+        return senteToPlay;
     }
 
     public ShogiBoardState getShogiBoardState() {

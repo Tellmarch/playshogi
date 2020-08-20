@@ -206,7 +206,6 @@ public class ByoYomiActivity extends MyAbstractActivity {
         moveDuration = new Duration();
     }
 
-
     private AsyncCallback<ProblemDetails> getProblemRequestCallback() {
         return new AsyncCallback<ProblemDetails>() {
 

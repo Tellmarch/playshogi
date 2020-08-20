@@ -83,9 +83,11 @@ public class SfenConverter {
             c.append('-');
         }
 
-        // Should we add the move count?
-
         return res + " " + c;
+    }
+
+    public static String toSFENWithMoveCount(final ShogiPosition pos) {
+        return toSFEN(pos) + " " + pos.getMoveCount();
     }
 
     public static ShogiPosition fromSFEN(final String sfen) {
@@ -141,8 +143,10 @@ public class SfenConverter {
         KomadaiState senteKomadai = new KomadaiState();
         KomadaiState goteKomadai = new KomadaiState();
 
+        int moveCount = 1;
         boolean senteTurn = true;
         if (fields[1].equalsIgnoreCase("w")) {
+            moveCount = 2;
             senteTurn = false;
         }
 
@@ -205,6 +209,9 @@ public class SfenConverter {
             }
         }
 
-        return new ShogiPosition(senteTurn, shogiBoardState, senteKomadai, goteKomadai);
+        if (fields.length > 3)
+            moveCount = Integer.parseInt(fields[3]);
+
+        return new ShogiPosition(moveCount, senteTurn, shogiBoardState, senteKomadai, goteKomadai);
     }
 }
