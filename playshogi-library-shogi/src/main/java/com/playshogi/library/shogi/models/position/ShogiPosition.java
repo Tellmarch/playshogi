@@ -52,6 +52,14 @@ public class ShogiPosition implements Position<ShogiPosition> {
         this.shogiBoardState = shogiBoardState;
     }
 
+    public int getColumns() {
+        return shogiBoardState.getWidth();
+    }
+
+    public int getRows() {
+        return shogiBoardState.getHeight();
+    }
+
     public KomadaiState getSenteKomadai() {
         return senteKomadai;
     }
