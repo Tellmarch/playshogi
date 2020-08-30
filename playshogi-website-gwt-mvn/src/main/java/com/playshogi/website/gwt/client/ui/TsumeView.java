@@ -5,6 +5,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.web.bindery.event.shared.EventBus;
+import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.website.gwt.client.widget.board.ShogiBoard;
 import com.playshogi.website.gwt.client.widget.gamenavigator.GameNavigator;
 import com.playshogi.website.gwt.client.widget.problems.ProblemFeedbackPanel;
@@ -38,6 +39,10 @@ public class TsumeView extends Composite {
         gameNavigator.getNavigatorConfiguration().setProblemMode(true);
 
         initWidget(shogiBoard);
+    }
+
+    public ShogiPosition getCurrentPosition() {
+        return shogiBoard.getPosition();
     }
 
     public void activate(final EventBus eventBus) {

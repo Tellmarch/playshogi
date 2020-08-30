@@ -4,6 +4,7 @@ import com.google.gwt.core.client.Duration;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.place.shared.PlaceController;
 import com.google.gwt.user.client.History;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
 import com.google.web.bindery.event.shared.EventBus;
@@ -14,15 +15,14 @@ import com.playshogi.library.shogi.models.formats.sfen.SfenConverter;
 import com.playshogi.library.shogi.models.formats.usf.UsfFormat;
 import com.playshogi.website.gwt.client.SessionInformation;
 import com.playshogi.website.gwt.client.controller.ProblemController;
-import com.playshogi.website.gwt.client.events.GameTreeChangedEvent;
-import com.playshogi.website.gwt.client.events.ProblemNumMovesSelectedEvent;
-import com.playshogi.website.gwt.client.events.UserFinishedProblemEvent;
-import com.playshogi.website.gwt.client.events.UserSkippedProblemEvent;
-import com.playshogi.website.gwt.client.place.OpeningsPlace;
+import com.playshogi.website.gwt.client.events.*;
 import com.playshogi.website.gwt.client.place.TsumePlace;
 import com.playshogi.website.gwt.client.ui.TsumeView;
 import com.playshogi.website.gwt.client.util.FireAndForgetCallback;
+import com.playshogi.website.gwt.shared.models.PositionEvaluationDetails;
 import com.playshogi.website.gwt.shared.models.ProblemDetails;
+import com.playshogi.website.gwt.shared.services.KifuService;
+import com.playshogi.website.gwt.shared.services.KifuServiceAsync;
 import com.playshogi.website.gwt.shared.services.ProblemsService;
 import com.playshogi.website.gwt.shared.services.ProblemsServiceAsync;
 
@@ -34,6 +34,7 @@ public class TsumeActivity extends MyAbstractActivity {
     private final MyEventBinder eventBinder = GWT.create(MyEventBinder.class);
 
     private final ProblemsServiceAsync problemsService = GWT.create(ProblemsService.class);
+    private final KifuServiceAsync kifuService = GWT.create(KifuService.class);
     private final PlaceController placeController;
     private final TsumeView tsumeView;
     private final SessionInformation sessionInformation;
@@ -152,5 +153,24 @@ public class TsumeActivity extends MyAbstractActivity {
 
     private TsumePlace getPlace() {
         return new TsumePlace(tsumeId);
+    }
+
+    @EventHandler
+    public void onRequestPositionEvaluationEvent(final RequestPositionEvaluationEvent event) {
+        GWT.log("Tsume Activity Handling RequestPositionEvaluationEvent");
+        String sfen = SfenConverter.toSFEN(tsumeView.getCurrentPosition());
+        kifuService.analysePosition(sessionInformation.getSessionId(), sfen,
+                new AsyncCallback<PositionEvaluationDetails>() {
+                    @Override
+                    public void onFailure(Throwable throwable) {
+                        GWT.log("TsumeActivity - ERROR GETTING POSITION EVALUATION");
+                    }
+
+                    @Override
+                    public void onSuccess(PositionEvaluationDetails result) {
+                        GWT.log("TsumeActivity - received position evaluation\n" + result);
+                        Window.alert(result.getTsumeAnalysis());
+                    }
+                });
     }
 }

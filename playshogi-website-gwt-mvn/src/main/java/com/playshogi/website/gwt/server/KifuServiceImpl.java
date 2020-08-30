@@ -11,10 +11,10 @@ import com.playshogi.library.database.models.PersistentGameSetPos;
 import com.playshogi.library.database.models.PersistentKifu.KifuType;
 import com.playshogi.library.models.record.GameInformation;
 import com.playshogi.library.models.record.GameRecord;
-import com.playshogi.library.shogi.engine.PositionEvaluation;
-import com.playshogi.library.shogi.engine.PrincipalVariation;
-import com.playshogi.library.shogi.engine.USIConnector;
+import com.playshogi.library.shogi.engine.*;
+import com.playshogi.library.shogi.models.formats.sfen.SfenConverter;
 import com.playshogi.library.shogi.models.formats.usf.UsfFormat;
+import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.website.gwt.shared.models.*;
 import com.playshogi.website.gwt.shared.services.KifuService;
 
@@ -36,6 +36,8 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
     private final Authenticator authenticator = Authenticator.INSTANCE;
 
     private final Map<String, List<PositionEvaluationDetails>> kifuEvaluations = new HashMap<>();
+    private final TsumeEscapeSolver tsumeEscapeSolver =
+            new TsumeEscapeSolver(new QueuedTsumeSolver(EngineConfiguration.TSUME_ENGINE));
 
     public KifuServiceImpl() {
         DbConnection dbConnection = new DbConnection();
@@ -138,9 +140,19 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
     public PositionEvaluationDetails analysePosition(String sessionId, String sfen) {
         LOGGER.log(Level.INFO, "analyzing position:\n" + sfen);
 
+        ShogiPosition position = SfenConverter.fromSFEN(sfen);
+
+        if (position.hasSenteKingOnBoard()) {
+            return analyseNormalPosition(sessionId, sfen);
+        } else {
+            return analyseTsumePosition(sessionId, position);
+        }
+    }
+
+    private PositionEvaluationDetails analyseNormalPosition(final String sessionId, final String sfen) {
         LoginResult loginResult = authenticator.checkSession(sessionId);
         if (loginResult != null && loginResult.isLoggedIn()) {
-            USIConnector usiConnector = new USIConnector();
+            USIConnector usiConnector = new USIConnector(EngineConfiguration.NORMAL_ENGINE);
             usiConnector.connect();
             PositionEvaluation evaluation = usiConnector.analysePosition(sfen);
             usiConnector.disconnect();
@@ -151,6 +163,14 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
             LOGGER.log(Level.INFO, "Position analysis is only available for logged-in users");
             return null;
         }
+    }
+
+    private PositionEvaluationDetails analyseTsumePosition(final String sessionId, final ShogiPosition position) {
+        EscapeTsumeResult result = tsumeEscapeSolver.escapeTsume(position);
+        LOGGER.log(Level.INFO, "Tsume analysis: " + result);
+        PositionEvaluationDetails details = new PositionEvaluationDetails();
+        details.setTsumeAnalysis(result.toPrettyString());
+        return details;
     }
 
     private PositionEvaluationDetails convertPositionEvaluation(final PositionEvaluation evaluation) {
@@ -190,7 +210,7 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
 
             kifuEvaluations.put(kifuUsf, new ArrayList<>());
 
-            USIConnector usiConnector = new USIConnector();
+            USIConnector usiConnector = new USIConnector(EngineConfiguration.NORMAL_ENGINE);
             usiConnector.connect();
             usiConnector.analyzeKifu(gameRecord.getGameTree(), evaluation -> {
                 LOGGER.log(Level.INFO, "New position evaluation for kifu analysis " + evaluation);

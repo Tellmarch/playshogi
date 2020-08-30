@@ -105,7 +105,7 @@ public class GameNavigator extends Composite implements ClickHandler {
         gameNavigation.addMove(move);
         if (!existingMove) {
             GWT.log("New variation");
-            boolean positionCheckmate = shogiRulesEngine.isPositionCheckmate(gameNavigation.getPosition(), true);
+            boolean positionCheckmate = shogiRulesEngine.isPositionCheckmate(gameNavigation.getPosition());
             if (move instanceof DropMove) {
                 DropMove dropMove = (DropMove) move;
                 if (dropMove.getPieceType() == PieceType.PAWN) {

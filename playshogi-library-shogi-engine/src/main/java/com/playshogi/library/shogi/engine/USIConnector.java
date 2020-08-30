@@ -3,7 +3,6 @@ package com.playshogi.library.shogi.engine;
 import com.playshogi.library.models.record.GameNavigation;
 import com.playshogi.library.models.record.GameTree;
 import com.playshogi.library.shogi.models.formats.sfen.SfenConverter;
-import com.playshogi.library.shogi.models.formats.usf.UsfFormat;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.library.shogi.models.shogivariant.ShogiInitialPositionFactory;
 import com.playshogi.library.shogi.rules.ShogiRulesEngine;
@@ -19,13 +18,16 @@ public class USIConnector {
 
     private static final Logger LOGGER = Logger.getLogger(USIConnector.class.getName());
 
-    private static final String ENGINE_COMMAND = "./YaneuraOu-by-gcc";
-    private static final File ENGINE_PATH = new File("/home/jfortin/shogi/engines/YaneuraOu/source/");
+    private final EngineConfiguration engineConfiguration;
 
     private Scanner input;
     private PrintWriter output;
-    private boolean connected = true;
+    private boolean connected = false;
     private Process process;
+
+    public USIConnector(EngineConfiguration engineConfiguration) {
+        this.engineConfiguration = engineConfiguration;
+    }
 
     public boolean connect() {
         if (connected) {
@@ -33,8 +35,8 @@ public class USIConnector {
         }
         try {
             ProcessBuilder processBuilder = new ProcessBuilder();
-            processBuilder.command(ENGINE_COMMAND);
-            processBuilder.directory(ENGINE_PATH);
+            processBuilder.command(engineConfiguration.getCommand());
+            processBuilder.directory(engineConfiguration.getPath());
             process = processBuilder.start();
 
             input = new Scanner(new InputStreamReader(process.getInputStream()));
@@ -94,6 +96,47 @@ public class USIConnector {
             callback.processPositionEvaluation(analysePosition(SfenConverter.toSFEN(position)));
         }
     }
+
+    public PositionEvaluation analyseTsume(String sfen) {
+        if (!connected) {
+            throw new IllegalStateException("Engine is not connected");
+        }
+
+        LOGGER.log(Level.INFO, "Looking for mate: " + sfen);
+
+        sendCommand(output, "position sfen " + sfen + " 0");
+        sendCommand(output, "go mate 2000");
+
+        return readTsumeResult(input);
+    }
+
+    private PositionEvaluation readTsumeResult(Scanner input) {
+        List<PrincipalVariation> principalVariationHistory = new ArrayList<>();
+
+        String nextLine;
+        do {
+            nextLine = input.nextLine();
+            System.out.println("<< " + nextLine);
+        } while (!nextLine.startsWith("checkmate"));
+
+        String[] split = nextLine.split(" ");
+
+        if (split[1].equals("nomate") || split[1].equals("timeout")) {
+            return new PositionEvaluation(new PrincipalVariation[]{}, null, null);
+        } else {
+            StringBuilder variation = new StringBuilder();
+            for (int i = 1; i < split.length; i++) {
+                variation.append(split[i]).append(" ");
+            }
+            int numMoves = split.length - 1;
+            PrincipalVariation principalVariation = new PrincipalVariation();
+            principalVariation.setForcedMate(true);
+            principalVariation.setNumMovesBeforeMate(numMoves);
+            principalVariation.setPrincipalVariation(variation.toString());
+            return new PositionEvaluation(new PrincipalVariation[]{principalVariation}, split[1], null);
+        }
+    }
+
 
     public PositionEvaluation analysePosition(String sfen) {
         if (!connected) {
@@ -216,14 +259,7 @@ public class USIConnector {
         }
     }
 
-    public static void main(String[] args) {
-
-        USIConnector usiConnector = new USIConnector();
-        usiConnector.connect();
-//        System.out.println(usiConnector.analysePosition("ln1g5/1ks2gs1l/1pp4p1/p2bpn2p/3p3P1/P1P1P1P1P/1P1P1PS2" +
-//                "/2KGGS1R1/LN6L b RNPbp"));
-        String usf = "USF:1.0\n^*:7g7f3c3d";
-        usiConnector.analyzeKifu(UsfFormat.INSTANCE.read(usf).getGameTree(), System.out::println);
-        usiConnector.disconnect();
+    public boolean isConnected() {
+        return connected;
     }
 }

@@ -53,6 +53,10 @@ public enum Piece {
         return sentePiece;
     }
 
+    public Player getOwner() {
+        return sentePiece ? Player.BLACK : Player.WHITE;
+    }
+
     public boolean isGotePiece() {
         return !sentePiece;
     }

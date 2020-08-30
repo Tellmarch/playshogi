@@ -11,7 +11,22 @@
         <b>Contact: playshogi [at] hotmail.com</b>
         <p/>
         <p/>
-        <b>Last updated: 2020-08-08</b>
+        <b>Last updated: 2020-08-30</b>
+        <p/>
+        New Features:
+        <ul>
+            <li>Export current problem to SFEN</li>
+            <li>Added "Tell me why?" button to explain why the answer is incorrect</li>
+            <li>Show all gote pieces in hand for tsume problems</li>
+            <li>Reset leaderboard</li>
+        </ul>
+        Bug fixes:
+        <ul>
+            <li>Fixed a couple of piece movement bugs</li>
+        </ul>
+        <p/>
+        <p/>
+        <b>Update: 2020-08-08</b>
         <p/>
         Bug fixes:
         <ul>

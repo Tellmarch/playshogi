@@ -3,6 +3,7 @@ package com.playshogi.library.shogi.models.position;
 import com.playshogi.library.models.Position;
 import com.playshogi.library.models.Square;
 import com.playshogi.library.shogi.models.Piece;
+import com.playshogi.library.shogi.models.Player;
 import com.playshogi.library.shogi.models.shogivariant.ShogiVariant;
 
 import java.util.ArrayList;
@@ -22,7 +23,8 @@ public class ShogiPosition implements Position<ShogiPosition> {
     }
 
     public ShogiPosition(final ShogiVariant shogiVariant) {
-        this(1, true, new ShogiBoardStateImpl(shogiVariant.getBoardWidth(), shogiVariant.getBoardHeight()), new KomadaiState(), new KomadaiState());
+        this(1, true, new ShogiBoardStateImpl(shogiVariant.getBoardWidth(), shogiVariant.getBoardHeight()),
+                new KomadaiState(), new KomadaiState());
     }
 
     public ShogiPosition(int moveCount, final boolean senteToPlay, final ShogiBoardState shogiBoardState,
@@ -38,11 +40,22 @@ public class ShogiPosition implements Position<ShogiPosition> {
         return moveCount;
     }
 
-    public void decrementMoveCount() { this.moveCount = this.moveCount - 1; this.senteToPlay = !this.senteToPlay; }
-    public void incrementMoveCount() { this.moveCount = this.moveCount + 1; this.senteToPlay = !this.senteToPlay; }
+    public void decrementMoveCount() {
+        this.moveCount = this.moveCount - 1;
+        this.senteToPlay = !this.senteToPlay;
+    }
+
+    public void incrementMoveCount() {
+        this.moveCount = this.moveCount + 1;
+        this.senteToPlay = !this.senteToPlay;
+    }
 
     public boolean isSenteToPlay() {
         return senteToPlay;
+    }
+
+    public Player playerToMove() {
+        return senteToPlay ? Player.BLACK : Player.WHITE;
     }
 
     public ShogiBoardState getShogiBoardState() {
@@ -89,15 +102,23 @@ public class ShogiPosition implements Position<ShogiPosition> {
         return shogiBoardState.getPieceAt(square).isPresent() && !shogiBoardState.getPieceAt(square).get().isSentePiece();
     }
 
+    public boolean hasSenteKingOnBoard() {
+        for (int i = 1; i <= getRows(); i++) {
+            for (int j = 1; j <= getColumns(); j++) {
+                if (shogiBoardState.getPieceAt(i, j).orElse(null) == Piece.SENTE_KING) return true;
+            }
+        }
+        return false;
+    }
+
     /**
-     *
      * @return list of squares of the board
      */
-    public List<Square> getAllSquares(){
+    public List<Square> getAllSquares() {
         List<Square> squares = new ArrayList<>();
         for (int row = 1; row <= shogiBoardState.getLastRow(); row++) {
             for (int column = 1; column <= shogiBoardState.getLastColumn(); column++) {
-                squares.add(Square.of(column,row));
+                squares.add(Square.of(column, row));
             }
         }
         return squares;

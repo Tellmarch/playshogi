@@ -5,6 +5,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -13,13 +14,12 @@ import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.library.shogi.models.formats.sfen.SfenConverter;
-import com.playshogi.website.gwt.client.events.PositionChangedEvent;
-import com.playshogi.website.gwt.client.events.UserFinishedProblemEvent;
-import com.playshogi.website.gwt.client.events.UserNavigatedBackEvent;
-import com.playshogi.website.gwt.client.events.UserSkippedProblemEvent;
+import com.playshogi.library.shogi.models.position.ShogiPosition;
+import com.playshogi.website.gwt.client.events.*;
 import com.playshogi.website.gwt.client.widget.gamenavigator.GameNavigator;
 
 public class ProblemFeedbackPanel extends Composite implements ClickHandler {
+
 
     interface MyEventBinder extends EventBinder<ProblemFeedbackPanel> {
     }
@@ -28,15 +28,17 @@ public class ProblemFeedbackPanel extends Composite implements ClickHandler {
 
     private final SafeHtml chooseHtml = SafeHtmlUtils
             .fromSafeConstant("Play the correct move!<br>");
-    private final SafeHtml wrongHtml = SafeHtmlUtils.fromSafeConstant("<p style=\"font-size:20px;color:red\">Wrong!</p>");
+    private final SafeHtml wrongHtml = SafeHtmlUtils.fromSafeConstant("<p style=\"font-size:20px;" +
+            "color:red\">Wrong!</p>");
     private final SafeHtml correctHtml = SafeHtmlUtils.fromSafeConstant("<p style=\"font-size:20px;" +
             "color:green\">Correct!</p>");
 
     private EventBus eventBus;
     private Button skipButton;
+    private ShogiPosition currentPosition = null;
 
+    private final Button tellMeWhyButton;
     private final HTML messagePanel;
-    private final HTML positionPanel;
 
     public ProblemFeedbackPanel(final GameNavigator gameNavigator) {
 
@@ -49,6 +51,12 @@ public class ProblemFeedbackPanel extends Composite implements ClickHandler {
         skipButton.addClickHandler(this);
         flowPanel.add(skipButton);
 
+        Button sfenButton = new Button("SFEN");
+        sfenButton.addClickHandler(clickEvent -> {
+            if (currentPosition != null) Window.alert(SfenConverter.toSFENWithMoveCount(currentPosition));
+        });
+        flowPanel.add(sfenButton);
+
         flowPanel.add(new HTML(SafeHtmlUtils.fromSafeConstant("<br>")));
 
         messagePanel = new HTML();
@@ -57,10 +65,10 @@ public class ProblemFeedbackPanel extends Composite implements ClickHandler {
 
         flowPanel.add(messagePanel);
 
-        positionPanel = new HTML();
-        positionPanel.getElement().getStyle().setBackgroundColor("White");
+        tellMeWhyButton = new Button("Tell me why!");
+        tellMeWhyButton.addClickHandler(clickEvent -> eventBus.fireEvent(new RequestPositionEvaluationEvent()));
 
-        flowPanel.add(positionPanel);
+        flowPanel.add(tellMeWhyButton);
 
         initWidget(flowPanel);
     }
@@ -70,6 +78,7 @@ public class ProblemFeedbackPanel extends Composite implements ClickHandler {
         Object source = event.getSource();
         if (source == skipButton) {
             messagePanel.setHTML(chooseHtml);
+            tellMeWhyButton.setVisible(false);
             eventBus.fireEvent(new UserSkippedProblemEvent());
         }
     }
@@ -79,8 +88,10 @@ public class ProblemFeedbackPanel extends Composite implements ClickHandler {
         GWT.log("Problem feedback: handle UserFinishedProblemEvent");
         if (event.isSuccess()) {
             messagePanel.setHTML(correctHtml);
+            tellMeWhyButton.setVisible(false);
         } else {
             messagePanel.setHTML(wrongHtml);
+            tellMeWhyButton.setVisible(true);
         }
     }
 
@@ -88,6 +99,13 @@ public class ProblemFeedbackPanel extends Composite implements ClickHandler {
     public void onUserNavigatedBack(final UserNavigatedBackEvent event) {
         GWT.log("Problem feedback: handle user navigated back event");
         messagePanel.setHTML(chooseHtml);
+        tellMeWhyButton.setVisible(false);
+    }
+
+    @EventHandler
+    public void onPositionChanged(final PositionChangedEvent event) {
+        GWT.log("Problem feedback: position changed");
+        currentPosition = event.getPosition();
     }
 
     public void activate(final EventBus eventBus) {
@@ -95,14 +113,6 @@ public class ProblemFeedbackPanel extends Composite implements ClickHandler {
         this.eventBus = eventBus;
         eventBinder.bindEventHandlers(this, eventBus);
         messagePanel.setHTML(chooseHtml);
-        positionPanel.setVisible(false);
-    }
-
-    @EventHandler
-    public void onPositionChanged(final PositionChangedEvent event) {
-        GWT.log("Problem feedback: position changed");
-        SafeHtml html = SafeHtmlUtils.fromTrustedString("<nobr>" + SfenConverter.toSFENWithMoveCount(event.getPosition()) + "</nobr>");
-        positionPanel.setHTML(html);
-        positionPanel.setVisible(true);
+        tellMeWhyButton.setVisible(false);
     }
 }
