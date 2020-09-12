@@ -124,8 +124,7 @@ public class ProblemStatisticsView extends Composite {
     }
 
     public void activate(final EventBus eventBus) {
-        com.google.gwt.core.shared.GWT.log("Activating problem statistics view");
-        GWT.log("Activating Problem feedback panel");
+        GWT.log("Activating problem statistics view");
         eventBinder.bindEventHandlers(this, eventBus);
         highScorePanel.activate(eventBus);
     }
