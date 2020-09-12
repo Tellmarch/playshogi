@@ -3,7 +3,9 @@ package com.playshogi.library.database;
 import com.playshogi.library.database.models.PersistentGame;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -15,6 +17,9 @@ public class GameRepository {
             + "(`kifu_id`, `sente_id`, `gote_id`, `sente_name`, `gote_name`, `date_played`, `venue`, `description`)" + " VALUES ( ?, ?, ?, ?, ?, ?, ?, ?);";
     private static final String SELECT_GAME = "SELECT * FROM ps_game WHERE id = ?";
     private static final String DELETE_GAME = "DELETE FROM ps_game WHERE id = ?";
+
+    private static final String SELECT_GAMES_FROM_GAMESET = "SELECT * FROM playshogi.ps_gamesetgame join playshogi" +
+            ".ps_game on ps_game.id = game_id WHERE gameset_id = ?;";
 
     private final DbConnection dbConnection;
 
@@ -90,6 +95,35 @@ public class GameRepository {
             }
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error looking up the game in db", e);
+            return null;
+        }
+    }
+
+    public List<PersistentGame> getGamesFromGameSet(final int gameSetId) {
+        ArrayList<PersistentGame> games = new ArrayList<>();
+        Connection connection = dbConnection.getConnection();
+        try (PreparedStatement preparedStatement = connection.prepareStatement(SELECT_GAMES_FROM_GAMESET)) {
+            preparedStatement.setInt(1, gameSetId);
+            ResultSet rs = preparedStatement.executeQuery();
+            while (rs.next()) {
+                LOGGER.log(Level.INFO, "Found game with id: " + rs.getInt("game_id"));
+
+                int kifuId = rs.getInt("kifu_id");
+                int gameId = rs.getInt("game_id");
+                int senteId = rs.getInt("sente_id");
+                int goteId = rs.getInt("gote_id");
+                String senteName = rs.getString("sente_name");
+                String goteName = rs.getString("gote_name");
+                int venueId = rs.getInt("venue");
+                String description = rs.getString("description");
+                Date datePlayed = rs.getDate("date_played");
+
+                games.add(new PersistentGame(gameId, kifuId, senteId, goteId, senteName, goteName, datePlayed, venueId,
+                        description));
+            }
+            return games;
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error looking up the gameset games in db", e);
             return null;
         }
     }

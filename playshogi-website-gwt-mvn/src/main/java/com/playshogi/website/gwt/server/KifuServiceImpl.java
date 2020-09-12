@@ -1,10 +1,7 @@
 package com.playshogi.website.gwt.server;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
-import com.playshogi.library.database.DbConnection;
-import com.playshogi.library.database.GameSetRepository;
-import com.playshogi.library.database.KifuRepository;
-import com.playshogi.library.database.PositionRepository;
+import com.playshogi.library.database.*;
 import com.playshogi.library.database.models.PersistentGame;
 import com.playshogi.library.database.models.PersistentGameSetMove;
 import com.playshogi.library.database.models.PersistentGameSetPos;
@@ -33,6 +30,7 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
     private final KifuRepository kifuRepository;
     private final GameSetRepository gameSetRepository;
     private final PositionRepository positionRepository;
+    private final GameRepository gameRepository;
     private final Authenticator authenticator = Authenticator.INSTANCE;
 
     private final Map<String, List<PositionEvaluationDetails>> kifuEvaluations = new HashMap<>();
@@ -44,6 +42,7 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
         gameSetRepository = new GameSetRepository(dbConnection);
         positionRepository = new PositionRepository(dbConnection);
         kifuRepository = new KifuRepository(dbConnection);
+        gameRepository = new GameRepository(dbConnection);
     }
 
     @Override
@@ -82,20 +81,36 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
         return result.toArray(new KifuDetails[0]);
     }
 
-    @Override
-    public KifuDetails[] getGameSetKifuDetails(String sessionId, String gameSetId) {
-        return new KifuDetails[0];
-    }
-
-    private KifuDetails createKifuDetails(final String key, final GameRecord value) {
+    private KifuDetails createKifuDetails(final String id, final GameRecord value) {
         GameInformation gameInformation = value.getGameInformation();
 
         KifuDetails kifuDetails = new KifuDetails();
-        kifuDetails.setId(key);
+        kifuDetails.setId(id);
         kifuDetails.setSente(gameInformation.getSente());
         kifuDetails.setGote(gameInformation.getGote());
         kifuDetails.setVenue(gameInformation.getVenue());
         kifuDetails.setDate(gameInformation.getDate());
+        return kifuDetails;
+    }
+
+    @Override
+    public KifuDetails[] getGameSetKifuDetails(final String sessionId, final String gameSetId) {
+        LOGGER.log(Level.INFO, "getGameSetKifuDetails:\n" + gameSetId);
+
+        List<PersistentGame> games = gameRepository.getGamesFromGameSet(Integer.parseInt(gameSetId));
+
+        return games.stream().map(this::createKifuDetails).toArray(KifuDetails[]::new);
+    }
+
+    private KifuDetails createKifuDetails(final PersistentGame game) {
+        KifuDetails kifuDetails = new KifuDetails();
+        kifuDetails.setId(String.valueOf(game.getKifuId()));
+        kifuDetails.setSente(game.getSenteName());
+        kifuDetails.setGote(game.getGoteName());
+        kifuDetails.setSenteId(String.valueOf(game.getSenteId()));
+        kifuDetails.setGoteId(String.valueOf(game.getGoteId()));
+        kifuDetails.setDate(String.valueOf(game.getDatePlayed()));
+        //TODO venue
         return kifuDetails;
     }
 
