@@ -31,8 +31,9 @@ public class UserRepository {
     public AuthenticationResult authenticateUser(final String username, final String password) {
         Connection connection = dbConnection.getConnection();
         try (PreparedStatement preparedStatement = connection.prepareStatement(LOGIN_SQL)) {
+            String hash = PasswordHashing.hash(password);
             preparedStatement.setString(1, username);
-            preparedStatement.setString(2, password);
+            preparedStatement.setString(2, hash);
             ResultSet rs = preparedStatement.executeQuery();
             if (rs.next()) {
                 int userId = rs.getInt("id");
@@ -42,7 +43,7 @@ public class UserRepository {
                 LOGGER.log(Level.INFO, "Did not find user: " + username);
                 return new AuthenticationResult(AuthenticationResult.Status.INVALID);
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error looking up the user in db", e);
             return new AuthenticationResult(AuthenticationResult.Status.UNAVAILABLE);
         }
@@ -61,17 +62,18 @@ public class UserRepository {
                 LOGGER.log(Level.INFO, "Found existing user: " + username + " with id: " + userId);
                 return new AuthenticationResult(AuthenticationResult.Status.INVALID);
             } else {
-                int userId = insertUser(username, password);
+                String hash = PasswordHashing.hash(password);
+                int userId = insertUser(username, hash);
                 LOGGER.log(Level.INFO, "Registered new user: " + username);
                 return new AuthenticationResult(AuthenticationResult.Status.LOGIN_OK, userId, username);
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error registering new user in db", e);
             return new AuthenticationResult(AuthenticationResult.Status.UNAVAILABLE);
         }
     }
 
-    private int insertUser(final String userName, final String password_hash) throws SQLException {
+    private int insertUser(final String userName, final String passwordHash) throws SQLException {
 
         int key = -1;
 
@@ -79,7 +81,7 @@ public class UserRepository {
         try (PreparedStatement preparedStatement = connection.prepareStatement(INSERT_USER,
                 Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setString(1, userName);
-            preparedStatement.setString(2, password_hash);
+            preparedStatement.setString(2, passwordHash);
             preparedStatement.executeUpdate();
 
             ResultSet rs = preparedStatement.getGeneratedKeys();
