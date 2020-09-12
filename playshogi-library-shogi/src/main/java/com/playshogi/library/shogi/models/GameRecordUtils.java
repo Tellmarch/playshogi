@@ -1,12 +1,15 @@
 package com.playshogi.library.shogi.models;
 
+import com.playshogi.library.models.Move;
 import com.playshogi.library.models.record.GameNavigation;
 import com.playshogi.library.models.record.GameRecord;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.library.shogi.models.shogivariant.ShogiInitialPositionFactory;
 import com.playshogi.library.shogi.rules.ShogiRulesEngine;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 public class GameRecordUtils {
 
@@ -20,6 +23,18 @@ public class GameRecordUtils {
             gameNavigation.moveForward();
             System.out.println(gameNavigation.getPosition().toString());
         }
+    }
+
+    public static List<Move> getMainVariationMoves(final GameRecord gameRecord) {
+        GameNavigation<ShogiPosition> gameNavigation = new GameNavigation<>(new ShogiRulesEngine(),
+                gameRecord.getGameTree(),
+                ShogiInitialPositionFactory.createInitialPosition());
+        ArrayList<Move> moves = new ArrayList<>();
+        while (gameNavigation.canMoveForward()) {
+            moves.add(gameNavigation.getMainVariationMove());
+            gameNavigation.moveForward();
+        }
+        return moves;
     }
 
     public static Iterable<ShogiPosition> getMainVariation(final GameRecord gameRecord) {

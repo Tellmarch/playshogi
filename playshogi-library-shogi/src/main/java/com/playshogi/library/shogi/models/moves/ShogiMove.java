@@ -1,19 +1,27 @@
 package com.playshogi.library.shogi.models.moves;
 
 import com.playshogi.library.models.Move;
+import com.playshogi.library.shogi.models.Player;
 import com.playshogi.library.shogi.models.formats.usf.UsfMoveConverter;
+
+import java.util.Objects;
 
 public class ShogiMove implements Move {
 
-    private final boolean senteMoving;
+    private final Player player;
     private volatile String usfString;
 
-    public ShogiMove(final boolean senteMoving) {
-        this.senteMoving = senteMoving;
+    public ShogiMove(final Player player) {
+        this.player = player;
     }
 
+    public Player getPlayer() {
+        return player;
+    }
+
+    @Deprecated
     public boolean isSenteMoving() {
-        return senteMoving;
+        return player == Player.BLACK;
     }
 
     public String getUsfString() {
@@ -29,31 +37,16 @@ public class ShogiMove implements Move {
     }
 
     @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + (senteMoving ? 1231 : 1237);
-        result = prime * result + ((getUsfString() == null) ? 0 : getUsfString().hashCode());
-        return result;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ShogiMove)) return false;
+        ShogiMove shogiMove = (ShogiMove) o;
+        return getPlayer() == shogiMove.getPlayer() &&
+                Objects.equals(getUsfString(), shogiMove.getUsfString());
     }
 
     @Override
-    public boolean equals(final Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        ShogiMove other = (ShogiMove) obj;
-        if (senteMoving != other.senteMoving)
-            return false;
-        if (getUsfString() == null) {
-            if (other.getUsfString() != null)
-                return false;
-        } else if (!getUsfString().equals(other.getUsfString()))
-            return false;
-        return true;
+    public int hashCode() {
+        return Objects.hash(getPlayer(), getUsfString());
     }
-
 }

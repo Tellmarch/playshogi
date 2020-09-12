@@ -17,14 +17,13 @@ public class NormalMove extends ShogiMove implements ToSquareMove {
     }
 
     public NormalMove(Piece piece, Square fromSquare, Square toSquare, Piece promotionPiece) {
-        super(piece.isSentePiece());
+        super(piece.getOwner());
         this.piece = piece;
         this.fromSquare = fromSquare;
         this.toSquare = toSquare;
         this.promotionPiece = promotionPiece;
     }
 
-    @Deprecated
     public NormalMove(Piece piece, Square fromSquare, Square toSquare, boolean promote) {
         this(piece, fromSquare, toSquare, promote ? piece.getPromotedPiece() : null);
     }

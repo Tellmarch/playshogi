@@ -57,7 +57,6 @@ public class GameCollectionsActivity extends MyAbstractActivity {
                     eventBus.fireEvent(new ListCollectionGamesEvent(kifuDetails));
                 }
             });
-
         }
 
         containerWidget.setWidget(gameCollectionsView.asWidget());

@@ -5,7 +5,9 @@ import com.playshogi.library.models.record.GameTree;
 
 public interface GameRecordFormat {
 
-    GameRecord read(String usfString);
+    default GameRecord read(String string) {
+        return read(new StringLineReader(string));
+    }
 
     GameRecord read(LineReader lineReader);
 

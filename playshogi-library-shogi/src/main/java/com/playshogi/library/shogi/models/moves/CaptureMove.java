@@ -18,7 +18,6 @@ public class CaptureMove extends NormalMove {
         this.capturedPiece = capturedPiece;
     }
 
-    @Deprecated
     public CaptureMove(Piece piece, Square fromSquare, Square toSquare, Piece capturedPiece, boolean promote) {
         this(piece, fromSquare, toSquare, capturedPiece, promote ? piece.getPromotedPiece() : null);
     }
