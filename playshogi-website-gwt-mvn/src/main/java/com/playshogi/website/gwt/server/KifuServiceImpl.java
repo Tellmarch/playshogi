@@ -82,6 +82,11 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
         return result.toArray(new KifuDetails[0]);
     }
 
+    @Override
+    public KifuDetails[] getGameSetKifuDetails(String sessionId, String gameSetId) {
+        return new KifuDetails[0];
+    }
+
     private KifuDetails createKifuDetails(final String key, final GameRecord value) {
         GameInformation gameInformation = value.getGameInformation();
 

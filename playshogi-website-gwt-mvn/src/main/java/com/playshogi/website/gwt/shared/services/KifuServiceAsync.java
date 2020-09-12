@@ -13,6 +13,8 @@ public interface KifuServiceAsync {
 
     void getAvailableKifuDetails(String sessionId, AsyncCallback<KifuDetails[]> callback);
 
+    void getGameSetKifuDetails(String sessionId, String gameSetId, AsyncCallback<KifuDetails[]> callback);
+
     void getPositionDetails(String sfen, int gameSetId, AsyncCallback<PositionDetails> callback);
 
     void analysePosition(String sessionId, String sfen, AsyncCallback<PositionEvaluationDetails> callback);

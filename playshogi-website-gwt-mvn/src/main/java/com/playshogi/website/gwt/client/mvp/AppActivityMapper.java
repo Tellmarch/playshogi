@@ -68,7 +68,7 @@ public class AppActivityMapper implements ActivityMapper {
         } else if (place instanceof MyGamesPlace) {
             return new MyGamesActivity(myGamesView);
         } else if (place instanceof GameCollectionsPlace) {
-            return new GameCollectionsActivity(gameCollectionsView);
+            return new GameCollectionsActivity((GameCollectionsPlace) place, gameCollectionsView);
         } else if (place instanceof ProblemStatisticsPlace) {
             return new ProblemStatisticsActivity(problemStatisticsView, sessionInformation);
         } else if (place instanceof LoginPlace) {

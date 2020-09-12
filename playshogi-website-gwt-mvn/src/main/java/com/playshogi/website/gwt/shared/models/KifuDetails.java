@@ -1,21 +1,8 @@
 package com.playshogi.website.gwt.shared.models;
 
-import com.google.gwt.view.client.ProvidesKey;
-
 import java.io.Serializable;
 
-@SuppressWarnings("serial")
 public class KifuDetails implements Serializable {
-
-    /**
-     * The key provider that provides the unique ID of a contact.
-     */
-    public static final ProvidesKey<KifuDetails> KEY_PROVIDER = new ProvidesKey<KifuDetails>() {
-        @Override
-        public Object getKey(final KifuDetails item) {
-            return item == null ? null : item.getId();
-        }
-    };
 
     private String id;
     private String sente;
