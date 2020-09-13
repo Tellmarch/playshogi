@@ -8,6 +8,7 @@ import com.google.gwt.user.client.ui.*;
 import com.google.web.bindery.event.shared.EventBus;
 import com.playshogi.library.models.record.GameRecord;
 import com.playshogi.library.shogi.models.formats.kif.KifFormat;
+import com.playshogi.library.shogi.models.formats.psn.PsnFormat;
 import com.playshogi.library.shogi.models.formats.usf.UsfFormat;
 import com.playshogi.website.gwt.client.events.GameRecordChangedEvent;
 
@@ -71,6 +72,9 @@ public class ImportKifuPanel extends Composite implements ClickHandler {
         if (gameText.startsWith("USF")) {
             GWT.log("Will parse as USF game");
             gameRecord = UsfFormat.INSTANCE.read(gameText);
+        } else if (gameText.startsWith("[")) {
+            GWT.log("Will parse as PSN game");
+            gameRecord = PsnFormat.INSTANCE.read(gameText);
         } else {
             GWT.log("Will parse as KIF game");
             gameRecord = KifFormat.INSTANCE.read(gameText);

@@ -3,7 +3,6 @@ package com.playshogi.website.gwt.client.widget.kifu;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.ui.*;
 import com.google.web.bindery.event.shared.EventBus;
@@ -22,15 +21,9 @@ public class KifuEditorPanel extends Composite implements ClickHandler {
 
     private final MyEventBinder eventBinder = GWT.create(MyEventBinder.class);
 
-    SafeHtml chooseHtml = SafeHtmlUtils.fromSafeConstant("Editing kifu");
-    SafeHtml wrongHtml = SafeHtmlUtils.fromSafeConstant("<p style=\"font-size:20px;color:red\">Wrong!</p>");
-    SafeHtml correctHtml = SafeHtmlUtils.fromSafeConstant("<p style=\"font-size:20px;color:green\">Correct!</p>");
-
     private EventBus eventBus;
     private final Button importButton;
     private final Button saveButton;
-
-    private final HTML messagePanel;
 
     private DialogBox importDialogBox;
 
@@ -43,7 +36,7 @@ public class KifuEditorPanel extends Composite implements ClickHandler {
         importButton = new Button("Import kifu");
         importButton.addClickHandler(this);
 
-//        verticalPanel.add(importButton);
+        verticalPanel.add(importButton);
 
         verticalPanel.add(new HTML(SafeHtmlUtils.fromSafeConstant("<br>")));
 
@@ -54,15 +47,9 @@ public class KifuEditorPanel extends Composite implements ClickHandler {
         saveButton = new Button("Save kifu");
         saveButton.addClickHandler(this);
 
-//        verticalPanel.add(saveButton);
+        verticalPanel.add(saveButton);
 
         verticalPanel.add(new HTML(SafeHtmlUtils.fromSafeConstant("<br>")));
-
-        messagePanel = new HTML();
-        messagePanel.setHTML(chooseHtml);
-        messagePanel.getElement().getStyle().setBackgroundColor("White");
-
-//        verticalPanel.add(messagePanel);
 
         initWidget(verticalPanel);
     }
