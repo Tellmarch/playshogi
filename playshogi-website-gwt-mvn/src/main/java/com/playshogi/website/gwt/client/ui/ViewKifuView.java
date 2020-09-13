@@ -11,8 +11,8 @@ import com.playshogi.website.gwt.client.widget.board.ShogiBoard;
 import com.playshogi.website.gwt.client.widget.engine.KifuEvaluationChartPanel;
 import com.playshogi.website.gwt.client.widget.engine.PositionEvaluationDetailsPanel;
 import com.playshogi.website.gwt.client.widget.gamenavigator.GameNavigator;
-import com.playshogi.website.gwt.client.widget.kifu.KifuEditorPanel;
 import com.playshogi.website.gwt.client.widget.kifu.KifuInformationPanel;
+import com.playshogi.website.gwt.client.widget.kifu.KifuNavigationPanel;
 
 @Singleton
 public class ViewKifuView extends Composite {
@@ -20,7 +20,7 @@ public class ViewKifuView extends Composite {
     private static final String NEWKIFU = "newkifu";
     private final ShogiBoard shogiBoard;
     private final GameNavigator gameNavigator;
-    private final KifuEditorPanel kifuEditorPanel;
+    private final KifuNavigationPanel kifuNavigationPanel;
     private final KifuInformationPanel kifuInformationPanel;
     private final PositionEvaluationDetailsPanel positionEvaluationDetailsPanel;
     private final KifuEvaluationChartPanel kifuEvaluationChartPanel;
@@ -31,10 +31,10 @@ public class ViewKifuView extends Composite {
         shogiBoard = new ShogiBoard(NEWKIFU);
         gameNavigator = new GameNavigator(NEWKIFU);
 
-        kifuEditorPanel = new KifuEditorPanel(gameNavigator);
+        kifuNavigationPanel = new KifuNavigationPanel(gameNavigator);
         kifuInformationPanel = new KifuInformationPanel();
 
-        shogiBoard.setUpperRightPanel(kifuEditorPanel);
+        shogiBoard.setUpperRightPanel(kifuNavigationPanel);
         shogiBoard.setLowerLeftPanel(kifuInformationPanel);
 
         positionEvaluationDetailsPanel = new PositionEvaluationDetailsPanel();
@@ -55,7 +55,6 @@ public class ViewKifuView extends Composite {
         GWT.log("Activating new kifu view");
         shogiBoard.activate(eventBus);
         gameNavigator.activate(eventBus);
-        kifuEditorPanel.activate(eventBus);
         kifuInformationPanel.activate(eventBus);
         positionEvaluationDetailsPanel.activate(eventBus);
         kifuEvaluationChartPanel.activate(eventBus);
