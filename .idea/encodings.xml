@@ -5,11 +5,14 @@
     <file url="file://$PROJECT_DIR$/playshogi-library-common/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/playshogi-library-database" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/playshogi-library-database/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/playshogi-library-database/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/playshogi-library-shogi" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/playshogi-library-shogi-engine" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/playshogi-library-shogi-engine/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/playshogi-library-shogi-engine/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/playshogi-library-shogi-files" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/playshogi-library-shogi-files/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/playshogi-library-shogi-files/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/playshogi-library-shogi/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/playshogi-website-gwt-mvn" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/playshogi-website-gwt-mvn/src/main/java" charset="UTF-8" />
