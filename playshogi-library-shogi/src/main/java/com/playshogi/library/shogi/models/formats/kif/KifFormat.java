@@ -5,6 +5,7 @@ import com.playshogi.library.models.record.*;
 import com.playshogi.library.shogi.models.formats.kif.KifUtils.PieceParsingResult;
 import com.playshogi.library.shogi.models.formats.sfen.GameRecordFormat;
 import com.playshogi.library.shogi.models.formats.sfen.LineReader;
+import com.playshogi.library.shogi.models.formats.sfen.StringLineReader;
 import com.playshogi.library.shogi.models.moves.ShogiMove;
 import com.playshogi.library.shogi.models.moves.SpecialMove;
 import com.playshogi.library.shogi.models.moves.SpecialMoveType;
@@ -15,6 +16,11 @@ import com.playshogi.library.shogi.rules.ShogiRulesEngine;
 
 public enum KifFormat implements GameRecordFormat {
     INSTANCE;
+
+    @Override
+    public GameRecord read(String string) {
+        return read(new StringLineReader(string));
+    }
 
     @Override
     public GameRecord read(final LineReader lineReader) {

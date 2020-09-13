@@ -6,6 +6,7 @@ import com.playshogi.library.models.record.*;
 import com.playshogi.library.shogi.models.formats.sfen.GameRecordFormat;
 import com.playshogi.library.shogi.models.formats.sfen.LineReader;
 import com.playshogi.library.shogi.models.formats.sfen.SfenConverter;
+import com.playshogi.library.shogi.models.formats.sfen.StringLineReader;
 import com.playshogi.library.shogi.models.moves.ShogiMove;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.library.shogi.models.shogivariant.ShogiInitialPositionFactory;
@@ -18,6 +19,11 @@ public enum UsfFormat implements GameRecordFormat {
     INSTANCE;
 
     private static final Logger LOGGER = Logger.getLogger(UsfFormat.class.getName());
+
+    @Override
+    public GameRecord read(String string) {
+        return read(new StringLineReader(string));
+    }
 
     @Override
     public GameRecord read(final LineReader lineReader) {
