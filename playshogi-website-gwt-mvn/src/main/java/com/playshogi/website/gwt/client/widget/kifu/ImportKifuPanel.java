@@ -1,9 +1,10 @@
 package com.playshogi.website.gwt.client.widget.kifu;
 
-import com.google.gwt.core.shared.GWT;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import com.google.web.bindery.event.shared.EventBus;
 import com.playshogi.library.models.record.GameRecord;
@@ -34,22 +35,49 @@ public class ImportKifuPanel extends Composite implements ClickHandler {
 
         verticalPanel.add(loadFromURLButton);
 
-        verticalPanel.add(new HTML(SafeHtmlUtils.fromSafeConstant("<br>")));
+        verticalPanel.add(new HTML(SafeHtmlUtils.fromSafeConstant("<br/>")));
+
+        FormPanel form = createUploadForm();
+        verticalPanel.add(form);
+
+        verticalPanel.add(new HTML(SafeHtmlUtils.fromSafeConstant("<br/>")));
 
         textArea = new TextArea();
         textArea.setCharacterWidth(80);
         textArea.setVisibleLines(15);
-
         verticalPanel.add(textArea);
 
         loadFromTextButton = new Button("Import from text");
         loadFromTextButton.addClickHandler(this);
 
-        verticalPanel.add(new HTML(SafeHtmlUtils.fromSafeConstant("<br>")));
+        verticalPanel.add(new HTML(SafeHtmlUtils.fromSafeConstant("<br/>")));
 
         verticalPanel.add(loadFromTextButton);
 
         initWidget(verticalPanel);
+    }
+
+    private FormPanel createUploadForm() {
+        FormPanel form = new FormPanel();
+        form.setAction(GWT.getModuleBaseURL() + "uploadKifu");
+        form.setEncoding(FormPanel.ENCODING_MULTIPART);
+        form.setMethod(FormPanel.METHOD_POST);
+
+        VerticalPanel panel = new VerticalPanel();
+        form.setWidget(panel);
+
+        FileUpload upload = new FileUpload();
+        upload.setName("file");
+        panel.add(upload);
+
+        panel.add(new Button("Upload", (ClickHandler) event -> form.submit()));
+
+        form.addSubmitHandler(event -> GWT.log("Submit event"));
+        form.addSubmitCompleteHandler(event -> {
+            GWT.log("Submit complete");
+            Window.alert(event.getResults());
+        });
+        return form;
     }
 
     @Override

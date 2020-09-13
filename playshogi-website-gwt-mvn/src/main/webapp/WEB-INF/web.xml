@@ -46,6 +46,16 @@
         <url-pattern>/playshogiwebsite/kifus</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+        <servlet-name>uploadKifu</servlet-name>
+        <servlet-class>com.playshogi.website.gwt.server.KifuUploadServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>uploadKifu</servlet-name>
+        <url-pattern>/playshogiwebsite/uploadKifu</url-pattern>
+    </servlet-mapping>
+
     <!-- Default page to serve -->
     <welcome-file-list>
         <welcome-file>ShogiBoard.html</welcome-file>
