@@ -18,7 +18,7 @@ import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-@MultipartConfig
+@MultipartConfig(maxFileSize = 1024 * 1024 * 5, maxRequestSize = 1024 * 1024 * 5 * 2)
 public class KifuUploadServlet extends HttpServlet {
 
     private static final Logger LOGGER = Logger.getLogger(KifuUploadServlet.class.getName());
@@ -38,12 +38,12 @@ public class KifuUploadServlet extends HttpServlet {
                 }
 
                 GameRecord record = readGameRecord(scanner, fileName);
-                String message = "Successfully imported kifu: " + fileName + " " + UsfFormat.INSTANCE.write(record);
-                writer.println(message);
-                LOGGER.log(Level.INFO, message);
+                String usf = UsfFormat.INSTANCE.write(record);
+                writer.println("SUCCESS:" + usf);
+                LOGGER.log(Level.INFO, "Successfully imported kifu: " + fileName + " " + usf);
             } catch (Exception ex) {
                 LOGGER.log(Level.SEVERE, "Problems during file upload.", ex);
-                writer.println("Error uploading the file: " + ex.getMessage());
+                writer.println("ERROR: Error uploading the file: " + ex.getMessage());
             }
         }
     }

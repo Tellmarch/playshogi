@@ -4,7 +4,10 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
@@ -24,8 +27,6 @@ public class KifuEditorPanel extends Composite implements ClickHandler {
     private EventBus eventBus;
     private final Button importButton;
     private final Button saveButton;
-
-    private DialogBox importDialogBox;
 
     private final ImportKifuPanel importKifuPanel = new ImportKifuPanel();
 
@@ -59,11 +60,7 @@ public class KifuEditorPanel extends Composite implements ClickHandler {
         Object source = event.getSource();
         if (source == importButton) {
             GWT.log("Kifu editor: Opening the import dialog box");
-            if (importDialogBox == null) {
-                importDialogBox = createImportDialogBox();
-            }
-            importDialogBox.center();
-            importDialogBox.show();
+            importKifuPanel.showInDialog();
         } else if (source == saveButton) {
             GWT.log("Kifu editor: request saving kifu");
             eventBus.fireEvent(new GameRecordSaveRequestedEvent());
@@ -92,25 +89,6 @@ public class KifuEditorPanel extends Composite implements ClickHandler {
         importKifuPanel.activate(eventBus);
     }
 
-    private DialogBox createImportDialogBox() {
-        final DialogBox dialogBox = new DialogBox();
-        dialogBox.ensureDebugId("cwDialogBox");
-        dialogBox.setText("Import kifu");
-        dialogBox.setGlassEnabled(true);
 
-        VerticalPanel dialogContents = new VerticalPanel();
-        dialogContents.setSpacing(4);
-        dialogBox.setWidget(dialogContents);
-
-        dialogContents.add(importKifuPanel);
-        dialogContents.setCellHorizontalAlignment(importKifuPanel, HasHorizontalAlignment.ALIGN_CENTER);
-
-        Button closeButton = new Button("Close", (ClickHandler) event -> dialogBox.hide());
-        dialogContents.add(closeButton);
-
-        dialogContents.setCellHorizontalAlignment(closeButton, HasHorizontalAlignment.ALIGN_RIGHT);
-
-        return dialogBox;
-    }
 
 }

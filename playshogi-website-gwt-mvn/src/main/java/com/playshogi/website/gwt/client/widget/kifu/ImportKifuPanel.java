@@ -15,25 +15,14 @@ import com.playshogi.website.gwt.client.events.GameRecordChangedEvent;
 
 public class ImportKifuPanel extends Composite implements ClickHandler {
 
-    private final Button loadFromURLButton;
     private final Button loadFromTextButton;
     private final TextArea textArea;
-    private final TextBox urlText;
     private EventBus eventBus;
+    private DialogBox dialogBox;
 
     public ImportKifuPanel() {
 
         FlowPanel verticalPanel = new FlowPanel();
-
-        urlText = new TextBox();
-        urlText.setVisibleLength(50);
-
-        verticalPanel.add(urlText);
-
-        loadFromURLButton = new Button("Load from URL");
-        loadFromURLButton.addClickHandler(this);
-
-        verticalPanel.add(loadFromURLButton);
 
         verticalPanel.add(new HTML(SafeHtmlUtils.fromSafeConstant("<br/>")));
 
@@ -75,7 +64,17 @@ public class ImportKifuPanel extends Composite implements ClickHandler {
         form.addSubmitHandler(event -> GWT.log("Submit event"));
         form.addSubmitCompleteHandler(event -> {
             GWT.log("Submit complete");
-            Window.alert(event.getResults());
+            String result = event.getResults();
+            if (result.startsWith("ERROR")) {
+                Window.alert(event.getResults());
+            } else if (result.startsWith("SUCCESS:")) {
+                String usf = result.substring(8);
+                GWT.log("Kifu USF: " + usf);
+                GameRecord gameRecord = UsfFormat.INSTANCE.read(usf);
+                updateBoard(gameRecord);
+            } else {
+                GWT.log("Don't know how to handle the response: " + result);
+            }
         });
         return form;
     }
@@ -108,6 +107,40 @@ public class ImportKifuPanel extends Composite implements ClickHandler {
             gameRecord = KifFormat.INSTANCE.read(gameText);
         }
         GWT.log("Firing game record changed event...");
+        updateBoard(gameRecord);
+    }
+
+    private void updateBoard(GameRecord gameRecord) {
         eventBus.fireEvent(new GameRecordChangedEvent(gameRecord));
+        dialogBox.hide();
+    }
+
+    private DialogBox createImportDialogBox() {
+        final DialogBox dialogBox = new DialogBox();
+        dialogBox.ensureDebugId("cwDialogBox");
+        dialogBox.setText("Import kifu");
+        dialogBox.setGlassEnabled(true);
+
+        VerticalPanel dialogContents = new VerticalPanel();
+        dialogContents.setSpacing(4);
+        dialogBox.setWidget(dialogContents);
+
+        dialogContents.add(this);
+        dialogContents.setCellHorizontalAlignment(this, HasHorizontalAlignment.ALIGN_CENTER);
+
+        Button closeButton = new Button("Close", (ClickHandler) event -> dialogBox.hide());
+        dialogContents.add(closeButton);
+
+        dialogContents.setCellHorizontalAlignment(closeButton, HasHorizontalAlignment.ALIGN_RIGHT);
+
+        return dialogBox;
+    }
+
+    public void showInDialog() {
+        if (dialogBox == null) {
+            dialogBox = createImportDialogBox();
+        }
+        dialogBox.center();
+        dialogBox.show();
     }
 }
