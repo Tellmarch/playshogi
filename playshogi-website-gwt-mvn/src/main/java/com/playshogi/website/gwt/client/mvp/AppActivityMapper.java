@@ -32,8 +32,6 @@ public class AppActivityMapper implements ActivityMapper {
     @Inject
     ViewKifuView viewKifuView;
     @Inject
-    MyGamesView myGamesView;
-    @Inject
     GameCollectionsView gameCollectionsView;
     @Inject
     ProblemStatisticsView problemStatisticsView;
@@ -65,8 +63,6 @@ public class AppActivityMapper implements ActivityMapper {
             return new FreeBoardActivity((FreeBoardPlace) place, freeBoardView);
         } else if (place instanceof OpeningsPlace) {
             return new OpeningsActivity((OpeningsPlace) place, openingsView, placeController);
-        } else if (place instanceof MyGamesPlace) {
-            return new MyGamesActivity(myGamesView);
         } else if (place instanceof GameCollectionsPlace) {
             return new GameCollectionsActivity((GameCollectionsPlace) place, gameCollectionsView, sessionInformation);
         } else if (place instanceof ProblemStatisticsPlace) {
