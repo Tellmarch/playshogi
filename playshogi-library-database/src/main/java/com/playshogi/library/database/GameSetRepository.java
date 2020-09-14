@@ -15,7 +15,6 @@ import com.playshogi.library.shogi.models.shogivariant.ShogiInitialPositionFacto
 import com.playshogi.library.shogi.rules.ShogiRulesEngine;
 
 import java.sql.*;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -166,7 +165,7 @@ public class GameSetRepository {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd");
         try {
             return simpleDateFormat.parse(date);
-        } catch (ParseException e) {
+        } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Couldn't parse date: " + date);
         }
 

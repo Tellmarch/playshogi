@@ -6,6 +6,7 @@ import com.playshogi.library.database.models.PersistentGame;
 import com.playshogi.library.database.models.PersistentGameSetMove;
 import com.playshogi.library.database.models.PersistentGameSetPos;
 import com.playshogi.library.database.models.PersistentKifu.KifuType;
+import com.playshogi.library.models.record.GameCollection;
 import com.playshogi.library.models.record.GameInformation;
 import com.playshogi.library.models.record.GameRecord;
 import com.playshogi.library.shogi.engine.*;
@@ -94,6 +95,28 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
     }
 
     @Override
+    public GameCollectionDetails[] getGameCollections(final String sessionId) {
+
+        ArrayList<GameCollectionDetails> gameCollectionDetails = new ArrayList<>();
+
+        GameCollectionDetails proGames = new GameCollectionDetails();
+        proGames.setId("1");
+        proGames.setName("57k Pro Games");
+        gameCollectionDetails.add(proGames);
+
+        Map<String, GameCollection> collections = CollectionUploads.INSTANCE.getCollections();
+        for (Entry<String, GameCollection> collection : collections.entrySet()) {
+            GameCollectionDetails details = new GameCollectionDetails();
+            details.setId(collection.getKey());
+            details.setName(collection.getValue().getName());
+
+            gameCollectionDetails.add(details);
+        }
+
+        return gameCollectionDetails.toArray(new GameCollectionDetails[0]);
+    }
+
+    @Override
     public KifuDetails[] getGameSetKifuDetails(final String sessionId, final String gameSetId) {
         LOGGER.log(Level.INFO, "getGameSetKifuDetails:\n" + gameSetId);
 
@@ -157,7 +180,7 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
     }
 
     @Override
-    public PositionEvaluationDetails analysePosition(String sessionId, String sfen) {
+    public PositionEvaluationDetails analysePosition(final String sessionId, final String sfen) {
         LOGGER.log(Level.INFO, "analyzing position:\n" + sfen);
 
         ShogiPosition position = SfenConverter.fromSFEN(sfen);
@@ -215,7 +238,7 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
     }
 
     @Override
-    public boolean requestKifuAnalysis(String sessionId, String kifuUsf) {
+    public boolean requestKifuAnalysis(final String sessionId, final String kifuUsf) {
         LOGGER.log(Level.INFO, "requestKifuAnalysis:\n" + kifuUsf);
 
         if (kifuEvaluations.containsKey(kifuUsf)) {
@@ -246,7 +269,7 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
     }
 
     @Override
-    public PositionEvaluationDetails[] getKifUAnalysisResults(String sessionId, String kifuUsf) {
+    public PositionEvaluationDetails[] getKifUAnalysisResults(final String sessionId, final String kifuUsf) {
         LOGGER.log(Level.INFO, "getKifUAnalysisResults:\n" + kifuUsf);
 
         if (!kifuEvaluations.containsKey(kifuUsf)) {
@@ -261,5 +284,33 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
             LOGGER.log(Level.INFO, "Kifu analysis is only available for logged-in users");
             return new PositionEvaluationDetails[0];
         }
+    }
+
+    @Override
+    public String saveGameCollection(final String sessionId, final String draftId) {
+        LOGGER.log(Level.INFO, "saveGameCollection: " + draftId);
+
+        LoginResult loginResult = authenticator.checkSession(sessionId);
+        if (loginResult == null || !loginResult.isLoggedIn()) {
+            throw new IllegalStateException("Only logged in users can save a game collection");
+        }
+
+        GameCollection collection = CollectionUploads.INSTANCE.getCollection(draftId);
+
+        if (collection == null) {
+            for (Entry<String, GameCollection> c : CollectionUploads.INSTANCE.getCollections().entrySet()) {
+                LOGGER.log(Level.INFO, "Existing draft collection: " + c.getKey() + " " + c.getValue().getName());
+            }
+            throw new IllegalStateException("Invalid draft connection ID");
+        }
+
+        int id = gameSetRepository.saveGameSet(collection.getName());
+
+        int i = 1;
+        for (GameRecord game : collection.getGames()) {
+            gameSetRepository.addGameToGameSet(game, id, 1, "Game #" + (i++), loginResult.getUserId());
+        }
+
+        return String.valueOf(id);
     }
 }

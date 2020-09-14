@@ -6,6 +6,7 @@ import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.cellview.client.CellTable;
 import com.google.gwt.user.cellview.client.HasKeyboardSelectionPolicy;
 import com.google.gwt.user.cellview.client.TextColumn;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
@@ -19,6 +20,7 @@ import com.playshogi.website.gwt.client.events.ListCollectionGamesEvent;
 import com.playshogi.website.gwt.client.events.ListGameCollectionsEvent;
 import com.playshogi.website.gwt.client.place.GameCollectionsPlace;
 import com.playshogi.website.gwt.client.place.ViewKifuPlace;
+import com.playshogi.website.gwt.client.widget.kifu.ImportCollectionPanel;
 import com.playshogi.website.gwt.shared.models.GameCollectionDetails;
 import com.playshogi.website.gwt.shared.models.KifuDetails;
 
@@ -36,6 +38,7 @@ public class GameCollectionsView extends Composite {
 
     private final CellTable<GameCollectionDetails> collectionsTable;
     private final CellTable<KifuDetails> kifusTable;
+    private final ImportCollectionPanel importCollectionPanel = new ImportCollectionPanel();
 
     @Inject
     public GameCollectionsView(final PlaceController placeController) {
@@ -44,6 +47,11 @@ public class GameCollectionsView extends Composite {
         FlowPanel flowPanel = new FlowPanel();
 
         flowPanel.add(new HTML(SafeHtmlUtils.fromSafeConstant("Game collections<br/>")));
+
+        Button importButton = new Button("Import Game Collection");
+        importButton.addClickHandler(clickEvent -> importCollectionPanel.showInDialog());
+
+        flowPanel.add(importButton);
 
         collectionsTable = createGameCollectionTable();
         kifusTable = createKifusTable();
@@ -130,6 +138,7 @@ public class GameCollectionsView extends Composite {
         eventBinder.bindEventHandlers(this, eventBus);
         collectionsTable.setVisible(false);
         kifusTable.setVisible(false);
+        importCollectionPanel.activate(eventBus);
     }
 
     @EventHandler

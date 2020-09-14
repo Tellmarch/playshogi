@@ -2,6 +2,7 @@ package com.playshogi.website.gwt.shared.services;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import com.playshogi.website.gwt.shared.models.GameCollectionDetails;
 import com.playshogi.website.gwt.shared.models.KifuDetails;
 import com.playshogi.website.gwt.shared.models.PositionDetails;
 import com.playshogi.website.gwt.shared.models.PositionEvaluationDetails;
@@ -24,5 +25,9 @@ public interface KifuService extends RemoteService {
     boolean requestKifuAnalysis(String sessionId, String kifuUsf);
 
     PositionEvaluationDetails[] getKifUAnalysisResults(String sessionId, String kifuUsf);
+
+    GameCollectionDetails[] getGameCollections(String sessionId);
+
+    String saveGameCollection(String sessionId, String draftId);
 
 }
