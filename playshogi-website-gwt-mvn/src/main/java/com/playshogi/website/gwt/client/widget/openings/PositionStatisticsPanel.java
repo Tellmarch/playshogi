@@ -19,6 +19,7 @@ import com.playshogi.website.gwt.shared.models.PositionDetails;
 import com.playshogi.website.gwt.shared.models.PositionMoveDetails;
 
 public class PositionStatisticsPanel extends Composite {
+
     interface MyEventBinder extends EventBinder<PositionStatisticsPanel> {
     }
 
@@ -33,6 +34,7 @@ public class PositionStatisticsPanel extends Composite {
     private final AppPlaceHistoryMapper historyMapper;
 
     private ShogiPosition shogiPosition;
+    private String gameSetId;
 
     public PositionStatisticsPanel(final AppPlaceHistoryMapper historyMapper) {
         this.historyMapper = historyMapper;
@@ -45,9 +47,10 @@ public class PositionStatisticsPanel extends Composite {
         initWidget(verticalPanel);
     }
 
-    public void activate(final EventBus eventBus) {
+    public void activate(final String gameSetId, final EventBus eventBus) {
         GWT.log("Activating position statistics panel");
         this.eventBus = eventBus;
+        this.gameSetId = gameSetId;
         eventBinder.bindEventHandlers(this, eventBus);
     }
 
@@ -85,7 +88,7 @@ public class PositionStatisticsPanel extends Composite {
                 String moveUsf = moveDetails.getMove();
                 final ShogiMove move = UsfMoveConverter.fromUsfString(moveUsf, shogiPosition);
                 Hyperlink hyperlink = new Hyperlink(KifMoveConverter.toKifStringShort(move),
-                        historyMapper.getToken(new OpeningsPlace(moveDetails.getNewSfen())));
+                        historyMapper.getToken(new OpeningsPlace(moveDetails.getNewSfen(), gameSetId)));
 
                 hyperlink.setStyleName("movelink");
 

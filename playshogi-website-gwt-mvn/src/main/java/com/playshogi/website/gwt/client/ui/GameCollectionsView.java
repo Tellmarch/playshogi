@@ -1,9 +1,11 @@
 package com.playshogi.website.gwt.client.ui;
 
+import com.google.gwt.cell.client.ActionCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.place.shared.PlaceController;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.cellview.client.CellTable;
+import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.HasKeyboardSelectionPolicy;
 import com.google.gwt.user.cellview.client.TextColumn;
 import com.google.gwt.user.client.ui.Button;
@@ -19,6 +21,7 @@ import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.website.gwt.client.events.ListCollectionGamesEvent;
 import com.playshogi.website.gwt.client.events.ListGameCollectionsEvent;
 import com.playshogi.website.gwt.client.place.GameCollectionsPlace;
+import com.playshogi.website.gwt.client.place.OpeningsPlace;
 import com.playshogi.website.gwt.client.place.ViewKifuPlace;
 import com.playshogi.website.gwt.client.widget.kifu.ImportCollectionPanel;
 import com.playshogi.website.gwt.shared.models.GameCollectionDetails;
@@ -83,15 +86,27 @@ public class GameCollectionsView extends Composite {
         };
         collectionsTable.addColumn(nameColumn, "Name");
 
-        final SingleSelectionModel<GameCollectionDetails> selectionModel = new SingleSelectionModel<>();
-        collectionsTable.setSelectionModel(selectionModel);
-        selectionModel.addSelectionChangeHandler(event -> {
-            GameCollectionDetails selected = selectionModel.getSelectedObject();
-            if (selected != null) {
-                GWT.log("Going to game collection " + selected.getId());
-                placeController.goTo(new GameCollectionsPlace(selected.getId()));
+        ActionCell<GameCollectionDetails> listActionCell = new ActionCell<>("List Games",
+                gameCollectionDetails -> placeController.goTo(new GameCollectionsPlace(gameCollectionDetails.getId())));
+
+        collectionsTable.addColumn(new Column<GameCollectionDetails, GameCollectionDetails>(listActionCell) {
+            @Override
+            public GameCollectionDetails getValue(final GameCollectionDetails gameCollectionDetails) {
+                return gameCollectionDetails;
             }
-        });
+        }, "List Games");
+
+        ActionCell<GameCollectionDetails> exploreActionCell = new ActionCell<>("Explore",
+                gameCollectionDetails -> placeController.goTo(new OpeningsPlace(OpeningsPlace.DEFAULT_SFEN,
+                        gameCollectionDetails.getId())));
+
+        collectionsTable.addColumn(new Column<GameCollectionDetails, GameCollectionDetails>(exploreActionCell) {
+            @Override
+            public GameCollectionDetails getValue(final GameCollectionDetails gameCollectionDetails) {
+                return gameCollectionDetails;
+            }
+        }, "Explore");
+
         return collectionsTable;
     }
 

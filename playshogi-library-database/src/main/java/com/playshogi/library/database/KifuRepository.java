@@ -23,8 +23,12 @@ public class KifuRepository {
     private static final String INSERT_KIFU_POSITION = "INSERT INTO `playshogi`.`ps_kifupos` (`kifu_id`, " +
             "`position_id`) VALUES (?, ?) ON DUPLICATE KEY update kifu_id=kifu_id;";
 
-    private static final String SELECT_KIFU_POSITION = "SELECT * FROM ps_kifupos JOIN ps_game ON ps_kifupos" +
-            ".kifu_id = ps_game.kifu_id WHERE position_id = ? LIMIT 5";
+    private static final String SELECT_KIFU_POSITION = "SELECT * FROM playshogi.ps_kifupos JOIN playshogi.ps_game ON " +
+            "ps_kifupos.kifu_id = ps_game.kifu_id WHERE position_id = ? LIMIT 5";
+
+    private static final String SELECT_KIFU_POSITION_GAMESET = "SELECT * FROM playshogi.ps_kifupos JOIN playshogi" +
+            ".ps_game ON ps_kifupos.kifu_id = ps_game.kifu_id JOIN playshogi.ps_gamesetgame ON " +
+            "ps_game.id = ps_gamesetgame.game_id WHERE position_id = ? AND gameset_id = ? LIMIT 5";
 
     private static final String SELECT_KIFU = "SELECT * FROM ps_kifu WHERE id = ?";
     private static final String DELETE_KIFU = "DELETE FROM ps_kifu WHERE id = ?";
@@ -122,6 +126,40 @@ public class KifuRepository {
         Connection connection = dbConnection.getConnection();
         try (PreparedStatement preparedStatement = connection.prepareStatement(SELECT_KIFU_POSITION)) {
             preparedStatement.setInt(1, positionId);
+            ResultSet rs = preparedStatement.executeQuery();
+            List<PersistentGame> result = new ArrayList<>();
+
+            while (rs.next()) {
+
+                int gameId = rs.getInt("ps_game.id");
+                int kifuId = rs.getInt("ps_game.kifu_id");
+                int senteId = rs.getInt("ps_game.sente_id");
+                int goteId = rs.getInt("ps_game.gote_id");
+                String senteName = rs.getString("ps_game.sente_name");
+                String goteName = rs.getString("ps_game.gote_name");
+                int venueId = rs.getInt("ps_game.venue");
+                String description = rs.getString("ps_game.description");
+                Date datePlayed = rs.getDate("ps_game.date_played");
+
+                result.add(new PersistentGame(gameId, kifuId, senteId, goteId, senteName, goteName, datePlayed,
+                        venueId, description));
+
+            }
+
+            LOGGER.log(Level.INFO, "Found kifus: " + result);
+
+            return result;
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error looking up the kifus for position in db", e);
+            return null;
+        }
+    }
+
+    public List<PersistentGame> getGamesForPosition(final int positionId, final int gameSetId) {
+        Connection connection = dbConnection.getConnection();
+        try (PreparedStatement preparedStatement = connection.prepareStatement(SELECT_KIFU_POSITION_GAMESET)) {
+            preparedStatement.setInt(1, positionId);
+            preparedStatement.setInt(2, gameSetId);
             ResultSet rs = preparedStatement.executeQuery();
             List<PersistentGame> result = new ArrayList<>();
 

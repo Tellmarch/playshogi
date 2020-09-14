@@ -134,10 +134,11 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
     }
 
     @Override
-    public PositionDetails getPositionDetails(final String sfen, final int gameSetId) {
+    public PositionDetails getPositionDetails(final String sfen, final String gameSetId) {
         LOGGER.log(Level.INFO, "querying position details:\n" + sfen + " " + gameSetId);
         // TODO validate permissions
 
+        int gameSetIdInt = Integer.parseInt(gameSetId);
         int positionId = positionRepository.getPositionIdBySfen(sfen);
 
         if (positionId == -1) {
@@ -145,8 +146,8 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
             return null;
         }
 
-        PersistentGameSetPos stats = gameSetRepository.getGameSetPositionStats(positionId, gameSetId);
-        List<PersistentGameSetMove> moveStats = gameSetRepository.getGameSetPositionMoveStats(positionId, gameSetId);
+        PersistentGameSetPos stats = gameSetRepository.getGameSetPositionStats(positionId, gameSetIdInt);
+        List<PersistentGameSetMove> moveStats = gameSetRepository.getGameSetPositionMoveStats(positionId, gameSetIdInt);
 
         PositionMoveDetails[] details = new PositionMoveDetails[moveStats.size()];
         for (int i = 0; i < details.length; i++) {
@@ -156,7 +157,9 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
                     move.getPositionOccurences(), move.getSenteWins(), move.getGoteWins(), newSfen);
         }
 
-        List<PersistentGame> gamesForPosition = kifuRepository.getGamesForPosition(positionId);
+        // TODO remove special case once database is properly populated
+        List<PersistentGame> gamesForPosition = gameSetIdInt == 1 ? kifuRepository.getGamesForPosition(positionId) :
+                kifuRepository.getGamesForPosition(positionId, gameSetIdInt);
 
         SimpleDateFormat yearDateFormat = new SimpleDateFormat("yyyy");
 

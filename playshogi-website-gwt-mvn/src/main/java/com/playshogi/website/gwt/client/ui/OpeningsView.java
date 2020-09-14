@@ -37,12 +37,12 @@ public class OpeningsView extends Composite {
         initWidget(shogiBoard);
     }
 
-    public void activate(final ShogiPosition position, final EventBus eventBus) {
+    public void activate(final ShogiPosition position, final String gameSetId, final EventBus eventBus) {
         GWT.log("Activating openings view");
         shogiBoard.activate(eventBus);
         gameNavigator.getGameNavigation().setGameTree(new GameTree(position));
         gameNavigator.activate(eventBus);
-        positionStatisticsPanel.activate(eventBus);
+        positionStatisticsPanel.activate(gameSetId, eventBus);
         positionKifusPanel.activate(eventBus);
     }
 

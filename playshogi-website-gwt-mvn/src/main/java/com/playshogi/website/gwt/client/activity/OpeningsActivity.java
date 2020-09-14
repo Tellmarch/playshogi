@@ -28,6 +28,7 @@ public class OpeningsActivity extends MyAbstractActivity {
 
     private final String sfen;
     private final OpeningsView openingsView;
+    private String gameSetId = "1";
 
     private EventBus eventBus;
 
@@ -38,6 +39,9 @@ public class OpeningsActivity extends MyAbstractActivity {
         this.openingsView = freeBoardView;
         this.placeController = placeController;
         this.sfen = place.getSfen();
+        if (place.getGameSetId() != null) {
+            this.gameSetId = place.getGameSetId();
+        }
     }
 
     @Override
@@ -46,10 +50,10 @@ public class OpeningsActivity extends MyAbstractActivity {
         GWT.log("Starting openings activity");
         eventBinder.bindEventHandlers(this, eventBus);
         final ShogiPosition position = SfenConverter.fromSFEN(sfen);
-        openingsView.activate(position, eventBus);
+        openingsView.activate(position, gameSetId, eventBus);
         containerWidget.setWidget(openingsView.asWidget());
 
-        kifuService.getPositionDetails(SfenConverter.toSFEN(position), 1, new AsyncCallback<PositionDetails>() {
+        kifuService.getPositionDetails(SfenConverter.toSFEN(position), gameSetId, new AsyncCallback<PositionDetails>() {
 
             @Override
             public void onSuccess(final PositionDetails result) {
@@ -76,7 +80,7 @@ public class OpeningsActivity extends MyAbstractActivity {
         GWT.log("OPENINGS - POSITION CHANGED EVENT");
 
         if (event.isTriggeredByUser()) {
-            placeController.goTo(new OpeningsPlace(SfenConverter.toSFEN(event.getPosition())));
+            placeController.goTo(new OpeningsPlace(SfenConverter.toSFEN(event.getPosition()), gameSetId));
         }
 
     }

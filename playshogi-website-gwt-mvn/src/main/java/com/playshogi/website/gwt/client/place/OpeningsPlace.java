@@ -11,21 +11,31 @@ import com.playshogi.library.shogi.models.shogivariant.ShogiInitialPositionFacto
  */
 public class OpeningsPlace extends Place {
 
-    private static final String DEFAULT_SFEN =
+    public static final String DEFAULT_SFEN =
             SfenConverter.toSFEN(ShogiInitialPositionFactory.createInitialPosition());
 
     private final String sfen;
+    private final String gameSetId;
 
     public OpeningsPlace() {
         this(DEFAULT_SFEN);
     }
 
-    public OpeningsPlace(final String token) {
-        this.sfen = token;
+    public OpeningsPlace(final String sfen) {
+        this(sfen, null);
+    }
+
+    public OpeningsPlace(final String sfen, final String gameSetId) {
+        this.sfen = sfen;
+        this.gameSetId = gameSetId;
     }
 
     public String getSfen() {
         return sfen;
+    }
+
+    public String getGameSetId() {
+        return gameSetId;
     }
 
     @Prefix("Openings")
@@ -33,13 +43,17 @@ public class OpeningsPlace extends Place {
 
         @Override
         public String getToken(final OpeningsPlace place) {
-            return place.getSfen();
+            return place.getGameSetId() == null ? place.getSfen() : place.getGameSetId() + ":" + place.getSfen();
         }
 
         @Override
         public OpeningsPlace getPlace(final String token) {
-            return new OpeningsPlace(token);
+            if (token.contains(":")) {
+                String[] split = token.split(":", 2);
+                return new OpeningsPlace(split[1], split[0]);
+            } else {
+                return new OpeningsPlace(token);
+            }
         }
-
     }
 }

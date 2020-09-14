@@ -18,7 +18,7 @@ public interface KifuService extends RemoteService {
 
     KifuDetails[] getGameSetKifuDetails(String sessionId, String gameSetId);
 
-    PositionDetails getPositionDetails(String sfen, int gameSetId);
+    PositionDetails getPositionDetails(String sfen, String gameSetId);
 
     PositionEvaluationDetails analysePosition(String sessionId, String sfen);
 
