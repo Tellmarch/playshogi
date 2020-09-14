@@ -28,7 +28,11 @@ public class GameSetRepository {
 
     private static final String INSERT_GAMESET = "INSERT INTO `playshogi`.`ps_gameset` (`name`)" + " VALUES (?);";
     private static final String SELECT_GAMESET = "SELECT * FROM `playshogi`.`ps_gameset` WHERE id = ?";
+    private static final String SELECT_ALL_GAMESET = "SELECT * FROM `playshogi`.`ps_gameset` LIMIT 1000";
     private static final String DELETE_GAMESET = "DELETE FROM `playshogi`.`ps_gameset` WHERE id = ?";
+
+    private static final String INSERT_GAMESET_GAME = "INSERT INTO `playshogi`.`ps_gamesetgame`" +
+            "(`gameset_id`,`game_id`) VALUES (?,?);";
 
     private static final String INCREMENT_GAMESET_POSITION_SENTE_WIN = "INSERT INTO `playshogi`.`ps_gamesetpos` " +
             "(`position_id`, `gameset_id`, `num_total`, `num_sente_win`, `num_gote_win`)"
@@ -86,6 +90,18 @@ public class GameSetRepository {
         return key;
     }
 
+    public void addGameSetGameRecord(final int gameSetId, final int gameId) {
+        Connection connection = dbConnection.getConnection();
+        try (PreparedStatement preparedStatement = connection.prepareStatement(INSERT_GAMESET_GAME)) {
+            preparedStatement.setInt(1, gameSetId);
+            preparedStatement.setInt(2, gameId);
+
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error saving the gamesetgame in db", e);
+        }
+    }
+
     public PersistentGameSet getGameSetById(final int gameSetId) {
         Connection connection = dbConnection.getConnection();
         try (PreparedStatement preparedStatement = connection.prepareStatement(SELECT_GAMESET)) {
@@ -104,6 +120,23 @@ public class GameSetRepository {
             LOGGER.log(Level.SEVERE, "Error looking up the gameset in db", e);
             return null;
         }
+    }
+
+    public List<PersistentGameSet> getAllGameSets() {
+        List<PersistentGameSet> result = new ArrayList<>();
+        Connection connection = dbConnection.getConnection();
+        try (PreparedStatement preparedStatement = connection.prepareStatement(SELECT_ALL_GAMESET)) {
+            ResultSet rs = preparedStatement.executeQuery();
+            while (rs.next()) {
+                String name = rs.getString("name");
+                int id = rs.getInt("id");
+
+                result.add(new PersistentGameSet(id, name));
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error retrieving gamesets in db", e);
+        }
+        return result;
     }
 
     public void deleteGamesetById(final int gameSetId) {
@@ -129,9 +162,11 @@ public class GameSetRepository {
 
         int kifuId = kifuRep.saveKifu(gameRecord, gameName, authorId, KifuType.GAME);
 
-        gameRep.saveGame(kifuId, null, null, gameRecord.getGameInformation().getSente(),
+        int gameId = gameRep.saveGame(kifuId, null, null, gameRecord.getGameInformation().getSente(),
                 gameRecord.getGameInformation().getGote(),
                 parseDate(gameRecord.getGameInformation().getDate()), venueId, gameName);
+
+        addGameSetGameRecord(gameSetId, gameId);
 
         boolean senteWin = gameRecord.getGameResult() == GameResult.SENTE_WIN;
         boolean goteWin = gameRecord.getGameResult() == GameResult.GOTE_WIN;

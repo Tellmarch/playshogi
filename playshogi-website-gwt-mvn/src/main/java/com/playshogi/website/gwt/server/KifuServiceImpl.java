@@ -3,6 +3,7 @@ package com.playshogi.website.gwt.server;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.playshogi.library.database.*;
 import com.playshogi.library.database.models.PersistentGame;
+import com.playshogi.library.database.models.PersistentGameSet;
 import com.playshogi.library.database.models.PersistentGameSetMove;
 import com.playshogi.library.database.models.PersistentGameSetPos;
 import com.playshogi.library.database.models.PersistentKifu.KifuType;
@@ -99,16 +100,11 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
 
         ArrayList<GameCollectionDetails> gameCollectionDetails = new ArrayList<>();
 
-        GameCollectionDetails proGames = new GameCollectionDetails();
-        proGames.setId("1");
-        proGames.setName("57k Pro Games");
-        gameCollectionDetails.add(proGames);
-
-        Map<String, GameCollection> collections = CollectionUploads.INSTANCE.getCollections();
-        for (Entry<String, GameCollection> collection : collections.entrySet()) {
+        List<PersistentGameSet> allGameSets = gameSetRepository.getAllGameSets();
+        for (PersistentGameSet gameSet : allGameSets) {
             GameCollectionDetails details = new GameCollectionDetails();
-            details.setId(collection.getKey());
-            details.setName(collection.getValue().getName());
+            details.setId(String.valueOf(gameSet.getId()));
+            details.setName(gameSet.getName());
 
             gameCollectionDetails.add(details);
         }
