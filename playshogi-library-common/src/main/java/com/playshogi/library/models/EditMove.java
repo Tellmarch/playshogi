@@ -1,13 +1,13 @@
 package com.playshogi.library.models;
 
 public class EditMove implements Move {
-    private final Position<?> position;
+    private final Position position;
 
-    public EditMove(final Position<?> position) {
+    public EditMove(final Position position) {
         this.position = position;
     }
 
-    public Position<?> getPosition() {
+    public Position getPosition() {
         return position;
     }
 

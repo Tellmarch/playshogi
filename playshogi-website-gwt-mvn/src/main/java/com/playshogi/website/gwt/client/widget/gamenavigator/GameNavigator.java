@@ -35,7 +35,7 @@ public class GameNavigator extends Composite implements ClickHandler {
     private final Button nextButton;
     private final Button lastButton;
     private final GameNavigation<ShogiPosition> gameNavigation;
-    private ShogiRulesEngine shogiRulesEngine;
+    private final ShogiRulesEngine shogiRulesEngine;
 
     private EventBus eventBus;
 

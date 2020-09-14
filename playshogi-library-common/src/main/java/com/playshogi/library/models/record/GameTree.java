@@ -11,7 +11,7 @@ public class GameTree {
         this(new Node(null));
     }
 
-    public GameTree(final Position<?> startingPosition) {
+    public GameTree(final Position startingPosition) {
         this(new Node(new EditMove(startingPosition)));
     }
 

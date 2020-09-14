@@ -7,17 +7,19 @@ import com.google.gwt.place.shared.Prefix;
 public class ViewKifuPlace extends Place {
 
     private final String kifuId;
+    private final int move;
 
-    public ViewKifuPlace() {
-        this(null);
-    }
-
-    public ViewKifuPlace(final String kifuId) {
+    public ViewKifuPlace(final String kifuId, final int move) {
         this.kifuId = kifuId;
+        this.move = move;
     }
 
     public String getKifuId() {
         return kifuId;
+    }
+
+    public int getMove() {
+        return move;
     }
 
     @Prefix("ViewKifu")
@@ -25,12 +27,13 @@ public class ViewKifuPlace extends Place {
 
         @Override
         public String getToken(final ViewKifuPlace place) {
-            return place.getKifuId();
+            return place.getKifuId() + ":" + place.getMove();
         }
 
         @Override
         public ViewKifuPlace getPlace(final String token) {
-            return new ViewKifuPlace(token);
+            String[] split = token.split(":");
+            return new ViewKifuPlace(split[0], Integer.parseInt(split[1]));
         }
 
     }

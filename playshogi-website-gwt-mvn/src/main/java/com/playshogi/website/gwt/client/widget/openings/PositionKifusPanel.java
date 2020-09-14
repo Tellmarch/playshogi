@@ -67,7 +67,7 @@ public class PositionKifusPanel extends Composite {
                 String kifuId = kifuIds[i];
                 String kifuDesc = kifuDescs[i];
 
-                Hyperlink hyperlink = new Hyperlink(kifuDesc, historyMapper.getToken(new ViewKifuPlace(kifuId)));
+                Hyperlink hyperlink = new Hyperlink(kifuDesc, historyMapper.getToken(new ViewKifuPlace(kifuId, 1)));
 
                 grid.setWidget(i, 0, hyperlink);
 

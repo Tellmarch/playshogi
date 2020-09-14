@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class ShogiPosition implements Position<ShogiPosition> {
+public class ShogiPosition implements Position {
 
     private int moveCount;
     private boolean senteToPlay;
@@ -127,12 +127,6 @@ public class ShogiPosition implements Position<ShogiPosition> {
     @Override
     public String toString() {
         return shogiBoardState.toString();
-    }
-
-    @Override
-    public ShogiPosition clonePosition() {
-        // TODO Auto-generated method stub
-        return null;
     }
 
 }

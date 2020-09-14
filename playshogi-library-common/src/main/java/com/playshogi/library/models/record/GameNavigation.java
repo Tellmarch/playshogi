@@ -5,7 +5,7 @@ import com.playshogi.library.models.Move;
 import com.playshogi.library.models.Position;
 import com.playshogi.library.models.games.GameRulesEngine;
 
-public class GameNavigation<P extends Position<P>> {
+public class GameNavigation<P extends Position> {
 
     private GameTree gameTree;
     private Node currentNode;
