@@ -100,7 +100,7 @@ public class PsnFormatTest {
     public void read() {
         GameRecord record = PsnFormat.INSTANCE.read(EXAMPLE_GAME);
         List<Move> moves = GameRecordUtils.getMainVariationMoves(record);
-        System.out.println(moves);
+        System.out.println(record + " " + moves);
         assertEquals(78, moves.size());
     }
 }

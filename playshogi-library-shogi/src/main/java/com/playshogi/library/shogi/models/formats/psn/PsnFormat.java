@@ -29,7 +29,19 @@ public enum PsnFormat implements GameRecordFormat {
         while (lineReader.hasNextLine()) {
             String line = lineReader.nextLine();
             if (line.startsWith("[")) {
-                //TODO parse metadata
+                String[] split = line.split(" ", 2);
+                String key = split[0].substring(1);
+                String value = split[1].substring(1, split[1].length() - 2);
+
+                if ("Black".equalsIgnoreCase(key) || "Sente".equalsIgnoreCase(key)) {
+                    gameInformation.setSente(value);
+                } else if ("White".equalsIgnoreCase(key) || "Gote".equalsIgnoreCase(key)) {
+                    gameInformation.setGote(value);
+                } else if ("Date".equalsIgnoreCase(key)) {
+                    gameInformation.setDate(value);
+                } else if ("Event".equalsIgnoreCase(key)) {
+                    gameInformation.setVenue(value);
+                }
             } else if (line.startsWith("{")) {
                 //TODO comment
             } else {
