@@ -57,9 +57,9 @@ public class ViewKifuActivity extends MyAbstractActivity {
         kifuService.getKifuUsf(sessionInformation.getSessionId(), kifuId, new AsyncCallback<String>() {
 
             @Override
-            public void onSuccess(final String result) {
-                GWT.log("Kifu loaded successfully: " + result);
-                gameRecord = UsfFormat.INSTANCE.read(result);
+            public void onSuccess(final String usf) {
+                GWT.log("Kifu loaded successfully: " + usf);
+                gameRecord = UsfFormat.INSTANCE.read(usf);
 
                 eventBus.fireEvent(new GameTreeChangedEvent(gameRecord.getGameTree()));
                 eventBus.fireEvent(new GameInformationChangedEvent(gameRecord.getGameInformation()));

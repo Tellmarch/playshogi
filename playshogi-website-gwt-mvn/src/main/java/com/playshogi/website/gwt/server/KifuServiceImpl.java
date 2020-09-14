@@ -8,7 +8,6 @@ import com.playshogi.library.database.models.PersistentGameSetMove;
 import com.playshogi.library.database.models.PersistentGameSetPos;
 import com.playshogi.library.database.models.PersistentKifu.KifuType;
 import com.playshogi.library.models.record.GameCollection;
-import com.playshogi.library.models.record.GameInformation;
 import com.playshogi.library.models.record.GameRecord;
 import com.playshogi.library.shogi.engine.*;
 import com.playshogi.library.shogi.models.formats.sfen.SfenConverter;
@@ -71,28 +70,6 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
             LOGGER.log(Level.INFO, "found kifu:\n" + usf);
             return usf;
         }
-    }
-
-    @Override
-    public KifuDetails[] getAvailableKifuDetails(final String sessionId) {
-        Map<String, GameRecord> gameRecords = Collections.emptyMap();
-        List<KifuDetails> result = new ArrayList<>(gameRecords.size());
-        for (Entry<String, GameRecord> entry : gameRecords.entrySet()) {
-            result.add(createKifuDetails(entry.getKey(), entry.getValue()));
-        }
-        return result.toArray(new KifuDetails[0]);
-    }
-
-    private KifuDetails createKifuDetails(final String id, final GameRecord value) {
-        GameInformation gameInformation = value.getGameInformation();
-
-        KifuDetails kifuDetails = new KifuDetails();
-        kifuDetails.setId(id);
-        kifuDetails.setSente(gameInformation.getSente());
-        kifuDetails.setGote(gameInformation.getGote());
-        kifuDetails.setVenue(gameInformation.getVenue());
-        kifuDetails.setDate(gameInformation.getDate());
-        return kifuDetails;
     }
 
     @Override
