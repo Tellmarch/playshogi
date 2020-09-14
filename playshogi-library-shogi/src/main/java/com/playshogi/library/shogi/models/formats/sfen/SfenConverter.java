@@ -1,6 +1,5 @@
 package com.playshogi.library.shogi.models.formats.sfen;
 
-import com.playshogi.library.models.Square;
 import com.playshogi.library.shogi.models.Piece;
 import com.playshogi.library.shogi.models.PieceType;
 import com.playshogi.library.shogi.models.position.KomadaiState;
@@ -8,15 +7,10 @@ import com.playshogi.library.shogi.models.position.ShogiBoardState;
 import com.playshogi.library.shogi.models.position.ShogiBoardStateImpl;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
+import java.util.*;
 
 import static com.playshogi.library.shogi.models.formats.usf.UsfUtil.pieceFromChar;
 import static com.playshogi.library.shogi.models.formats.usf.UsfUtil.pieceToString;
-
-import java.util.Optional;
 
 public class SfenConverter {
 
@@ -87,7 +81,7 @@ public class SfenConverter {
     }
 
     public static String toSFENWithMoveCount(final ShogiPosition pos) {
-        return toSFEN(pos) + " " + pos.getMoveCount();
+        return toSFEN(pos) + " " + (pos.getMoveCount() + 1);
     }
 
     public static ShogiPosition fromSFEN(final String sfen) {
@@ -212,6 +206,6 @@ public class SfenConverter {
         if (fields.length > 3)
             moveCount = Integer.parseInt(fields[3]);
 
-        return new ShogiPosition(moveCount, senteTurn, shogiBoardState, senteKomadai, goteKomadai);
+        return new ShogiPosition(moveCount - 1, senteTurn, shogiBoardState, senteKomadai, goteKomadai);
     }
 }

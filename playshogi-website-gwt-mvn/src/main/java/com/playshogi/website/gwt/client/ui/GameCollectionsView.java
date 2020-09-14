@@ -156,7 +156,7 @@ public class GameCollectionsView extends Composite {
             KifuDetails selected = selectionModel.getSelectedObject();
             if (selected != null) {
                 GWT.log("Going to kifu" + selected.getId());
-                placeController.goTo(new ViewKifuPlace(selected.getId(), 1));
+                placeController.goTo(new ViewKifuPlace(selected.getId(), 0));
             }
         });
 

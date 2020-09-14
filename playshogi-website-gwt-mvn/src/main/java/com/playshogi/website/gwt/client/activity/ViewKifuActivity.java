@@ -1,6 +1,7 @@
 package com.playshogi.website.gwt.client.activity;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
@@ -38,12 +39,14 @@ public class ViewKifuActivity extends MyAbstractActivity {
     private final SessionInformation sessionInformation;
 
     private final String kifuId;
+    private int initialMoveCount;
 
     public ViewKifuActivity(final ViewKifuPlace place, final ViewKifuView viewKifuView,
                             final SessionInformation sessionInformation) {
         this.viewKifuView = viewKifuView;
         this.sessionInformation = sessionInformation;
         kifuId = place.getKifuId();
+        initialMoveCount = place.getMove();
     }
 
     @Override
@@ -61,7 +64,7 @@ public class ViewKifuActivity extends MyAbstractActivity {
                 GWT.log("Kifu loaded successfully: " + usf);
                 gameRecord = UsfFormat.INSTANCE.read(usf);
 
-                eventBus.fireEvent(new GameTreeChangedEvent(gameRecord.getGameTree()));
+                eventBus.fireEvent(new GameTreeChangedEvent(gameRecord.getGameTree(), initialMoveCount));
                 eventBus.fireEvent(new GameInformationChangedEvent(gameRecord.getGameInformation()));
             }
 
@@ -76,14 +79,6 @@ public class ViewKifuActivity extends MyAbstractActivity {
     public void onStop() {
         GWT.log("Stopping view kifu activity");
         super.onStop();
-    }
-
-    @EventHandler
-    public void onGameRecordChanged(final GameRecordChangedEvent gameRecordChangedEvent) {
-        GWT.log("View Kifu Activity Handling GameRecordChangedEvent");
-        gameRecord = gameRecordChangedEvent.getGameRecord();
-        eventBus.fireEvent(new GameTreeChangedEvent(gameRecord.getGameTree()));
-        eventBus.fireEvent(new GameInformationChangedEvent(gameRecord.getGameInformation()));
     }
 
     @EventHandler
@@ -162,5 +157,13 @@ public class ViewKifuActivity extends MyAbstractActivity {
                 timer.cancel();
             }
         });
+    }
+
+    @EventHandler
+    public void onPositionChangedEvent(final PositionChangedEvent event) {
+        GWT.log("ViewKifuActivity handling PositionChangedEvent");
+        //Update URL with the new move count
+        History.newItem("ViewKifu:" + new ViewKifuPlace.Tokenizer().getToken(new ViewKifuPlace(kifuId,
+                event.getPosition().getMoveCount())), false);
     }
 }

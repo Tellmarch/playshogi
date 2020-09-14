@@ -12,6 +12,7 @@ import java.util.Optional;
 
 public class ShogiPosition implements Position {
 
+    // How many moves were played in the position (starts at 0)
     private int moveCount;
     private boolean senteToPlay;
     private ShogiBoardState shogiBoardState;
@@ -23,7 +24,7 @@ public class ShogiPosition implements Position {
     }
 
     public ShogiPosition(final ShogiVariant shogiVariant) {
-        this(1, true, new ShogiBoardStateImpl(shogiVariant.getBoardWidth(), shogiVariant.getBoardHeight()),
+        this(0, true, new ShogiBoardStateImpl(shogiVariant.getBoardWidth(), shogiVariant.getBoardHeight()),
                 new KomadaiState(), new KomadaiState());
     }
 

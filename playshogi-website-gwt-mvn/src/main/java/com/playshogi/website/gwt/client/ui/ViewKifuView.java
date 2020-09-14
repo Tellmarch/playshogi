@@ -17,7 +17,7 @@ import com.playshogi.website.gwt.client.widget.kifu.KifuNavigationPanel;
 @Singleton
 public class ViewKifuView extends Composite {
 
-    private static final String NEWKIFU = "newkifu";
+    private static final String VIEWKIFU = "viewkifu";
     private final ShogiBoard shogiBoard;
     private final GameNavigator gameNavigator;
     private final KifuNavigationPanel kifuNavigationPanel;
@@ -27,9 +27,9 @@ public class ViewKifuView extends Composite {
 
     @Inject
     public ViewKifuView() {
-        GWT.log("Creating new kifu view");
-        shogiBoard = new ShogiBoard(NEWKIFU);
-        gameNavigator = new GameNavigator(NEWKIFU);
+        GWT.log("Creating ViewKifuView");
+        shogiBoard = new ShogiBoard(VIEWKIFU);
+        gameNavigator = new GameNavigator(VIEWKIFU);
 
         kifuNavigationPanel = new KifuNavigationPanel(gameNavigator);
         kifuInformationPanel = new KifuInformationPanel();
@@ -52,7 +52,7 @@ public class ViewKifuView extends Composite {
     }
 
     public void activate(final EventBus eventBus) {
-        GWT.log("Activating new kifu view");
+        GWT.log("Activating ViewKifuView");
         shogiBoard.activate(eventBus);
         gameNavigator.activate(eventBus);
         kifuInformationPanel.activate(eventBus);

@@ -12,6 +12,7 @@ import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.library.models.record.GameNavigation;
 import com.playshogi.library.models.record.GameTree;
+import com.playshogi.library.shogi.models.GameRecordUtils;
 import com.playshogi.library.shogi.models.PieceType;
 import com.playshogi.library.shogi.models.formats.usf.UsfMoveConverter;
 import com.playshogi.library.shogi.models.moves.DropMove;
@@ -89,7 +90,10 @@ public class GameNavigator extends Composite implements ClickHandler {
     @EventHandler
     public void onGameTreeChanged(final GameTreeChangedEvent gameTreeChangedEvent) {
         GWT.log(activityId + ": Handling game tree changed event");
-        gameNavigation.setGameTree(gameTreeChangedEvent.getGameTree());
+        GameTree gameTree = gameTreeChangedEvent.getGameTree();
+        gameNavigation.setGameTree(gameTree, GameRecordUtils.getinitialPosition(gameTree),
+                gameTreeChangedEvent.getGoToMove());
+
         firePositionChanged(false);
     }
 

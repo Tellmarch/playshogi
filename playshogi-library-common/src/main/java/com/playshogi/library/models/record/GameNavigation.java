@@ -125,14 +125,13 @@ public class GameNavigation<P extends Position> {
         return gameTree;
     }
 
-    @SuppressWarnings("unchecked")
-    public void setGameTree(final GameTree gameTree) {
-        moveToStart();
+    public void setGameTree(final GameTree gameTree, final P startingPosition, final int goToMove) {
         this.gameTree = gameTree;
         this.currentNode = gameTree.getRootNode();
-        if (currentNode.getMove() instanceof EditMove) {
-            EditMove editMove = (EditMove) currentNode.getMove();
-            this.position = (P) editMove.getPosition();
+        this.position = startingPosition;
+
+        for (int i = 0; i < goToMove; i++) {
+            moveForward();
         }
     }
 }
