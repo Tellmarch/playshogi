@@ -76,7 +76,7 @@ public class USIConnector {
         void processPositionEvaluation(PositionEvaluation evaluation);
     }
 
-    public void analyzeKifu(GameTree gameTree, AnalysisCallback callback) {
+    public void analyzeKifu(final GameTree gameTree, final int timeMs, final AnalysisCallback callback) {
         if (!connected) {
             throw new IllegalStateException("Engine is not connected");
         }
@@ -88,12 +88,12 @@ public class USIConnector {
 
         ShogiPosition position = gameNavigation.getPosition();
 
-        callback.processPositionEvaluation(analysePosition(SfenConverter.toSFEN(position)));
+        callback.processPositionEvaluation(analysePosition(SfenConverter.toSFEN(position), timeMs));
 
         while (gameNavigation.canMoveForward()) {
             gameNavigation.moveForward();
             position = gameNavigation.getPosition();
-            callback.processPositionEvaluation(analysePosition(SfenConverter.toSFEN(position)));
+            callback.processPositionEvaluation(analysePosition(SfenConverter.toSFEN(position), timeMs));
         }
     }
 
@@ -138,7 +138,7 @@ public class USIConnector {
     }
 
 
-    public PositionEvaluation analysePosition(String sfen) {
+    public PositionEvaluation analysePosition(final String sfen, final int timeMs) {
         if (!connected) {
             throw new IllegalStateException("Engine is not connected");
         }
@@ -146,7 +146,7 @@ public class USIConnector {
         LOGGER.log(Level.INFO, "Evaluation position: " + sfen);
 
         sendCommand(output, "position sfen " + sfen + " 0");
-        sendCommand(output, "go btime 0 wtime 0 byoyomi 5000");
+        sendCommand(output, "go btime 0 wtime 0 byoyomi " + timeMs);
 
         return readEvaluation(input);
     }

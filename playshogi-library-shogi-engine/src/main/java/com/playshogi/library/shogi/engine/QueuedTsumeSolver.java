@@ -30,7 +30,7 @@ public class QueuedTsumeSolver {
         return usiConnector.analyseTsume(sfen);
     }
 
-    public void shutDown() {
+    public synchronized void shutDown() {
         shutdown = true;
         usiConnector.disconnect();
     }

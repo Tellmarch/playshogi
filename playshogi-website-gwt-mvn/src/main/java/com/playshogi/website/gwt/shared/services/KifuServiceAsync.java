@@ -1,10 +1,7 @@
 package com.playshogi.website.gwt.shared.services;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.playshogi.website.gwt.shared.models.GameCollectionDetails;
-import com.playshogi.website.gwt.shared.models.KifuDetails;
-import com.playshogi.website.gwt.shared.models.PositionDetails;
-import com.playshogi.website.gwt.shared.models.PositionEvaluationDetails;
+import com.playshogi.website.gwt.shared.models.*;
 
 public interface KifuServiceAsync {
 
@@ -18,9 +15,9 @@ public interface KifuServiceAsync {
 
     void analysePosition(String sessionId, String sfen, AsyncCallback<PositionEvaluationDetails> callback);
 
-    void requestKifuAnalysis(String sessionId, String kifuUsf, AsyncCallback<Boolean> callback);
+    void requestKifuAnalysis(String sessionId, String kifuUsf, AsyncCallback<AnalysisRequestStatus> callback);
 
-    void getKifUAnalysisResults(String sessionId, String kifuUsf, AsyncCallback<PositionEvaluationDetails[]> callback);
+    void getKifuAnalysisResults(String sessionId, String kifuUsf, AsyncCallback<AnalysisRequestResult> callback);
 
     void getGameCollections(String sessionId, AsyncCallback<GameCollectionDetails[]> callback);
 

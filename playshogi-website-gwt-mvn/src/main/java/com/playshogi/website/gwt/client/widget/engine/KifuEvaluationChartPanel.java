@@ -1,10 +1,7 @@
 package com.playshogi.website.gwt.client.widget.engine;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.*;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
@@ -18,6 +15,7 @@ import com.googlecode.gwt.charts.client.options.HAxis;
 import com.googlecode.gwt.charts.client.options.VAxis;
 import com.playshogi.website.gwt.client.events.KifuEvaluationEvent;
 import com.playshogi.website.gwt.client.events.RequestKifuEvaluationEvent;
+import com.playshogi.website.gwt.shared.models.AnalysisRequestStatus;
 import com.playshogi.website.gwt.shared.models.PositionEvaluationDetails;
 import com.playshogi.website.gwt.shared.models.PrincipalVariationDetails;
 
@@ -31,6 +29,7 @@ public class KifuEvaluationChartPanel extends Composite {
     private EventBus eventBus;
     private VerticalPanel panel;
     private LineChart chart;
+    private final HTML statusHTML;
 
     public KifuEvaluationChartPanel() {
         panel = new VerticalPanel();
@@ -41,6 +40,10 @@ public class KifuEvaluationChartPanel extends Composite {
         evaluateButton.addClickHandler(clickEvent -> eventBus.fireEvent(new RequestKifuEvaluationEvent()));
 
         flowPanel.add(evaluateButton);
+
+        statusHTML = new HTML("Evaluation status");
+        flowPanel.add(statusHTML);
+
         panel.add(flowPanel);
 
         initialize();
@@ -59,7 +62,33 @@ public class KifuEvaluationChartPanel extends Composite {
     @EventHandler
     public void onKifuEvaluationEvent(final KifuEvaluationEvent event) {
         GWT.log("KifuEvaluationChartPanel: handle KifuEvaluationEvent");
-        drawEvaluation(event);
+        AnalysisRequestStatus status = event.getStatus();
+        switch (status) {
+            case IN_PROGRESS:
+                statusHTML.setHTML("Analyzing... " + event.getPositionEvaluationDetails().length);
+                drawEvaluation(event);
+                break;
+            case COMPLETED:
+                statusHTML.setHTML("Analysis complete!");
+                drawEvaluation(event);
+                break;
+            case QUEUED:
+                statusHTML.setHTML("Queued in position " + event.getQueuePosition());
+                break;
+            case QUEUE_TOO_LONG:
+                statusHTML.setHTML("The queue is too long - please try again later.");
+                break;
+            case USER_QUOTA_EXCEEDED:
+                statusHTML.setHTML("User quota exceeded - please try again tomorrow.");
+                break;
+            case NOT_ALLOWED:
+                statusHTML.setHTML("Game analysis is not available for guest users, consider registering.");
+                break;
+            case NOT_REQUESTED:
+            case UNAVAILABLE:
+                statusHTML.setHTML("Analysis: unexpected error.");
+                break;
+        }
     }
 
     private void drawEvaluation(KifuEvaluationEvent event) {

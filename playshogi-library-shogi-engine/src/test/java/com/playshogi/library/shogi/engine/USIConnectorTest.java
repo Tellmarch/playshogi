@@ -35,7 +35,7 @@ public class USIConnectorTest {
         USIConnector usiConnector = new USIConnector(EngineConfiguration.NORMAL_ENGINE);
         usiConnector.connect();
         System.out.println(usiConnector.analysePosition("ln1g5/1ks2gs1l/1pp4p1/p2bpn2p/3p3P1/P1P1P1P1P/1P1P1PS2" +
-                "/2KGGS1R1/LN6L b RNPbp"));
+                "/2KGGS1R1/LN6L b RNPbp", 2000));
         usiConnector.disconnect();
     }
 
@@ -44,7 +44,7 @@ public class USIConnectorTest {
         USIConnector usiConnector = new USIConnector(EngineConfiguration.NORMAL_ENGINE);
         usiConnector.connect();
         String usf = "USF:1.0\n^*:7g7f3c3d";
-        usiConnector.analyzeKifu(UsfFormat.INSTANCE.read(usf).getGameTree(), System.out::println);
+        usiConnector.analyzeKifu(UsfFormat.INSTANCE.read(usf).getGameTree(), 2000, System.out::println);
         usiConnector.disconnect();
     }
 }

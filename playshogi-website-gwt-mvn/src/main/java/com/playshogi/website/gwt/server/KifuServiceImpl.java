@@ -17,10 +17,15 @@ import com.playshogi.website.gwt.shared.models.*;
 import com.playshogi.website.gwt.shared.services.KifuService;
 
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map.Entry;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import static com.playshogi.website.gwt.shared.models.AnalysisRequestStatus.*;
 
 public class KifuServiceImpl extends RemoteServiceServlet implements KifuService {
 
@@ -34,9 +39,9 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
     private final GameRepository gameRepository;
     private final Authenticator authenticator = Authenticator.INSTANCE;
 
-    private final Map<String, List<PositionEvaluationDetails>> kifuEvaluations = new HashMap<>();
     private final TsumeEscapeSolver tsumeEscapeSolver =
             new TsumeEscapeSolver(new QueuedTsumeSolver(EngineConfiguration.TSUME_ENGINE));
+    private final QueuedKifuAnalyzer queuedKifuAnalyzer = new QueuedKifuAnalyzer(EngineConfiguration.NORMAL_ENGINE);
 
     public KifuServiceImpl() {
         DbConnection dbConnection = new DbConnection();
@@ -173,7 +178,7 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
         if (loginResult != null && loginResult.isLoggedIn()) {
             USIConnector usiConnector = new USIConnector(EngineConfiguration.NORMAL_ENGINE);
             usiConnector.connect();
-            PositionEvaluation evaluation = usiConnector.analysePosition(sfen);
+            PositionEvaluation evaluation = usiConnector.analysePosition(sfen, 5000);
             usiConnector.disconnect();
             LOGGER.log(Level.INFO, "Position analysis: " + evaluation);
 
@@ -214,52 +219,69 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
     }
 
     @Override
-    public boolean requestKifuAnalysis(final String sessionId, final String kifuUsf) {
+    public AnalysisRequestStatus requestKifuAnalysis(final String sessionId, final String kifuUsf) {
         LOGGER.log(Level.INFO, "requestKifuAnalysis:\n" + kifuUsf);
 
-        if (kifuEvaluations.containsKey(kifuUsf)) {
+        QueuedKifuAnalyzer.Status status = queuedKifuAnalyzer.getStatus(kifuUsf);
+
+        if (status != QueuedKifuAnalyzer.Status.NOT_STARTED) {
             LOGGER.log(Level.INFO, "Kifu analysis was already requested");
-            return false;
+            return fromStatus(status);
         }
 
         LoginResult loginResult = authenticator.checkSession(sessionId);
         if (loginResult != null && loginResult.isLoggedIn()) {
+            if (queuedKifuAnalyzer.getQueueSize() > 5) {
+                return QUEUE_TOO_LONG;
+            }
 
-            GameRecord gameRecord = UsfFormat.INSTANCE.read(kifuUsf);
-
-            kifuEvaluations.put(kifuUsf, new ArrayList<>());
-
-            USIConnector usiConnector = new USIConnector(EngineConfiguration.NORMAL_ENGINE);
-            usiConnector.connect();
-            usiConnector.analyzeKifu(gameRecord.getGameTree(), evaluation -> {
-                LOGGER.log(Level.INFO, "New position evaluation for kifu analysis " + evaluation);
-                kifuEvaluations.get(kifuUsf).add(convertPositionEvaluation(evaluation));
-            });
-            usiConnector.disconnect();
-            LOGGER.log(Level.INFO, "Finished kifu analysis for " + kifuUsf);
-            return true;
+            queuedKifuAnalyzer.analyzeKifu(kifuUsf);
+            LOGGER.log(Level.INFO, "Queued kifu analysis for " + kifuUsf);
+            return QUEUED;
         } else {
             LOGGER.log(Level.INFO, "Kifu analysis is only available for logged-in users");
-            return false;
+            return NOT_ALLOWED;
+        }
+    }
+
+    private AnalysisRequestStatus fromStatus(QueuedKifuAnalyzer.Status status) {
+        switch (status) {
+            case QUEUED:
+                return QUEUED;
+            case IN_PROGRESS:
+                return IN_PROGRESS;
+            case COMPLETED:
+                return COMPLETED;
+            case NOT_STARTED:
+            default:
+                throw new IllegalStateException("Can not convert status " + status);
         }
     }
 
     @Override
-    public PositionEvaluationDetails[] getKifUAnalysisResults(final String sessionId, final String kifuUsf) {
+    public AnalysisRequestResult getKifuAnalysisResults(final String sessionId, final String kifuUsf) {
         LOGGER.log(Level.INFO, "getKifUAnalysisResults:\n" + kifuUsf);
 
-        if (!kifuEvaluations.containsKey(kifuUsf)) {
+        QueuedKifuAnalyzer.Status status = queuedKifuAnalyzer.getStatus(kifuUsf);
+
+        if (status == QueuedKifuAnalyzer.Status.NOT_STARTED) {
             LOGGER.log(Level.INFO, "Kifu analysis was not requested");
-            return new PositionEvaluationDetails[0];
+            return new AnalysisRequestResult(NOT_REQUESTED);
         }
 
-        LoginResult loginResult = authenticator.checkSession(sessionId);
-        if (loginResult != null && loginResult.isLoggedIn()) {
-            return kifuEvaluations.get(kifuUsf).toArray(new PositionEvaluationDetails[0]);
-        } else {
-            LOGGER.log(Level.INFO, "Kifu analysis is only available for logged-in users");
-            return new PositionEvaluationDetails[0];
+        if (status == QueuedKifuAnalyzer.Status.QUEUED) {
+            LOGGER.log(Level.INFO, "Kifu analysis  in queue");
+            AnalysisRequestResult result = new AnalysisRequestResult(QUEUED);
+            result.setQueuePosition(queuedKifuAnalyzer.getQueuedPosition(kifuUsf));
+            return result;
         }
+
+        List<PositionEvaluation> evaluation = queuedKifuAnalyzer.getEvaluation(kifuUsf);
+
+        AnalysisRequestResult result = new AnalysisRequestResult();
+        result.setDetails(evaluation.stream().map(this::convertPositionEvaluation).toArray(PositionEvaluationDetails[]::new));
+        result.setStatus(status == QueuedKifuAnalyzer.Status.IN_PROGRESS ? IN_PROGRESS : COMPLETED);
+        return result;
     }
 
     @Override
