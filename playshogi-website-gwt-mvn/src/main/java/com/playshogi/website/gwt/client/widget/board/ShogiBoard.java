@@ -102,6 +102,7 @@ public class ShogiBoard extends Composite implements ClickHandler {
         absolutePanel = new AbsolutePanel();
         Image ban = new Image(boardResources.ban_kaya_a());
         Image grid = new Image(boardResources.masu_dot());
+        Image coordinates = new Image(boardResources.scoordE());
         Image tatami = new Image(boardResources.bg_tatami());
         goteKomadaiImage = new Image(boardResources.ghand());
         senteKomadaiImage = new Image(boardResources.shand());
@@ -120,6 +121,7 @@ public class ShogiBoard extends Composite implements ClickHandler {
 
         absolutePanel.add(ban, boardLeft, boardTop);
         absolutePanel.add(grid, boardLeft, boardTop);
+        absolutePanel.add(coordinates, boardLeft, boardTop);
 
         senteKomadaiX = boardLeft + ban.getWidth() + TATAMI_INSIDE_MARGIN;
         senteKomadaiY = TATAMI_TOP_MARGIN + ban.getHeight() - senteKomadaiImage.getHeight();
