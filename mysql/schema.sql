@@ -231,7 +231,16 @@ DROP TABLE IF EXISTS `playshogi`.`ps_gameset` ;
 CREATE TABLE IF NOT EXISTS `playshogi`.`ps_gameset` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(255) NOT NULL,
-  PRIMARY KEY (`id`))
+  `description` VARCHAR(5000) NOT NULL,
+  `visibility` TINYINT UNSIGNED NOT NULL DEFAULT 0,
+  `owner_user_id` INT UNSIGNED NULL,
+  PRIMARY KEY (`id`),
+  INDEX `fk_ps_gameset_1_idx` (`owner_user_id` ASC),
+  CONSTRAINT `fk_ps_gameset_1`
+    FOREIGN KEY (`owner_user_id`)
+    REFERENCES `playshogi`.`ps_user` (`id`)
+    ON DELETE SET NULL
+    ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 
