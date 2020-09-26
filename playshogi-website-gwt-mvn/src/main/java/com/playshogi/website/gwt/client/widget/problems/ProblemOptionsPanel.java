@@ -8,7 +8,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
-import com.playshogi.website.gwt.client.events.ProblemNumMovesSelectedEvent;
+import com.playshogi.website.gwt.client.events.puzzles.ProblemNumMovesSelectedEvent;
 
 public class ProblemOptionsPanel extends Composite implements ClickHandler {
 

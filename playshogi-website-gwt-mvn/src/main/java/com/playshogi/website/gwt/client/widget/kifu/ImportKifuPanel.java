@@ -11,7 +11,7 @@ import com.playshogi.library.models.record.GameRecord;
 import com.playshogi.library.shogi.models.formats.kif.KifFormat;
 import com.playshogi.library.shogi.models.formats.psn.PsnFormat;
 import com.playshogi.library.shogi.models.formats.usf.UsfFormat;
-import com.playshogi.website.gwt.client.events.GameRecordChangedEvent;
+import com.playshogi.website.gwt.client.events.kifu.GameRecordChangedEvent;
 
 public class ImportKifuPanel extends Composite implements ClickHandler {
 

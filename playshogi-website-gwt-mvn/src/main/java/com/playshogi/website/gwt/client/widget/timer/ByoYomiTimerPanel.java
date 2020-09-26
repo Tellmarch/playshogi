@@ -7,7 +7,7 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
-import com.playshogi.website.gwt.client.events.MoveTimerEvent;
+import com.playshogi.website.gwt.client.events.puzzles.MoveTimerEvent;
 
 public class ByoYomiTimerPanel extends Composite {
 

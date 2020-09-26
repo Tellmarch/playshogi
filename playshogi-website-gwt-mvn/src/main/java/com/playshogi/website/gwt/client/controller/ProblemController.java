@@ -4,9 +4,9 @@ import com.google.gwt.core.client.GWT;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
-import com.playshogi.website.gwt.client.events.EndOfVariationReachedEvent;
-import com.playshogi.website.gwt.client.events.NewVariationPlayedEvent;
-import com.playshogi.website.gwt.client.events.UserFinishedProblemEvent;
+import com.playshogi.website.gwt.client.events.gametree.EndOfVariationReachedEvent;
+import com.playshogi.website.gwt.client.events.gametree.NewVariationPlayedEvent;
+import com.playshogi.website.gwt.client.events.puzzles.UserFinishedProblemEvent;
 
 public class ProblemController {
 

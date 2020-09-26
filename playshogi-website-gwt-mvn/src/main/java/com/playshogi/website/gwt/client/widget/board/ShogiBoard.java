@@ -18,10 +18,10 @@ import com.playshogi.library.shogi.models.moves.ShogiMove;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.library.shogi.models.shogivariant.ShogiInitialPositionFactory;
 import com.playshogi.library.shogi.rules.ShogiRulesEngine;
-import com.playshogi.website.gwt.client.events.HighlightMoveEvent;
-import com.playshogi.website.gwt.client.events.MovePlayedEvent;
-import com.playshogi.website.gwt.client.events.PieceStyleSelectedEvent;
-import com.playshogi.website.gwt.client.events.PositionChangedEvent;
+import com.playshogi.website.gwt.client.events.gametree.HighlightMoveEvent;
+import com.playshogi.website.gwt.client.events.gametree.MovePlayedEvent;
+import com.playshogi.website.gwt.client.events.gametree.PositionChangedEvent;
+import com.playshogi.website.gwt.client.events.user.PieceStyleSelectedEvent;
 import com.playshogi.website.gwt.client.widget.board.KomadaiPositioning.Point;
 
 import java.util.ArrayList;
@@ -291,7 +291,7 @@ public class ShogiBoard extends Composite implements ClickHandler {
                 Piece piece = selectedPiece.getPiece();
 
                 if (selectedPiece.isInKomadai()) {
-                    DropMove move = new DropMove(piece.isSentePiece(), piece.getPieceType(), getSquare(row, col));
+                    DropMove move = new DropMove(piece.getOwner(), piece.getPieceType(), getSquare(row, col));
                     if (boardConfiguration.allowIllegalMoves() || shogiRulesEngine.isMoveLegalInPosition(position, move)) {
                         playMove(move);
                     }

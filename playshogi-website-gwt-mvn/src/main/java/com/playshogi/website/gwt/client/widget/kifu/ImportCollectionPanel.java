@@ -7,8 +7,8 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import com.google.web.bindery.event.shared.EventBus;
 import com.playshogi.library.models.record.GameRecord;
-import com.playshogi.website.gwt.client.events.DraftCollectionUploadedEvent;
-import com.playshogi.website.gwt.client.events.GameRecordChangedEvent;
+import com.playshogi.website.gwt.client.events.collections.DraftCollectionUploadedEvent;
+import com.playshogi.website.gwt.client.events.kifu.GameRecordChangedEvent;
 
 public class ImportCollectionPanel extends Composite {
 

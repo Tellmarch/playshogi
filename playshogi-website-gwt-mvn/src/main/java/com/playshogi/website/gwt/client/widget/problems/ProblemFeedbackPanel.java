@@ -15,7 +15,11 @@ import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.library.shogi.models.formats.sfen.SfenConverter;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
-import com.playshogi.website.gwt.client.events.*;
+import com.playshogi.website.gwt.client.events.gametree.PositionChangedEvent;
+import com.playshogi.website.gwt.client.events.gametree.UserNavigatedBackEvent;
+import com.playshogi.website.gwt.client.events.kifu.RequestPositionEvaluationEvent;
+import com.playshogi.website.gwt.client.events.puzzles.UserFinishedProblemEvent;
+import com.playshogi.website.gwt.client.events.puzzles.UserSkippedProblemEvent;
 import com.playshogi.website.gwt.client.widget.gamenavigator.GameNavigator;
 
 public class ProblemFeedbackPanel extends Composite implements ClickHandler {

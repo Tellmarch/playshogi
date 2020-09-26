@@ -3,14 +3,13 @@ package com.playshogi.website.gwt.client.widget;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.web.bindery.event.shared.EventBus;
 import com.playshogi.library.shogi.models.Piece;
-import com.playshogi.website.gwt.client.events.PieceStyleSelectedEvent;
+import com.playshogi.website.gwt.client.events.user.PieceStyleSelectedEvent;
 import com.playshogi.website.gwt.client.widget.board.PieceGraphics;
 
 public class PiecesSelectorPanel extends Composite implements ClickHandler {

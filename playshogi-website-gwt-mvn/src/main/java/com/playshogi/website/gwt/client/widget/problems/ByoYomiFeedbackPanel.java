@@ -9,9 +9,9 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
-import com.playshogi.website.gwt.client.events.ByoYomiSurvivalFinishedEvent;
-import com.playshogi.website.gwt.client.events.UserFinishedProblemEvent;
-import com.playshogi.website.gwt.client.events.UserNavigatedBackEvent;
+import com.playshogi.website.gwt.client.events.gametree.UserNavigatedBackEvent;
+import com.playshogi.website.gwt.client.events.puzzles.ByoYomiSurvivalFinishedEvent;
+import com.playshogi.website.gwt.client.events.puzzles.UserFinishedProblemEvent;
 import com.playshogi.website.gwt.client.widget.timer.ByoYomiTimerPanel;
 
 public class ByoYomiFeedbackPanel extends Composite {

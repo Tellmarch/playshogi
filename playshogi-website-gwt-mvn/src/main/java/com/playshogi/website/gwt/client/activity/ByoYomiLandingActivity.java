@@ -6,7 +6,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
 import com.google.web.bindery.event.shared.EventBus;
 import com.playshogi.website.gwt.client.SessionInformation;
-import com.playshogi.website.gwt.client.events.HighScoreListEvent;
+import com.playshogi.website.gwt.client.events.puzzles.HighScoreListEvent;
 import com.playshogi.website.gwt.client.place.ByoYomiLandingPlace;
 import com.playshogi.website.gwt.client.ui.ByoYomiLandingView;
 import com.playshogi.website.gwt.shared.models.SurvivalHighScore;

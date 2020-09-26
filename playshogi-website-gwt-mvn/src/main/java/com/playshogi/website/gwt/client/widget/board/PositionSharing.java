@@ -1,8 +1,6 @@
 package com.playshogi.website.gwt.client.widget.board;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
@@ -15,7 +13,7 @@ import com.playshogi.library.shogi.models.formats.sfen.SfenConverter;
 import com.playshogi.library.shogi.models.formats.usf.UsfMoveConverter;
 import com.playshogi.library.shogi.models.moves.ShogiMove;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
-import com.playshogi.website.gwt.client.events.MovePlayedEvent;
+import com.playshogi.website.gwt.client.events.gametree.MovePlayedEvent;
 import com.playshogi.website.gwt.shared.services.PositionSharingService;
 import com.playshogi.website.gwt.shared.services.PositionSharingServiceAsync;
 
@@ -45,64 +43,40 @@ public class PositionSharing extends Composite {
         keyField = new TextBox();
         keyField.setText("MyBoard");
 
-        shareButton.addClickHandler(new ClickHandler() {
+        shareButton.addClickHandler(event -> positionSharingService.sharePosition(SfenConverter.toSFEN(shogiBoard.getPosition()), keyField.getText(),
+                getVoidCallback("share")));
+
+        loadButton.addClickHandler(event -> positionSharingService.getPosition(keyField.getText(),
+                new AsyncCallback<String>() {
+
             @Override
-            public void onClick(final ClickEvent event) {
-                positionSharingService.sharePosition(SfenConverter.toSFEN(shogiBoard.getPosition()), keyField.getText(),
-                        getVoidCallback("share"));
+            public void onFailure(final Throwable caught) {
+                GWT.log("load failure");
             }
 
+            @Override
+            public void onSuccess(final String result) {
+                GWT.log("load success");
+                ShogiPosition positionFromServer = SfenConverter.fromSFEN(result);
+                shogiBoard.setPosition(positionFromServer);
+            }
+        }));
+
+        playSenteButton.addClickHandler(event -> {
+            shogiBoard.setPlaySenteMoves(true);
+            shogiBoard.setPlayGoteMoves(false);
         });
 
-        loadButton.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(final ClickEvent event) {
-                positionSharingService.getPosition(keyField.getText(), new AsyncCallback<String>() {
-
-                    @Override
-                    public void onFailure(final Throwable caught) {
-                        GWT.log("load failure");
-                    }
-
-                    @Override
-                    public void onSuccess(final String result) {
-                        GWT.log("load success");
-                        ShogiPosition positionFromServer = SfenConverter.fromSFEN(result);
-                        if (positionFromServer != null) {
-                            shogiBoard.setPosition(positionFromServer);
-                        }
-                    }
-                });
-            }
+        playGoteButton.addClickHandler(event -> {
+            shogiBoard.setPlaySenteMoves(false);
+            shogiBoard.setPlayGoteMoves(true);
+            waitForNextMove();
         });
 
-        playSenteButton.addClickHandler(new ClickHandler() {
-
-            @Override
-            public void onClick(final ClickEvent event) {
-                shogiBoard.setPlaySenteMoves(true);
-                shogiBoard.setPlayGoteMoves(false);
-            }
-        });
-
-        playGoteButton.addClickHandler(new ClickHandler() {
-
-            @Override
-            public void onClick(final ClickEvent event) {
-                shogiBoard.setPlaySenteMoves(false);
-                shogiBoard.setPlayGoteMoves(true);
-                waitForNextMove();
-            }
-        });
-
-        watchButton.addClickHandler(new ClickHandler() {
-
-            @Override
-            public void onClick(final ClickEvent event) {
-                shogiBoard.setPlaySenteMoves(false);
-                shogiBoard.setPlayGoteMoves(false);
-                waitForNextMove();
-            }
+        watchButton.addClickHandler(event -> {
+            shogiBoard.setPlaySenteMoves(false);
+            shogiBoard.setPlayGoteMoves(false);
+            waitForNextMove();
         });
 
         HorizontalPanel horizontalPanel = new HorizontalPanel();

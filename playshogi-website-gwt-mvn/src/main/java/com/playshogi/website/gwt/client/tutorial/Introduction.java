@@ -3,9 +3,9 @@ package com.playshogi.website.gwt.client.tutorial;
 import com.google.web.bindery.event.shared.EventBus;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.library.shogi.models.shogivariant.ShogiInitialPositionFactory;
-import com.playshogi.website.gwt.client.events.ChangeTutorialTextEvent;
-import com.playshogi.website.gwt.client.events.ChangeTutorialTitleEvent;
-import com.playshogi.website.gwt.client.events.MovePlayedEvent;
+import com.playshogi.website.gwt.client.events.gametree.MovePlayedEvent;
+import com.playshogi.website.gwt.client.events.tutorial.ChangeTutorialTextEvent;
+import com.playshogi.website.gwt.client.events.tutorial.ChangeTutorialTitleEvent;
 import com.playshogi.website.gwt.client.widget.board.ShogiBoard;
 
 public class Introduction implements Tutorial{

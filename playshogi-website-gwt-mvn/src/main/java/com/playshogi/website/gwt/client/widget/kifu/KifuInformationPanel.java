@@ -7,7 +7,7 @@ import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.library.models.record.GameInformation;
-import com.playshogi.website.gwt.client.events.GameInformationChangedEvent;
+import com.playshogi.website.gwt.client.events.kifu.GameInformationChangedEvent;
 
 public class KifuInformationPanel extends Composite {
     interface MyEventBinder extends EventBinder<KifuInformationPanel> {

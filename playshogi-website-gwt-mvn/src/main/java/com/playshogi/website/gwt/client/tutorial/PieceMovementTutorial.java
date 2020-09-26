@@ -6,9 +6,9 @@ import com.playshogi.library.shogi.models.Piece;
 import com.playshogi.library.shogi.models.PieceType;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.library.shogi.rules.ShogiRulesEngine;
-import com.playshogi.website.gwt.client.events.ChangeTutorialTextEvent;
-import com.playshogi.website.gwt.client.events.ChangeTutorialTitleEvent;
-import com.playshogi.website.gwt.client.events.MovePlayedEvent;
+import com.playshogi.website.gwt.client.events.gametree.MovePlayedEvent;
+import com.playshogi.website.gwt.client.events.tutorial.ChangeTutorialTextEvent;
+import com.playshogi.website.gwt.client.events.tutorial.ChangeTutorialTitleEvent;
 import com.playshogi.website.gwt.client.widget.board.ShogiBoard;
 
 import java.util.List;

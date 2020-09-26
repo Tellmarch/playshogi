@@ -11,10 +11,10 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
-import com.playshogi.website.gwt.client.events.EndOfVariationReachedEvent;
-import com.playshogi.website.gwt.client.events.GameRecordSaveRequestedEvent;
-import com.playshogi.website.gwt.client.events.NewVariationPlayedEvent;
-import com.playshogi.website.gwt.client.events.UserNavigatedBackEvent;
+import com.playshogi.website.gwt.client.events.gametree.EndOfVariationReachedEvent;
+import com.playshogi.website.gwt.client.events.gametree.NewVariationPlayedEvent;
+import com.playshogi.website.gwt.client.events.gametree.UserNavigatedBackEvent;
+import com.playshogi.website.gwt.client.events.kifu.GameRecordSaveRequestedEvent;
 import com.playshogi.website.gwt.client.widget.gamenavigator.GameNavigator;
 
 public class KifuEditorPanel extends Composite implements ClickHandler {

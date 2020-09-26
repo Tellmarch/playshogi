@@ -10,8 +10,8 @@ import com.google.gwt.user.client.ui.*;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
-import com.playshogi.website.gwt.client.events.ActivityTimerEvent;
-import com.playshogi.website.gwt.client.events.UserFinishedProblemEvent;
+import com.playshogi.website.gwt.client.events.puzzles.ActivityTimerEvent;
+import com.playshogi.website.gwt.client.events.puzzles.UserFinishedProblemEvent;
 import com.playshogi.website.gwt.client.mvp.AppPlaceHistoryMapper;
 import com.playshogi.website.gwt.client.place.TsumePlace;
 

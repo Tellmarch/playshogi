@@ -10,7 +10,7 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
-import com.playshogi.website.gwt.client.events.HighScoreListEvent;
+import com.playshogi.website.gwt.client.events.puzzles.HighScoreListEvent;
 import com.playshogi.website.gwt.shared.models.SurvivalHighScore;
 
 import java.util.Arrays;

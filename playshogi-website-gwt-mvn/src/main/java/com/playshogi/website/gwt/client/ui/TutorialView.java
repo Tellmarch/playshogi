@@ -7,7 +7,7 @@ import com.google.inject.Singleton;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
-import com.playshogi.website.gwt.client.events.*;
+import com.playshogi.website.gwt.client.events.tutorial.*;
 import com.playshogi.website.gwt.client.mvp.AppPlaceHistoryMapper;
 import com.playshogi.website.gwt.client.place.TutorialPlace;
 import com.playshogi.website.gwt.client.tutorial.TutorialMessages;

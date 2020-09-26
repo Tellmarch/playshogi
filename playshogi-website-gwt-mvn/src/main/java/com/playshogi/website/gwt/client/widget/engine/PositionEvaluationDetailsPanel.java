@@ -10,8 +10,8 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
-import com.playshogi.website.gwt.client.events.PositionEvaluationEvent;
-import com.playshogi.website.gwt.client.events.RequestPositionEvaluationEvent;
+import com.playshogi.website.gwt.client.events.kifu.PositionEvaluationEvent;
+import com.playshogi.website.gwt.client.events.kifu.RequestPositionEvaluationEvent;
 import com.playshogi.website.gwt.shared.models.PrincipalVariationDetails;
 
 import java.util.ArrayList;

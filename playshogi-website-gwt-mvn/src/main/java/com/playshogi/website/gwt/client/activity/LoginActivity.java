@@ -6,8 +6,8 @@ import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.website.gwt.client.SessionInformation;
-import com.playshogi.website.gwt.client.events.UserLoggedInEvent;
-import com.playshogi.website.gwt.client.events.UserLoggedOutEvent;
+import com.playshogi.website.gwt.client.events.user.UserLoggedInEvent;
+import com.playshogi.website.gwt.client.events.user.UserLoggedOutEvent;
 import com.playshogi.website.gwt.client.place.LoginPlace;
 import com.playshogi.website.gwt.client.ui.LoginView;
 
