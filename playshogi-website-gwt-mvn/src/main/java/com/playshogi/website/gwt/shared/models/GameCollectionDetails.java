@@ -5,6 +5,8 @@ import java.io.Serializable;
 public class GameCollectionDetails implements Serializable {
     private String id;
     private String name;
+    private String description;
+    private String visibility;
 
     public GameCollectionDetails() {
     }
@@ -25,11 +27,29 @@ public class GameCollectionDetails implements Serializable {
         this.name = name;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(final String description) {
+        this.description = description;
+    }
+
+    public String getVisibility() {
+        return visibility;
+    }
+
+    public void setVisibility(final String visibility) {
+        this.visibility = visibility;
+    }
+
     @Override
     public String toString() {
         return "GameCollectionDetails{" +
                 "id='" + id + '\'' +
                 ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", visibility='" + visibility + '\'' +
                 '}';
     }
 }

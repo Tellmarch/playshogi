@@ -7,9 +7,7 @@ import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.website.gwt.client.SessionInformation;
-import com.playshogi.website.gwt.client.events.DraftCollectionUploadedEvent;
-import com.playshogi.website.gwt.client.events.ListCollectionGamesEvent;
-import com.playshogi.website.gwt.client.events.ListGameCollectionsEvent;
+import com.playshogi.website.gwt.client.events.*;
 import com.playshogi.website.gwt.client.place.GameCollectionsPlace;
 import com.playshogi.website.gwt.client.ui.GameCollectionsView;
 import com.playshogi.website.gwt.shared.models.GameCollectionDetails;
@@ -20,6 +18,7 @@ import com.playshogi.website.gwt.shared.services.KifuServiceAsync;
 public class GameCollectionsActivity extends MyAbstractActivity {
 
     private final KifuServiceAsync kifuService = GWT.create(KifuService.class);
+    private EventBus eventBus;
 
     interface MyEventBinder extends EventBinder<GameCollectionsActivity> {
     }
@@ -31,7 +30,7 @@ public class GameCollectionsActivity extends MyAbstractActivity {
     private final SessionInformation sessionInformation;
 
     public GameCollectionsActivity(final GameCollectionsPlace place, final GameCollectionsView gameCollectionsView,
-                                   SessionInformation sessionInformation) {
+                                   final SessionInformation sessionInformation) {
         this.place = place;
         this.gameCollectionsView = gameCollectionsView;
         this.sessionInformation = sessionInformation;
@@ -40,6 +39,7 @@ public class GameCollectionsActivity extends MyAbstractActivity {
     @Override
     public void start(final AcceptsOneWidget containerWidget, final EventBus eventBus) {
         GWT.log("Starting game collections activity");
+        this.eventBus = eventBus;
         eventBinder.bindEventHandlers(this, eventBus);
         gameCollectionsView.activate(eventBus);
 
@@ -90,6 +90,25 @@ public class GameCollectionsActivity extends MyAbstractActivity {
                 GWT.log("GameCollectionsActivity: saved draft collection");
             }
         });
+    }
+
+    @EventHandler
+    public void onSaveGameCollectionDetails(final SaveGameCollectionDetailsEvent event) {
+        GWT.log("GameCollectionsActivity: Handling SaveGameCollectionDetailsEvent: " + event.getDetails());
+        kifuService.saveGameCollectionDetails(sessionInformation.getSessionId(), event.getDetails(),
+                new AsyncCallback<Void>() {
+                    @Override
+                    public void onFailure(final Throwable throwable) {
+                        GWT.log("GameCollectionsActivity: error during saveGameCollectionDetails");
+                        eventBus.fireEvent(new SaveGameCollectionDetailsResultEvent(false));
+                    }
+
+                    @Override
+                    public void onSuccess(final Void unused) {
+                        GWT.log("GameCollectionsActivity: saveGameCollectionDetails success");
+                        eventBus.fireEvent(new SaveGameCollectionDetailsResultEvent(true));
+                    }
+                });
     }
 
 }

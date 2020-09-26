@@ -17,6 +17,7 @@ import com.playshogi.website.gwt.client.events.ListGameCollectionsEvent;
 import com.playshogi.website.gwt.client.place.GameCollectionsPlace;
 import com.playshogi.website.gwt.client.place.OpeningsPlace;
 import com.playshogi.website.gwt.client.place.ViewKifuPlace;
+import com.playshogi.website.gwt.client.widget.kifu.CollectionPropertiesPanel;
 import com.playshogi.website.gwt.client.widget.kifu.ImportCollectionPanel;
 import com.playshogi.website.gwt.shared.models.GameCollectionDetails;
 import com.playshogi.website.gwt.shared.models.KifuDetails;
@@ -40,6 +41,7 @@ public class GameCollectionsView extends Composite {
     private final VerticalPanel collectionsPanel;
     private final VerticalPanel kifusPanel;
     private final ImportCollectionPanel importCollectionPanel = new ImportCollectionPanel();
+    private final CollectionPropertiesPanel collectionPropertiesPanel = new CollectionPropertiesPanel();
 
     @Inject
     public GameCollectionsView(final PlaceController placeController) {
@@ -121,6 +123,16 @@ public class GameCollectionsView extends Composite {
             }
         }, "Explore");
 
+        ActionCell<GameCollectionDetails> propertiesActionCell = new ActionCell<>("Properties",
+                collectionPropertiesPanel::showInDialog);
+
+        collectionsTable.addColumn(new Column<GameCollectionDetails, GameCollectionDetails>(propertiesActionCell) {
+            @Override
+            public GameCollectionDetails getValue(final GameCollectionDetails gameCollectionDetails) {
+                return gameCollectionDetails;
+            }
+        }, "Properties");
+
         return collectionsTable;
     }
 
@@ -169,6 +181,7 @@ public class GameCollectionsView extends Composite {
         collectionsPanel.setVisible(false);
         kifusPanel.setVisible(false);
         importCollectionPanel.activate(eventBus);
+        collectionPropertiesPanel.activate(eventBus);
     }
 
     @EventHandler

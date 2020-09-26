@@ -311,4 +311,11 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
 
         return String.valueOf(id);
     }
+
+    @Override
+    public void saveGameCollectionDetails(final String sessionId, final GameCollectionDetails gameCollectionDetails) {
+        LOGGER.log(Level.INFO, "saveGameCollectionDetails: " + gameCollectionDetails);
+
+
+    }
 }
