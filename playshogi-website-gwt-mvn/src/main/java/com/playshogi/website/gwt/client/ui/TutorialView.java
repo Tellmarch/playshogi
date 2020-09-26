@@ -1,7 +1,6 @@
 package com.playshogi.website.gwt.client.ui;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -9,9 +8,9 @@ import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.website.gwt.client.events.*;
-import com.playshogi.website.gwt.client.tutorial.TutorialMessages;
 import com.playshogi.website.gwt.client.mvp.AppPlaceHistoryMapper;
 import com.playshogi.website.gwt.client.place.TutorialPlace;
+import com.playshogi.website.gwt.client.tutorial.TutorialMessages;
 import com.playshogi.website.gwt.client.tutorial.Tutorials;
 import com.playshogi.website.gwt.client.widget.PiecesSelectorPanel;
 import com.playshogi.website.gwt.client.widget.board.ShogiBoard;
@@ -83,13 +82,13 @@ public class TutorialView extends Composite {
 
         flowPanel.add(new Hyperlink(tutorialMessages.introTitle(), historyMapper.getToken(new TutorialPlace(1))));
         flowPanel.add(new Hyperlink(tutorialMessages.kingTitle(), historyMapper.getToken(new TutorialPlace(2))));
-        flowPanel.add(new Hyperlink("The Rook", historyMapper.getToken(new TutorialPlace(4))));
-        flowPanel.add(new Hyperlink("The Bishop", historyMapper.getToken(new TutorialPlace(6))));
-        flowPanel.add(new Hyperlink("The Gold general", historyMapper.getToken(new TutorialPlace(8))));
-        flowPanel.add(new Hyperlink("The Silver General", historyMapper.getToken(new TutorialPlace(10))));
-        flowPanel.add(new Hyperlink("The Knight", historyMapper.getToken(new TutorialPlace(12))));
-        flowPanel.add(new Hyperlink("The Lance", historyMapper.getToken(new TutorialPlace(14))));
-        flowPanel.add(new Hyperlink("The Pawn", historyMapper.getToken(new TutorialPlace(16))));
+        flowPanel.add(new Hyperlink("The Rook", historyMapper.getToken(new TutorialPlace(3))));
+        flowPanel.add(new Hyperlink("The Bishop", historyMapper.getToken(new TutorialPlace(4))));
+        flowPanel.add(new Hyperlink("The Gold general", historyMapper.getToken(new TutorialPlace(5))));
+        flowPanel.add(new Hyperlink("The Silver General", historyMapper.getToken(new TutorialPlace(6))));
+        flowPanel.add(new Hyperlink("The Knight", historyMapper.getToken(new TutorialPlace(7))));
+        flowPanel.add(new Hyperlink("The Lance", historyMapper.getToken(new TutorialPlace(8))));
+        flowPanel.add(new Hyperlink("The Pawn", historyMapper.getToken(new TutorialPlace(9))));
 
         flowPanel.getElement().getStyle().setBackgroundColor("#DBCBCB");
 

@@ -51,6 +51,10 @@ public class ShogiPosition implements Position {
         this.senteToPlay = !this.senteToPlay;
     }
 
+    public void setSenteToPlay(final boolean senteToPlay) {
+        this.senteToPlay = senteToPlay;
+    }
+
     public boolean isSenteToPlay() {
         return senteToPlay;
     }

@@ -44,7 +44,7 @@ public class NavigationBar extends Composite {
         flowPanel.setStyleName("contentButtons");
 
         flowPanel.add(createHyperlink("Main page", new MainPagePlace()));
-//        flowPanel.add(createHyperlink("How to Play", new TutorialPlace()));
+        flowPanel.add(createHyperlink("How to Play", new TutorialPlace()));
         flowPanel.add(createHyperlink("Problems", new TsumePlace()));
         flowPanel.add(createHyperlink("ByoYomi Survival", new ByoYomiLandingPlace()));
         flowPanel.add(createHyperlink("Statistics", new ProblemStatisticsPlace()));

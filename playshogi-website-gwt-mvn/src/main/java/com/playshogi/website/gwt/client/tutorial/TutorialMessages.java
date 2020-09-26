@@ -62,4 +62,24 @@ public interface TutorialMessages extends Messages {
             "Click \"Try again\" to give it another try.")
     String rookPracticeFailed2();
 
+    @DefaultMessage("Work in progress")
+    String inProgress();
+
+    @DefaultMessage("The Pawn")
+    String pawnTitle();
+
+    @DefaultMessage("The Lance")
+    String lanceTitle();
+
+    @DefaultMessage("The Knight")
+    String knightTitle();
+
+    @DefaultMessage("The Silver General")
+    String silverTitle();
+
+    @DefaultMessage("The Gold General")
+    String goldTitle();
+
+    @DefaultMessage("The Bishop")
+    String bishopTitle();
 }
