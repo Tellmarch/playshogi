@@ -304,7 +304,8 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
             throw new IllegalStateException("Invalid draft connection ID");
         }
 
-        int id = gameSetRepository.saveGameSet(collection.getName(), collection.getName());
+        int id = gameSetRepository.saveGameSet(collection.getName(), collection.getName(),
+                PersistentGameSet.Visibility.PRIVATE, loginResult.getUserId());
 
         if (id == -1) {
             LOGGER.log(Level.INFO, "Error saving the game set");
@@ -320,25 +321,29 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
     }
 
     @Override
-    public void updateGameCollectionDetails(final String sessionId, final GameCollectionDetails gameCollectionDetails) {
-        LOGGER.log(Level.INFO, "saveGameCollectionDetails: " + gameCollectionDetails);
+    public void updateGameCollectionDetails(final String sessionId, final GameCollectionDetails details) {
+        LOGGER.log(Level.INFO, "saveGameCollectionDetails: " + details);
 
         LoginResult loginResult = authenticator.checkSession(sessionId);
         if (loginResult == null || !loginResult.isLoggedIn()) {
             throw new IllegalStateException("Only logged in users can update a game collection");
         }
 
-
+        gameSetRepository.updateGameSet(Integer.parseInt(details.getId()), details.getName(), details.getDescription(),
+                PersistentGameSet.Visibility.valueOf(details.getVisibility().toUpperCase()), loginResult.getUserId());
     }
 
 
     @Override
-    public void createGameCollection(final String sessionId, final GameCollectionDetails gameCollectionDetails) {
-        LOGGER.log(Level.INFO, "createGameCollection: " + gameCollectionDetails);
+    public void createGameCollection(final String sessionId, final GameCollectionDetails details) {
+        LOGGER.log(Level.INFO, "createGameCollection: " + details);
 
         LoginResult loginResult = authenticator.checkSession(sessionId);
         if (loginResult == null || !loginResult.isLoggedIn()) {
             throw new IllegalStateException("Only logged in users can create a game collection");
         }
+
+        gameSetRepository.saveGameSet(details.getName(), details.getDescription(),
+                PersistentGameSet.Visibility.valueOf(details.getVisibility().toUpperCase()), loginResult.getUserId());
     }
 }

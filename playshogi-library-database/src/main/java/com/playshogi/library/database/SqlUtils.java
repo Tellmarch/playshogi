@@ -1,7 +1,9 @@
 package com.playshogi.library.database;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 
 public class SqlUtils {
 
@@ -11,6 +13,15 @@ public class SqlUtils {
             result = null;
         }
         return result;
+    }
+
+    public static void setInteger(final PreparedStatement preparedStatement, final int fieldIndex,
+                                  final Integer value) throws SQLException {
+        if (value == null) {
+            preparedStatement.setNull(fieldIndex, Types.INTEGER);
+        } else {
+            preparedStatement.setInt(fieldIndex, value);
+        }
     }
 
 }

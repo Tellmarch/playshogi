@@ -22,15 +22,20 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static com.playshogi.library.database.SqlUtils.setInteger;
+
 public class GameSetRepository {
 
     private static final Logger LOGGER = Logger.getLogger(GameSetRepository.class.getName());
 
-    private static final String INSERT_GAMESET = "INSERT INTO `playshogi`.`ps_gameset` (`name`, `description`)" + " " +
-            "VALUES (?, ?);";
+    private static final String INSERT_GAMESET = "INSERT INTO `playshogi`.`ps_gameset` (`name`, `description`, " +
+            "`visibility`, `owner_user_id`) VALUES (?, ?, ?, ?);";
     private static final String SELECT_GAMESET = "SELECT * FROM `playshogi`.`ps_gameset` WHERE id = ?";
     private static final String SELECT_ALL_GAMESET = "SELECT * FROM `playshogi`.`ps_gameset` LIMIT 1000";
     private static final String DELETE_GAMESET = "DELETE FROM `playshogi`.`ps_gameset` WHERE id = ?";
+
+    private static final String UPDATE_GAMESET = "UPDATE `playshogi`.`ps_gameset` " +
+            "SET `name` = ?, `description` = ?, `visibility` = ? WHERE `id` = ? AND `owner_user_id` = ?;";
 
     private static final String INSERT_GAMESET_GAME = "INSERT INTO `playshogi`.`ps_gamesetgame`" +
             "(`gameset_id`,`game_id`) VALUES (?,?);";
@@ -66,7 +71,8 @@ public class GameSetRepository {
         this.dbConnection = dbConnection;
     }
 
-    public int saveGameSet(final String name, final String description) {
+    public int saveGameSet(final String name, final String description, final PersistentGameSet.Visibility visibility
+            , final Integer ownerId) {
 
         int key = -1;
 
@@ -75,6 +81,8 @@ public class GameSetRepository {
                 Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setString(1, name);
             preparedStatement.setString(2, description);
+            preparedStatement.setInt(3, visibility.ordinal());
+            setInteger(preparedStatement, 4, ownerId);
             preparedStatement.executeUpdate();
 
             ResultSet rs = preparedStatement.getGeneratedKeys();
@@ -90,6 +98,31 @@ public class GameSetRepository {
         }
 
         return key;
+    }
+
+    public void updateGameSet(final int id, final String name, final String description,
+                              final PersistentGameSet.Visibility visibility
+            , final Integer ownerId) {
+
+        int key = -1;
+
+        Connection connection = dbConnection.getConnection();
+        try (PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_GAMESET)) {
+            preparedStatement.setString(1, name);
+            preparedStatement.setString(2, description);
+            preparedStatement.setInt(3, visibility.ordinal());
+            preparedStatement.setInt(4, id);
+            setInteger(preparedStatement, 5, ownerId);
+            int res = preparedStatement.executeUpdate();
+
+            if (res == 1) {
+                LOGGER.log(Level.INFO, "Updated gameset with index " + key);
+            } else {
+                LOGGER.log(Level.SEVERE, "Could not update gameset (res = " + res + ")");
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error updating the gameset in db", e);
+        }
     }
 
     public void addGameSetGameRecord(final int gameSetId, final int gameId) {

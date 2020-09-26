@@ -152,9 +152,7 @@ public class CollectionPropertiesPanel extends Composite {
     }
 
     public void showInUpdateDialog(final GameCollectionDetails details) {
-        if (updateDialogBox == null) {
-            updateDialogBox = createUpdateDialogBox();
-        }
+        updateDialogBox = createUpdateDialogBox();
 
         fillDetails(details);
 
@@ -163,9 +161,7 @@ public class CollectionPropertiesPanel extends Composite {
     }
 
     public void showInCreateDialog() {
-        if (createDialogBox == null) {
-            createDialogBox = createCreateDialogBox();
-        }
+        createDialogBox = createCreateDialogBox();
 
         title.setText("My New Game Collection");
         description.setText("My New Game Collection");
