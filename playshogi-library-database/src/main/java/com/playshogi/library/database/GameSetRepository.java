@@ -26,7 +26,8 @@ public class GameSetRepository {
 
     private static final Logger LOGGER = Logger.getLogger(GameSetRepository.class.getName());
 
-    private static final String INSERT_GAMESET = "INSERT INTO `playshogi`.`ps_gameset` (`name`)" + " VALUES (?);";
+    private static final String INSERT_GAMESET = "INSERT INTO `playshogi`.`ps_gameset` (`name`, `description`)" + " " +
+            "VALUES (?, ?);";
     private static final String SELECT_GAMESET = "SELECT * FROM `playshogi`.`ps_gameset` WHERE id = ?";
     private static final String SELECT_ALL_GAMESET = "SELECT * FROM `playshogi`.`ps_gameset` LIMIT 1000";
     private static final String DELETE_GAMESET = "DELETE FROM `playshogi`.`ps_gameset` WHERE id = ?";
@@ -65,7 +66,7 @@ public class GameSetRepository {
         this.dbConnection = dbConnection;
     }
 
-    public int saveGameSet(final String name) {
+    public int saveGameSet(final String name, final String description) {
 
         int key = -1;
 
@@ -73,6 +74,7 @@ public class GameSetRepository {
         try (PreparedStatement preparedStatement = connection.prepareStatement(INSERT_GAMESET,
                 Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setString(1, name);
+            preparedStatement.setString(2, description);
             preparedStatement.executeUpdate();
 
             ResultSet rs = preparedStatement.getGeneratedKeys();
@@ -110,8 +112,12 @@ public class GameSetRepository {
             if (rs.next()) {
                 LOGGER.log(Level.INFO, "Found gameset: " + rs.getString("name") + " with id: " + rs.getInt("id"));
                 String name = rs.getString("name");
+                String description = rs.getString("description");
+                PersistentGameSet.Visibility visibility = PersistentGameSet.Visibility.values()[rs.getInt("visibility"
+                )];
+                Integer ownerId = SqlUtils.getInteger(rs, "owner_user_id");
 
-                return new PersistentGameSet(gameSetId, name);
+                return new PersistentGameSet(gameSetId, name, description, visibility, ownerId);
             } else {
                 LOGGER.log(Level.INFO, "Did not find gameset: " + gameSetId);
                 return null;
@@ -130,8 +136,12 @@ public class GameSetRepository {
             while (rs.next()) {
                 String name = rs.getString("name");
                 int id = rs.getInt("id");
+                String description = rs.getString("description");
+                PersistentGameSet.Visibility visibility = PersistentGameSet.Visibility.values()[rs.getInt("visibility"
+                )];
+                Integer ownerId = SqlUtils.getInteger(rs, "owner_user_id");
 
-                result.add(new PersistentGameSet(id, name));
+                result.add(new PersistentGameSet(id, name, description, visibility, ownerId));
             }
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error retrieving gamesets in db", e);

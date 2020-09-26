@@ -2,6 +2,7 @@ package com.playshogi.website.gwt.client;
 
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.user.client.Cookies;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
 import com.google.web.bindery.event.shared.EventBus;
@@ -99,5 +100,13 @@ public class SessionInformation implements AsyncCallback<LoginResult> {
     public void register(final String username, final String password) {
         GWT.log("Registering as " + username);
         loginService.register(username, password, this);
+    }
+
+    public void ifLoggedIn(final Runnable runnable) {
+        if (isLoggedIn()) {
+            runnable.run();
+        } else {
+            Window.alert("This functionality is only available to logged in users - please log-in or register.");
+        }
     }
 }

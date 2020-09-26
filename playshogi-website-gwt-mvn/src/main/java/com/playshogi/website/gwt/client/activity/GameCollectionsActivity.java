@@ -7,7 +7,8 @@ import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.website.gwt.client.SessionInformation;
-import com.playshogi.website.gwt.client.events.*;
+import com.playshogi.website.gwt.client.events.DraftCollectionUploadedEvent;
+import com.playshogi.website.gwt.client.events.collections.*;
 import com.playshogi.website.gwt.client.place.GameCollectionsPlace;
 import com.playshogi.website.gwt.client.ui.GameCollectionsView;
 import com.playshogi.website.gwt.shared.models.GameCollectionDetails;
@@ -95,7 +96,7 @@ public class GameCollectionsActivity extends MyAbstractActivity {
     @EventHandler
     public void onSaveGameCollectionDetails(final SaveGameCollectionDetailsEvent event) {
         GWT.log("GameCollectionsActivity: Handling SaveGameCollectionDetailsEvent: " + event.getDetails());
-        kifuService.saveGameCollectionDetails(sessionInformation.getSessionId(), event.getDetails(),
+        kifuService.updateGameCollectionDetails(sessionInformation.getSessionId(), event.getDetails(),
                 new AsyncCallback<Void>() {
                     @Override
                     public void onFailure(final Throwable throwable) {
@@ -106,6 +107,25 @@ public class GameCollectionsActivity extends MyAbstractActivity {
                     @Override
                     public void onSuccess(final Void unused) {
                         GWT.log("GameCollectionsActivity: saveGameCollectionDetails success");
+                        eventBus.fireEvent(new SaveGameCollectionDetailsResultEvent(true));
+                    }
+                });
+    }
+
+    @EventHandler
+    public void onCreateGameCollection(final CreateGameCollectionEvent event) {
+        GWT.log("GameCollectionsActivity: Handling CreateGameCollectionEvent: " + event.getDetails());
+        kifuService.createGameCollection(sessionInformation.getSessionId(), event.getDetails(),
+                new AsyncCallback<Void>() {
+                    @Override
+                    public void onFailure(final Throwable throwable) {
+                        GWT.log("GameCollectionsActivity: error during createGameCollection");
+                        eventBus.fireEvent(new SaveGameCollectionDetailsResultEvent(false));
+                    }
+
+                    @Override
+                    public void onSuccess(final Void unused) {
+                        GWT.log("GameCollectionsActivity: createGameCollection success");
                         eventBus.fireEvent(new SaveGameCollectionDetailsResultEvent(true));
                     }
                 });

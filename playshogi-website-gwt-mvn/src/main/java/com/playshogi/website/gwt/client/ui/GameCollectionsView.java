@@ -12,8 +12,9 @@ import com.google.inject.Singleton;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
-import com.playshogi.website.gwt.client.events.ListCollectionGamesEvent;
-import com.playshogi.website.gwt.client.events.ListGameCollectionsEvent;
+import com.playshogi.website.gwt.client.SessionInformation;
+import com.playshogi.website.gwt.client.events.collections.ListCollectionGamesEvent;
+import com.playshogi.website.gwt.client.events.collections.ListGameCollectionsEvent;
 import com.playshogi.website.gwt.client.place.GameCollectionsPlace;
 import com.playshogi.website.gwt.client.place.OpeningsPlace;
 import com.playshogi.website.gwt.client.place.ViewKifuPlace;
@@ -44,16 +45,26 @@ public class GameCollectionsView extends Composite {
     private final CollectionPropertiesPanel collectionPropertiesPanel = new CollectionPropertiesPanel();
 
     @Inject
-    public GameCollectionsView(final PlaceController placeController) {
+    public GameCollectionsView(final PlaceController placeController, final SessionInformation sessionInformation) {
         this.placeController = placeController;
         GWT.log("Creating game collections view");
         FlowPanel flowPanel = new FlowPanel();
 
         flowPanel.add(new HTML("<br/>"));
 
+        HorizontalPanel buttonsPanel = new HorizontalPanel();
+        buttonsPanel.setSpacing(5);
+
+        Button createButton = new Button("Create New Game Collection");
+        createButton.addClickHandler(clickEvent -> sessionInformation.ifLoggedIn(collectionPropertiesPanel::showInCreateDialog));
+        buttonsPanel.add(createButton);
+
         Button importButton = new Button("Import Game Collection");
-        importButton.addClickHandler(clickEvent -> importCollectionPanel.showInDialog());
-        flowPanel.add(importButton);
+        importButton.addClickHandler(clickEvent -> sessionInformation.ifLoggedIn(importCollectionPanel::showInDialog));
+        buttonsPanel.add(importButton);
+
+
+        flowPanel.add(buttonsPanel);
 
         flowPanel.add(new HTML("<br/>"));
 
@@ -124,7 +135,7 @@ public class GameCollectionsView extends Composite {
         }, "Explore");
 
         ActionCell<GameCollectionDetails> propertiesActionCell = new ActionCell<>("Properties",
-                collectionPropertiesPanel::showInDialog);
+                collectionPropertiesPanel::showInUpdateDialog);
 
         collectionsTable.addColumn(new Column<GameCollectionDetails, GameCollectionDetails>(propertiesActionCell) {
             @Override
