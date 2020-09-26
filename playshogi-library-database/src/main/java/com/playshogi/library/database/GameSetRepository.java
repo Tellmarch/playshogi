@@ -197,13 +197,17 @@ public class GameSetRepository {
         }
     }
 
-    public void addGameToGameSet(final GameRecord gameRecord, final int gameSetId, final int venueId,
-                                 final String gameName, final int authorId) {
+    public boolean addGameToGameSet(final GameRecord gameRecord, final int gameSetId, final int venueId,
+                                    final String gameName, final int authorId) {
         PositionRepository rep = new PositionRepository(dbConnection);
         KifuRepository kifuRep = new KifuRepository(dbConnection);
         GameRepository gameRep = new GameRepository(dbConnection);
 
         int kifuId = kifuRep.saveKifu(gameRecord, gameName, authorId, KifuType.GAME);
+
+        if (kifuId == -1) {
+            return false;
+        }
 
         int gameId = gameRep.saveGame(kifuId, null, null, gameRecord.getGameInformation().getSente(),
                 gameRecord.getGameInformation().getGote(),
@@ -237,6 +241,7 @@ public class GameSetRepository {
             lastPositionId = positionId;
         }
 
+        return true;
     }
 
     private Date parseDate(final String date) {

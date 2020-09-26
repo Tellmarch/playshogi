@@ -6,8 +6,10 @@ import com.google.gwt.user.client.ui.AcceptsOneWidget;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
+import com.playshogi.library.shogi.models.formats.usf.UsfFormat;
 import com.playshogi.website.gwt.client.SessionInformation;
 import com.playshogi.website.gwt.client.events.collections.*;
+import com.playshogi.website.gwt.client.events.kifu.ImportGameRecordEvent;
 import com.playshogi.website.gwt.client.place.GameCollectionsPlace;
 import com.playshogi.website.gwt.client.ui.GameCollectionsView;
 import com.playshogi.website.gwt.shared.models.GameCollectionDetails;
@@ -43,6 +45,12 @@ public class GameCollectionsActivity extends MyAbstractActivity {
         eventBinder.bindEventHandlers(this, eventBus);
         gameCollectionsView.activate(eventBus);
 
+        fetchData();
+
+        containerWidget.setWidget(gameCollectionsView.asWidget());
+    }
+
+    private void fetchData() {
         kifuService.getGameCollections(sessionInformation.getSessionId(), new AsyncCallback<GameCollectionDetails[]>() {
             @Override
             public void onFailure(Throwable throwable) {
@@ -72,8 +80,6 @@ public class GameCollectionsActivity extends MyAbstractActivity {
                         }
                     });
         }
-
-        containerWidget.setWidget(gameCollectionsView.asWidget());
     }
 
     @EventHandler
@@ -88,6 +94,7 @@ public class GameCollectionsActivity extends MyAbstractActivity {
             @Override
             public void onSuccess(final String s) {
                 GWT.log("GameCollectionsActivity: saved draft collection");
+                refresh();
             }
         });
     }
@@ -107,6 +114,7 @@ public class GameCollectionsActivity extends MyAbstractActivity {
                     public void onSuccess(final Void unused) {
                         GWT.log("GameCollectionsActivity: saveGameCollectionDetails success");
                         eventBus.fireEvent(new SaveGameCollectionDetailsResultEvent(true));
+                        refresh();
                     }
                 });
     }
@@ -126,8 +134,33 @@ public class GameCollectionsActivity extends MyAbstractActivity {
                     public void onSuccess(final Void unused) {
                         GWT.log("GameCollectionsActivity: createGameCollection success");
                         eventBus.fireEvent(new SaveGameCollectionDetailsResultEvent(true));
+                        refresh();
                     }
                 });
+    }
+
+    @EventHandler
+    public void onImportGameRecord(final ImportGameRecordEvent event) {
+        GWT.log("GameCollectionsActivity Handling ImportGameRecordEvent");
+
+        kifuService.saveKifu(sessionInformation.getSessionId(), UsfFormat.INSTANCE.write(event.getGameRecord()),
+                event.getCollectionId(), new AsyncCallback<Void>() {
+            @Override
+            public void onFailure(final Throwable throwable) {
+                GWT.log("GameCollectionsActivity: error during saveKifu");
+            }
+
+            @Override
+            public void onSuccess(final Void unused) {
+                GWT.log("GameCollectionsActivity: saveKifu success");
+                refresh();
+            }
+        });
+
+    }
+
+    private void refresh() {
+        fetchData();
     }
 
 }

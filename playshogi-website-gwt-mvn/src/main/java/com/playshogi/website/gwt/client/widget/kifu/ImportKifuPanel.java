@@ -11,7 +11,7 @@ import com.playshogi.library.models.record.GameRecord;
 import com.playshogi.library.shogi.models.formats.kif.KifFormat;
 import com.playshogi.library.shogi.models.formats.psn.PsnFormat;
 import com.playshogi.library.shogi.models.formats.usf.UsfFormat;
-import com.playshogi.website.gwt.client.events.kifu.GameRecordChangedEvent;
+import com.playshogi.website.gwt.client.events.kifu.ImportGameRecordEvent;
 
 public class ImportKifuPanel extends Composite implements ClickHandler {
 
@@ -19,6 +19,7 @@ public class ImportKifuPanel extends Composite implements ClickHandler {
     private final TextArea textArea;
     private EventBus eventBus;
     private DialogBox dialogBox;
+    private String collectionId;
 
     public ImportKifuPanel() {
 
@@ -71,7 +72,7 @@ public class ImportKifuPanel extends Composite implements ClickHandler {
                 String usf = result.substring(8);
                 GWT.log("Kifu USF: " + usf);
                 GameRecord gameRecord = UsfFormat.INSTANCE.read(usf);
-                updateBoard(gameRecord);
+                importGameRecord(gameRecord);
             } else {
                 GWT.log("Don't know how to handle the response: " + result);
             }
@@ -83,7 +84,7 @@ public class ImportKifuPanel extends Composite implements ClickHandler {
     public void onClick(final ClickEvent event) {
         Object source = event.getSource();
         if (source == loadFromTextButton) {
-            importGame();
+            importGameFromText();
         }
     }
 
@@ -92,7 +93,7 @@ public class ImportKifuPanel extends Composite implements ClickHandler {
         this.eventBus = eventBus;
     }
 
-    private void importGame() {
+    private void importGameFromText() {
         GWT.log("Importing game...");
         String gameText = textArea.getText();
         GameRecord gameRecord;
@@ -107,11 +108,11 @@ public class ImportKifuPanel extends Composite implements ClickHandler {
             gameRecord = KifFormat.INSTANCE.read(gameText);
         }
         GWT.log("Firing game record changed event...");
-        updateBoard(gameRecord);
+        importGameRecord(gameRecord);
     }
 
-    private void updateBoard(GameRecord gameRecord) {
-        eventBus.fireEvent(new GameRecordChangedEvent(gameRecord));
+    private void importGameRecord(final GameRecord gameRecord) {
+        eventBus.fireEvent(new ImportGameRecordEvent(gameRecord, collectionId));
         dialogBox.hide();
     }
 
@@ -136,10 +137,11 @@ public class ImportKifuPanel extends Composite implements ClickHandler {
         return dialogBox;
     }
 
-    public void showInDialog() {
+    public void showInDialog(final String collectionId) {
         if (dialogBox == null) {
             dialogBox = createImportDialogBox();
         }
+        this.collectionId = collectionId;
         dialogBox.center();
         dialogBox.show();
     }

@@ -8,6 +8,7 @@ import com.playshogi.library.database.models.PersistentGameSetMove;
 import com.playshogi.library.database.models.PersistentGameSetPos;
 import com.playshogi.library.database.models.PersistentKifu.KifuType;
 import com.playshogi.library.models.record.GameCollection;
+import com.playshogi.library.models.record.GameInformation;
 import com.playshogi.library.models.record.GameRecord;
 import com.playshogi.library.shogi.engine.*;
 import com.playshogi.library.shogi.models.formats.sfen.SfenConverter;
@@ -54,10 +55,38 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
     @Override
     public String saveKifu(final String sessionId, final String kifuUsf) {
         LOGGER.log(Level.INFO, "saving kifu:\n" + kifuUsf);
+
+        LoginResult loginResult = authenticator.checkSession(sessionId);
+        if (loginResult == null || !loginResult.isLoggedIn()) {
+            throw new IllegalStateException("Only logged in users can save a game");
+        }
+
         GameRecord gameRecord = UsfFormat.INSTANCE.read(kifuUsf);
         String name = UUID.randomUUID().toString();
         int kifuId = kifuRepository.saveKifu(gameRecord, name, 1, KifuType.GAME);
         return String.valueOf(kifuId);
+    }
+
+    @Override
+    public void saveKifu(final String sessionId, final String kifuUsf, final String collectionId) {
+        LOGGER.log(Level.INFO, "saving kifu in collection:\n" + kifuUsf);
+
+        LoginResult loginResult = authenticator.checkSession(sessionId);
+        if (loginResult == null || !loginResult.isLoggedIn()) {
+            throw new IllegalStateException("Only logged in users can save a game");
+        }
+
+        GameRecord gameRecord = UsfFormat.INSTANCE.read(kifuUsf);
+        String name = getDefaultName(gameRecord).substring(0, 40);
+        if (!gameSetRepository.addGameToGameSet(gameRecord, Integer.parseInt(collectionId), 1, name,
+                loginResult.getUserId())) {
+            throw new IllegalArgumentException("Could not save the kifu in database");
+        }
+    }
+
+    private String getDefaultName(final GameRecord gameRecord) {
+        GameInformation info = gameRecord.getGameInformation();
+        return info.getVenue() + " - " + info.getSente() + " - " + info.getGote() + " - " + info.getDate();
     }
 
     @Override

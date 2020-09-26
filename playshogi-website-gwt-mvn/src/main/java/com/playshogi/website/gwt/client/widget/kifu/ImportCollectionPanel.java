@@ -6,9 +6,7 @@ import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import com.google.web.bindery.event.shared.EventBus;
-import com.playshogi.library.models.record.GameRecord;
 import com.playshogi.website.gwt.client.events.collections.DraftCollectionUploadedEvent;
-import com.playshogi.website.gwt.client.events.kifu.GameRecordChangedEvent;
 
 public class ImportCollectionPanel extends Composite {
 
@@ -93,11 +91,6 @@ public class ImportCollectionPanel extends Composite {
     public void activate(final EventBus eventBus) {
         GWT.log("Activating kifu importer panel");
         this.eventBus = eventBus;
-    }
-
-    private void updateBoard(GameRecord gameRecord) {
-        eventBus.fireEvent(new GameRecordChangedEvent(gameRecord));
-        dialogBox.hide();
     }
 
 }

@@ -60,7 +60,7 @@ public class KifuEditorPanel extends Composite implements ClickHandler {
         Object source = event.getSource();
         if (source == importButton) {
             GWT.log("Kifu editor: Opening the import dialog box");
-            importKifuPanel.showInDialog();
+            importKifuPanel.showInDialog(null);
         } else if (source == saveButton) {
             GWT.log("Kifu editor: request saving kifu");
             eventBus.fireEvent(new GameRecordSaveRequestedEvent());

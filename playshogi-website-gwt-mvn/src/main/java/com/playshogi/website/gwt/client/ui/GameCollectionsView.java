@@ -20,6 +20,7 @@ import com.playshogi.website.gwt.client.place.OpeningsPlace;
 import com.playshogi.website.gwt.client.place.ViewKifuPlace;
 import com.playshogi.website.gwt.client.widget.kifu.CollectionPropertiesPanel;
 import com.playshogi.website.gwt.client.widget.kifu.ImportCollectionPanel;
+import com.playshogi.website.gwt.client.widget.kifu.ImportKifuPanel;
 import com.playshogi.website.gwt.shared.models.GameCollectionDetails;
 import com.playshogi.website.gwt.shared.models.KifuDetails;
 
@@ -43,6 +44,7 @@ public class GameCollectionsView extends Composite {
     private final VerticalPanel kifusPanel;
     private final ImportCollectionPanel importCollectionPanel = new ImportCollectionPanel();
     private final CollectionPropertiesPanel collectionPropertiesPanel = new CollectionPropertiesPanel();
+    private final ImportKifuPanel importKifuPanel = new ImportKifuPanel();
 
     @Inject
     public GameCollectionsView(final PlaceController placeController, final SessionInformation sessionInformation) {
@@ -123,6 +125,16 @@ public class GameCollectionsView extends Composite {
             }
         }, "List Games");
 
+        ActionCell<GameCollectionDetails> addGameActionCell = new ActionCell<>("Add Game",
+                gameCollectionDetails -> importKifuPanel.showInDialog(gameCollectionDetails.getId()));
+
+        collectionsTable.addColumn(new Column<GameCollectionDetails, GameCollectionDetails>(addGameActionCell) {
+            @Override
+            public GameCollectionDetails getValue(final GameCollectionDetails gameCollectionDetails) {
+                return gameCollectionDetails;
+            }
+        }, "Add Game");
+
         ActionCell<GameCollectionDetails> exploreActionCell = new ActionCell<>("Explore",
                 gameCollectionDetails -> placeController.goTo(new OpeningsPlace(OpeningsPlace.DEFAULT_SFEN,
                         gameCollectionDetails.getId())));
@@ -193,6 +205,7 @@ public class GameCollectionsView extends Composite {
         kifusPanel.setVisible(false);
         importCollectionPanel.activate(eventBus);
         collectionPropertiesPanel.activate(eventBus);
+        importKifuPanel.activate(eventBus);
     }
 
     @EventHandler

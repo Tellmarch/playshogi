@@ -11,8 +11,8 @@ import com.playshogi.library.shogi.models.formats.usf.UsfFormat;
 import com.playshogi.website.gwt.client.SessionInformation;
 import com.playshogi.website.gwt.client.events.gametree.GameTreeChangedEvent;
 import com.playshogi.website.gwt.client.events.kifu.GameInformationChangedEvent;
-import com.playshogi.website.gwt.client.events.kifu.GameRecordChangedEvent;
 import com.playshogi.website.gwt.client.events.kifu.GameRecordSaveRequestedEvent;
+import com.playshogi.website.gwt.client.events.kifu.ImportGameRecordEvent;
 import com.playshogi.website.gwt.client.place.NewKifuPlace;
 import com.playshogi.website.gwt.client.ui.NewKifuView;
 import com.playshogi.website.gwt.shared.services.KifuService;
@@ -57,8 +57,8 @@ public class NewKifuActivity extends MyAbstractActivity {
     }
 
     @EventHandler
-    public void onGameRecordChanged(final GameRecordChangedEvent gameRecordChangedEvent) {
-        GWT.log("New Kifu Activity Handling GameRecordChangedEvent");
+    public void onImportGameRecord(final ImportGameRecordEvent gameRecordChangedEvent) {
+        GWT.log("New Kifu Activity Handling ImportGameRecordEvent");
         gameRecord = gameRecordChangedEvent.getGameRecord();
         eventBus.fireEvent(new GameTreeChangedEvent(gameRecord.getGameTree()));
         eventBus.fireEvent(new GameInformationChangedEvent(gameRecord.getGameInformation()));

@@ -9,6 +9,8 @@ public interface KifuService extends RemoteService {
 
     String saveKifu(String sessionId, String kifuUsf);
 
+    void saveKifu(String sessionId, String kifuUsf, String collectionId);
+
     String getKifuUsf(String sessionId, String kifuId);
 
     KifuDetails[] getGameSetKifuDetails(String sessionId, String gameSetId);
