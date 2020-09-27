@@ -5,14 +5,15 @@ import com.google.gwt.user.client.ui.*;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
-import com.googlecode.gwt.charts.client.ChartLoader;
-import com.googlecode.gwt.charts.client.ChartPackage;
-import com.googlecode.gwt.charts.client.ColumnType;
-import com.googlecode.gwt.charts.client.DataTable;
+import com.googlecode.gwt.charts.client.*;
 import com.googlecode.gwt.charts.client.corechart.LineChart;
 import com.googlecode.gwt.charts.client.corechart.LineChartOptions;
+import com.googlecode.gwt.charts.client.event.SelectEvent;
+import com.googlecode.gwt.charts.client.event.SelectHandler;
 import com.googlecode.gwt.charts.client.options.HAxis;
 import com.googlecode.gwt.charts.client.options.VAxis;
+import com.playshogi.website.gwt.client.events.gametree.MoveSelectedEvent;
+import com.playshogi.website.gwt.client.events.gametree.PositionChangedEvent;
 import com.playshogi.website.gwt.client.events.kifu.KifuEvaluationEvent;
 import com.playshogi.website.gwt.client.events.kifu.RequestKifuEvaluationEvent;
 import com.playshogi.website.gwt.shared.models.AnalysisRequestStatus;
@@ -20,6 +21,8 @@ import com.playshogi.website.gwt.shared.models.PositionEvaluationDetails;
 import com.playshogi.website.gwt.shared.models.PrincipalVariationDetails;
 
 public class KifuEvaluationChartPanel extends Composite {
+
+    private PositionEvaluationDetails[] positionEvaluationDetails;
 
     interface MyEventBinder extends EventBinder<KifuEvaluationChartPanel> {
     }
@@ -30,6 +33,7 @@ public class KifuEvaluationChartPanel extends Composite {
     private VerticalPanel panel;
     private LineChart chart;
     private final HTML statusHTML;
+    private String kifuId;
 
     public KifuEvaluationChartPanel() {
         panel = new VerticalPanel();
@@ -55,6 +59,16 @@ public class KifuEvaluationChartPanel extends Composite {
         ChartLoader chartLoader = new ChartLoader(ChartPackage.CORECHART);
         chartLoader.loadApi(() -> {
             chart = new LineChart();
+            chart.addSelectHandler(new SelectHandler() {
+                @Override
+                public void onSelect(final SelectEvent selectEvent) {
+                    if (chart.getSelection().length() > 0) {
+                        int move = chart.getSelection().get(0).getRow();
+                        GWT.log("Selected move " + move);
+                        eventBus.fireEvent(new MoveSelectedEvent(move));
+                    }
+                }
+            });
             panel.add(chart);
         });
     }
@@ -62,6 +76,10 @@ public class KifuEvaluationChartPanel extends Composite {
     @EventHandler
     public void onKifuEvaluationEvent(final KifuEvaluationEvent event) {
         GWT.log("KifuEvaluationChartPanel: handle KifuEvaluationEvent");
+        if (!event.getKifuId().equals(kifuId)) {
+            GWT.log("KifuEvaluationChartPanel: handle KifuEvaluationEvent - not for us");
+            return;
+        }
         AnalysisRequestStatus status = event.getStatus();
         switch (status) {
             case IN_PROGRESS:
@@ -95,14 +113,18 @@ public class KifuEvaluationChartPanel extends Composite {
         DataTable dataTable = DataTable.create();
         dataTable.addColumn(ColumnType.NUMBER, "move");
         dataTable.addColumn(ColumnType.NUMBER, "evaluation");
-        PositionEvaluationDetails[] positionEvaluationDetails = event.getPositionEvaluationDetails();
+        positionEvaluationDetails = event.getPositionEvaluationDetails();
         dataTable.addRows(positionEvaluationDetails.length);
         for (int i = 0; i < positionEvaluationDetails.length; i++) {
             PrincipalVariationDetails[] history = positionEvaluationDetails[i].getPrincipalVariationHistory();
             if (history.length > 0) {
                 dataTable.setValue(i, 0, i);
-                int graphValue = i % 2 == 0 ? history[0].getEvaluationCP() : -history[0].getEvaluationCP();
+                PrincipalVariationDetails latest = history[history.length - 1];
+                int graphValue = i % 2 == 0 ? latest.getEvaluationCP() : -latest.getEvaluationCP();
                 graphValue = Math.min(1000, Math.max(-1000, graphValue));
+                if (latest.isForcedMate()) {
+                    graphValue = (latest.getNumMovesBeforeMate() < 0) == (i % 2 == 0) ? -1000 : 1000;
+                }
                 dataTable.setValue(i, 1, graphValue);
             }
         }
@@ -117,11 +139,24 @@ public class KifuEvaluationChartPanel extends Composite {
         options.setHeight(400);
 
         chart.draw(dataTable, options);
+        chart.setVisible(true);
     }
 
-    public void activate(final EventBus eventBus) {
+    public void activate(final EventBus eventBus, final String kifuId) {
         GWT.log("Activating KifuEvaluationChartPanel");
+        this.kifuId = kifuId;
         this.eventBus = eventBus;
         eventBinder.bindEventHandlers(this, eventBus);
+        if (chart != null) {
+            chart.setVisible(false);
+        }
+    }
+
+    @EventHandler
+    public void onPositionChangedEvent(final PositionChangedEvent event) {
+        GWT.log("KifuEvaluationChartPanel handling PositionChangedEvent");
+        if (chart != null) {
+            chart.setSelection(Selection.create(event.getPosition().getMoveCount(), 1));
+        }
     }
 }

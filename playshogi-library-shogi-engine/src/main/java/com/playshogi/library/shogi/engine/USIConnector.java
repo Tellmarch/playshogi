@@ -81,8 +81,6 @@ public class USIConnector {
             throw new IllegalStateException("Engine is not connected");
         }
 
-        ArrayList<PositionEvaluation> evaluations = new ArrayList<>();
-
         GameNavigation<ShogiPosition> gameNavigation = new GameNavigation<>(new ShogiRulesEngine(),
                 gameTree, ShogiInitialPositionFactory.createInitialPosition());
 
@@ -90,7 +88,7 @@ public class USIConnector {
 
         callback.processPositionEvaluation(analysePosition(SfenConverter.toSFEN(position), timeMs));
 
-        while (gameNavigation.canMoveForward()) {
+        while (!gameNavigation.isEndOfVariation()) {
             gameNavigation.moveForward();
             position = gameNavigation.getPosition();
             callback.processPositionEvaluation(analysePosition(SfenConverter.toSFEN(position), timeMs));

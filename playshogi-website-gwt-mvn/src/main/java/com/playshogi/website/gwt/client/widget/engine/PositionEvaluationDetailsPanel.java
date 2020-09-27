@@ -99,11 +99,13 @@ public class PositionEvaluationDetailsPanel extends Composite {
             list.add(principalVariationHistory[i]);
         }
         table.setRowData(0, list);
+        table.setVisible(true);
     }
 
     public void activate(final EventBus eventBus) {
         GWT.log("Activating PositionEvaluationDetailsPanel");
         this.eventBus = eventBus;
         eventBinder.bindEventHandlers(this, eventBus);
+        table.setVisible(false);
     }
 }

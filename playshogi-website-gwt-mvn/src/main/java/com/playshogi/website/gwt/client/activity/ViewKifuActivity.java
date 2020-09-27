@@ -13,6 +13,7 @@ import com.playshogi.library.shogi.models.formats.sfen.SfenConverter;
 import com.playshogi.library.shogi.models.formats.usf.UsfFormat;
 import com.playshogi.website.gwt.client.SessionInformation;
 import com.playshogi.website.gwt.client.events.gametree.GameTreeChangedEvent;
+import com.playshogi.website.gwt.client.events.gametree.MoveSelectedEvent;
 import com.playshogi.website.gwt.client.events.gametree.PositionChangedEvent;
 import com.playshogi.website.gwt.client.events.kifu.*;
 import com.playshogi.website.gwt.client.place.ViewKifuPlace;
@@ -41,7 +42,8 @@ public class ViewKifuActivity extends MyAbstractActivity {
     private final SessionInformation sessionInformation;
 
     private final String kifuId;
-    private int initialMoveCount;
+    private final int initialMoveCount;
+    private AnalysisRequestResult analysisResult;
 
     public ViewKifuActivity(final ViewKifuPlace place, final ViewKifuView viewKifuView,
                             final SessionInformation sessionInformation) {
@@ -56,7 +58,7 @@ public class ViewKifuActivity extends MyAbstractActivity {
         GWT.log("Starting view kifu activity");
         this.eventBus = eventBus;
         eventBinder.bindEventHandlers(this, eventBus);
-        viewKifuView.activate(eventBus);
+        viewKifuView.activate(eventBus, kifuId);
         containerWidget.setWidget(viewKifuView.asWidget());
 
         kifuService.getKifuUsf(sessionInformation.getSessionId(), kifuId, new AsyncCallback<String>() {
@@ -138,7 +140,7 @@ public class ViewKifuActivity extends MyAbstractActivity {
                     public void onSuccess(AnalysisRequestStatus result) {
                         GWT.log("ViewKifu - kifu evaluation result: " + result);
                         if (result.isDenied()) {
-                            eventBus.fireEvent(new KifuEvaluationEvent(new AnalysisRequestResult(result)));
+                            eventBus.fireEvent(new KifuEvaluationEvent(new AnalysisRequestResult(result), kifuId));
                         } else if (result.needToWait()) {
 
                             Timer timer = new Timer() {
@@ -159,6 +161,7 @@ public class ViewKifuActivity extends MyAbstractActivity {
     private void queryKifuAnalysisResults(final String usf, final Timer timer) {
         kifuService.getKifuAnalysisResults(sessionInformation.getSessionId(), usf,
                 new AsyncCallback<AnalysisRequestResult>() {
+
                     @Override
                     public void onFailure(Throwable throwable) {
                         GWT.log("ViewKifu - error requesting kifu analysis results");
@@ -171,7 +174,8 @@ public class ViewKifuActivity extends MyAbstractActivity {
                         if (result.getStatus().isFinal()) {
                             if (timer != null) timer.cancel();
                         }
-                        eventBus.fireEvent(new KifuEvaluationEvent(result));
+                        analysisResult = result;
+                        eventBus.fireEvent(new KifuEvaluationEvent(result, kifuId));
                     }
                 });
     }
@@ -179,8 +183,21 @@ public class ViewKifuActivity extends MyAbstractActivity {
     @EventHandler
     public void onPositionChangedEvent(final PositionChangedEvent event) {
         GWT.log("ViewKifuActivity handling PositionChangedEvent");
+
+        int moveCount = event.getPosition().getMoveCount();
         //Update URL with the new move count
         History.newItem("ViewKifu:" + new ViewKifuPlace.Tokenizer().getToken(new ViewKifuPlace(kifuId,
-                event.getPosition().getMoveCount())), false);
+                moveCount)), false);
+
+        if (analysisResult != null && analysisResult.getDetails().length > moveCount) {
+            eventBus.fireEvent(new PositionEvaluationEvent(analysisResult.getDetails()[moveCount]));
+        }
     }
+
+    @EventHandler
+    public void onMoveSelectedEvent(final MoveSelectedEvent event) {
+        GWT.log("ViewKifuActivity handling MoveSelectedEvent");
+        eventBus.fireEvent(new GameTreeChangedEvent(gameRecord.getGameTree(), event.getMoveNumber()));
+    }
+
 }

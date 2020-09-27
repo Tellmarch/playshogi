@@ -7,9 +7,11 @@ import com.playshogi.website.gwt.shared.models.PositionEvaluationDetails;
 
 public class KifuEvaluationEvent extends GenericEvent {
     private final AnalysisRequestResult result;
+    private final String kifuId;
 
-    public KifuEvaluationEvent(AnalysisRequestResult result) {
+    public KifuEvaluationEvent(AnalysisRequestResult result, final String kifuId) {
         this.result = result;
+        this.kifuId = kifuId;
     }
 
     public AnalysisRequestResult getResult() {
@@ -22,6 +24,10 @@ public class KifuEvaluationEvent extends GenericEvent {
 
     public AnalysisRequestStatus getStatus() {
         return result.getStatus();
+    }
+
+    public String getKifuId() {
+        return kifuId;
     }
 
     public int getQueuePosition() {

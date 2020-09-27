@@ -51,13 +51,13 @@ public class ViewKifuView extends Composite {
         initWidget(verticalPanel);
     }
 
-    public void activate(final EventBus eventBus) {
+    public void activate(final EventBus eventBus, final String kifuId) {
         GWT.log("Activating ViewKifuView");
         shogiBoard.activate(eventBus);
         gameNavigator.activate(eventBus);
         kifuInformationPanel.activate(eventBus);
         positionEvaluationDetailsPanel.activate(eventBus);
-        kifuEvaluationChartPanel.activate(eventBus);
+        kifuEvaluationChartPanel.activate(eventBus, kifuId);
     }
 
     public GameNavigator getGameNavigator() {
