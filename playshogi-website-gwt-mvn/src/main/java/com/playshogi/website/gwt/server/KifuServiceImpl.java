@@ -107,31 +107,59 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
     }
 
     @Override
-    public GameCollectionDetails[] getGameCollections(final String sessionId) {
+    public GameCollectionDetailsList getGameCollections(final String sessionId) {
 
-        ArrayList<GameCollectionDetails> gameCollectionDetails = new ArrayList<>();
+        ArrayList<GameCollectionDetails> publicCollectionDetails = new ArrayList<>();
 
-        List<PersistentGameSet> allGameSets = gameSetRepository.getAllGameSets();
-        for (PersistentGameSet gameSet : allGameSets) {
-            GameCollectionDetails details = new GameCollectionDetails();
-            details.setId(String.valueOf(gameSet.getId()));
-            details.setName(gameSet.getName());
-            details.setDescription(gameSet.getDescription());
-            details.setVisibility(gameSet.getVisibility().toString().toLowerCase());
-
-            gameCollectionDetails.add(details);
+        List<PersistentGameSet> publicGameSets = gameSetRepository.getAllPublicGameSets();
+        for (PersistentGameSet gameSet : publicGameSets) {
+            publicCollectionDetails.add(getCollectionDetails(gameSet));
         }
 
-        return gameCollectionDetails.toArray(new GameCollectionDetails[0]);
+        ArrayList<GameCollectionDetails> userCollectionDetails = new ArrayList<>();
+
+        LoginResult loginResult = authenticator.checkSession(sessionId);
+        if (loginResult != null && loginResult.isLoggedIn()) {
+            List<PersistentGameSet> userGameSets = gameSetRepository.getGameSetsForUser(loginResult.getUserId());
+            for (PersistentGameSet gameSet : userGameSets) {
+                userCollectionDetails.add(getCollectionDetails(gameSet));
+            }
+        }
+
+        GameCollectionDetailsList result = new GameCollectionDetailsList();
+        result.setPublicCollections(publicCollectionDetails.toArray(new GameCollectionDetails[0]));
+        result.setMyCollections(userCollectionDetails.toArray(new GameCollectionDetails[0]));
+
+        return result;
+    }
+
+    private GameCollectionDetails getCollectionDetails(final PersistentGameSet gameSet) {
+        GameCollectionDetails details = new GameCollectionDetails();
+        details.setId(String.valueOf(gameSet.getId()));
+        details.setName(gameSet.getName());
+        details.setDescription(gameSet.getDescription());
+        details.setVisibility(gameSet.getVisibility().toString().toLowerCase());
+        return details;
     }
 
     @Override
-    public KifuDetails[] getGameSetKifuDetails(final String sessionId, final String gameSetId) {
+    public GameCollectionDetailsAndGames getGameSetKifuDetails(final String sessionId, final String gameSetId) {
         LOGGER.log(Level.INFO, "getGameSetKifuDetails:\n" + gameSetId);
+
+        //TODO access control
+
+        PersistentGameSet gameSet = gameSetRepository.getGameSetById(Integer.parseInt(gameSetId));
+        if (gameSet == null) {
+            throw new IllegalArgumentException("Invalid gameSet ID");
+        }
 
         List<PersistentGame> games = gameRepository.getGamesFromGameSet(Integer.parseInt(gameSetId));
 
-        return games.stream().map(this::createKifuDetails).toArray(KifuDetails[]::new);
+        GameCollectionDetailsAndGames result = new GameCollectionDetailsAndGames();
+        result.setDetails(getCollectionDetails(gameSet));
+        result.setGames(games.stream().map(this::createKifuDetails).toArray(KifuDetails[]::new));
+
+        return result;
     }
 
     private KifuDetails createKifuDetails(final PersistentGame game) {

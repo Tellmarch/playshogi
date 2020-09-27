@@ -31,6 +31,11 @@ public class GameSetRepository {
     private static final String INSERT_GAMESET = "INSERT INTO `playshogi`.`ps_gameset` (`name`, `description`, " +
             "`visibility`, `owner_user_id`) VALUES (?, ?, ?, ?);";
     private static final String SELECT_GAMESET = "SELECT * FROM `playshogi`.`ps_gameset` WHERE id = ?";
+
+    private static final String SELECT_GAMESETS_FOR_USER = "SELECT * FROM `playshogi`.`ps_gameset` WHERE " +
+            "owner_user_id = ? LIMIT 1000";
+    private static final String SELECT_PUBLIC_GAMESETS = "SELECT * FROM `playshogi`.`ps_gameset` WHERE visibility = 2" +
+            " LIMIT 1000";
     private static final String SELECT_ALL_GAMESET = "SELECT * FROM `playshogi`.`ps_gameset` LIMIT 1000";
     private static final String DELETE_GAMESET = "DELETE FROM `playshogi`.`ps_gameset` WHERE id = ?";
 
@@ -181,6 +186,50 @@ public class GameSetRepository {
         }
         return result;
     }
+
+    public List<PersistentGameSet> getAllPublicGameSets() {
+        List<PersistentGameSet> result = new ArrayList<>();
+        Connection connection = dbConnection.getConnection();
+        try (PreparedStatement preparedStatement = connection.prepareStatement(SELECT_PUBLIC_GAMESETS)) {
+            ResultSet rs = preparedStatement.executeQuery();
+            while (rs.next()) {
+                String name = rs.getString("name");
+                int id = rs.getInt("id");
+                String description = rs.getString("description");
+                PersistentGameSet.Visibility visibility = PersistentGameSet.Visibility.values()[rs.getInt("visibility"
+                )];
+                Integer ownerId = SqlUtils.getInteger(rs, "owner_user_id");
+
+                result.add(new PersistentGameSet(id, name, description, visibility, ownerId));
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error retrieving public gamesets in db", e);
+        }
+        return result;
+    }
+
+    public List<PersistentGameSet> getGameSetsForUser(int userId) {
+        List<PersistentGameSet> result = new ArrayList<>();
+        Connection connection = dbConnection.getConnection();
+        try (PreparedStatement preparedStatement = connection.prepareStatement(SELECT_GAMESETS_FOR_USER)) {
+            preparedStatement.setInt(1, userId);
+            ResultSet rs = preparedStatement.executeQuery();
+            while (rs.next()) {
+                String name = rs.getString("name");
+                int id = rs.getInt("id");
+                String description = rs.getString("description");
+                PersistentGameSet.Visibility visibility = PersistentGameSet.Visibility.values()[rs.getInt("visibility"
+                )];
+                Integer ownerId = SqlUtils.getInteger(rs, "owner_user_id");
+
+                result.add(new PersistentGameSet(id, name, description, visibility, ownerId));
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error retrieving gamesets for user in db", e);
+        }
+        return result;
+    }
+
 
     public void deleteGamesetById(final int gameSetId) {
         Connection connection = dbConnection.getConnection();

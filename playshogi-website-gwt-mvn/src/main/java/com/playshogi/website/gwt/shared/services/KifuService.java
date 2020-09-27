@@ -13,7 +13,7 @@ public interface KifuService extends RemoteService {
 
     String getKifuUsf(String sessionId, String kifuId);
 
-    KifuDetails[] getGameSetKifuDetails(String sessionId, String gameSetId);
+    GameCollectionDetailsAndGames getGameSetKifuDetails(String sessionId, String gameSetId);
 
     PositionDetails getPositionDetails(String sfen, String gameSetId);
 
@@ -23,7 +23,7 @@ public interface KifuService extends RemoteService {
 
     AnalysisRequestResult getKifuAnalysisResults(String sessionId, String kifuUsf);
 
-    GameCollectionDetails[] getGameCollections(String sessionId);
+    GameCollectionDetailsList getGameCollections(String sessionId);
 
     String saveGameCollection(String sessionId, String draftId);
 

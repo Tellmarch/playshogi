@@ -3,7 +3,10 @@ package com.playshogi.website.gwt.client.ui;
 import com.google.gwt.cell.client.ActionCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.place.shared.PlaceController;
-import com.google.gwt.user.cellview.client.*;
+import com.google.gwt.user.cellview.client.CellTable;
+import com.google.gwt.user.cellview.client.Column;
+import com.google.gwt.user.cellview.client.HasKeyboardSelectionPolicy;
+import com.google.gwt.user.cellview.client.TextColumn;
 import com.google.gwt.user.client.ui.*;
 import com.google.gwt.view.client.ListDataProvider;
 import com.google.gwt.view.client.SingleSelectionModel;
@@ -18,6 +21,7 @@ import com.playshogi.website.gwt.client.events.collections.ListGameCollectionsEv
 import com.playshogi.website.gwt.client.place.GameCollectionsPlace;
 import com.playshogi.website.gwt.client.place.OpeningsPlace;
 import com.playshogi.website.gwt.client.place.ViewKifuPlace;
+import com.playshogi.website.gwt.client.widget.TablePanel;
 import com.playshogi.website.gwt.client.widget.kifu.CollectionPropertiesPanel;
 import com.playshogi.website.gwt.client.widget.kifu.ImportCollectionPanel;
 import com.playshogi.website.gwt.client.widget.kifu.ImportKifuPanel;
@@ -25,8 +29,6 @@ import com.playshogi.website.gwt.shared.models.GameCollectionDetails;
 import com.playshogi.website.gwt.shared.models.KifuDetails;
 
 import java.util.Arrays;
-
-import static com.google.gwt.user.client.ui.HasHorizontalAlignment.ALIGN_CENTER;
 
 @Singleton
 public class GameCollectionsView extends Composite {
@@ -38,10 +40,12 @@ public class GameCollectionsView extends Composite {
 
     private final MyEventBinder eventBinder = GWT.create(MyEventBinder.class);
 
-    private final CellTable<GameCollectionDetails> collectionsTable;
+    private final CellTable<GameCollectionDetails> myCollectionsTable;
+    private final CellTable<GameCollectionDetails> publicCollectionsTable;
     private final CellTable<KifuDetails> kifusTable;
-    private final VerticalPanel collectionsPanel;
-    private final VerticalPanel kifusPanel;
+    private final TablePanel myCollectionsPanel;
+    private final TablePanel publicCollectionsPanel;
+    private final TablePanel kifusPanel;
     private final ImportCollectionPanel importCollectionPanel = new ImportCollectionPanel();
     private final CollectionPropertiesPanel collectionPropertiesPanel = new CollectionPropertiesPanel();
     private final ImportKifuPanel importKifuPanel = new ImportKifuPanel();
@@ -51,6 +55,10 @@ public class GameCollectionsView extends Composite {
         this.placeController = placeController;
         GWT.log("Creating game collections view");
         FlowPanel flowPanel = new FlowPanel();
+
+        flowPanel.add(new HTML("<b>Warning</b>: feature in development, please keep backups of your game collections" +
+                ".</br>"));
+        flowPanel.add(new HTML("Expect bugs, e.g. accidental data deletion or bad access control.</br>"));
 
         flowPanel.add(new HTML("<br/>"));
 
@@ -70,28 +78,22 @@ public class GameCollectionsView extends Composite {
 
         flowPanel.add(new HTML("<br/>"));
 
+        myCollectionsTable = createGameCollectionTable();
+        myCollectionsPanel = new TablePanel("My Game Collections", myCollectionsTable);
+        flowPanel.add(myCollectionsPanel);
 
-        collectionsPanel = new VerticalPanel();
-        collectionsPanel.setHorizontalAlignment(ALIGN_CENTER);
-        collectionsTable = createGameCollectionTable();
-        SimplePager collectionsPager = new SimplePager();
-        collectionsPager.setDisplay(collectionsTable);
-        collectionsPanel.add(collectionsTable);
-        collectionsPanel.add(collectionsPager);
+        publicCollectionsTable = createGameCollectionTable();
+        publicCollectionsPanel = new TablePanel("Public Game Collections", publicCollectionsTable);
+        flowPanel.add(publicCollectionsPanel);
 
-        kifusPanel = new VerticalPanel();
-        kifusPanel.setHorizontalAlignment(ALIGN_CENTER);
         kifusTable = createKifusTable();
-        SimplePager kifusPager = new SimplePager();
-        kifusPager.setDisplay(kifusTable);
-        kifusPanel.add(new HTML("<br/><br/>Games in collection:<br/><br/>"));
-        kifusPanel.add(kifusTable);
-        kifusPanel.add(kifusPager);
-
-        flowPanel.add(collectionsPanel);
+        kifusPanel = new TablePanel("Games in Collection: ", kifusTable);
         flowPanel.add(kifusPanel);
 
-        initWidget(flowPanel);
+        ScrollPanel scrollPanel = new ScrollPanel();
+        scrollPanel.add(flowPanel);
+        scrollPanel.setSize("100%", "100%");
+        initWidget(scrollPanel);
     }
 
     private CellTable<GameCollectionDetails> createGameCollectionTable() {
@@ -201,7 +203,7 @@ public class GameCollectionsView extends Composite {
     public void activate(final EventBus eventBus) {
         GWT.log("Activating game collections view");
         eventBinder.bindEventHandlers(this, eventBus);
-        collectionsPanel.setVisible(false);
+        myCollectionsPanel.setVisible(false);
         kifusPanel.setVisible(false);
         importCollectionPanel.activate(eventBus);
         collectionPropertiesPanel.activate(eventBus);
@@ -210,11 +212,13 @@ public class GameCollectionsView extends Composite {
 
     @EventHandler
     public void onListGameCollectionsEvent(final ListGameCollectionsEvent event) {
-        GWT.log("GameCollectionsView: handle GameCollectionsEvent");
-        ListDataProvider<GameCollectionDetails> dataProvider =
-                new ListDataProvider<>(Arrays.asList(event.getDetails()));
-        dataProvider.addDataDisplay(collectionsTable);
-        collectionsPanel.setVisible(true);
+        GWT.log("GameCollectionsView: handle GameCollectionsEvent:\n" + event);
+
+        new ListDataProvider<>(Arrays.asList(event.getMyCollections())).addDataDisplay(myCollectionsTable);
+        myCollectionsPanel.setVisible(event.getMyCollections().length > 0);
+
+        new ListDataProvider<>(Arrays.asList(event.getPublicCollections())).addDataDisplay(publicCollectionsTable);
+        publicCollectionsPanel.setVisible(true);
     }
 
     @EventHandler
@@ -223,5 +227,6 @@ public class GameCollectionsView extends Composite {
         ListDataProvider<KifuDetails> dataProvider = new ListDataProvider<>(Arrays.asList(event.getDetails()));
         dataProvider.addDataDisplay(kifusTable);
         kifusPanel.setVisible(true);
+        kifusPanel.setTableTitle(event.getCollectionDetails().getName());
     }
 }

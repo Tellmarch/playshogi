@@ -11,7 +11,8 @@ public interface KifuServiceAsync {
 
     void saveKifu(String sessionId, String kifuUsf, String collectionId, AsyncCallback<Void> callback);
 
-    void getGameSetKifuDetails(String sessionId, String gameSetId, AsyncCallback<KifuDetails[]> callback);
+    void getGameSetKifuDetails(String sessionId, String gameSetId,
+                               AsyncCallback<GameCollectionDetailsAndGames> callback);
 
     void getPositionDetails(String sfen, String gameSetId, AsyncCallback<PositionDetails> callback);
 
@@ -21,7 +22,7 @@ public interface KifuServiceAsync {
 
     void getKifuAnalysisResults(String sessionId, String kifuUsf, AsyncCallback<AnalysisRequestResult> callback);
 
-    void getGameCollections(String sessionId, AsyncCallback<GameCollectionDetails[]> callback);
+    void getGameCollections(String sessionId, AsyncCallback<GameCollectionDetailsList> callback);
 
     void saveGameCollection(String sessionId, String draftId, AsyncCallback<String> callback);
 

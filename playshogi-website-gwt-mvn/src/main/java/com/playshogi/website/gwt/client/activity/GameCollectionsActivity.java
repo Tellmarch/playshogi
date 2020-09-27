@@ -10,10 +10,11 @@ import com.playshogi.library.shogi.models.formats.usf.UsfFormat;
 import com.playshogi.website.gwt.client.SessionInformation;
 import com.playshogi.website.gwt.client.events.collections.*;
 import com.playshogi.website.gwt.client.events.kifu.ImportGameRecordEvent;
+import com.playshogi.website.gwt.client.events.user.UserLoggedInEvent;
 import com.playshogi.website.gwt.client.place.GameCollectionsPlace;
 import com.playshogi.website.gwt.client.ui.GameCollectionsView;
-import com.playshogi.website.gwt.shared.models.GameCollectionDetails;
-import com.playshogi.website.gwt.shared.models.KifuDetails;
+import com.playshogi.website.gwt.shared.models.GameCollectionDetailsAndGames;
+import com.playshogi.website.gwt.shared.models.GameCollectionDetailsList;
 import com.playshogi.website.gwt.shared.services.KifuService;
 import com.playshogi.website.gwt.shared.services.KifuServiceAsync;
 
@@ -51,32 +52,34 @@ public class GameCollectionsActivity extends MyAbstractActivity {
     }
 
     private void fetchData() {
-        kifuService.getGameCollections(sessionInformation.getSessionId(), new AsyncCallback<GameCollectionDetails[]>() {
-            @Override
-            public void onFailure(Throwable throwable) {
-                GWT.log("GameCollectionsActivity: error retrieving collections list");
-            }
+        kifuService.getGameCollections(sessionInformation.getSessionId(),
+                new AsyncCallback<GameCollectionDetailsList>() {
+                    @Override
+                    public void onFailure(Throwable throwable) {
+                        GWT.log("GameCollectionsActivity: error retrieving collections list");
+                    }
 
-            @Override
-            public void onSuccess(GameCollectionDetails[] gameCollectionDetails) {
-                GWT.log("GameCollectionsActivity: retrieved collections list");
-                eventBus.fireEvent(new ListGameCollectionsEvent(gameCollectionDetails));
-            }
-        });
+                    @Override
+                    public void onSuccess(GameCollectionDetailsList gameCollectionDetails) {
+                        GWT.log("GameCollectionsActivity: retrieved collections list");
+                        eventBus.fireEvent(new ListGameCollectionsEvent(gameCollectionDetails.getMyCollections(),
+                                gameCollectionDetails.getPublicCollections()));
+                    }
+                });
 
         if (place.getCollectionId().isPresent()) {
             GWT.log("Querying for collection games");
             kifuService.getGameSetKifuDetails(sessionInformation.getSessionId(), place.getCollectionId().get(),
-                    new AsyncCallback<KifuDetails[]>() {
+                    new AsyncCallback<GameCollectionDetailsAndGames>() {
                         @Override
                         public void onFailure(Throwable throwable) {
                             GWT.log("GameCollectionsActivity: error retrieving collection games");
                         }
 
                         @Override
-                        public void onSuccess(KifuDetails[] kifuDetails) {
+                        public void onSuccess(GameCollectionDetailsAndGames result) {
                             GWT.log("GameCollectionsActivity: retrieved collection games");
-                            eventBus.fireEvent(new ListCollectionGamesEvent(kifuDetails));
+                            eventBus.fireEvent(new ListCollectionGamesEvent(result.getGames(), result.getDetails()));
                         }
                     });
         }
@@ -145,18 +148,23 @@ public class GameCollectionsActivity extends MyAbstractActivity {
 
         kifuService.saveKifu(sessionInformation.getSessionId(), UsfFormat.INSTANCE.write(event.getGameRecord()),
                 event.getCollectionId(), new AsyncCallback<Void>() {
-            @Override
-            public void onFailure(final Throwable throwable) {
-                GWT.log("GameCollectionsActivity: error during saveKifu");
-            }
+                    @Override
+                    public void onFailure(final Throwable throwable) {
+                        GWT.log("GameCollectionsActivity: error during saveKifu");
+                    }
 
-            @Override
-            public void onSuccess(final Void unused) {
-                GWT.log("GameCollectionsActivity: saveKifu success");
-                refresh();
-            }
-        });
+                    @Override
+                    public void onSuccess(final Void unused) {
+                        GWT.log("GameCollectionsActivity: saveKifu success");
+                        refresh();
+                    }
+                });
 
+    }
+
+    @EventHandler
+    public void onUserLoggedIn(final UserLoggedInEvent event) {
+        refresh();
     }
 
     private void refresh() {
