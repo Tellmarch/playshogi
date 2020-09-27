@@ -16,14 +16,14 @@ public class KifMoveConverter {
 
         if (str.startsWith("投了")) {
             return new SpecialMove(player, SpecialMoveType.RESIGN);
+        } else if (str.startsWith("反則勝ち")) {
+            return new SpecialMove(player, SpecialMoveType.ILLEGAL_MOVE);
         } else if (str.startsWith("千日手")) {
             return new SpecialMove(player, SpecialMoveType.SENNICHITE);
         } else if (str.startsWith("持将棋")) {
             return new SpecialMove(player, SpecialMoveType.JISHOGI);
         } else if (str.startsWith("中断")) {
             return new SpecialMove(player, SpecialMoveType.BREAK);
-        } else if (str.startsWith("反則勝ち")) { // what is this?
-            return new SpecialMove(player, SpecialMoveType.OTHER);
         }
 
         int pos = 0;

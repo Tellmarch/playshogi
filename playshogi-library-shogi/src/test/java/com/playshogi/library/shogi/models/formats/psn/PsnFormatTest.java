@@ -1,11 +1,8 @@
 package com.playshogi.library.shogi.models.formats.psn;
 
-import com.playshogi.library.models.Move;
 import com.playshogi.library.models.record.GameRecord;
-import com.playshogi.library.shogi.models.GameRecordUtils;
+import com.playshogi.library.shogi.models.formats.usf.UsfFormat;
 import org.junit.Test;
-
-import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
@@ -99,8 +96,14 @@ public class PsnFormatTest {
     @Test
     public void read() {
         GameRecord record = PsnFormat.INSTANCE.read(EXAMPLE_GAME);
-        List<Move> moves = GameRecordUtils.getMainVariationMoves(record);
-        System.out.println(record + " " + moves);
-        assertEquals(78, moves.size());
+        assertEquals("USF:1.0\n" +
+                "^*:7g7f8c8d7i6h8d8e8h7g5a4b2h5h6a5b5i4h7a6b4h3h7c7d6g6f6b7c6h6g9c9d9g9f7c8d3i4h7d7e5h7h8b7b7g6h3c3d" +
+                "9i9h7e7f6g7f2b6f7f6g7b7H6g7hr*8b6h7g6f7G8i7gb*3cB*4f8d7cR*6a7c6d5g5f8e8f6a7A8b8c8g8f8c8fP*6b8f8H6b6A" +
+                "p*7f6a6b5b6b7a6b4a5b6b6a5b5a6a7b5a5b4f6d8h7h6i7h7f7GR*8bn*6b7b6b5b6b8b6Bs*5b6d5C4b3b6b5br*4bS*4a3b2b" +
+                "5c4b3a4bR*3bRSGN\n" +
+                "BN:AAA aaa\n" +
+                "WN:BBB bbb\n" +
+                "GD:19/07/2013\n" +
+                "GQ:ESC/WOSC 2013", UsfFormat.INSTANCE.write(record));
     }
 }

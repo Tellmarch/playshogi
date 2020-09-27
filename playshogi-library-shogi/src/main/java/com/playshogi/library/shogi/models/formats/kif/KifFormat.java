@@ -155,7 +155,7 @@ public enum KifFormat implements GameRecordFormat {
             if (line.startsWith("*")) {
                 continue;
             }
-            String[] ts = line.split(" ", 2);
+            String[] ts = line.split("\\s+", 2);
             int i;
             try {
                 i = new Integer(ts[0]);
