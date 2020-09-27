@@ -1,11 +1,7 @@
 package com.playshogi.website.gwt.client.ui;
 
 import com.google.gwt.core.shared.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.KeyCodes;
-import com.google.gwt.event.dom.client.KeyUpEvent;
-import com.google.gwt.event.dom.client.KeyUpHandler;
+import com.google.gwt.event.dom.client.*;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -50,6 +46,8 @@ public class LoginView extends Composite implements ClickHandler, KeyUpHandler {
 
         loginPanel = new VerticalPanel();
         loginPanel.add(grid);
+        loginPanel.add(new HTML("By registering, you agree to be bound by our <a href=\"terms.html\" " +
+                "target=\"_blank\">Terms of Service and Privacy Policy</a>.</br>"));
         loginPanel.add(buttonPanel);
 
         VerticalPanel verticalPanel = new VerticalPanel();
