@@ -23,6 +23,7 @@ public class LoggingEventBus extends SimpleEventBus {
     @Override
     public void fireEvent(final Event<?> event) {
         GWT.log("firingevent: " + event.toDebugString());
+        //noinspection deprecation
         GWT.log("#handlers: " + getHandlerCount(event.getAssociatedType()));
         super.fireEvent(event);
     }
@@ -34,13 +35,9 @@ public class LoggingEventBus extends SimpleEventBus {
     }
 
     private HandlerRegistration wrap(final HandlerRegistration registration) {
-        return new HandlerRegistration() {
-
-            @Override
-            public void removeHandler() {
-                GWT.log("Removing handler");
-                registration.removeHandler();
-            }
+        return () -> {
+            GWT.log("Removing handler");
+            registration.removeHandler();
         };
     }
 }

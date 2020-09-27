@@ -2,6 +2,7 @@ package com.playshogi.library.shogi.models.formats.kif;
 
 import com.playshogi.library.models.Square;
 import com.playshogi.library.shogi.models.Piece;
+import com.playshogi.library.shogi.models.Player;
 import com.playshogi.library.shogi.models.formats.kif.KifUtils.PieceParsingResult;
 import com.playshogi.library.shogi.models.moves.*;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
@@ -11,18 +12,18 @@ import java.util.Optional;
 public class KifMoveConverter {
 
     public static ShogiMove fromKifString(final String str, final ShogiPosition shogiPosition,
-                                          final ShogiMove previousMove, final boolean sente) {
+                                          final ShogiMove previousMove, final Player player) {
 
         if (str.startsWith("投了")) {
-            return new SpecialMove(sente, SpecialMoveType.RESIGN);
+            return new SpecialMove(player, SpecialMoveType.RESIGN);
         } else if (str.startsWith("千日手")) {
-            return new SpecialMove(sente, SpecialMoveType.SENNICHITE);
+            return new SpecialMove(player, SpecialMoveType.SENNICHITE);
         } else if (str.startsWith("持将棋")) {
-            return new SpecialMove(sente, SpecialMoveType.JISHOGI);
+            return new SpecialMove(player, SpecialMoveType.JISHOGI);
         } else if (str.startsWith("中断")) {
-            return new SpecialMove(sente, SpecialMoveType.BREAK);
+            return new SpecialMove(player, SpecialMoveType.BREAK);
         } else if (str.startsWith("反則勝ち")) { // what is this?
-            return new SpecialMove(sente, SpecialMoveType.OTHER);
+            return new SpecialMove(player, SpecialMoveType.OTHER);
         }
 
         int pos = 0;
@@ -46,7 +47,7 @@ public class KifMoveConverter {
             pos++;
         }
 
-        PieceParsingResult pieceParsingResult = KifUtils.readPiece(str, pos, sente);
+        PieceParsingResult pieceParsingResult = KifUtils.readPiece(str, pos, player);
         Piece piece = pieceParsingResult.piece;
         pos = pieceParsingResult.nextPosition;
 
@@ -69,7 +70,7 @@ public class KifMoveConverter {
         }
         if (c == '打') {
             // Drop
-            return new DropMove(sente, piece.getPieceType(), toSquare);
+            return new DropMove(player, piece.getPieceType(), toSquare);
         } else if (c == '(') {
             // Reading the destination square
             int column2 = str.charAt(++pos) - '0';

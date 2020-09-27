@@ -2,6 +2,7 @@ package com.playshogi.library.shogi.models.formats.kif;
 
 import com.playshogi.library.models.Square;
 import com.playshogi.library.models.record.*;
+import com.playshogi.library.shogi.models.Player;
 import com.playshogi.library.shogi.models.formats.kif.KifUtils.PieceParsingResult;
 import com.playshogi.library.shogi.models.formats.sfen.GameRecordFormat;
 import com.playshogi.library.shogi.models.formats.sfen.LineReader;
@@ -114,7 +115,7 @@ public enum KifFormat implements GameRecordFormat {
                     l = lineReader.nextLine();
                     int pos = 1;
                     for (int column = 9; column >= 1; column--) {
-                        PieceParsingResult pieceParsingResult = KifUtils.readPiece(l, pos, true);
+                        PieceParsingResult pieceParsingResult = KifUtils.readPiece(l, pos);
                         pos = pieceParsingResult.nextPosition;
                         startingPosition.getShogiBoardState().setPieceAt(Square.of(column, row),
                                 pieceParsingResult.piece);
@@ -142,7 +143,7 @@ public enum KifFormat implements GameRecordFormat {
 
         GameResult gameResult = GameResult.UNKNOWN;
 
-        boolean senteToMove = true;
+        Player player = Player.BLACK;
         ShogiMove curMove = null;
         ShogiMove prevMove = null;
         int moveNumber = 1;
@@ -166,7 +167,7 @@ public enum KifFormat implements GameRecordFormat {
             }
             moveNumber++;
             String move = ts[1];
-            curMove = KifMoveConverter.fromKifString(move, gameNavigation.getPosition(), prevMove, senteToMove);
+            curMove = KifMoveConverter.fromKifString(move, gameNavigation.getPosition(), prevMove, player);
 
             if (curMove == null) {
                 System.out.println("Error parsing move in line " + line + "in file " + "???");
@@ -176,12 +177,12 @@ public enum KifFormat implements GameRecordFormat {
             if (curMove instanceof SpecialMove) {
                 SpecialMove specialMove = (SpecialMove) curMove;
                 if (specialMove.getSpecialMoveType() == SpecialMoveType.RESIGN) {
-                    gameResult = senteToMove ? GameResult.GOTE_WIN : GameResult.SENTE_WIN;
+                    gameResult = player == Player.BLACK ? GameResult.GOTE_WIN : GameResult.SENTE_WIN;
                 }
             }
 
             gameNavigation.addMove(curMove);
-            senteToMove = !senteToMove;
+            player = player.opposite();
             prevMove = curMove;
         }
 
@@ -201,7 +202,7 @@ public enum KifFormat implements GameRecordFormat {
         }
         String[] piecesInHandStrings = value.split("　");
         for (String pieceString : piecesInHandStrings) {
-            PieceParsingResult pieceParsingResult = KifUtils.readPiece(pieceString, 0, true);
+            PieceParsingResult pieceParsingResult = KifUtils.readPiece(pieceString, 0);
             int number;
             if (pieceString.length() == 1) {
                 number = 1;

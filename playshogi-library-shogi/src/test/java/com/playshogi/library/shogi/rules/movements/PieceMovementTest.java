@@ -4,8 +4,6 @@ import com.playshogi.library.models.Square;
 import com.playshogi.library.shogi.models.formats.sfen.SfenConverter;
 import com.playshogi.library.shogi.models.position.ShogiBoardState;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
-import com.playshogi.library.shogi.rules.ShogiRulesEngine;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -14,7 +12,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(Parameterized.class)
 public class PieceMovementTest {
@@ -60,8 +59,9 @@ public class PieceMovementTest {
             }
             for(Square to: invalidDest) {
                 // isMoveDxDyValid doesn't check that there is no sente piece at to
-                if(!(position.hasSentePieceAt(to))) {
-                    assertFalse("Move from " + from + " to " + to + " is invalid", pieceMovement.isMoveDxDyValid(boardState, from, to));
+                if (!(position.hasBlackPieceAt(to))) {
+                    assertFalse("Move from " + from + " to " + to + " is invalid",
+                            pieceMovement.isMoveDxDyValid(boardState, from, to));
                 }
             }
         }

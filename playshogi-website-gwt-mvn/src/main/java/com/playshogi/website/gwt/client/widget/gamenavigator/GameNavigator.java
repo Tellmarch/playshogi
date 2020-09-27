@@ -14,6 +14,7 @@ import com.playshogi.library.models.record.GameNavigation;
 import com.playshogi.library.models.record.GameTree;
 import com.playshogi.library.shogi.models.GameRecordUtils;
 import com.playshogi.library.shogi.models.PieceType;
+import com.playshogi.library.shogi.models.Player;
 import com.playshogi.library.shogi.models.formats.usf.UsfMoveConverter;
 import com.playshogi.library.shogi.models.moves.DropMove;
 import com.playshogi.library.shogi.models.moves.ShogiMove;
@@ -123,15 +124,11 @@ public class GameNavigator extends Composite implements ClickHandler {
             // } else if (isSenteToPlay() &&
             // !boardConfiguration.isPlaySenteMoves()) {
             // gameNavigation.moveForward();
-        } else if (!isSenteToPlay() && navigatorConfiguration.isProblemMode()) {
+        } else if (gameNavigation.getPosition().getPlayerToMove() == Player.WHITE && navigatorConfiguration.isProblemMode()) {
             gameNavigation.moveForward();
         }
 
         firePositionChanged(true);
-    }
-
-    private boolean isSenteToPlay() {
-        return gameNavigation.getPosition().isSenteToPlay();
     }
 
     @Override

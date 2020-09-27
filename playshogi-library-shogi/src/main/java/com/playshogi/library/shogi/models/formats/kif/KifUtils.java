@@ -2,19 +2,24 @@ package com.playshogi.library.shogi.models.formats.kif;
 
 import com.playshogi.library.shogi.models.Piece;
 import com.playshogi.library.shogi.models.PieceType;
+import com.playshogi.library.shogi.models.Player;
 
 public class KifUtils {
 
     private static final char[] JAPANESE_NUMBERS = new char[]{'一', '二', '三', '四', '五', '六', '七', '八', '九', '十'};
 
-    static PieceParsingResult readPiece(final String str, int pos, boolean sente) {
+    static PieceParsingResult readPiece(final String str, int pos) {
+        return readPiece(str, pos, Player.BLACK);
+    }
+
+    static PieceParsingResult readPiece(final String str, int pos, Player player) {
 
         while (str.charAt(pos) == ' ') {
             pos++;
         }
 
         if (str.charAt(pos) == 'v') {
-            sente = false;
+            player = Player.WHITE;
             pos++;
         }
 
@@ -24,61 +29,61 @@ public class KifUtils {
                 piece = null;
                 break;
             case '歩':
-                piece = Piece.getPiece(PieceType.PAWN, sente);
+                piece = Piece.getPiece(PieceType.PAWN, player);
                 break;
             case '香':
-                piece = Piece.getPiece(PieceType.LANCE, sente);
+                piece = Piece.getPiece(PieceType.LANCE, player);
                 break;
             case '桂':
-                piece = Piece.getPiece(PieceType.KNIGHT, sente);
+                piece = Piece.getPiece(PieceType.KNIGHT, player);
                 break;
             case '銀':
-                piece = Piece.getPiece(PieceType.SILVER, sente);
+                piece = Piece.getPiece(PieceType.SILVER, player);
                 break;
             case '金':
-                piece = Piece.getPiece(PieceType.GOLD, sente);
+                piece = Piece.getPiece(PieceType.GOLD, player);
                 break;
             case '角':
-                piece = Piece.getPiece(PieceType.BISHOP, sente);
+                piece = Piece.getPiece(PieceType.BISHOP, player);
                 break;
             case '飛':
-                piece = Piece.getPiece(PieceType.ROOK, sente);
+                piece = Piece.getPiece(PieceType.ROOK, player);
                 break;
             case '王':
             case '玉':
-                piece = Piece.getPiece(PieceType.KING, sente);
+                piece = Piece.getPiece(PieceType.KING, player);
                 break;
             case 'と':
-                piece = Piece.getPiece(PieceType.PAWN, sente, true);
+                piece = Piece.getPiece(PieceType.PAWN, player, true);
                 break;
             case '馬':
-                piece = Piece.getPiece(PieceType.BISHOP, sente, true);
+                piece = Piece.getPiece(PieceType.BISHOP, player, true);
                 break;
             case '竜':
             case '龍':
-                piece = Piece.getPiece(PieceType.ROOK, sente, true);
+                piece = Piece.getPiece(PieceType.ROOK, player, true);
                 break;
             case '杏':
-                piece = Piece.getPiece(PieceType.LANCE, sente, true);
+                piece = Piece.getPiece(PieceType.LANCE, player, true);
                 break;
             case '圭':
-                piece = Piece.getPiece(PieceType.KNIGHT, sente, true);
+                piece = Piece.getPiece(PieceType.KNIGHT, player, true);
                 break;
             case '全':
-                piece = Piece.getPiece(PieceType.SILVER, sente, true);
+                piece = Piece.getPiece(PieceType.SILVER, player, true);
                 break;
             case '成': {
                 // Special case : promoted piece...
                 pos++;
                 switch (str.charAt(pos)) {
                     case '香':
-                        piece = Piece.getPiece(PieceType.LANCE, sente, true);
+                        piece = Piece.getPiece(PieceType.LANCE, player, true);
                         break;
                     case '桂':
-                        piece = Piece.getPiece(PieceType.KNIGHT, sente, true);
+                        piece = Piece.getPiece(PieceType.KNIGHT, player, true);
                         break;
                     case '銀':
-                        piece = Piece.getPiece(PieceType.SILVER, sente, true);
+                        piece = Piece.getPiece(PieceType.SILVER, player, true);
                         break;
                     default:
                         throw new IllegalArgumentException("Error reading the move " + str);

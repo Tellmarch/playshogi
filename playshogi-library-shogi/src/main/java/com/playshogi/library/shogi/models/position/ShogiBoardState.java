@@ -2,6 +2,7 @@ package com.playshogi.library.shogi.models.position;
 
 import com.playshogi.library.models.Square;
 import com.playshogi.library.shogi.models.Piece;
+import com.playshogi.library.shogi.models.Player;
 import com.playshogi.library.shogi.models.formats.usf.UsfUtil;
 
 import java.util.Optional;
@@ -25,7 +26,7 @@ public abstract class ShogiBoardState {
 
     public abstract ShogiBoardState opposite();
 
-    public abstract boolean hasPlayerPawnOnColumn(boolean isPlayerSente, int column);
+    public abstract boolean hasPlayerPawnOnColumn(Player player, int column);
 
     public abstract boolean isSquareEmptyOrGote(Square square);
 

@@ -2,6 +2,7 @@ package com.playshogi.library.shogi.models.formats.sfen;
 
 import com.playshogi.library.shogi.models.Piece;
 import com.playshogi.library.shogi.models.PieceType;
+import com.playshogi.library.shogi.models.Player;
 import com.playshogi.library.shogi.models.position.KomadaiState;
 import com.playshogi.library.shogi.models.position.ShogiBoardState;
 import com.playshogi.library.shogi.models.position.ShogiBoardStateImpl;
@@ -45,7 +46,7 @@ public class SfenConverter {
         res.append(" ");
 
         // Which side to move?
-        if (pos.isSenteToPlay()) {
+        if (pos.getPlayerToMove() == Player.BLACK) {
             res.append("b");
         } else {
             res.append("w");
@@ -60,7 +61,7 @@ public class SfenConverter {
                 if (n != 1) {
                     c.append(n);
                 }
-                c.append(pieceToString(Piece.getPiece(PIECE_TYPE_VALUES[i], true)));
+                c.append(pieceToString(Piece.getPiece(PIECE_TYPE_VALUES[i], Player.BLACK)));
             }
         }
         int[] capture2 = pos.getGoteKomadai().getPieces();
@@ -70,7 +71,7 @@ public class SfenConverter {
                 if (n != 1) {
                     c.append(n);
                 }
-                c.append(pieceToString(Piece.getPiece(PIECE_TYPE_VALUES[i], false)));
+                c.append(pieceToString(Piece.getPiece(PIECE_TYPE_VALUES[i], Player.WHITE)));
             }
         }
         if (c.length() == 0) {
@@ -138,10 +139,10 @@ public class SfenConverter {
         KomadaiState goteKomadai = new KomadaiState();
 
         int moveCount = 1;
-        boolean senteTurn = true;
+        Player player = Player.BLACK;
         if (fields[1].equalsIgnoreCase("w")) {
             moveCount = 2;
-            senteTurn = false;
+            player = Player.WHITE;
         }
 
         // TODO : more validation?
@@ -181,11 +182,11 @@ public class SfenConverter {
                 } else {
                     s = 1;
                 }
-                if(p == null) {
+                if (p == null) {
                     System.out.println("Error parsing SFEN " + sfen);
                     return new ShogiPosition();
                 }
-                if (p.isSentePiece()) {
+                if (p.isBlackPiece()) {
                     senteKomadai.setPiecesOfType(p.getPieceType(), s);
                 } else {
                     goteKomadai.setPiecesOfType(p.getPieceType(), s);
@@ -206,6 +207,6 @@ public class SfenConverter {
         if (fields.length > 3)
             moveCount = Integer.parseInt(fields[3]);
 
-        return new ShogiPosition(moveCount - 1, senteTurn, shogiBoardState, senteKomadai, goteKomadai);
+        return new ShogiPosition(moveCount - 1, player, shogiBoardState, senteKomadai, goteKomadai);
     }
 }

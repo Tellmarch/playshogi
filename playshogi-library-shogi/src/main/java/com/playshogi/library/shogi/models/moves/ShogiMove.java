@@ -19,8 +19,7 @@ public class ShogiMove implements Move {
         return player;
     }
 
-    @Deprecated
-    public boolean isSenteMoving() {
+    public boolean isBlackMoving() {
         return player == Player.BLACK;
     }
 

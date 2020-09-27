@@ -29,9 +29,9 @@ public class UsfMoveConverter {
         for (int i = 1; i < specialStrings.length; i++) {
             if (usfMove.equalsIgnoreCase(specialStrings[i])) {
                 if (specialTypes[i] != null) {
-                    return new SpecialMove(shogiPosition.isSenteToPlay(), specialTypes[i]);
+                    return new SpecialMove(shogiPosition.getPlayerToMove(), specialTypes[i]);
                 } else {
-                    return new SpecialMove(shogiPosition.isSenteToPlay(), SpecialMoveType.OTHER);
+                    return new SpecialMove(shogiPosition.getPlayerToMove(), SpecialMoveType.OTHER);
                 }
             }
         }
@@ -60,7 +60,7 @@ public class UsfMoveConverter {
             promotion = UsfUtil.promote(usfMove.charAt(3));
         }
         if (drop) {
-            return new DropMove(piece.isSentePiece(), piece.getPieceType(), Square.of(col2, row2));
+            return new DropMove(piece.getOwner(), piece.getPieceType(), Square.of(col2, row2));
         } else {
             Optional<Piece> capturedPiece = shogiPosition.getPieceAt(Square.of(col2, row2));
             if (capturedPiece.isPresent()) {
@@ -84,7 +84,7 @@ public class UsfMoveConverter {
     }
 
     private static String toUsfString(final DropMove move) {
-        Piece piece = Piece.getPiece(move.getPieceType(), move.isSenteMoving());
+        Piece piece = Piece.getPiece(move.getPieceType(), move.getPlayer());
         return UsfUtil.pieceToString(piece) + '*' + UsfUtil.columnNumber2Char(move.getToSquare().getColumn())
                 + UsfUtil.rowNumber2Char(move.getToSquare().getRow());
     }

@@ -20,7 +20,7 @@ public class TsumeEscapeSolver {
 
 
     public EscapeTsumeResult escapeTsume(final ShogiPosition position) {
-        if (position.isSenteToPlay()) {
+        if (position.getPlayerToMove() == Player.BLACK) {
             throw new IllegalStateException("Can only try to escape Tsume from Gote point of view");
         }
 

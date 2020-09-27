@@ -34,7 +34,7 @@ public class PieceMovementsUtils {
             while ((square = getSquare(boardState, col += dCol, row += dRow)).isPresent()) {
                 Optional<Piece> piece = boardState.getPieceAt(col, row);
                 // Our piece: we can not go there
-                if (piece.isPresent() && piece.get().isSentePiece()) {
+                if (piece.isPresent() && piece.get().isBlackPiece()) {
                     break;
                 }
                 result.add(square.get());

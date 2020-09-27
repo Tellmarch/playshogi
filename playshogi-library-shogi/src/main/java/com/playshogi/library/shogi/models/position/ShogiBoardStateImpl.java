@@ -2,7 +2,7 @@ package com.playshogi.library.shogi.models.position;
 
 import com.playshogi.library.models.Square;
 import com.playshogi.library.shogi.models.Piece;
-import com.playshogi.library.shogi.models.PieceType;
+import com.playshogi.library.shogi.models.Player;
 
 import java.util.Optional;
 
@@ -56,10 +56,10 @@ public class ShogiBoardStateImpl extends ShogiBoardState {
     }
 
     @Override
-    public boolean hasPlayerPawnOnColumn(final boolean isPlayerSente, final int column) {
+    public boolean hasPlayerPawnOnColumn(final Player player, final int column) {
+        Piece playerPawn = player == Player.BLACK ? Piece.SENTE_PAWN : Piece.GOTE_PAWN;
         for (Piece piece : board[column - 1]) {
-            if (piece != null && (piece.isSentePiece() == isPlayerSente) && piece.getPieceType() == PieceType.PAWN
-                    && !piece.isPromoted()) {
+            if (piece == playerPawn) {
                 return true;
             }
         }
@@ -77,6 +77,6 @@ public class ShogiBoardStateImpl extends ShogiBoardState {
     @Override
     public boolean isSquareEmptyOrGote(final Square square) {
         Optional<Piece> piece = getPieceAt(square);
-        return !piece.isPresent() || piece.get().isGotePiece();
+        return !piece.isPresent() || piece.get().isWhitePiece();
     }
 }

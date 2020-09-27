@@ -2,6 +2,7 @@ package com.playshogi.library.shogi.models.position;
 
 import com.playshogi.library.models.Square;
 import com.playshogi.library.shogi.models.Piece;
+import com.playshogi.library.shogi.models.Player;
 
 import java.util.Optional;
 
@@ -44,8 +45,8 @@ class InvertedShogiBoardState extends ShogiBoardState {
     }
 
     @Override
-    public boolean hasPlayerPawnOnColumn(final boolean isPlayerSente, final int column) {
-        return original.hasPlayerPawnOnColumn(!isPlayerSente, 10 - column);
+    public boolean hasPlayerPawnOnColumn(final Player player, final int column) {
+        return original.hasPlayerPawnOnColumn(player.opposite(), 10 - column);
     }
 
     @Override
@@ -56,6 +57,6 @@ class InvertedShogiBoardState extends ShogiBoardState {
     @Override
     public boolean isSquareEmptyOrGote(final Square square) {
         Optional<Piece> piece = original.getPieceAt(square.opposite());
-        return !piece.isPresent() || piece.get().isSentePiece();
+        return !piece.isPresent() || piece.get().isBlackPiece();
     }
 }

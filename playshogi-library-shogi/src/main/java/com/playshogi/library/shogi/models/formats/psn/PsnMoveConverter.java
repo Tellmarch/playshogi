@@ -24,12 +24,12 @@ public class PsnMoveConverter {
         }
 
         if (str.startsWith("--")) {
-            return new SpecialMove(position.playerToMove(), SpecialMoveType.RESIGN);
+            return new SpecialMove(position.getPlayerToMove(), SpecialMoveType.RESIGN);
         }
 
         // Handle drop moves
         if (str.length() == 4 && str.charAt(1) == '*') {
-            return new DropMove(position.playerToMove(), pieceFromChar(str.charAt(0)),
+            return new DropMove(position.getPlayerToMove(), pieceFromChar(str.charAt(0)),
                     Square.of(char2ColumnNumber(str.charAt(2)), char2RowNumber(str.charAt(3))));
         }
 
@@ -41,7 +41,7 @@ public class PsnMoveConverter {
             throw new IllegalArgumentException("Can not parse move: " + moveStr);
         }
 
-        Piece piece = Piece.getPiece(pieceType, position.isSenteToPlay(), promotedPieceMoving);
+        Piece piece = Piece.getPiece(pieceType, position.getPlayerToMove(), promotedPieceMoving);
 
         str = str.substring(promotedPieceMoving ? 2 : 1);
 

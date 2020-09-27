@@ -59,7 +59,7 @@ public class RookExercise implements Tutorial {
         shogiBoard.displayPosition();
 
         Optional<Square> aboveToSquare = ((NormalMove) senteMove).getToSquare().above();
-        if (aboveToSquare.isPresent() && position.hasGotePieceAt(aboveToSquare.get())) {
+        if (aboveToSquare.isPresent() && position.hasWhitePieceAt(aboveToSquare.get())) {
             eventBus.fireEvent(new ChangeTutorialTextEvent(tutorialMessages.rookPracticeFailed()));
             return;
         }
@@ -86,7 +86,7 @@ public class RookExercise implements Tutorial {
     private NormalMove getGoteMove() {
         for (int row = 1; row <= 9; row++) {
             for (int col = 1; col <= 9; col++) {
-                if (position.hasGotePieceAt(Square.of(col, row))) {
+                if (position.hasWhitePieceAt(Square.of(col, row))) {
                     GWT.log("col: " + col + " row: " + row);
                     return new NormalMove(Piece.GOTE_PAWN, Square.of(col, row), Square.of(col, row + 1));
                 }

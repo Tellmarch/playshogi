@@ -2,6 +2,7 @@ package com.playshogi.library.shogi.rules.movements;
 
 import com.playshogi.library.models.Square;
 import com.playshogi.library.shogi.models.Piece;
+import com.playshogi.library.shogi.models.Player;
 import com.playshogi.library.shogi.models.position.ShogiBoardState;
 
 import java.util.Collections;
@@ -14,7 +15,7 @@ public class PawnMovement implements PieceMovement {
     public List<Square> getPossibleMoves(final ShogiBoardState position, final Square from) {
         if (from.getRow() != ShogiBoardState.FIRST_ROW) {
             Optional<Piece> piece = position.getPieceAt(from.getColumn(), from.getRow() - 1);
-            if (!piece.isPresent() || !piece.get().isSentePiece()) {
+            if (!piece.isPresent() || !piece.get().isBlackPiece()) {
                 return Collections.singletonList(Square.of(from.getColumn(), from.getRow() - 1));
             }
         }
@@ -29,7 +30,8 @@ public class PawnMovement implements PieceMovement {
 
     @Override
     public boolean isDropValid(final ShogiBoardState position, final Square to) {
-        return to.getRow() != ShogiBoardState.FIRST_ROW && !position.hasPlayerPawnOnColumn(true, to.getColumn());
+        return to.getRow() != ShogiBoardState.FIRST_ROW && !position.hasPlayerPawnOnColumn(Player.BLACK,
+                to.getColumn());
     }
 
     @Override

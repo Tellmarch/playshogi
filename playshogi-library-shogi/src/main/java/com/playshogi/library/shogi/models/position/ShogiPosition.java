@@ -14,7 +14,7 @@ public class ShogiPosition implements Position {
 
     // How many moves were played in the position (starts at 0)
     private int moveCount;
-    private boolean senteToPlay;
+    private Player playerToMove;
     private ShogiBoardState shogiBoardState;
     private KomadaiState senteKomadai;
     private KomadaiState goteKomadai;
@@ -24,14 +24,14 @@ public class ShogiPosition implements Position {
     }
 
     public ShogiPosition(final ShogiVariant shogiVariant) {
-        this(0, true, new ShogiBoardStateImpl(shogiVariant.getBoardWidth(), shogiVariant.getBoardHeight()),
+        this(0, Player.BLACK, new ShogiBoardStateImpl(shogiVariant.getBoardWidth(), shogiVariant.getBoardHeight()),
                 new KomadaiState(), new KomadaiState());
     }
 
-    public ShogiPosition(int moveCount, final boolean senteToPlay, final ShogiBoardState shogiBoardState,
+    public ShogiPosition(int moveCount, final Player playerToMove, final ShogiBoardState shogiBoardState,
                          final KomadaiState senteKomadai, final KomadaiState goteKomadai) {
         this.moveCount = moveCount;
-        this.senteToPlay = senteToPlay;
+        this.playerToMove = playerToMove;
         this.shogiBoardState = shogiBoardState;
         this.senteKomadai = senteKomadai;
         this.goteKomadai = goteKomadai;
@@ -43,24 +43,20 @@ public class ShogiPosition implements Position {
 
     public void decrementMoveCount() {
         this.moveCount = this.moveCount - 1;
-        this.senteToPlay = !this.senteToPlay;
+        this.playerToMove = playerToMove.opposite();
     }
 
     public void incrementMoveCount() {
         this.moveCount = this.moveCount + 1;
-        this.senteToPlay = !this.senteToPlay;
+        this.playerToMove = playerToMove.opposite();
     }
 
-    public void setSenteToPlay(final boolean senteToPlay) {
-        this.senteToPlay = senteToPlay;
+    public void setPlayerToMove(final Player playerToMove) {
+        this.playerToMove = playerToMove;
     }
 
-    public boolean isSenteToPlay() {
-        return senteToPlay;
-    }
-
-    public Player playerToMove() {
-        return senteToPlay ? Player.BLACK : Player.WHITE;
+    public Player getPlayerToMove() {
+        return playerToMove;
     }
 
     public ShogiBoardState getShogiBoardState() {
@@ -99,12 +95,16 @@ public class ShogiPosition implements Position {
         return shogiBoardState.getPieceAt(square);
     }
 
-    public boolean hasSentePieceAt(final Square square) {
-        return shogiBoardState.getPieceAt(square).isPresent() && shogiBoardState.getPieceAt(square).get().isSentePiece();
+    public boolean isEmptySquare(final Square square) {
+        return !shogiBoardState.getPieceAt(square).isPresent();
     }
 
-    public boolean hasGotePieceAt(final Square square) {
-        return shogiBoardState.getPieceAt(square).isPresent() && !shogiBoardState.getPieceAt(square).get().isSentePiece();
+    public boolean hasBlackPieceAt(final Square square) {
+        return shogiBoardState.getPieceAt(square).isPresent() && shogiBoardState.getPieceAt(square).get().isBlackPiece();
+    }
+
+    public boolean hasWhitePieceAt(final Square square) {
+        return shogiBoardState.getPieceAt(square).isPresent() && shogiBoardState.getPieceAt(square).get().isWhitePiece();
     }
 
     public boolean hasSenteKingOnBoard() {
