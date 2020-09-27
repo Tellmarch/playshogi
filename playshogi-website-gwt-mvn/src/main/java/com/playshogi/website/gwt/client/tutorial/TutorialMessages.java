@@ -16,7 +16,8 @@ public interface TutorialMessages extends Messages {
     @DefaultMessage("Success! Click \"Next\" to go to the next lesson.")
     String success();
 
-    @DefaultMessage("Welcome to this introduction to Shogi Rules! In this interactive tutorial, you will learn how to" +
+    @DefaultMessage("***WORK IN PROGRESS - UNDER CONSTRUCTION***\n" +
+            "Welcome to this introduction to Shogi Rules! In this interactive tutorial, you will learn how to" +
             " recognize and move the shogi pieces.\n" +
             "The tutorial can be done with tradionational Japanese pieces, or international graphics - feel free to " +
             "change between those at any point with the buttons on the left of the board!")

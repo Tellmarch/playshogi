@@ -12,7 +12,25 @@
         <b>Contact: playshogi [at] hotmail.com</b>
         <p/>
         <p/>
-        <b>Last updated: 2020-08-30</b>
+        <b>Last updated: 2020-09-27</b>
+        <p/>
+        New Features:
+        <ul>
+            <li>Added Terms of Service</li>
+            <li>Beginning of Shogi Tutorial (Under construction)</li>
+            <li>Game collections: save and organize your games on the server</li>
+            <li>On demand computer analyzis of kifus and positions</li>
+            <li>User registration and statistics</li>
+            <li>Reset leaderboard</li>
+        </ul>
+        Bug fixes:
+        <ul>
+            <li>Added board coordinates</li>
+            <li>Removed SFEN string in byo yomi survival</li>
+        </ul>
+        <p/>
+        <p/>
+        <b>Update: 2020-08-30</b>
         <p/>
         New Features:
         <ul>

@@ -1,6 +1,7 @@
 package com.playshogi.library.shogi.models.formats.psn;
 
 import com.playshogi.library.models.record.*;
+import com.playshogi.library.shogi.models.Player;
 import com.playshogi.library.shogi.models.formats.sfen.GameRecordFormat;
 import com.playshogi.library.shogi.models.formats.sfen.LineReader;
 import com.playshogi.library.shogi.models.formats.sfen.StringLineReader;
@@ -23,7 +24,6 @@ public enum PsnFormat implements GameRecordFormat {
         GameNavigation<ShogiPosition> gameNavigation = new GameNavigation<>(new ShogiRulesEngine(),
                 gameTree, ShogiInitialPositionFactory.createInitialPosition());
 
-        GameResult gameResult = GameResult.UNKNOWN;
         GameInformation gameInformation = new GameInformation();
 
         while (lineReader.hasNextLine()) {
@@ -48,6 +48,13 @@ public enum PsnFormat implements GameRecordFormat {
                 ShogiMove move = PsnMoveConverter.fromKifString(line, gameNavigation.getPosition());
                 gameNavigation.addMove(move);
             }
+        }
+
+        GameResult gameResult;
+        if (((ShogiMove) gameNavigation.getCurrentMove()).getPlayer() == Player.BLACK) {
+            gameResult = GameResult.GOTE_WIN;
+        } else {
+            gameResult = GameResult.SENTE_WIN;
         }
 
         gameNavigation.moveToStart();

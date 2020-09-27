@@ -27,8 +27,11 @@ public class ImportKifuPanel extends Composite implements ClickHandler {
 
         verticalPanel.add(new HTML(SafeHtmlUtils.fromSafeConstant("<br/>")));
 
-        FormPanel form = createUploadForm();
-        verticalPanel.add(form);
+//        FormPanel form = createUploadForm();
+//        verticalPanel.add(form);
+
+
+        verticalPanel.add(new HTML("We support importing kifus in the following formats: KIF, PSN, USF"));
 
         verticalPanel.add(new HTML(SafeHtmlUtils.fromSafeConstant("<br/>")));
 

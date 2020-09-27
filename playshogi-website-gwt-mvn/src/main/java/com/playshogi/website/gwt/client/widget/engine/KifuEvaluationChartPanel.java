@@ -22,8 +22,6 @@ import com.playshogi.website.gwt.shared.models.PrincipalVariationDetails;
 
 public class KifuEvaluationChartPanel extends Composite {
 
-    private PositionEvaluationDetails[] positionEvaluationDetails;
-
     interface MyEventBinder extends EventBinder<KifuEvaluationChartPanel> {
     }
 
@@ -34,6 +32,8 @@ public class KifuEvaluationChartPanel extends Composite {
     private LineChart chart;
     private final HTML statusHTML;
     private String kifuId;
+    private PositionEvaluationDetails[] positionEvaluationDetails;
+
 
     public KifuEvaluationChartPanel() {
         panel = new VerticalPanel();
@@ -155,7 +155,7 @@ public class KifuEvaluationChartPanel extends Composite {
     @EventHandler
     public void onPositionChangedEvent(final PositionChangedEvent event) {
         GWT.log("KifuEvaluationChartPanel handling PositionChangedEvent");
-        if (chart != null) {
+        if (positionEvaluationDetails != null && positionEvaluationDetails.length > event.getPosition().getMoveCount() && chart != null && chart.isVisible()) {
             chart.setSelection(Selection.create(event.getPosition().getMoveCount(), 1));
         }
     }
