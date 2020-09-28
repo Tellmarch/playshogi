@@ -6,6 +6,8 @@ import com.playshogi.library.shogi.models.formats.sfen.GameRecordFormat;
 import com.playshogi.library.shogi.models.formats.sfen.LineReader;
 import com.playshogi.library.shogi.models.formats.sfen.StringLineReader;
 import com.playshogi.library.shogi.models.moves.ShogiMove;
+import com.playshogi.library.shogi.models.moves.SpecialMove;
+import com.playshogi.library.shogi.models.moves.SpecialMoveType;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.library.shogi.models.shogivariant.ShogiInitialPositionFactory;
 import com.playshogi.library.shogi.rules.ShogiRulesEngine;
@@ -42,11 +44,20 @@ public enum PsnFormat implements GameRecordFormat {
                 } else if ("Event".equalsIgnoreCase(key)) {
                     gameInformation.setVenue(value);
                 }
-            } else if (line.startsWith("{")) {
-                //TODO comment
+            } else if (line.startsWith("--")) {
+                // Ex: --Black Won-- as the last line
+                gameNavigation.addMove(new SpecialMove(gameNavigation.getPosition().getPlayerToMove(),
+                        SpecialMoveType.RESIGN));
             } else {
-                ShogiMove move = PsnMoveConverter.fromKifString(line, gameNavigation.getPosition());
-                gameNavigation.addMove(move);
+                String[] split = line.split("\\s+");
+                for (String token : split) {
+                    if (token.startsWith("{")) {
+                        //TODO comment
+                    } else {
+                        ShogiMove move = PsnMoveConverter.fromPsnString(token, gameNavigation.getPosition());
+                        gameNavigation.addMove(move);
+                    }
+                }
             }
         }
 

@@ -93,6 +93,28 @@ public class PsnFormatTest {
             "77.R*3b\n" +
             "--Black Won--";
 
+    private static final String OLD_FORMAT = "[Name \"Matt Casters\"]\n" +
+            "[Email \"aaa@bbb.com\"]\n" +
+            "[Country \"Japan\"]\n" +
+            "[Sente \"Takeshi Fujii\"]\n" +
+            "[Gote \"Yoshiharu Habu\"]\n" +
+            "[Black_grade \"Grade\"]\n" +
+            "[White_grade \"Meijin\"]\n" +
+            "[Result \"1-0\"]\n" +
+            "[Comment \"Opening: Shikenbisha\"]\n" +
+            "[Source \"Patrick Davin's Shogi Nexus website\"]\n" +
+            "[Event \"Shinjin'o vs, Meijin\"]\n" +
+            "[Date \"19700101\"]\n" +
+            "[Round \"\"]\n" +
+            "[Venue \"\"]\n" +
+            "[Proam \"Professional\"]\n" +
+            "P7g-7f P8c-8d R2h-6h S7a-6b P6g-6f P5c-5d P1g-1f P1c-1d K5i-4h K5a-4b S3i-3h K4b-3b S7i-7h P3c-3d S7h-6g" +
+            " G6a-5b G6i-5h P8d-8e B8h-7g P7c-7d K4h-3i S3a-4b K3i-2h S4b-5c P5g-5f P6c-6d P4g-4f P6d-6e G5h-4g " +
+            "P7d-7e P7fx7e P6ex6f S6g-7f P8e-8f P8gx8f P6f-6g+ B7gx2b+ K3bx2b S7fx6g B'3c P5f-5e B3cx5e B'7g B5ex7g+ " +
+            "N8ix7g P'7f S6gx7f R8bx8f P'6c S6b-5a N7g-6e S5c-4d N6e-5c+ R8fx7f +N5cx5b G4ax5b P6c-6b+ G5bx6b P'5b " +
+            "R7f-7i+ P5bx5a+ +R7ix6h +P5a-4a S4d-3c B'3a K2b-1b P1f-1e S'2b P1ex1d P'1g L1ix1g P'1f L1gx1f P'1e G'3b " +
+            "S2bx3a +P4ax3a P1ex1f S'1c\n";
+
     @Test
     public void read() {
         GameRecord record = PsnFormat.INSTANCE.read(EXAMPLE_GAME);
@@ -105,5 +127,19 @@ public class PsnFormatTest {
                 "WN:BBB bbb\n" +
                 "GD:19/07/2013\n" +
                 "GQ:ESC/WOSC 2013", UsfFormat.INSTANCE.write(record));
+    }
+
+    @Test
+    public void readOld() {
+        GameRecord record = PsnFormat.INSTANCE.read(OLD_FORMAT);
+        assertEquals("USF:1.0\n" +
+                "^*:7g7f8c8d2h6h7a6b6g6f5c5d1g1f1c1d5i4h5a4b3i3h4b3b7i7h3c3d7h6g6a5b6i5h8d8e8h7g7c7d4h3i3a4b3i2h4b5c" +
+                "5g5f6c6d4g4f6d6e5h4g7d7e7f7e6e6f6g7f8e8f8g8f6f6G7g2B3b2b7f6gb*3c5f5e3c5eB*7g5e7G8i7gp*7f6g7f8b8fP*6c" +
+                "6b5a7g6e5c4d6e5C8f7f5c5b4a5b6c6B5b6bP*5b7f7I5b5A7i6h5a4a4d3cB*3a2b1b1f1es*2b1e1dp*1g1i1gp*1f1g1fp*1e" +
+                "G*3b2b3a4a3a1e1fS*1c\n" +
+                "BN:Takeshi Fujii\n" +
+                "WN:Yoshiharu Habu\n" +
+                "GD:19700101\n" +
+                "GQ:Shinjin'o vs, Meijin", UsfFormat.INSTANCE.write(record));
     }
 }

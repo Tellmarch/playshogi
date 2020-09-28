@@ -15,7 +15,7 @@ public class PsnMoveConverter {
     /**
      * For now, only supports the full notation
      */
-    public static ShogiMove fromKifString(final String moveStr, final ShogiPosition position) {
+    public static ShogiMove fromPsnString(final String moveStr, final ShogiPosition position) {
         // TODO support abbreviated notation
 
         String str = moveStr;
@@ -28,7 +28,7 @@ public class PsnMoveConverter {
         }
 
         // Handle drop moves
-        if (str.length() == 4 && str.charAt(1) == '*') {
+        if (str.length() == 4 && (str.charAt(1) == '*' || str.charAt(1) == '\'')) {
             return new DropMove(position.getPlayerToMove(), pieceFromChar(str.charAt(0)),
                     Square.of(char2ColumnNumber(str.charAt(2)), char2RowNumber(str.charAt(3))));
         }

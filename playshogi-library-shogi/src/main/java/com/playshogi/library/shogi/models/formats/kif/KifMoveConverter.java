@@ -24,6 +24,8 @@ public class KifMoveConverter {
             return new SpecialMove(player, SpecialMoveType.JISHOGI);
         } else if (str.startsWith("中断")) {
             return new SpecialMove(player, SpecialMoveType.BREAK);
+        } else if (str.startsWith("切れ負け")) {
+            return new SpecialMove(player, SpecialMoveType.TIMEOUT);
         }
 
         int pos = 0;
