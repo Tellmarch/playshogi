@@ -77,7 +77,8 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
         }
 
         GameRecord gameRecord = UsfFormat.INSTANCE.read(kifuUsf);
-        String name = getDefaultName(gameRecord).substring(0, 40);
+        String defaultName = getDefaultName(gameRecord);
+        String name = defaultName.length() <= 40 ? defaultName : defaultName.substring(0, 40);
         if (!gameSetRepository.addGameToGameSet(gameRecord, Integer.parseInt(collectionId), 1, name,
                 loginResult.getUserId())) {
             throw new IllegalArgumentException("Could not save the kifu in database");
