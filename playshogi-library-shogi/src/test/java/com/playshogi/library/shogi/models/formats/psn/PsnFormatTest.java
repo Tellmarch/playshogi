@@ -90,6 +90,7 @@ public class PsnFormatTest {
             "74.K3b-2b\n" +
             "75.+B5cx4b\n" +
             "76.S3ax4b\n" +
+            "{Some comment with spaces}\n" +
             "77.R*3b\n" +
             "--Black Won--";
 

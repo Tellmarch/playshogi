@@ -53,12 +53,11 @@ public class GameNavigator extends Composite implements ClickHandler {
         GWT.log(activityId + ": Creating game navigator");
 
         this.activityId = activityId;
+        this.navigatorConfiguration = navigatorConfiguration;
         shogiRulesEngine = new ShogiRulesEngine();
-        GameNavigation<ShogiPosition> gameNavigation = new GameNavigation<>(shogiRulesEngine, new GameTree(),
+        gameNavigation = new GameNavigation<>(shogiRulesEngine, new GameTree(),
                 ShogiInitialPositionFactory.createInitialPosition());
 
-        this.navigatorConfiguration = navigatorConfiguration;
-        this.gameNavigation = gameNavigation;
         firstButton = new Button("<<");
         previousButton = new Button("<");
         nextButton = new Button(">");
@@ -90,10 +89,10 @@ public class GameNavigator extends Composite implements ClickHandler {
 
     @EventHandler
     public void onGameTreeChanged(final GameTreeChangedEvent gameTreeChangedEvent) {
-        GWT.log(activityId + ": Handling game tree changed event");
+        GWT.log(activityId + ": Handling game tree changed event - move " + gameTreeChangedEvent.getGoToMove());
         GameTree gameTree = gameTreeChangedEvent.getGameTree();
-        gameNavigation.setGameTree(gameTree, GameRecordUtils.getinitialPosition(gameTree),
-                gameTreeChangedEvent.getGoToMove());
+        ShogiPosition startingPosition = GameRecordUtils.getinitialPosition(gameTree);
+        gameNavigation.setGameTree(gameTree, startingPosition, gameTreeChangedEvent.getGoToMove());
 
         firePositionChanged(false);
     }

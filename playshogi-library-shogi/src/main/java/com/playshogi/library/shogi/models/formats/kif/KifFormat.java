@@ -36,6 +36,8 @@ public enum KifFormat implements GameRecordFormat {
 
         ShogiPosition startingPosition = null;
 
+        boolean goteToPlay = false;
+
         String l = lineReader.nextLine();
         while (!l.startsWith("手数")) {
             l = l.trim();
@@ -45,7 +47,14 @@ public enum KifFormat implements GameRecordFormat {
             }
 
             if (l.equals("先手番")) {
-                // sente to play?
+                // sente to play
+                l = lineReader.nextLine();
+                continue;
+            }
+
+            if (l.equals("後手番")) {
+                // gote to play
+                goteToPlay = true;
                 l = lineReader.nextLine();
                 continue;
             }
@@ -109,8 +118,8 @@ public enum KifFormat implements GameRecordFormat {
                 startingPosition = new ShogiPosition();
                 KomadaiState komadai = startingPosition.getGoteKomadai();
                 readPiecesInHand(value, komadai);
-                l = lineReader.nextLine();
-                l = lineReader.nextLine();
+                lineReader.nextLine(); //  ９ ８ ７ ６ ５ ４ ３ ２ １
+                lineReader.nextLine(); // +---------------------------+
                 for (int row = 1; row <= 9; row++) {
                     l = lineReader.nextLine();
                     int pos = 1;
@@ -121,7 +130,7 @@ public enum KifFormat implements GameRecordFormat {
                                 pieceParsingResult.piece);
                     }
                 }
-                l = lineReader.nextLine();
+                lineReader.nextLine(); // +---------------------------+
             } else if (field.equals("先手の持駒")) {
                 // sente pieces in hand
                 KomadaiState komadai = startingPosition.getSenteKomadai();
@@ -134,17 +143,24 @@ public enum KifFormat implements GameRecordFormat {
         // s.next();
         // s.useDelimiter("[ \r\n]");
 
+        if (goteToPlay) {
+            startingPosition.setPlayerToMove(Player.WHITE);
+        }
+
+        GameTree gameTree;
         if (startingPosition == null) {
             startingPosition = ShogiInitialPositionFactory.createInitialPosition();
+            gameTree = new GameTree();
+        } else {
+            gameTree = new GameTree(startingPosition);
         }
-        GameTree gameTree = new GameTree(startingPosition);
-        GameNavigation<ShogiPosition> gameNavigation = new GameNavigation<ShogiPosition>(new ShogiRulesEngine(),
+        GameNavigation<ShogiPosition> gameNavigation = new GameNavigation<>(new ShogiRulesEngine(),
                 gameTree, startingPosition);
 
         GameResult gameResult = GameResult.UNKNOWN;
 
         Player player = Player.BLACK;
-        ShogiMove curMove = null;
+        ShogiMove curMove;
         ShogiMove prevMove = null;
         int moveNumber = 1;
         while (lineReader.hasNextLine()) {
@@ -168,11 +184,6 @@ public enum KifFormat implements GameRecordFormat {
             moveNumber++;
             String move = ts[1];
             curMove = KifMoveConverter.fromKifString(move, gameNavigation.getPosition(), prevMove, player);
-
-            if (curMove == null) {
-                System.out.println("Error parsing move in line " + line + "in file " + "???");
-                break;
-            }
 
             if (curMove instanceof SpecialMove) {
                 SpecialMove specialMove = (SpecialMove) curMove;

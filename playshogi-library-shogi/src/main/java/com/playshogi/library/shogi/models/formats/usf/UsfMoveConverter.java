@@ -13,8 +13,9 @@ public class UsfMoveConverter {
             "MATE", "REPT", "NMAT", "++++", "++..", "+...", "====", "-...", "--..", "----", "=88=", "+88-"};
 
     public static final SpecialMoveType[] specialTypes = {null, null, null, SpecialMoveType.RESIGN, null,
-            SpecialMoveType.JISHOGI, null, SpecialMoveType.ILLEGAL_MOVE, null, null, SpecialMoveType.SENNICHITE, null,
-            null, null, null, null, null, null, null, null, null};
+            SpecialMoveType.JISHOGI, SpecialMoveType.TIMEOUT, SpecialMoveType.ILLEGAL_MOVE, null,
+            SpecialMoveType.CHECKMATE, SpecialMoveType.SENNICHITE, null, null, null, null, null, null, null, null,
+            null, null};
 
     /**
      * Create a move from a 4 character long USF String.
@@ -64,7 +65,8 @@ public class UsfMoveConverter {
         } else {
             Optional<Piece> capturedPiece = shogiPosition.getPieceAt(Square.of(col2, row2));
             if (capturedPiece.isPresent()) {
-                return new CaptureMove(piece, Square.of(col1, row1), Square.of(col2, row2), capturedPiece.get(), promotion);
+                return new CaptureMove(piece, Square.of(col1, row1), Square.of(col2, row2), capturedPiece.get(),
+                        promotion);
             } else {
                 return new NormalMove(piece, Square.of(col1, row1), Square.of(col2, row2), promotion);
             }
@@ -108,6 +110,10 @@ public class UsfMoveConverter {
                 return "RSGN";
             case SENNICHITE:
                 return "REPT";
+            case CHECKMATE:
+                return "MATE";
+            case TIMEOUT:
+                return "TIME";
             default:
                 return "SLNT";
         }

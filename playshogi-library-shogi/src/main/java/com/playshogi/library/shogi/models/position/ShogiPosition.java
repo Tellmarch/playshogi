@@ -4,6 +4,7 @@ import com.playshogi.library.models.Position;
 import com.playshogi.library.models.Square;
 import com.playshogi.library.shogi.models.Piece;
 import com.playshogi.library.shogi.models.Player;
+import com.playshogi.library.shogi.models.formats.sfen.SfenConverter;
 import com.playshogi.library.shogi.models.shogivariant.ShogiVariant;
 
 import java.util.ArrayList;
@@ -134,4 +135,9 @@ public class ShogiPosition implements Position {
         return shogiBoardState.toString();
     }
 
+    @Override
+    public Position clonePosition() {
+        // TODO optimize... maybe...
+        return SfenConverter.fromSFEN(SfenConverter.toSFEN(this));
+    }
 }

@@ -57,8 +57,13 @@ public enum UsfFormat implements GameRecordFormat {
         } else {
             // We read the starting position, in a SFEN that goes up to ":"
             String sfen = l.substring(2, l.indexOf(':'));
-            startingPosition = SfenConverter.fromSFEN(sfen);
-            gameTree = new GameTree(startingPosition);
+            if (SfenConverter.INITIAL_POSITION_SFEN.equals(sfen)) {
+                startingPosition = ShogiInitialPositionFactory.createInitialPosition();
+                gameTree = new GameTree();
+            } else {
+                startingPosition = SfenConverter.fromSFEN(sfen);
+                gameTree = new GameTree(startingPosition);
+            }
         }
 
         GameNavigation<ShogiPosition> gameNavigation = new GameNavigation<>(new ShogiRulesEngine(),
@@ -292,11 +297,11 @@ public enum UsfFormat implements GameRecordFormat {
         return builder.toString();
     }
 
-    /**
-     * Gives the USF string representing the whole tree.
-     *
-     * @return
-     */
+//    /**
+//     * Gives the USF string representing the whole tree.
+//     *
+//     * @return
+//     */
     // public String toUSFString(final GameTree gameTree) {
     // String endline = System.getProperty("line.separator");
     // String res = "^*:";
@@ -317,10 +322,5 @@ public enum UsfFormat implements GameRecordFormat {
     // }
     // return res;
     // }
-    public static void main(final String[] args) {
-        String s = "USF:1.0\n^*:7g7f3c3d";
-        GameRecord gameRecord = INSTANCE.read(s);
-        System.out.println(INSTANCE.write(gameRecord));
-    }
 
 }

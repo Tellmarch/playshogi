@@ -48,15 +48,13 @@ public enum PsnFormat implements GameRecordFormat {
                 // Ex: --Black Won-- as the last line
                 gameNavigation.addMove(new SpecialMove(gameNavigation.getPosition().getPlayerToMove(),
                         SpecialMoveType.RESIGN));
+            } else if (line.startsWith("{") && line.endsWith("}")) {
+                //TODO comment
             } else {
                 String[] split = line.split("\\s+");
                 for (String token : split) {
-                    if (token.startsWith("{")) {
-                        //TODO comment
-                    } else {
-                        ShogiMove move = PsnMoveConverter.fromPsnString(token, gameNavigation.getPosition());
-                        gameNavigation.addMove(move);
-                    }
+                    ShogiMove move = PsnMoveConverter.fromPsnString(token, gameNavigation.getPosition());
+                    gameNavigation.addMove(move);
                 }
             }
         }

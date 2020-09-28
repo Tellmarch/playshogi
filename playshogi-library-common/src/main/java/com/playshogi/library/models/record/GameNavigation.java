@@ -19,9 +19,9 @@ public class GameNavigation<P extends Position> {
         this.currentNode = gameTree.getRootNode();
         if (currentNode.getMove() instanceof EditMove) {
             EditMove editMove = (EditMove) currentNode.getMove();
-            this.position = (P) editMove.getPosition();
+            this.position = (P) editMove.getPosition().clonePosition();
         } else {
-            this.position = startPosition;
+            this.position = (P) startPosition.clonePosition();
         }
     }
 
@@ -125,10 +125,11 @@ public class GameNavigation<P extends Position> {
         return gameTree;
     }
 
+    @SuppressWarnings("unchecked")
     public void setGameTree(final GameTree gameTree, final P startingPosition, final int goToMove) {
         this.gameTree = gameTree;
         this.currentNode = gameTree.getRootNode();
-        this.position = startingPosition;
+        this.position = (P) startingPosition.clonePosition();
 
         for (int i = 0; i < goToMove; i++) {
             moveForward();
