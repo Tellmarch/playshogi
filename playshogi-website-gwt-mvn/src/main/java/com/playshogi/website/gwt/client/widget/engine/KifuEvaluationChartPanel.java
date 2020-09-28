@@ -10,6 +10,7 @@ import com.googlecode.gwt.charts.client.corechart.LineChart;
 import com.googlecode.gwt.charts.client.corechart.LineChartOptions;
 import com.googlecode.gwt.charts.client.event.SelectEvent;
 import com.googlecode.gwt.charts.client.event.SelectHandler;
+import com.googlecode.gwt.charts.client.options.ChartArea;
 import com.googlecode.gwt.charts.client.options.HAxis;
 import com.googlecode.gwt.charts.client.options.VAxis;
 import com.playshogi.website.gwt.client.events.gametree.MoveSelectedEvent;
@@ -135,9 +136,15 @@ public class KifuEvaluationChartPanel extends Composite {
         options.setTitle("Evaluation");
         options.setHAxis(HAxis.create("Move"));
         options.setVAxis(VAxis.create("Centipawns"));
-        options.setWidth(800);
-        options.setHeight(400);
+        options.setWidth(600);
+        options.setHeight(300);
 
+        ChartArea chartArea = ChartArea.create();
+        chartArea.setLeft(60);
+        chartArea.setWidth(540);
+        chartArea.setTop(30);
+        chartArea.setHeight(240);
+        options.setChartArea(chartArea);
         chart.draw(dataTable, options);
         chart.setVisible(true);
     }

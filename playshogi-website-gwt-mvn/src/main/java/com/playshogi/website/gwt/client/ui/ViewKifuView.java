@@ -3,6 +3,7 @@ package com.playshogi.website.gwt.client.ui;
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -48,7 +49,11 @@ public class ViewKifuView extends Composite {
         verticalPanel.add(horizontalPanel);
         verticalPanel.add(positionEvaluationDetailsPanel);
 
-        initWidget(verticalPanel);
+        ScrollPanel scrollPanel = new ScrollPanel();
+        scrollPanel.add(verticalPanel);
+        scrollPanel.setSize("100%", "100%");
+
+        initWidget(scrollPanel);
     }
 
     public void activate(final EventBus eventBus, final String kifuId) {
