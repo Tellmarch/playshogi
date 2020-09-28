@@ -147,7 +147,8 @@ public class GameCollectionsActivity extends MyAbstractActivity {
     public void onImportGameRecord(final ImportGameRecordEvent event) {
         GWT.log("GameCollectionsActivity Handling ImportGameRecordEvent");
 
-        kifuService.saveKifu(sessionInformation.getSessionId(), UsfFormat.INSTANCE.write(event.getGameRecord()),
+        kifuService.saveGameAndAddToCollection(sessionInformation.getSessionId(),
+                UsfFormat.INSTANCE.write(event.getGameRecord()),
                 event.getCollectionId(), new AsyncCallback<Void>() {
                     @Override
                     public void onFailure(final Throwable throwable) {
@@ -170,23 +171,43 @@ public class GameCollectionsActivity extends MyAbstractActivity {
 
 
     @EventHandler
-    public void onDeleteGameCollectionEvent(final DeleteGameCollectionEvent event) {
+    public void onDeleteGameCollection(final DeleteGameCollectionEvent event) {
         GWT.log("GameCollectionsActivity Handling DeleteGameCollectionEvent");
         kifuService.deleteGameCollection(sessionInformation.getSessionId(), event.getCollectionId(),
                 new AsyncCallback<Void>() {
-            @Override
-            public void onFailure(final Throwable throwable) {
-                GWT.log("GameCollectionsActivity: error during deleteGameCollection");
-                Window.alert("Deletion failed");
-            }
+                    @Override
+                    public void onFailure(final Throwable throwable) {
+                        GWT.log("GameCollectionsActivity: error during deleteGameCollection");
+                        Window.alert("Deletion failed - maybe you do not have permission?");
+                    }
 
-            @Override
-            public void onSuccess(final Void unused) {
-                GWT.log("GameCollectionsActivity: deleteGameCollection success");
-                refresh();
-            }
-        });
+                    @Override
+                    public void onSuccess(final Void unused) {
+                        GWT.log("GameCollectionsActivity: deleteGameCollection success");
+                        refresh();
+                    }
+                });
 
+    }
+
+    @EventHandler
+    public void onRemoveGameFromCollection(final RemoveGameFromCollectionEvent event) {
+        GWT.log("GameCollectionsActivity Handling RemoveGameFromCollectionEvent");
+        kifuService.removeGameFromCollection(sessionInformation.getSessionId(), event.getGameId(),
+                event.getCollectionId(),
+                new AsyncCallback<Void>() {
+                    @Override
+                    public void onFailure(final Throwable throwable) {
+                        GWT.log("GameCollectionsActivity: error during removeGameFromCollection");
+                        Window.alert("Deletion failed - maybe you do not have permission?");
+                    }
+
+                    @Override
+                    public void onSuccess(final Void unused) {
+                        GWT.log("GameCollectionsActivity: removeGameFromCollection success");
+                        refresh();
+                    }
+                });
     }
 
     private void refresh() {

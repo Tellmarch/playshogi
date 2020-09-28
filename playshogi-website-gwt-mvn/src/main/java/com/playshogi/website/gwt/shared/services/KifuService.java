@@ -9,7 +9,7 @@ public interface KifuService extends RemoteService {
 
     String saveKifu(String sessionId, String kifuUsf);
 
-    void saveKifu(String sessionId, String kifuUsf, String collectionId);
+    void saveGameAndAddToCollection(String sessionId, String kifuUsf, String collectionId);
 
     String getKifuUsf(String sessionId, String kifuId);
 
@@ -32,5 +32,7 @@ public interface KifuService extends RemoteService {
     void createGameCollection(String sessionId, GameCollectionDetails gameCollectionDetails);
 
     void deleteGameCollection(String sessionId, String gameSetId);
+
+    void removeGameFromCollection(String sessionId, String gameId, String gameSetId);
 
 }

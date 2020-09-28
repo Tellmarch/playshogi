@@ -46,6 +46,9 @@ public class GameSetRepository {
     private static final String INSERT_GAMESET_GAME = "INSERT INTO `playshogi`.`ps_gamesetgame`" +
             "(`gameset_id`,`game_id`) VALUES (?,?);";
 
+    private static final String DELETE_GAMESET_GAME = "DELETE ps_gamesetgame FROM playshogi.ps_gamesetgame JOIN " +
+            "playshogi.ps_gameset on id=gameset_id WHERE gameset_id = ? and game_id=? and owner_user_id =?;";
+
     private static final String INCREMENT_GAMESET_POSITION_SENTE_WIN = "INSERT INTO `playshogi`.`ps_gamesetpos` " +
             "(`position_id`, `gameset_id`, `num_total`, `num_sente_win`, `num_gote_win`)"
             + " VALUES (?, ?, 1, 1, 0) ON DUPLICATE KEY UPDATE num_sente_win=num_sente_win+1,num_total=num_total+1;";
@@ -247,6 +250,26 @@ public class GameSetRepository {
             }
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error deleting up the gameset in db", e);
+            return false;
+        }
+    }
+
+    public boolean deleteGameFromGameset(final int gameId, final int gameSetId, final int userId) {
+        Connection connection = dbConnection.getConnection();
+        try (PreparedStatement preparedStatement = connection.prepareStatement(DELETE_GAMESET_GAME)) {
+            preparedStatement.setInt(1, gameSetId);
+            preparedStatement.setInt(2, gameId);
+            preparedStatement.setInt(3, userId);
+            int rs = preparedStatement.executeUpdate();
+            if (rs == 1) {
+                LOGGER.log(Level.INFO, "Deleted game from gameset: " + gameId + " " + gameSetId);
+                return true;
+            } else {
+                LOGGER.log(Level.INFO, "Could not delete game: " + gameId + " " + gameSetId);
+                return false;
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error deleting up the game from gameset in db", e);
             return false;
         }
     }

@@ -2,9 +2,10 @@ package com.playshogi.website.gwt.shared.models;
 
 import java.io.Serializable;
 
-public class KifuDetails implements Serializable {
+public class GameDetails implements Serializable {
 
     private String id;
+    private String kifuId;
     private String sente;
     private String gote;
     private String senteId;
@@ -12,7 +13,7 @@ public class KifuDetails implements Serializable {
     private String venue;
     private String date;
 
-    public KifuDetails() {
+    public GameDetails() {
     }
 
     public String getId() {
@@ -21,6 +22,14 @@ public class KifuDetails implements Serializable {
 
     public void setId(final String id) {
         this.id = id;
+    }
+
+    public String getKifuId() {
+        return kifuId;
+    }
+
+    public void setKifuId(final String kifuId) {
+        this.kifuId = kifuId;
     }
 
     public String getSente() {
@@ -73,8 +82,15 @@ public class KifuDetails implements Serializable {
 
     @Override
     public String toString() {
-        return "KifuDetails [id=" + id + ", sente=" + sente + ", gote=" + gote + ", senteId=" + senteId + ", goteId="
-                + goteId + ", venue=" + venue + ", date=" + date + "]";
+        return "GameDetails{" +
+                "id='" + id + '\'' +
+                ", kifuId='" + kifuId + '\'' +
+                ", sente='" + sente + '\'' +
+                ", gote='" + gote + '\'' +
+                ", senteId='" + senteId + '\'' +
+                ", goteId='" + goteId + '\'' +
+                ", venue='" + venue + '\'' +
+                ", date='" + date + '\'' +
+                '}';
     }
-
 }

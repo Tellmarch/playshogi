@@ -68,7 +68,7 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
     }
 
     @Override
-    public void saveKifu(final String sessionId, final String kifuUsf, final String collectionId) {
+    public void saveGameAndAddToCollection(final String sessionId, final String kifuUsf, final String collectionId) {
         LOGGER.log(Level.INFO, "saving kifu in collection:\n" + kifuUsf);
 
         LoginResult loginResult = authenticator.checkSession(sessionId);
@@ -157,21 +157,22 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
 
         GameCollectionDetailsAndGames result = new GameCollectionDetailsAndGames();
         result.setDetails(getCollectionDetails(gameSet));
-        result.setGames(games.stream().map(this::createKifuDetails).toArray(KifuDetails[]::new));
+        result.setGames(games.stream().map(this::createKifuDetails).toArray(GameDetails[]::new));
 
         return result;
     }
 
-    private KifuDetails createKifuDetails(final PersistentGame game) {
-        KifuDetails kifuDetails = new KifuDetails();
-        kifuDetails.setId(String.valueOf(game.getKifuId()));
-        kifuDetails.setSente(game.getSenteName());
-        kifuDetails.setGote(game.getGoteName());
-        kifuDetails.setSenteId(String.valueOf(game.getSenteId()));
-        kifuDetails.setGoteId(String.valueOf(game.getGoteId()));
-        kifuDetails.setDate(String.valueOf(game.getDatePlayed()));
+    private GameDetails createKifuDetails(final PersistentGame game) {
+        GameDetails gameDetails = new GameDetails();
+        gameDetails.setId(String.valueOf(game.getId()));
+        gameDetails.setKifuId(String.valueOf(game.getKifuId()));
+        gameDetails.setSente(game.getSenteName());
+        gameDetails.setGote(game.getGoteName());
+        gameDetails.setSenteId(String.valueOf(game.getSenteId()));
+        gameDetails.setGoteId(String.valueOf(game.getGoteId()));
+        gameDetails.setDate(String.valueOf(game.getDatePlayed()));
         //TODO venue
-        return kifuDetails;
+        return gameDetails;
     }
 
     @Override
@@ -415,6 +416,22 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
 
         if (!gameSetRepository.deleteGamesetById(Integer.parseInt(gameSetId), loginResult.getUserId())) {
             throw new IllegalStateException("The user does not have permission to delete the specified game " +
+                    "collection");
+        }
+    }
+
+    @Override
+    public void removeGameFromCollection(final String sessionId, final String gameId, final String gameSetId) {
+        LOGGER.log(Level.INFO, "removeGameFromCollection: " + gameId + " - " + gameSetId);
+
+        LoginResult loginResult = authenticator.checkSession(sessionId);
+        if (loginResult == null || !loginResult.isLoggedIn()) {
+            throw new IllegalStateException("Only logged in users can delete a game from a collection");
+        }
+
+        if (!gameSetRepository.deleteGameFromGameset(Integer.parseInt(gameId), Integer.parseInt(gameSetId),
+                loginResult.getUserId())) {
+            throw new IllegalStateException("The user does not have permission to delete the specified game from a " +
                     "collection");
         }
     }

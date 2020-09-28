@@ -5,12 +5,12 @@ import java.util.Arrays;
 
 public class GameCollectionDetailsAndGames implements Serializable {
     private GameCollectionDetails details;
-    private KifuDetails[] games;
+    private GameDetails[] games;
 
     public GameCollectionDetailsAndGames() {
     }
 
-    public GameCollectionDetailsAndGames(final GameCollectionDetails details, final KifuDetails[] games) {
+    public GameCollectionDetailsAndGames(final GameCollectionDetails details, final GameDetails[] games) {
         this.details = details;
         this.games = games;
     }
@@ -23,11 +23,11 @@ public class GameCollectionDetailsAndGames implements Serializable {
         this.details = details;
     }
 
-    public KifuDetails[] getGames() {
+    public GameDetails[] getGames() {
         return games;
     }
 
-    public void setGames(final KifuDetails[] games) {
+    public void setGames(final GameDetails[] games) {
         this.games = games;
     }
 

@@ -86,25 +86,6 @@ public class ViewKifuActivity extends MyAbstractActivity {
     }
 
     @EventHandler
-    public void onGameRecordSaveRequested(final GameRecordSaveRequestedEvent gameRecordSaveRequestedEvent) {
-        GWT.log("View Kifu Activity Handling GameRecordSaveRequestedEvent");
-        String usfString = UsfFormat.INSTANCE.write(gameRecord);
-        GWT.log(usfString);
-        kifuService.saveKifu(sessionInformation.getSessionId(), usfString, new AsyncCallback<String>() {
-
-            @Override
-            public void onSuccess(final String result) {
-                GWT.log("Kifu saved successfully: " + result);
-            }
-
-            @Override
-            public void onFailure(final Throwable caught) {
-                GWT.log("Error while saving Kifu: ", caught);
-            }
-        });
-    }
-
-    @EventHandler
     public void onRequestPositionEvaluationEvent(final RequestPositionEvaluationEvent event) {
         GWT.log("View Kifu Activity Handling RequestPositionEvaluationEvent");
         String sfen = SfenConverter.toSFEN(viewKifuView.getGameNavigator().getGameNavigation().getPosition());

@@ -31,7 +31,7 @@ public class PositionEvaluationDetailsPanel extends Composite {
         GWT.log("Creating PositionEvaluationDetailsPanel");
         VerticalPanel verticalPanel = new VerticalPanel();
 
-        Button evaluateButton = new Button("Position Evaluation");
+        Button evaluateButton = new Button("Position Evaluation (5 seconds)");
         evaluateButton.addClickHandler(clickEvent -> eventBus.fireEvent(new RequestPositionEvaluationEvent()));
 
         verticalPanel.add(evaluateButton);
