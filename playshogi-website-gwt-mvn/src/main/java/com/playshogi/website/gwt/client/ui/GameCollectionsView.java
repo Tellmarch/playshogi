@@ -7,6 +7,7 @@ import com.google.gwt.user.cellview.client.CellTable;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.HasKeyboardSelectionPolicy;
 import com.google.gwt.user.cellview.client.TextColumn;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import com.google.gwt.view.client.ListDataProvider;
 import com.google.gwt.view.client.SingleSelectionModel;
@@ -16,6 +17,7 @@ import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.website.gwt.client.SessionInformation;
+import com.playshogi.website.gwt.client.events.collections.DeleteGameCollectionEvent;
 import com.playshogi.website.gwt.client.events.collections.ListCollectionGamesEvent;
 import com.playshogi.website.gwt.client.events.collections.ListGameCollectionsEvent;
 import com.playshogi.website.gwt.client.place.GameCollectionsPlace;
@@ -34,6 +36,7 @@ import java.util.Arrays;
 public class GameCollectionsView extends Composite {
 
     private final PlaceController placeController;
+    private EventBus eventBus;
 
     interface MyEventBinder extends EventBinder<GameCollectionsView> {
     }
@@ -78,11 +81,11 @@ public class GameCollectionsView extends Composite {
 
         flowPanel.add(new HTML("<br/>"));
 
-        myCollectionsTable = createGameCollectionTable();
+        myCollectionsTable = createGameCollectionTable(true);
         myCollectionsPanel = new TablePanel("My Game Collections", myCollectionsTable);
         flowPanel.add(myCollectionsPanel);
 
-        publicCollectionsTable = createGameCollectionTable();
+        publicCollectionsTable = createGameCollectionTable(false);
         publicCollectionsPanel = new TablePanel("Public Game Collections", publicCollectionsTable);
         flowPanel.add(publicCollectionsPanel);
 
@@ -96,7 +99,7 @@ public class GameCollectionsView extends Composite {
         initWidget(scrollPanel);
     }
 
-    private CellTable<GameCollectionDetails> createGameCollectionTable() {
+    private CellTable<GameCollectionDetails> createGameCollectionTable(boolean allowEdit) {
         final CellTable<GameCollectionDetails> collectionsTable;
         collectionsTable = new CellTable<>(20);
         collectionsTable.setKeyboardSelectionPolicy(HasKeyboardSelectionPolicy.KeyboardSelectionPolicy.ENABLED);
@@ -127,15 +130,17 @@ public class GameCollectionsView extends Composite {
             }
         }, "List Games");
 
-        ActionCell<GameCollectionDetails> addGameActionCell = new ActionCell<>("Add Game",
-                gameCollectionDetails -> importKifuPanel.showInDialog(gameCollectionDetails.getId()));
+        if (allowEdit) {
+            ActionCell<GameCollectionDetails> addGameActionCell = new ActionCell<>("Add Game",
+                    gameCollectionDetails -> importKifuPanel.showInDialog(gameCollectionDetails.getId()));
 
-        collectionsTable.addColumn(new Column<GameCollectionDetails, GameCollectionDetails>(addGameActionCell) {
-            @Override
-            public GameCollectionDetails getValue(final GameCollectionDetails gameCollectionDetails) {
-                return gameCollectionDetails;
-            }
-        }, "Add Game");
+            collectionsTable.addColumn(new Column<GameCollectionDetails, GameCollectionDetails>(addGameActionCell) {
+                @Override
+                public GameCollectionDetails getValue(final GameCollectionDetails gameCollectionDetails) {
+                    return gameCollectionDetails;
+                }
+            }, "Add Game");
+        }
 
         ActionCell<GameCollectionDetails> exploreActionCell = new ActionCell<>("Explore",
                 gameCollectionDetails -> placeController.goTo(new OpeningsPlace(OpeningsPlace.DEFAULT_SFEN,
@@ -148,15 +153,29 @@ public class GameCollectionsView extends Composite {
             }
         }, "Explore");
 
-        ActionCell<GameCollectionDetails> propertiesActionCell = new ActionCell<>("Properties",
-                collectionPropertiesPanel::showInUpdateDialog);
+        if (allowEdit) {
+            ActionCell<GameCollectionDetails> propertiesActionCell = new ActionCell<>("Properties",
+                    collectionPropertiesPanel::showInUpdateDialog);
 
-        collectionsTable.addColumn(new Column<GameCollectionDetails, GameCollectionDetails>(propertiesActionCell) {
-            @Override
-            public GameCollectionDetails getValue(final GameCollectionDetails gameCollectionDetails) {
-                return gameCollectionDetails;
-            }
-        }, "Properties");
+            collectionsTable.addColumn(new Column<GameCollectionDetails, GameCollectionDetails>(propertiesActionCell) {
+                @Override
+                public GameCollectionDetails getValue(final GameCollectionDetails gameCollectionDetails) {
+                    return gameCollectionDetails;
+                }
+            }, "Properties");
+        }
+
+        if (allowEdit) {
+            ActionCell<GameCollectionDetails> deleteActionCell = new ActionCell<>("Delete Collection",
+                    this::confirmCollectionDeletion);
+
+            collectionsTable.addColumn(new Column<GameCollectionDetails, GameCollectionDetails>(deleteActionCell) {
+                @Override
+                public GameCollectionDetails getValue(final GameCollectionDetails gameCollectionDetails) {
+                    return gameCollectionDetails;
+                }
+            }, "Delete");
+        }
 
         return collectionsTable;
     }
@@ -202,6 +221,7 @@ public class GameCollectionsView extends Composite {
 
     public void activate(final EventBus eventBus) {
         GWT.log("Activating game collections view");
+        this.eventBus = eventBus;
         eventBinder.bindEventHandlers(this, eventBus);
         myCollectionsPanel.setVisible(false);
         kifusPanel.setVisible(false);
@@ -228,5 +248,16 @@ public class GameCollectionsView extends Composite {
         dataProvider.addDataDisplay(kifusTable);
         kifusPanel.setVisible(true);
         kifusPanel.setTableTitle(event.getCollectionDetails().getName());
+    }
+
+    public void confirmCollectionDeletion(final GameCollectionDetails details) {
+        boolean confirm = Window.confirm("Are you sure you want to delete the collection " + details.getName() + "?\n" +
+                "All the games from the collection will be inaccessible. This is not revertible.");
+        if (confirm) {
+            GWT.log("Deleting collection: " + details);
+            eventBus.fireEvent(new DeleteGameCollectionEvent(details.getId()));
+        } else {
+            GWT.log("Deletion cancelled: " + details);
+        }
     }
 }

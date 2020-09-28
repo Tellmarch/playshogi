@@ -41,7 +41,7 @@ public class KifuEvaluationChartPanel extends Composite {
 
         FlowPanel flowPanel = new FlowPanel();
         flowPanel.setWidth("400px");
-        Button evaluateButton = new Button("Evaluate");
+        Button evaluateButton = new Button("Analyze game with computer");
         evaluateButton.addClickHandler(clickEvent -> eventBus.fireEvent(new RequestKifuEvaluationEvent()));
 
         flowPanel.add(evaluateButton);

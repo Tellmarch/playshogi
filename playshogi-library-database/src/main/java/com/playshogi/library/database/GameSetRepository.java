@@ -37,7 +37,8 @@ public class GameSetRepository {
     private static final String SELECT_PUBLIC_GAMESETS = "SELECT * FROM `playshogi`.`ps_gameset` WHERE visibility = 2" +
             " LIMIT 1000";
     private static final String SELECT_ALL_GAMESET = "SELECT * FROM `playshogi`.`ps_gameset` LIMIT 1000";
-    private static final String DELETE_GAMESET = "DELETE FROM `playshogi`.`ps_gameset` WHERE id = ?";
+    private static final String DELETE_GAMESET = "DELETE FROM `playshogi`.`ps_gameset` WHERE id = ? AND owner_user_id" +
+            " = ?";
 
     private static final String UPDATE_GAMESET = "UPDATE `playshogi`.`ps_gameset` " +
             "SET `name` = ?, `description` = ?, `visibility` = ? WHERE `id` = ? AND `owner_user_id` = ?;";
@@ -231,18 +232,22 @@ public class GameSetRepository {
     }
 
 
-    public void deleteGamesetById(final int gameSetId) {
+    public boolean deleteGamesetById(final int gameSetId, final int userId) {
         Connection connection = dbConnection.getConnection();
         try (PreparedStatement preparedStatement = connection.prepareStatement(DELETE_GAMESET)) {
             preparedStatement.setInt(1, gameSetId);
+            preparedStatement.setInt(2, userId);
             int rs = preparedStatement.executeUpdate();
             if (rs == 1) {
                 LOGGER.log(Level.INFO, "Deleted gameset: " + gameSetId);
+                return true;
             } else {
                 LOGGER.log(Level.INFO, "Did not find gameset: " + gameSetId);
+                return false;
             }
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error deleting up the gameset in db", e);
+            return false;
         }
     }
 

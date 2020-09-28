@@ -1,6 +1,7 @@
 package com.playshogi.website.gwt.client.activity;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
 import com.google.web.bindery.event.shared.EventBus;
@@ -165,6 +166,27 @@ public class GameCollectionsActivity extends MyAbstractActivity {
     @EventHandler
     public void onUserLoggedIn(final UserLoggedInEvent event) {
         refresh();
+    }
+
+
+    @EventHandler
+    public void onDeleteGameCollectionEvent(final DeleteGameCollectionEvent event) {
+        GWT.log("GameCollectionsActivity Handling DeleteGameCollectionEvent");
+        kifuService.deleteGameCollection(sessionInformation.getSessionId(), event.getCollectionId(),
+                new AsyncCallback<Void>() {
+            @Override
+            public void onFailure(final Throwable throwable) {
+                GWT.log("GameCollectionsActivity: error during deleteGameCollection");
+                Window.alert("Deletion failed");
+            }
+
+            @Override
+            public void onSuccess(final Void unused) {
+                GWT.log("GameCollectionsActivity: deleteGameCollection success");
+                refresh();
+            }
+        });
+
     }
 
     private void refresh() {

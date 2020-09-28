@@ -32,4 +32,6 @@ public interface KifuServiceAsync {
     void createGameCollection(String sessionId, GameCollectionDetails gameCollectionDetails,
                               AsyncCallback<Void> callback);
 
+    void deleteGameCollection(String sessionId, String gameSetId, AsyncCallback<Void> callback);
+
 }

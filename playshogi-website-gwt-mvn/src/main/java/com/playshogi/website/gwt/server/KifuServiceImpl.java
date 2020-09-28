@@ -403,4 +403,19 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
         gameSetRepository.saveGameSet(details.getName(), details.getDescription(),
                 PersistentGameSet.Visibility.valueOf(details.getVisibility().toUpperCase()), loginResult.getUserId());
     }
+
+    @Override
+    public void deleteGameCollection(final String sessionId, final String gameSetId) {
+        LOGGER.log(Level.INFO, "deleteGameCollection: " + gameSetId);
+
+        LoginResult loginResult = authenticator.checkSession(sessionId);
+        if (loginResult == null || !loginResult.isLoggedIn()) {
+            throw new IllegalStateException("Only logged in users can delete a game collection");
+        }
+
+        if (!gameSetRepository.deleteGamesetById(Integer.parseInt(gameSetId), loginResult.getUserId())) {
+            throw new IllegalStateException("The user does not have permission to delete the specified game " +
+                    "collection");
+        }
+    }
 }
