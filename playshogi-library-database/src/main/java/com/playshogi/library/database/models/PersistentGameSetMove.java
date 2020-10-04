@@ -7,19 +7,19 @@ public class PersistentGameSetMove {
     private final int positionId;
     private final int newPositionId;
     private final int gameSetId;
-    private final int positionOccurences;
+    private final int newPositionOccurences;
     private final int senteWins;
     private final int goteWins;
 
     public PersistentGameSetMove(final String moveUsf, final int moveOccurrences, final int positionId,
                                  final int newPositionId, final int gameSetId,
-                                 final int positionOccurences, final int senteWins, final int goteWins) {
+                                 final int newPositionOccurences, final int senteWins, final int goteWins) {
         this.moveUsf = moveUsf;
         this.moveOccurrences = moveOccurrences;
         this.positionId = positionId;
         this.newPositionId = newPositionId;
         this.gameSetId = gameSetId;
-        this.positionOccurences = positionOccurences;
+        this.newPositionOccurences = newPositionOccurences;
         this.senteWins = senteWins;
         this.goteWins = goteWins;
     }
@@ -44,8 +44,8 @@ public class PersistentGameSetMove {
         return gameSetId;
     }
 
-    public int getPositionOccurences() {
-        return positionOccurences;
+    public int getNewPositionOccurences() {
+        return newPositionOccurences;
     }
 
     public int getSenteWins() {
@@ -59,9 +59,8 @@ public class PersistentGameSetMove {
     @Override
     public String toString() {
         return "PersistentGameSetMove [moveUsf=" + moveUsf + ", moveOccurrences=" + moveOccurrences + ", positionId=" + positionId + ", newPositionId="
-                + newPositionId + ", gameSetId=" + gameSetId + ", positionOccurences=" + positionOccurences + ", " +
-                "senteWins=" + senteWins + ", goteWins="
-                + goteWins + "]";
+                + newPositionId + ", gameSetId=" + gameSetId + ", newPositionOccurences=" + newPositionOccurences +
+                ", senteWins=" + senteWins + ", goteWins=" + goteWins + "]";
     }
 
 }

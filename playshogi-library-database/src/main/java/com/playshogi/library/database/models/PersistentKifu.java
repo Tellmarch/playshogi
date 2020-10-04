@@ -6,13 +6,13 @@ import java.util.Date;
 
 public class PersistentKifu {
 
-    public static enum KifuType {
+    public enum KifuType {
         GAME(1, "Game"), PROBLEM(2, "Problem");
 
         private final int dbInt;
         private final String description;
 
-        private KifuType(final int dbInt, final String description) {
+        KifuType(final int dbInt, final String description) {
             this.dbInt = dbInt;
             this.description = description;
         }

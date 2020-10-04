@@ -7,7 +7,7 @@ public class PositionMoveDetails implements Serializable {
 
     private String move;
     private int moveOcurrences;
-    private int positionOccurences;
+    private int newPositionOccurences;
     private int sente_wins;
     private int gote_wins;
     private String newSfen;
@@ -15,12 +15,11 @@ public class PositionMoveDetails implements Serializable {
     public PositionMoveDetails() {
     }
 
-    public PositionMoveDetails(final String move, final int moveOcurrences, final int positionOccurences,
-                               final int sente_wins, final int gote_wins,
-                               final String newSfen) {
+    public PositionMoveDetails(final String move, final int moveOcurrences, final int newPositionOccurences,
+                               final int sente_wins, final int gote_wins, final String newSfen) {
         this.move = move;
         this.moveOcurrences = moveOcurrences;
-        this.positionOccurences = positionOccurences;
+        this.newPositionOccurences = newPositionOccurences;
         this.sente_wins = sente_wins;
         this.gote_wins = gote_wins;
         this.newSfen = newSfen;
@@ -62,12 +61,12 @@ public class PositionMoveDetails implements Serializable {
         return newSfen;
     }
 
-    public int getPositionOccurences() {
-        return positionOccurences;
+    public int getNewPositionOccurences() {
+        return newPositionOccurences;
     }
 
-    public void setPositionOccurences(int positionOccurences) {
-        this.positionOccurences = positionOccurences;
+    public void setNewPositionOccurences(int newPositionOccurences) {
+        this.newPositionOccurences = newPositionOccurences;
     }
 
     public void setNewSfen(String newSfen) {
@@ -79,7 +78,7 @@ public class PositionMoveDetails implements Serializable {
         return "PositionMoveDetails{" +
                 "move='" + move + '\'' +
                 ", moveOcurrences=" + moveOcurrences +
-                ", positionOccurences=" + positionOccurences +
+                ", positionOccurences=" + newPositionOccurences +
                 ", sente_wins=" + sente_wins +
                 ", gote_wins=" + gote_wins +
                 ", newSfen='" + newSfen + '\'' +

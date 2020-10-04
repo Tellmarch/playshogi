@@ -1,8 +1,6 @@
 package com.playshogi.library.database;
 
-import com.playshogi.library.database.models.PersistentGameSet;
-import com.playshogi.library.database.models.PersistentGameSetMove;
-import com.playshogi.library.database.models.PersistentGameSetPos;
+import com.playshogi.library.database.models.*;
 import com.playshogi.library.database.models.PersistentKifu.KifuType;
 import com.playshogi.library.models.Move;
 import com.playshogi.library.models.record.GameNavigation;
@@ -61,12 +59,29 @@ public class GameSetRepository {
             "(`position_id`, `gameset_id`, `num_total`, `num_sente_win`, `num_gote_win`)"
             + " VALUES (?, ?, 1, 0, 0) ON DUPLICATE KEY UPDATE num_total=num_total+1;";
 
+    private static final String DECREMENT_GAMESET_POSITION_SENTE_WIN = "INSERT INTO `playshogi`.`ps_gamesetpos` " +
+            "(`position_id`, `gameset_id`, `num_total`, `num_sente_win`, `num_gote_win`)"
+            + " VALUES (?, ?, 0, 0, 0) ON DUPLICATE KEY UPDATE num_sente_win=num_sente_win-1,num_total=num_total-1;";
+
+    private static final String DECREMENT_GAMESET_POSITION_GOTE_WIN = "INSERT INTO `playshogi`.`ps_gamesetpos` " +
+            "(`position_id`, `gameset_id`, `num_total`, `num_sente_win`, `num_gote_win`)"
+            + " VALUES (?, ?, 0, 0, 0) ON DUPLICATE KEY UPDATE num_gote_win=num_gote_win-1,num_total=num_total-1;";
+
+    private static final String DECREMENT_GAMESET_POSITION_OTHER = "INSERT INTO `playshogi`.`ps_gamesetpos` " +
+            "(`position_id`, `gameset_id`, `num_total`, `num_sente_win`, `num_gote_win`)"
+            + " VALUES (?, ?, 0, 0, 0) ON DUPLICATE KEY UPDATE num_total=num_total-1;";
+
     private static final String SELECT_GAMESET_POSITION = "SELECT * FROM `playshogi`.`ps_gamesetpos` WHERE " +
             "position_id = ? AND gameset_id = ?";
 
     private static final String INCREMENT_GAMESET_MOVE = "INSERT INTO `playshogi`.`ps_gamesetmove` (`position_id`, " +
             "`move`, `new_position_id`, `gameset_id`, `num_total`)"
             + " VALUES (?, ?, ?, ?, 1) ON DUPLICATE KEY UPDATE num_total=num_total+1;";
+
+    private static final String DECREMENT_GAMESET_MOVE = "INSERT INTO `playshogi`.`ps_gamesetmove` (`position_id`, " +
+            "`move`, `new_position_id`, `gameset_id`, `num_total`)"
+            + " VALUES (?, ?, ?, ?, 0) ON DUPLICATE KEY UPDATE num_total=num_total-1;";
+
 
     private static final String SELECT_GAMESET_MOVES = "SELECT * FROM ps_gamesetmove"
             + " LEFT JOIN ps_gamesetpos ON ps_gamesetmove.new_position_id = ps_gamesetpos.position_id AND " +
@@ -76,8 +91,15 @@ public class GameSetRepository {
 
     private final DbConnection dbConnection;
 
+    private final PositionRepository positionRepository;
+    private final KifuRepository kifuRepository;
+    private final GameRepository gameRepository;
+
     public GameSetRepository(final DbConnection dbConnection) {
         this.dbConnection = dbConnection;
+        positionRepository = new PositionRepository(dbConnection);
+        kifuRepository = new KifuRepository(dbConnection);
+        gameRepository = new GameRepository(dbConnection);
     }
 
     public int saveGameSet(final String name, final String description, final PersistentGameSet.Visibility visibility
@@ -254,7 +276,55 @@ public class GameSetRepository {
         }
     }
 
-    public boolean deleteGameFromGameset(final int gameId, final int gameSetId, final int userId) {
+    public boolean deleteGameFromGameSet(final int gameId, final int gameSetId, final int userId) {
+        boolean result = deleteFromGameSetGameTable(gameId, gameSetId, userId);
+
+        if (!result) { // No permission
+            return false;
+        }
+
+        PersistentGame game = gameRepository.getGameById(gameId);
+
+        if (game == null) {
+            return true;
+        }
+
+        PersistentKifu kifu = kifuRepository.getKifuById(game.getKifuId());
+
+        if (kifu == null) {
+            return true;
+        }
+
+        GameRecord gameRecord = kifu.getKifu();
+
+        GameNavigation<ShogiPosition> gameNavigation = new GameNavigation<>(new ShogiRulesEngine(),
+                gameRecord.getGameTree(),
+                ShogiInitialPositionFactory.createInitialPosition());
+
+        boolean senteWin = gameRecord.getGameResult() == GameResult.BLACK_WIN;
+        boolean goteWin = gameRecord.getGameResult() == GameResult.WHITE_WIN;
+
+        int lastPositionId = positionRepository.getOrSavePosition(gameNavigation.getPosition());
+
+        decrementGameSetPosition(gameSetId, lastPositionId, senteWin, goteWin);
+
+        while (gameNavigation.canMoveForward()) {
+            Move move = gameNavigation.getMainVariationMove();
+
+            gameNavigation.moveForward();
+
+            int positionId = positionRepository.getOrSavePosition(gameNavigation.getPosition());
+
+            decrementGameSetPosition(gameSetId, positionId, senteWin, goteWin);
+            decrementGameSetMove(gameSetId, lastPositionId, UsfMoveConverter.toUsfString((ShogiMove) move), positionId);
+
+            lastPositionId = positionId;
+        }
+
+        return true;
+    }
+
+    private boolean deleteFromGameSetGameTable(final int gameId, final int gameSetId, final int userId) {
         Connection connection = dbConnection.getConnection();
         try (PreparedStatement preparedStatement = connection.prepareStatement(DELETE_GAMESET_GAME)) {
             preparedStatement.setInt(1, gameSetId);
@@ -276,17 +346,13 @@ public class GameSetRepository {
 
     public boolean addGameToGameSet(final GameRecord gameRecord, final int gameSetId, final int venueId,
                                     final String gameName, final int authorId) {
-        PositionRepository rep = new PositionRepository(dbConnection);
-        KifuRepository kifuRep = new KifuRepository(dbConnection);
-        GameRepository gameRep = new GameRepository(dbConnection);
-
-        int kifuId = kifuRep.saveKifu(gameRecord, gameName, authorId, KifuType.GAME);
+        int kifuId = kifuRepository.saveKifu(gameRecord, gameName, authorId, KifuType.GAME);
 
         if (kifuId == -1) {
             return false;
         }
 
-        int gameId = gameRep.saveGame(kifuId, null, null, gameRecord.getGameInformation().getSente(),
+        int gameId = gameRepository.saveGame(kifuId, null, null, gameRecord.getGameInformation().getSente(),
                 gameRecord.getGameInformation().getGote(),
                 parseDate(gameRecord.getGameInformation().getDate()), venueId, gameName);
 
@@ -299,9 +365,9 @@ public class GameSetRepository {
                 gameRecord.getGameTree(),
                 ShogiInitialPositionFactory.createInitialPosition());
 
-        int lastPositionId = rep.getOrSavePosition(gameNavigation.getPosition());
+        int lastPositionId = positionRepository.getOrSavePosition(gameNavigation.getPosition());
 
-        kifuRep.saveKifuPosition(kifuId, lastPositionId);
+        kifuRepository.saveKifuPosition(kifuId, lastPositionId);
         incrementGameSetPosition(gameSetId, lastPositionId, senteWin, goteWin);
 
         while (gameNavigation.canMoveForward()) {
@@ -309,9 +375,9 @@ public class GameSetRepository {
 
             gameNavigation.moveForward();
 
-            int positionId = rep.getOrSavePosition(gameNavigation.getPosition());
+            int positionId = positionRepository.getOrSavePosition(gameNavigation.getPosition());
 
-            kifuRep.saveKifuPosition(kifuId, positionId);
+            kifuRepository.saveKifuPosition(kifuId, positionId);
             incrementGameSetPosition(gameSetId, positionId, senteWin, goteWin);
             incrementGameSetMove(gameSetId, lastPositionId, UsfMoveConverter.toUsfString((ShogiMove) move), positionId);
 
@@ -332,9 +398,27 @@ public class GameSetRepository {
         return null;
     }
 
-    public void incrementGameSetPosition(final int gameSetId, final int positionId, final boolean senteWin,
-                                         final boolean goteWin) {
+    private void decrementGameSetPosition(final int gameSetId, final int positionId, final boolean senteWin,
+                                          final boolean goteWin) {
+        String statement = senteWin ? DECREMENT_GAMESET_POSITION_SENTE_WIN : (goteWin ?
+                DECREMENT_GAMESET_POSITION_GOTE_WIN : DECREMENT_GAMESET_POSITION_OTHER);
 
+        Connection connection = dbConnection.getConnection();
+        try (PreparedStatement preparedStatement = connection.prepareStatement(statement)) {
+            preparedStatement.setInt(1, positionId);
+            preparedStatement.setInt(2, gameSetId);
+            int updateResult = preparedStatement.executeUpdate();
+
+            if (updateResult != 1 && updateResult != 2) {
+                LOGGER.log(Level.SEVERE, "Could not decrement gameset position");
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error decrementing the gameset position in db", e);
+        }
+    }
+
+    private void incrementGameSetPosition(final int gameSetId, final int positionId, final boolean senteWin,
+                                          final boolean goteWin) {
         String statement = senteWin ? INCREMENT_GAMESET_POSITION_SENTE_WIN : (goteWin ?
                 INCREMENT_GAMESET_POSITION_GOTE_WIN : INCREMENT_GAMESET_POSITION_OTHER);
 
@@ -345,16 +429,15 @@ public class GameSetRepository {
             int updateResult = preparedStatement.executeUpdate();
 
             if (updateResult != 1 && updateResult != 2) {
-                LOGGER.log(Level.SEVERE, "Could not insert gameset position");
+                LOGGER.log(Level.SEVERE, "Could not increment gameset position");
             }
         } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Error inserting the gameset position in db", e);
+            LOGGER.log(Level.SEVERE, "Error incrementing the gameset position in db", e);
         }
-
     }
 
-    public void incrementGameSetMove(final int gameSetId, final int positionId, final String moveUsf,
-                                     final int newPositionId) {
+    private void incrementGameSetMove(final int gameSetId, final int positionId, final String moveUsf,
+                                      final int newPositionId) {
 
         Connection connection = dbConnection.getConnection();
         try (PreparedStatement preparedStatement = connection.prepareStatement(INCREMENT_GAMESET_MOVE)) {
@@ -365,10 +448,30 @@ public class GameSetRepository {
             int updateResult = preparedStatement.executeUpdate();
 
             if (updateResult != 1 && updateResult != 2) {
-                LOGGER.log(Level.SEVERE, "Could not insert gameset move");
+                LOGGER.log(Level.SEVERE, "Could not increment gameset move");
             }
         } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Error inserting the gameset move in db", e);
+            LOGGER.log(Level.SEVERE, "Error incrementing the gameset move in db", e);
+        }
+
+    }
+
+    private void decrementGameSetMove(final int gameSetId, final int positionId, final String moveUsf,
+                                      final int newPositionId) {
+
+        Connection connection = dbConnection.getConnection();
+        try (PreparedStatement preparedStatement = connection.prepareStatement(DECREMENT_GAMESET_MOVE)) {
+            preparedStatement.setInt(1, positionId);
+            preparedStatement.setString(2, moveUsf);
+            preparedStatement.setInt(3, newPositionId);
+            preparedStatement.setInt(4, gameSetId);
+            int updateResult = preparedStatement.executeUpdate();
+
+            if (updateResult != 1 && updateResult != 2) {
+                LOGGER.log(Level.SEVERE, "Could not decrement gameset move");
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error decrementing the gameset move in db", e);
         }
 
     }
@@ -415,17 +518,19 @@ public class GameSetRepository {
             ArrayList<PersistentGameSetMove> result = new ArrayList<>();
 
             while (rs.next()) {
-                int total = rs.getInt("ps_gamesetmove.num_total");
+                int moveOccurences = rs.getInt("ps_gamesetmove.num_total");
                 String move = rs.getString("move");
-                int posTotal = rs.getInt("ps_gamesetpos.num_total");
+                int newPositionOccurences = rs.getInt("ps_gamesetpos.num_total");
                 int senteWins = rs.getInt("num_sente_win");
                 int goteWins = rs.getInt("num_gote_win");
                 int newPositionId = rs.getInt("new_position_id");
 
-                LOGGER.log(Level.INFO, "Found position move: " + total);
+                LOGGER.log(Level.INFO, "Found position move: " + moveOccurences);
 
-                result.add(new PersistentGameSetMove(move, total, positionId, newPositionId, gameSetId, posTotal,
-                        senteWins, goteWins));
+                if (moveOccurences > 0) {
+                    result.add(new PersistentGameSetMove(move, moveOccurences, positionId, newPositionId, gameSetId,
+                            newPositionOccurences, senteWins, goteWins));
+                }
             }
 
             return result;

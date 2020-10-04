@@ -105,11 +105,11 @@ public class PositionStatisticsPanel extends Composite {
 
                 GWT.log(moveDetails.toString());
 
-                int senteMoveRate = (moveDetails.getSente_wins() * 1000) / moveDetails.getPositionOccurences();
-                int goteMoveRate = (moveDetails.getGote_wins() * 1000) / moveDetails.getPositionOccurences();
+                int senteMoveRate = (moveDetails.getSente_wins() * 1000) / moveDetails.getNewPositionOccurences();
+                int goteMoveRate = (moveDetails.getGote_wins() * 1000) / moveDetails.getNewPositionOccurences();
 
-                int sentePixels = moveDetails.getSente_wins() * 100 / moveDetails.getPositionOccurences();
-                int gotePixels = moveDetails.getGote_wins() * 100 / moveDetails.getPositionOccurences();
+                int sentePixels = moveDetails.getSente_wins() * 100 / moveDetails.getNewPositionOccurences();
+                int gotePixels = moveDetails.getGote_wins() * 100 / moveDetails.getNewPositionOccurences();
                 int otherPixels = 100 - sentePixels - gotePixels;
 
                 String bar = "<table bgcolor=\"#555555\" border=\"0\" cellpadding=\"0\" cellspacing=\"1\" " +

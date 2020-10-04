@@ -197,7 +197,7 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
             PersistentGameSetMove move = moveStats.get(i);
             String newSfen = positionRepository.getPositionSfenById(move.getNewPositionId());
             details[i] = new PositionMoveDetails(move.getMoveUsf(), move.getMoveOccurrences(),
-                    move.getPositionOccurences(), move.getSenteWins(), move.getGoteWins(), newSfen);
+                    move.getNewPositionOccurences(), move.getSenteWins(), move.getGoteWins(), newSfen);
         }
 
         // TODO remove special case once database is properly populated
@@ -430,7 +430,7 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
             throw new IllegalStateException("Only logged in users can delete a game from a collection");
         }
 
-        if (!gameSetRepository.deleteGameFromGameset(Integer.parseInt(gameId), Integer.parseInt(gameSetId),
+        if (!gameSetRepository.deleteGameFromGameSet(Integer.parseInt(gameId), Integer.parseInt(gameSetId),
                 loginResult.getUserId())) {
             throw new IllegalStateException("The user does not have permission to delete the specified game from a " +
                     "collection");
