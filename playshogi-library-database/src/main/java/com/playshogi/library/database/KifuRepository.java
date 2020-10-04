@@ -81,7 +81,7 @@ public class KifuRepository {
                 KifuType kifuType = KifuType.fromDbInt(type);
                 Date creationDate = rs.getDate("create_time");
                 Date updateDate = rs.getDate("update_time");
-                GameRecord gameRecord = UsfFormat.INSTANCE.read(usfString);
+                GameRecord gameRecord = UsfFormat.INSTANCE.readSingle(usfString);
 
                 return new PersistentKifu(kifuId, name, gameRecord, creationDate, updateDate, kifuType, authorId);
             } else {

@@ -12,6 +12,8 @@ import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.library.shogi.models.shogivariant.ShogiInitialPositionFactory;
 import com.playshogi.library.shogi.rules.ShogiRulesEngine;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -20,13 +22,21 @@ public enum UsfFormat implements GameRecordFormat {
 
     private static final Logger LOGGER = Logger.getLogger(UsfFormat.class.getName());
 
+    public GameRecord readSingle(final String string) {
+        List<GameRecord> gameRecords = read(string);
+        if (gameRecords.size() != 1) {
+            throw new IllegalStateException("Multiple or no game record, size=" + gameRecords.size());
+        }
+        return gameRecords.get(0);
+    }
+
     @Override
-    public GameRecord read(String string) {
+    public List<GameRecord> read(final String string) {
         return read(new StringLineReader(string));
     }
 
     @Override
-    public GameRecord read(final LineReader lineReader) {
+    public List<GameRecord> read(final LineReader lineReader) {
         String l = lineReader.nextLine();
         // First, check that the file is indeed USF.
         if (!l.contains("USF:")) {
@@ -200,7 +210,7 @@ public enum UsfFormat implements GameRecordFormat {
 
         gameNavigation.moveToStart();
 
-        return new GameRecord(gameInformation, gameTree, gameResult);
+        return Arrays.asList(new GameRecord(gameInformation, gameTree, gameResult));
     }
 
     /**

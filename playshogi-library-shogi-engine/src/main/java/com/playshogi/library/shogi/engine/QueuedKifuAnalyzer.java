@@ -83,7 +83,7 @@ public class QueuedKifuAnalyzer {
     }
 
     private void doAnalyse(final String kifuUsf) {
-        GameRecord gameRecord = UsfFormat.INSTANCE.read(kifuUsf);
+        GameRecord gameRecord = UsfFormat.INSTANCE.readSingle(kifuUsf);
         kifuEvaluations.put(kifuUsf, new CopyOnWriteArrayList<>());
         kifuStatus.put(kifuUsf, Status.IN_PROGRESS);
 

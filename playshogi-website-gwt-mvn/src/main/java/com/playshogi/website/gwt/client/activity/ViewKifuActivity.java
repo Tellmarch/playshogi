@@ -66,7 +66,7 @@ public class ViewKifuActivity extends MyAbstractActivity {
             @Override
             public void onSuccess(final String usf) {
                 GWT.log("Kifu loaded successfully: " + usf);
-                gameRecord = UsfFormat.INSTANCE.read(usf);
+                gameRecord = UsfFormat.INSTANCE.readSingle(usf);
 
                 eventBus.fireEvent(new GameTreeChangedEvent(gameRecord.getGameTree(), initialMoveCount));
                 eventBus.fireEvent(new GameInformationChangedEvent(gameRecord.getGameInformation()));

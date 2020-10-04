@@ -14,16 +14,19 @@ import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.library.shogi.models.shogivariant.ShogiInitialPositionFactory;
 import com.playshogi.library.shogi.rules.ShogiRulesEngine;
 
+import java.util.Arrays;
+import java.util.List;
+
 public enum KifFormat implements GameRecordFormat {
     INSTANCE;
 
     @Override
-    public GameRecord read(String string) {
+    public List<GameRecord> read(String string) {
         return read(new StringLineReader(string));
     }
 
     @Override
-    public GameRecord read(final LineReader lineReader) {
+    public List<GameRecord> read(final LineReader lineReader) {
         String date = "1000-1-1";
         String tournament = "UNKNOWN";
         String opening = "UNKNOWN";
@@ -202,7 +205,7 @@ public enum KifFormat implements GameRecordFormat {
         gameInformation.setGote(gote);
         gameInformation.setVenue(place);
         gameInformation.setDate(date);
-        return new GameRecord(gameInformation, gameTree, gameResult);
+        return Arrays.asList(new GameRecord(gameInformation, gameTree, gameResult));
     }
 
     private void readPiecesInHand(final String value, final KomadaiState komadai) {

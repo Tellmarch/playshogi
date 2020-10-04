@@ -6,4 +6,6 @@ public interface LineReader {
 
     String nextLine();
 
+    String peekNextLine();
+
 }

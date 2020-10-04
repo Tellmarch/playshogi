@@ -359,7 +359,7 @@ public class KifFormatTest {
 
     @Test
     public void readFromShogiClub24Kifu() {
-        GameRecord kif24 = KifFormat.INSTANCE.read(KIF_24);
+        GameRecord kif24 = KifFormat.INSTANCE.read(KIF_24).get(0);
         assertEquals("USF:1.0\n" +
                 "^w:7g7f3c3d2g2f5c5d2f2e8b5b3i4h5a6b8h2B3a2b9g9f9c9d7i7h6b7b5i6h7b8b4g4f7a7b6g6f6c6d2e2d2c2d2h2dp" +
                 "*2c2d2h5d5e4h4g5b5aB*1f4a3b1f3d5a5d3d4e5d2dP" +
@@ -372,7 +372,7 @@ public class KifFormatTest {
 
     @Test
     public void readFrom81DojoKifu() {
-        GameRecord kif81 = KifFormat.INSTANCE.read(KIF_81);
+        GameRecord kif81 = KifFormat.INSTANCE.read(KIF_81).get(0);
         assertEquals("USF:1.0\n" +
                 "^w:7g7f3c3d2g2f8c8d2f2e8d8e6i7h2b8H7i8h3a2b8h7g2b3c3i3h4a3b3h2g7a7b2g2f1c1d1g1f9c9d5i6h7c7d1f1e1d1e" +
                 "2f1e1a1e1i1eb*1i2h1hs*2g1h1ip*1h1e1B1h1I1b2a1i2iL*5f3c4dN*6e3b4bB*3an*4a3a4B5a4bB*3a4b5bG*4b5b6b4b4a" +
@@ -386,14 +386,13 @@ public class KifFormatTest {
 
     @Test
     public void readFromPyo() {
-        GameRecord kif = KifFormat.INSTANCE.read(KIF_PYO);
+        assertNull(KifFormat.INSTANCE.read(KIF_PYO));
         // Right now handicap games are not read correctly
-        assertNull(kif);
     }
 
     @Test
     public void readFromGotePosition() {
-        GameRecord kif = KifFormat.INSTANCE.read(KIF_GOTE_POSITION);
+        GameRecord kif = KifFormat.INSTANCE.read(KIF_GOTE_POSITION).get(0);
         assertEquals("USF:1.0\n" +
                 "^*ln1g3nl/1ks1g2r1/1pppp2pp/p4sp2/7P1/P1PP1SP1P/1PS1P4/1KG4R1/LN3G1NL w BPbp:\n" +
                 "BN:AAA\n" +
@@ -404,7 +403,7 @@ public class KifFormatTest {
 
     @Test
     public void readFromShogiExtend() {
-        GameRecord kif = KifFormat.INSTANCE.read(ANOTHER_KIF);
+        GameRecord kif = KifFormat.INSTANCE.read(ANOTHER_KIF).get(0);
         assertEquals("USF:1.0\n" +
                 "^w:2g2f3c3d2f2e2b3c3i4h3a3b1g1f4c4d3g3f3b4c4h3g8b3b5i6h5a6b6h7h6b7b7i6h7b8b6i7i7a7b9g9f9c9d3g4f5c5d" +
                 "5g5f4a5b4i5i3c4b7g7f1a1b1f1e4b6d5f5e4d4e4f4e6d5e8h5e5d5e2e2d2c2dB*2c3b2b4e3d4c3b2c3B2b3bS" +

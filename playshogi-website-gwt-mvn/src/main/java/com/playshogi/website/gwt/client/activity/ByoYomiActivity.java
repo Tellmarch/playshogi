@@ -221,7 +221,7 @@ public class ByoYomiActivity extends MyAbstractActivity {
                 } else {
                     GWT.log("Got problem details for random problem request: " + result);
                     String resultUsf = result.getUsf();
-                    GameRecord gameRecord = UsfFormat.INSTANCE.read(resultUsf);
+                    GameRecord gameRecord = UsfFormat.INSTANCE.readSingle(resultUsf);
                     GWT.log("Updating game navigator...");
                     setTsumeId(result.getId());
                     eventBus.fireEvent(new GameTreeChangedEvent(gameRecord.getGameTree()));

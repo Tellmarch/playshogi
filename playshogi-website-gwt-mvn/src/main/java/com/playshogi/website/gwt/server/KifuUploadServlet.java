@@ -61,10 +61,12 @@ public class KifuUploadServlet extends HttpServlet {
     }
 
     private void readKifu(InputStream inputStream, PrintWriter writer, String fileName) {
-        GameRecord record = readGameRecord(new Scanner(inputStream), fileName);
-        String usf = UsfFormat.INSTANCE.write(record);
-        writer.println("SUCCESS:" + usf);
-        LOGGER.log(Level.INFO, "Successfully imported kifu: " + fileName + " " + usf);
+        List<GameRecord> records = readGameRecord(new Scanner(inputStream), fileName);
+        for (GameRecord record : records) {
+            String usf = UsfFormat.INSTANCE.write(record);
+            writer.println("SUCCESS:" + usf);
+            LOGGER.log(Level.INFO, "Successfully imported kifu: " + fileName + " " + usf);
+        }
     }
 
     private void importCollection(final InputStream inputStream, final PrintWriter writer) throws IOException {
@@ -75,10 +77,12 @@ public class KifuUploadServlet extends HttpServlet {
 
         while ((entry = zipInputStream.getNextEntry()) != null) {
             System.out.println(entry.toString());
-            GameRecord gameRecord = readGameRecord(new Scanner(zipInputStream), entry.getName());
-            LOGGER.log(Level.INFO,
-                    "Successfully imported kifu: " + entry.getName() + " " + UsfFormat.INSTANCE.write(gameRecord));
-            records.add(gameRecord);
+            List<GameRecord> gameRecords = readGameRecord(new Scanner(zipInputStream), entry.getName());
+            for (GameRecord gameRecord : gameRecords) {
+                LOGGER.log(Level.INFO,
+                        "Successfully imported kifu: " + entry.getName() + " " + UsfFormat.INSTANCE.write(gameRecord));
+                records.add(gameRecord);
+            }
         }
 
         String collectionId = CollectionUploads.INSTANCE.addCollection(new GameCollection("New Collection", records));
@@ -95,7 +99,7 @@ public class KifuUploadServlet extends HttpServlet {
         return null;
     }
 
-    private GameRecord readGameRecord(final Scanner scanner, final String fileName) {
+    private List<GameRecord> readGameRecord(final Scanner scanner, final String fileName) {
         LOGGER.log(Level.INFO, "Importing kifu: " + fileName);
         if (fileName.endsWith(".kif")) {
             return KifFormat.INSTANCE.read(new ScannerLineReader(scanner));

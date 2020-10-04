@@ -13,6 +13,8 @@ import com.playshogi.library.shogi.models.formats.psn.PsnFormat;
 import com.playshogi.library.shogi.models.formats.usf.UsfFormat;
 import com.playshogi.website.gwt.client.events.kifu.ImportGameRecordEvent;
 
+import java.util.List;
+
 public class ImportKifuPanel extends Composite implements ClickHandler {
 
     private final Button loadFromTextButton;
@@ -74,7 +76,7 @@ public class ImportKifuPanel extends Composite implements ClickHandler {
             } else if (result.startsWith("SUCCESS:")) {
                 String usf = result.substring(8);
                 GWT.log("Kifu USF: " + usf);
-                GameRecord gameRecord = UsfFormat.INSTANCE.read(usf);
+                GameRecord gameRecord = UsfFormat.INSTANCE.readSingle(usf);
                 importGameRecord(gameRecord);
             } else {
                 GWT.log("Don't know how to handle the response: " + result);
@@ -99,19 +101,21 @@ public class ImportKifuPanel extends Composite implements ClickHandler {
     private void importGameFromText() {
         GWT.log("Importing game...");
         String gameText = textArea.getText();
-        GameRecord gameRecord;
+        List<GameRecord> gameRecords;
         if (gameText.startsWith("USF")) {
             GWT.log("Will parse as USF game");
-            gameRecord = UsfFormat.INSTANCE.read(gameText);
+            gameRecords = UsfFormat.INSTANCE.read(gameText);
         } else if (gameText.startsWith("[")) {
             GWT.log("Will parse as PSN game");
-            gameRecord = PsnFormat.INSTANCE.read(gameText);
+            gameRecords = PsnFormat.INSTANCE.read(gameText);
         } else {
             GWT.log("Will parse as KIF game");
-            gameRecord = KifFormat.INSTANCE.read(gameText);
+            gameRecords = KifFormat.INSTANCE.read(gameText);
         }
         GWT.log("Firing game record changed event...");
-        importGameRecord(gameRecord);
+        for (GameRecord gameRecord : gameRecords) {
+            importGameRecord(gameRecord);
+        }
     }
 
     private void importGameRecord(final GameRecord gameRecord) {

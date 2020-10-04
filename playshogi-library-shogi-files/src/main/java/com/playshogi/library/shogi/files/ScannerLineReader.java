@@ -9,18 +9,35 @@ public class ScannerLineReader implements LineReader {
 
     private final Scanner scanner;
     private boolean firstLine = true;
+    private String nextLine;
 
     public ScannerLineReader(final Scanner scanner) {
         this.scanner = scanner;
+        nextLine = readNextLine();
     }
 
     @Override
     public boolean hasNextLine() {
-        return scanner.hasNextLine();
+        return nextLine != null;
     }
 
     @Override
     public String nextLine() {
+        String current = nextLine;
+        nextLine = readNextLine();
+        return current;
+    }
+
+    @Override
+    public String peekNextLine() {
+        return nextLine;
+    }
+
+    private String readNextLine() {
+        if (!scanner.hasNextLine()) {
+            return null;
+        }
+
         if (firstLine) {
             firstLine = false;
             return removeUTF8BOM(scanner.nextLine());

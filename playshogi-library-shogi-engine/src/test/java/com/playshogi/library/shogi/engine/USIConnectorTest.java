@@ -44,7 +44,7 @@ public class USIConnectorTest {
         USIConnector usiConnector = new USIConnector(EngineConfiguration.NORMAL_ENGINE);
         usiConnector.connect();
         String usf = "USF:1.0\n^*:7g7f3c3dRSGN";
-        usiConnector.analyzeKifu(UsfFormat.INSTANCE.read(usf).getGameTree(), 1000, System.out::println);
+        usiConnector.analyzeKifu(UsfFormat.INSTANCE.readSingle(usf).getGameTree(), 1000, System.out::println);
         usiConnector.disconnect();
     }
 
@@ -60,7 +60,7 @@ public class USIConnectorTest {
                 "*6e6d7e8d7e8e7d7e8f5e9I6e6d" +
                 "l*6e6i7ip*7e6d6C5b6c8f7g9i7g8i7g6e6H7i8ib*6g8i9i8b8GP*6d6c5cS*6c8g8h6c7D8h9i6d6C6g4I6c5c4i3i2h1h" +
                 "s*1gRSGN\n";
-        usiConnector.analyzeKifu(UsfFormat.INSTANCE.read(usf).getGameTree(), 100, System.out::println);
+        usiConnector.analyzeKifu(UsfFormat.INSTANCE.readSingle(usf).getGameTree(), 100, System.out::println);
         usiConnector.disconnect();
     }
 

@@ -9,6 +9,7 @@ import com.playshogi.library.shogi.models.formats.kif.KifFormat;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class ProSetImporter {
@@ -62,11 +63,9 @@ public class ProSetImporter {
     private static void processKifu(final File file, final GameSetRepository repository, final int setId,
                                     final int kifuId, final int venueId)
             throws IOException {
-        GameRecord gameRecord = GameRecordFileReader.read(KifFormat.INSTANCE, file, "windows-932");
-        // Currently handicap games return null
-        if (gameRecord != null) {
-            repository.addGameToGameSet(gameRecord, setId, venueId, "Pro Classic Games #" + kifuId, 1);
+        List<GameRecord> gameRecord = GameRecordFileReader.read(KifFormat.INSTANCE, file, "windows-932");
+        if (gameRecord != null && gameRecord.size() == 1) {
+            repository.addGameToGameSet(gameRecord.get(0), setId, venueId, "Pro Classic Games #" + kifuId, 1);
         }
-//         System.out.println(UsfFormat.INSTANCE.write(gameRecord));
     }
 }

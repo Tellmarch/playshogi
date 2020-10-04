@@ -137,7 +137,7 @@ public class TsumeActivity extends MyAbstractActivity {
                 } else {
                     GWT.log("Got problem details problem request: " + tsumeId + " : " + result);
                     String resultUsf = result.getUsf();
-                    GameRecord gameRecord = UsfFormat.INSTANCE.read(resultUsf);
+                    GameRecord gameRecord = UsfFormat.INSTANCE.readSingle(resultUsf);
                     GWT.log("Updating game navigator...");
                     //TODO: how to update URL?
                     //placeController.goTo(new TsumePlace(result.getId()));

@@ -19,4 +19,8 @@ public class StringLineReader implements LineReader {
         return lines[position++];
     }
 
+    @Override
+    public String peekNextLine() {
+        return lines[position];
+    }
 }
