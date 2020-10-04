@@ -1,5 +1,6 @@
 package com.playshogi.library.shogi.models.formats.psn;
 
+import com.playshogi.library.models.Move;
 import com.playshogi.library.models.record.*;
 import com.playshogi.library.shogi.models.Player;
 import com.playshogi.library.shogi.models.formats.sfen.GameRecordFormat;
@@ -59,6 +60,10 @@ public enum PsnFormat implements GameRecordFormat {
                 // Ex: --Black Won-- as the last line
                 gameNavigation.addMove(new SpecialMove(gameNavigation.getPosition().getPlayerToMove(),
                         SpecialMoveType.RESIGN));
+            } else if (line.contains("$")) {
+                // TODO tsume: read position, then solution
+                // Ex: wK3a wN2a wL1a bB5b bP4c wN2c wP3d wN2d wP2e bBH1 bRH1 wPH15 wLH3 wNH1 wSH4 wGH4 wRH1 $
+                // B5b-4a+ K3a-2b +B4a-3b
             } else if (line.startsWith("{") && line.endsWith("}")) {
                 //TODO comment
             } else if (line.trim().isEmpty()) {
@@ -66,18 +71,34 @@ public enum PsnFormat implements GameRecordFormat {
                 break;
             } else {
                 String[] split = removeComments(line).split("\\s+");
+                int nestedParenthesis = 0;
                 for (String token : split) {
-                    ShogiMove move = PsnMoveConverter.fromPsnString(token, gameNavigation.getPosition());
-                    gameNavigation.addMove(move);
+                    if ("(".equals(token)) {
+                        nestedParenthesis++;
+                        continue;
+                    } else if (")".equals(token)) {
+                        nestedParenthesis--;
+                        continue;
+                    }
+
+                    if (nestedParenthesis == 0 && !token.isEmpty()) {
+                        ShogiMove move = PsnMoveConverter.fromPsnString(token, gameNavigation.getPosition());
+                        gameNavigation.addMove(move);
+                    }
                 }
             }
         }
 
         GameResult gameResult;
-        if (((ShogiMove) gameNavigation.getCurrentMove()).getPlayer() == Player.BLACK) {
-            gameResult = GameResult.WHITE_WIN;
+        Move currentMove = gameNavigation.getCurrentMove();
+        if (currentMove != null) {
+            if (((ShogiMove) currentMove).getPlayer() == Player.BLACK) {
+                gameResult = GameResult.WHITE_WIN;
+            } else {
+                gameResult = GameResult.BLACK_WIN;
+            }
         } else {
-            gameResult = GameResult.BLACK_WIN;
+            gameResult = GameResult.UNKNOWN;
         }
 
         gameNavigation.moveToStart();
