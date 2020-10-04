@@ -54,6 +54,7 @@ public class ImportCollectionPanel extends Composite {
                 GWT.log("Successfully uploaded draft collection: " + draftCollectionId);
 
                 eventBus.fireEvent(new DraftCollectionUploadedEvent(draftCollectionId));
+                dialogBox.hide();
             } else {
                 GWT.log("Don't know how to handle the response: " + result);
             }

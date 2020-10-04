@@ -89,10 +89,13 @@ public class GameCollectionsActivity extends MyAbstractActivity {
     @EventHandler
     public void onDraftCollectionUploaded(final DraftCollectionUploadedEvent event) {
         GWT.log("GameCollectionsActivity: Handling DraftCollectionUploadedEvent");
+        Window.alert("Your collection is uploading - it may take a few minutes to import all games to the database. " +
+                "You can keep using the website during that time.");
         kifuService.saveGameCollection(sessionInformation.getSessionId(), event.getId(), new AsyncCallback<String>() {
             @Override
             public void onFailure(final Throwable throwable) {
                 GWT.log("GameCollectionsActivity: error saving draft collection");
+                Window.alert("Failed to upload the game collection.");
             }
 
             @Override
