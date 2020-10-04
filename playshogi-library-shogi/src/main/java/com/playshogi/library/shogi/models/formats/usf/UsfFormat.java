@@ -203,30 +203,6 @@ public enum UsfFormat implements GameRecordFormat {
         return new GameRecord(gameInformation, gameTree, gameResult);
     }
 
-    private GameResult getResult(final char resultc) {
-        GameResult gameResult = GameResult.UNKNOWN;
-
-        // TODO : do something with it
-        switch (resultc) {
-            case 's':
-            case 'b':
-                gameResult = GameResult.SENTE_WIN;
-                break;
-            case 'g':
-            case 'w':
-                gameResult = GameResult.GOTE_WIN;
-                break;
-            case 'd':
-                gameResult = GameResult.OTHER;
-                break;
-            case '*':
-                break;
-            default:
-                throw (new IllegalArgumentException("Error parsing the USF File (not a valid result)"));
-        }
-        return gameResult;
-    }
-
     /**
      * plays a move sequence represented by a String, with each move occupying 4
      * characters.
@@ -260,7 +236,8 @@ public enum UsfFormat implements GameRecordFormat {
         GameInformation gameInformation = gameRecord.getGameInformation();
 
         StringBuilder builder = new StringBuilder("USF:1.0\n");
-        builder.append("^*");
+        builder.append("^");
+        builder.append(getResultChar(gameRecord.getGameResult()));
         Node n = gameTree.getRootNode();
         if (n.getMove() instanceof EditMove) {
             EditMove editMove = (EditMove) n.getMove();
@@ -295,6 +272,47 @@ public enum UsfFormat implements GameRecordFormat {
 
         }
         return builder.toString();
+    }
+
+    private GameResult getResult(final char resultc) {
+        GameResult gameResult = GameResult.UNKNOWN;
+
+        switch (resultc) {
+            case 's':
+            case 'b':
+                gameResult = GameResult.SENTE_WIN;
+                break;
+            case 'g':
+            case 'w':
+                gameResult = GameResult.GOTE_WIN;
+                break;
+            case 'd':
+                gameResult = GameResult.OTHER;
+                break;
+            case '*':
+                break;
+            default:
+                throw (new IllegalArgumentException("Error parsing the USF File (not a valid result)"));
+        }
+        return gameResult;
+    }
+
+    private static char getResultChar(final GameResult gameResult) {
+        if (gameResult == null) {
+            return '*';
+        }
+        switch (gameResult) {
+            case SENTE_WIN:
+                return 'b';
+            case GOTE_WIN:
+                return 'w';
+            case OTHER:
+                return 'd';
+            case UNKNOWN:
+                return '*';
+            default:
+                throw (new IllegalArgumentException("Unknown result type: " + gameResult));
+        }
     }
 
 //    /**

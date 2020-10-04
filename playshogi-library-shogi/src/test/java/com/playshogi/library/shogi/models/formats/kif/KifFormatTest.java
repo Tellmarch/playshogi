@@ -361,7 +361,7 @@ public class KifFormatTest {
     public void readFromShogiClub24Kifu() {
         GameRecord kif24 = KifFormat.INSTANCE.read(KIF_24);
         assertEquals("USF:1.0\n" +
-                "^*:7g7f3c3d2g2f5c5d2f2e8b5b3i4h5a6b8h2B3a2b9g9f9c9d7i7h6b7b5i6h7b8b4g4f7a7b6g6f6c6d2e2d2c2d2h2dp" +
+                "^w:7g7f3c3d2g2f5c5d2f2e8b5b3i4h5a6b8h2B3a2b9g9f9c9d7i7h6b7b5i6h7b8b4g4f7a7b6g6f6c6d2e2d2c2d2h2dp" +
                 "*2c2d2h5d5e4h4g5b5aB*1f4a3b1f3d5a5d3d4e5d2dP" +
                 "*2e2d4d6h7i2b3c7i8h3c3d4e6g6d6e7h7g2a3c2e2d2c2d2h2d3b2c2d2hp*2d6f6e2c2bFOUL\n" +
                 "BN:AAA(1779)\n" +
@@ -374,7 +374,7 @@ public class KifFormatTest {
     public void readFrom81DojoKifu() {
         GameRecord kif81 = KifFormat.INSTANCE.read(KIF_81);
         assertEquals("USF:1.0\n" +
-                "^*:7g7f3c3d2g2f8c8d2f2e8d8e6i7h2b8H7i8h3a2b8h7g2b3c3i3h4a3b3h2g7a7b2g2f1c1d1g1f9c9d5i6h7c7d1f1e1d1e" +
+                "^w:7g7f3c3d2g2f8c8d2f2e8d8e6i7h2b8H7i8h3a2b8h7g2b3c3i3h4a3b3h2g7a7b2g2f1c1d1g1f9c9d5i6h7c7d1f1e1d1e" +
                 "2f1e1a1e1i1eb*1i2h1hs*2g1h1ip*1h1e1B1h1I1b2a1i2iL*5f3c4dN*6e3b4bB*3an*4a3a4B5a4bB*3a4b5bG*4b5b6b4b4a" +
                 "r*2h6h7i6b7a5f5C8e8f7g8f8b8f5c6b6a6b3a8Fl*8cR*5a6b6a5a6A7a6a4a5a6a7a5a5b8c8fG*6b7a8b6b7b8b7b8g8fb*8g" +
                 "L*5h8g7F8i7gp*8gS*8eg*8h7i6i8h7hRSGN\n" +
@@ -386,33 +386,33 @@ public class KifFormatTest {
 
     @Test
     public void readFromPyo() {
-        GameRecord kifPyo = KifFormat.INSTANCE.read(KIF_PYO);
+        GameRecord kif = KifFormat.INSTANCE.read(KIF_PYO);
         // Right now handicap games are not read correctly
-        assertNull(kifPyo);
+        assertNull(kif);
     }
 
     @Test
     public void readFromGotePosition() {
-        GameRecord kif81 = KifFormat.INSTANCE.read(KIF_GOTE_POSITION);
+        GameRecord kif = KifFormat.INSTANCE.read(KIF_GOTE_POSITION);
         assertEquals("USF:1.0\n" +
                 "^*ln1g3nl/1ks1g2r1/1pppp2pp/p4sp2/7P1/P1PP1SP1P/1PS1P4/1KG4R1/LN3G1NL w BPbp:\n" +
                 "BN:AAA\n" +
                 "WN:BBB\n" +
                 "GD:1000-1-1\n" +
-                "GQ:UNKNOWN", UsfFormat.INSTANCE.write(kif81));
+                "GQ:UNKNOWN", UsfFormat.INSTANCE.write(kif));
     }
 
     @Test
     public void readFromShogiExtend() {
-        GameRecord kif81 = KifFormat.INSTANCE.read(ANOTHER_KIF);
+        GameRecord kif = KifFormat.INSTANCE.read(ANOTHER_KIF);
         assertEquals("USF:1.0\n" +
-                "^*:2g2f3c3d2f2e2b3c3i4h3a3b1g1f4c4d3g3f3b4c4h3g8b3b5i6h5a6b6h7h6b7b7i6h7b8b6i7i7a7b9g9f9c9d3g4f5c5d" +
+                "^w:2g2f3c3d2f2e2b3c3i4h3a3b1g1f4c4d3g3f3b4c4h3g8b3b5i6h5a6b6h7h6b7b7i6h7b8b6i7i7a7b9g9f9c9d3g4f5c5d" +
                 "5g5f4a5b4i5i3c4b7g7f1a1b1f1e4b6d5f5e4d4e4f4e6d5e8h5e5d5e2e2d2c2dB*2c3b2b4e3d4c3b2c3B2b3bS" +
                 "*4c3b3a2h2d5e5f8i7g5b4c3d4C3a3f2d2A3f3IP*5h5f5G6h5g3i5iN*5c6a7a4c5bb*3e2a1bb*3d1b3b5i7i7h7i3d" +
                 "6GG*6hg*8i7i6i3e5G5h5gs*7h6i5ig*4iMATE\n" +
                 "BN:AAA 初段\n" +
                 "WN:BBB 初段\n" +
                 "GD:2020/09/28 22:00:12\n" +
-                "GQ:UNKNOWN", UsfFormat.INSTANCE.write(kif81));
+                "GQ:UNKNOWN", UsfFormat.INSTANCE.write(kif));
     }
 }

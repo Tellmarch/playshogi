@@ -9,7 +9,6 @@ import com.playshogi.library.shogi.models.formats.sfen.LineReader;
 import com.playshogi.library.shogi.models.formats.sfen.StringLineReader;
 import com.playshogi.library.shogi.models.moves.ShogiMove;
 import com.playshogi.library.shogi.models.moves.SpecialMove;
-import com.playshogi.library.shogi.models.moves.SpecialMoveType;
 import com.playshogi.library.shogi.models.position.KomadaiState;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.library.shogi.models.shogivariant.ShogiInitialPositionFactory;
@@ -187,7 +186,7 @@ public enum KifFormat implements GameRecordFormat {
 
             if (curMove instanceof SpecialMove) {
                 SpecialMove specialMove = (SpecialMove) curMove;
-                if (specialMove.getSpecialMoveType() == SpecialMoveType.RESIGN) {
+                if (specialMove.getSpecialMoveType().isLosingMove()) {
                     gameResult = player == Player.BLACK ? GameResult.GOTE_WIN : GameResult.SENTE_WIN;
                 }
             }

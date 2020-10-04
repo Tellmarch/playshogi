@@ -120,7 +120,7 @@ public class PsnFormatTest {
     public void read() {
         GameRecord record = PsnFormat.INSTANCE.read(EXAMPLE_GAME);
         assertEquals("USF:1.0\n" +
-                "^*:7g7f8c8d7i6h8d8e8h7g5a4b2h5h6a5b5i4h7a6b4h3h7c7d6g6f6b7c6h6g9c9d9g9f7c8d3i4h7d7e5h7h8b7b7g6h3c3d" +
+                "^b:7g7f8c8d7i6h8d8e8h7g5a4b2h5h6a5b5i4h7a6b4h3h7c7d6g6f6b7c6h6g9c9d9g9f7c8d3i4h7d7e5h7h8b7b7g6h3c3d" +
                 "9i9h7e7f6g7f2b6f7f6g7b7H6g7hr*8b6h7g6f7G8i7gb*3cB*4f8d7cR*6a7c6d5g5f8e8f6a7A8b8c8g8f8c8fP*6b8f8H6b6A" +
                 "p*7f6a6b5b6b7a6b4a5b6b6a5b5a6a7b5a5b4f6d8h7h6i7h7f7GR*8bn*6b7b6b5b6b8b6Bs*5b6d5C4b3b6b5br*4bS*4a3b2b" +
                 "5c4b3a4bR*3bRSGN\n" +
@@ -134,7 +134,7 @@ public class PsnFormatTest {
     public void readOld() {
         GameRecord record = PsnFormat.INSTANCE.read(OLD_FORMAT);
         assertEquals("USF:1.0\n" +
-                "^*:7g7f8c8d2h6h7a6b6g6f5c5d1g1f1c1d5i4h5a4b3i3h4b3b7i7h3c3d7h6g6a5b6i5h8d8e8h7g7c7d4h3i3a4b3i2h4b5c" +
+                "^w:7g7f8c8d2h6h7a6b6g6f5c5d1g1f1c1d5i4h5a4b3i3h4b3b7i7h3c3d7h6g6a5b6i5h8d8e8h7g7c7d4h3i3a4b3i2h4b5c" +
                 "5g5f6c6d4g4f6d6e5h4g7d7e7f7e6e6f6g7f8e8f8g8f6f6G7g2B3b2b7f6gb*3c5f5e3c5eB*7g5e7G8i7gp*7f6g7f8b8fP*6c" +
                 "6b5a7g6e5c4d6e5C8f7f5c5b4a5b6c6B5b6bP*5b7f7I5b5A7i6h5a4a4d3cB*3a2b1b1f1es*2b1e1dp*1g1i1gp*1f1g1fp*1e" +
                 "G*3b2b3a4a3a1e1fS*1c\n" +
