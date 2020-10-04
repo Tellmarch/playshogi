@@ -280,11 +280,11 @@ public enum UsfFormat implements GameRecordFormat {
         switch (resultc) {
             case 's':
             case 'b':
-                gameResult = GameResult.SENTE_WIN;
+                gameResult = GameResult.BLACK_WIN;
                 break;
             case 'g':
             case 'w':
-                gameResult = GameResult.GOTE_WIN;
+                gameResult = GameResult.WHITE_WIN;
                 break;
             case 'd':
                 gameResult = GameResult.OTHER;
@@ -302,9 +302,9 @@ public enum UsfFormat implements GameRecordFormat {
             return '*';
         }
         switch (gameResult) {
-            case SENTE_WIN:
+            case BLACK_WIN:
                 return 'b';
-            case GOTE_WIN:
+            case WHITE_WIN:
                 return 'w';
             case OTHER:
                 return 'd';

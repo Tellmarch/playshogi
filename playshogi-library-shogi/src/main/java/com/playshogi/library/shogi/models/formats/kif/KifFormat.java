@@ -187,7 +187,7 @@ public enum KifFormat implements GameRecordFormat {
             if (curMove instanceof SpecialMove) {
                 SpecialMove specialMove = (SpecialMove) curMove;
                 if (specialMove.getSpecialMoveType().isLosingMove()) {
-                    gameResult = player == Player.BLACK ? GameResult.GOTE_WIN : GameResult.SENTE_WIN;
+                    gameResult = player == Player.BLACK ? GameResult.WHITE_WIN : GameResult.BLACK_WIN;
                 }
             }
 

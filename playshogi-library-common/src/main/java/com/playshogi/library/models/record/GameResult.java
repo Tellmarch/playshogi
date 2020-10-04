@@ -1,5 +1,8 @@
 package com.playshogi.library.models.record;
 
 public enum GameResult {
-    SENTE_WIN, GOTE_WIN, OTHER, UNKNOWN
+    BLACK_WIN, // Black may be sente or the handicap receiver
+    WHITE_WIN, // White may be gote or the handicap giver
+    OTHER,
+    UNKNOWN
 }

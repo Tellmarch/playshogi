@@ -292,8 +292,8 @@ public class GameSetRepository {
 
         addGameSetGameRecord(gameSetId, gameId);
 
-        boolean senteWin = gameRecord.getGameResult() == GameResult.SENTE_WIN;
-        boolean goteWin = gameRecord.getGameResult() == GameResult.GOTE_WIN;
+        boolean senteWin = gameRecord.getGameResult() == GameResult.BLACK_WIN;
+        boolean goteWin = gameRecord.getGameResult() == GameResult.WHITE_WIN;
 
         GameNavigation<ShogiPosition> gameNavigation = new GameNavigation<>(new ShogiRulesEngine(),
                 gameRecord.getGameTree(),

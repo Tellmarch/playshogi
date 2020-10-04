@@ -61,9 +61,9 @@ public enum PsnFormat implements GameRecordFormat {
 
         GameResult gameResult;
         if (((ShogiMove) gameNavigation.getCurrentMove()).getPlayer() == Player.BLACK) {
-            gameResult = GameResult.GOTE_WIN;
+            gameResult = GameResult.WHITE_WIN;
         } else {
-            gameResult = GameResult.SENTE_WIN;
+            gameResult = GameResult.BLACK_WIN;
         }
 
         gameNavigation.moveToStart();
