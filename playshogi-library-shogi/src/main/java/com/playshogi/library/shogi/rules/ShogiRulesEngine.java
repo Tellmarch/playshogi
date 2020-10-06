@@ -149,7 +149,7 @@ public class ShogiRulesEngine implements GameRulesEngine<ShogiPosition> {
         return Collections.emptyList();
     }
 
-    private List<Square> getPossibleTargetSquares(final ShogiPosition position, final Square from, Piece piece) {
+    public List<Square> getPossibleTargetSquares(final ShogiPosition position, final Square from, Piece piece) {
         PieceMovement pieceMovement = PIECE_MOVEMENTS.get(piece.getSentePiece());
         if (piece.getOwner() == Player.BLACK) {
             return pieceMovement.getPossibleMoves(position.getShogiBoardState(), from);
@@ -168,6 +168,10 @@ public class ShogiRulesEngine implements GameRulesEngine<ShogiPosition> {
             return Optional.of(move.withPromotionPiece(promotedPiece));
         }
         return Optional.empty();
+    }
+
+    public boolean canMove(final ShogiPosition position, final Player player) {
+        return player == position.getPlayerToMove();
     }
 
     /**

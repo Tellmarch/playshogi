@@ -1,5 +1,8 @@
 package com.playshogi.website.gwt.client.widget.board;
 
+import com.playshogi.library.shogi.models.Player;
+import com.playshogi.library.shogi.models.position.ShogiPosition;
+
 public class BoardConfiguration {
     private boolean inverted = false;
     private boolean allowIllegalMoves = false;
@@ -56,16 +59,12 @@ public class BoardConfiguration {
         this.alternateSenteAndGoteMoves = alternateSenteAndGoteMoves;
     }
 
-    public boolean isPlaySenteMoves() {
-        return playSenteMoves;
+    public boolean canPlayMove(ShogiPosition position) {
+        return position.getPlayerToMove() == Player.BLACK ? playSenteMoves : playGoteMoves;
     }
 
     public void setPlaySenteMoves(final boolean playSenteMoves) {
         this.playSenteMoves = playSenteMoves;
-    }
-
-    public boolean isPlayGoteMoves() {
-        return playGoteMoves;
     }
 
     public void setPlayGoteMoves(final boolean playGoteMoves) {

@@ -4,18 +4,28 @@ import com.google.gwt.user.client.ui.Image;
 import com.playshogi.library.models.Square;
 import com.playshogi.library.shogi.models.Piece;
 
+import java.util.Optional;
+
 public class PieceWrapper {
+    private static final String STYLE_SELECTED = "gwt-piece-selected";
+    private static final String STYLE_UNSELECTED = "gwt-piece-unselected";
+
     private Piece piece;
-    private Image image;
-    private int row;
-    private int column;
-    private boolean inKomadai = false;
+    private final Image image;
+    private final int row;
+    private final int column;
+    private boolean inKomadai;
 
     public PieceWrapper(final Piece piece, final Image image, final int row, final int column) {
+        this(piece, image, row, column, false);
+    }
+
+    public PieceWrapper(final Piece piece, final Image image, final int row, final int column, final boolean inKomadai) {
         this.piece = piece;
         this.image = image;
         this.row = row;
         this.column = column;
+        this.inKomadai = inKomadai;
     }
 
     public Piece getPiece() {
@@ -30,36 +40,37 @@ public class PieceWrapper {
         return image;
     }
 
-    public void setImage(final Image image) {
-        this.image = image;
-    }
-
     public int getRow() {
         return row;
-    }
-
-    public void setRow(final int row) {
-        this.row = row;
     }
 
     public int getColumn() {
         return column;
     }
 
-    public void setColumn(final int column) {
-        this.column = column;
-    }
-
-    public boolean isInKomadai() {
-        return inKomadai;
-    }
-
+    @Deprecated // prevents this.inKomadai from being immutable
     public void setInKomadai(final boolean inKomadai) {
         this.inKomadai = inKomadai;
     }
 
-    public Square getSquare() {
-        return Square.of(((8 - column) + 1), row + 1);
+    public Optional<Square> getSquare() {
+        if (inKomadai)
+            return Optional.empty();
+        else
+            return Optional.of(Square.of(((8 - column) + 1), row + 1));
     }
 
+    /**
+     * Selects the piece, even if not previously unselected
+     */
+    public void select() {
+        image.setStyleName(STYLE_SELECTED);
+    }
+
+    /**
+     * Unselects the piece, even if not previously selected
+     */
+    public void unselect() {
+        image.setStyleName(STYLE_UNSELECTED);
+    }
 }
