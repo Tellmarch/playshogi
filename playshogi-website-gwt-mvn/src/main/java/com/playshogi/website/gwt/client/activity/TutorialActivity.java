@@ -36,10 +36,10 @@ public class TutorialActivity extends MyAbstractActivity {
     private int chapter;
 
     public TutorialActivity(final TutorialPlace place, final TutorialView tutorialView,
-                            final PlaceController placeController, final Tutorials tutorials) {
+                            final PlaceController placeController) {
         this.tutorialView = tutorialView;
         this.placeController = placeController;
-        this.tutorials = tutorials;
+        this.tutorials = tutorialView.getTutorials();
         chapter = place.getChapter();
     }
 
@@ -48,8 +48,7 @@ public class TutorialActivity extends MyAbstractActivity {
         this.eventBus = eventBus;
         GWT.log("Starting tutorial activity");
         eventBinder.bindEventHandlers(this, eventBus);
-        tutorials.activate(eventBus);
-        tutorialView.activate(eventBus, tutorials);
+        tutorialView.activate(eventBus);
         containerWidget.setWidget(tutorialView.asWidget());
         Scheduler.get().scheduleDeferred(this::loadChapter);
     }

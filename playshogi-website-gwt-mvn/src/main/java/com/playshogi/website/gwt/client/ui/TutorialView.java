@@ -10,6 +10,8 @@ import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.website.gwt.client.events.tutorial.*;
 import com.playshogi.website.gwt.client.mvp.AppPlaceHistoryMapper;
 import com.playshogi.website.gwt.client.place.TutorialPlace;
+import com.playshogi.website.gwt.client.tutorial.PieceMovementTutorial;
+import com.playshogi.website.gwt.client.tutorial.Tutorial;
 import com.playshogi.website.gwt.client.tutorial.TutorialMessages;
 import com.playshogi.website.gwt.client.tutorial.Tutorials;
 import com.playshogi.website.gwt.client.widget.PiecesSelectorPanel;
@@ -30,18 +32,21 @@ public class TutorialView extends Composite {
     private final ShogiBoard shogiBoard;
     private EventBus eventBus;
     private final AppPlaceHistoryMapper historyMapper;
+    private final Tutorials tutorials;
     private final TextArea textArea;
     private HTML titleHTML;
     private PiecesSelectorPanel piecesSelectorPanel;
 
     @Inject
     public TutorialView(final AppPlaceHistoryMapper historyMapper) {
-        this.historyMapper = historyMapper;
         GWT.log("Creating tutorial view");
+
+        this.historyMapper = historyMapper;
 
         AbsolutePanel absolutePanel = getRightPanel();
 
         shogiBoard = new ShogiBoard(TUTORIAL);
+        this.tutorials = new Tutorials(this);
         shogiBoard.setLowerLeftPanel(getOutline());
         shogiBoard.setUpperRightPanel(absolutePanel);
 
@@ -81,14 +86,17 @@ public class TutorialView extends Composite {
         FlowPanel flowPanel = new FlowPanel();
 
         flowPanel.add(new Hyperlink(tutorialMessages.introTitle(), historyMapper.getToken(new TutorialPlace(1))));
-        flowPanel.add(new Hyperlink(tutorialMessages.kingTitle(), historyMapper.getToken(new TutorialPlace(2))));
-        flowPanel.add(new Hyperlink("The Rook", historyMapper.getToken(new TutorialPlace(3))));
-        flowPanel.add(new Hyperlink("The Bishop", historyMapper.getToken(new TutorialPlace(4))));
-        flowPanel.add(new Hyperlink("The Gold general", historyMapper.getToken(new TutorialPlace(5))));
-        flowPanel.add(new Hyperlink("The Silver General", historyMapper.getToken(new TutorialPlace(6))));
-        flowPanel.add(new Hyperlink("The Knight", historyMapper.getToken(new TutorialPlace(7))));
-        flowPanel.add(new Hyperlink("The Lance", historyMapper.getToken(new TutorialPlace(8))));
-        flowPanel.add(new Hyperlink("The Pawn", historyMapper.getToken(new TutorialPlace(9))));
+
+        // Adds an entry for each piece movement tutorial
+        Tutorial[] tutorials = this.tutorials.getTutorials();
+        for (int i = 0; i < tutorials.length; i++) {
+            if (tutorials[i] instanceof PieceMovementTutorial) {
+                PieceMovementTutorial pieceMovementTutorial = (PieceMovementTutorial) tutorials[i];
+
+                flowPanel.add(new Hyperlink(pieceMovementTutorial.getTutorialTitle(),
+                        historyMapper.getToken(new TutorialPlace(i + 1))));
+            }
+        }
 
         flowPanel.getElement().getStyle().setBackgroundColor("#DBCBCB");
 
@@ -101,12 +109,17 @@ public class TutorialView extends Composite {
         return shogiBoard;
     }
 
-    public void activate(final EventBus eventBus, final Tutorials tutorials) {
+    public Tutorials getTutorials() {
+        return tutorials;
+    }
+
+    public void activate(final EventBus eventBus) {
         GWT.log("Activating tutorial view");
         this.eventBus = eventBus;
         eventBinder.bindEventHandlers(this, this.eventBus);
         shogiBoard.activate(eventBus);
         piecesSelectorPanel.activate(eventBus);
+        tutorials.activate(eventBus);
     }
 
     private void setTutorialText(String text) {

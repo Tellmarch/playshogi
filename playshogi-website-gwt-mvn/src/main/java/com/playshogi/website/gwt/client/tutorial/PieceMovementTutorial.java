@@ -85,7 +85,7 @@ public class PieceMovementTutorial implements Tutorial {
         return "";
     }
 
-    private String getTutorialTitle() {
+    public String getTutorialTitle() {
         switch (piece.getPieceType()) {
             case PAWN:
                 return tutorialMessages.pawnTitle();

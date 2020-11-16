@@ -83,4 +83,8 @@ public interface TutorialMessages extends Messages {
 
     @DefaultMessage("The Bishop")
     String bishopTitle();
+
+    @DefaultMessage("Time to practice: find the square which lets your bishop attack 2 pieces at once!")
+    String bishopPractice();
+
 }

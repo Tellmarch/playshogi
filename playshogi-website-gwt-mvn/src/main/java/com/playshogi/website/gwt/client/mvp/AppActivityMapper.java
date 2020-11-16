@@ -8,7 +8,6 @@ import com.google.inject.Inject;
 import com.playshogi.website.gwt.client.SessionInformation;
 import com.playshogi.website.gwt.client.activity.*;
 import com.playshogi.website.gwt.client.place.*;
-import com.playshogi.website.gwt.client.tutorial.Tutorials;
 import com.playshogi.website.gwt.client.ui.*;
 
 public class AppActivityMapper implements ActivityMapper {
@@ -43,8 +42,6 @@ public class AppActivityMapper implements ActivityMapper {
     SessionInformation sessionInformation;
     @Inject
     PlaceController placeController;
-    @Inject
-    Tutorials tutorials;
 
     @Override
     public Activity getActivity(final Place place) {
@@ -74,7 +71,7 @@ public class AppActivityMapper implements ActivityMapper {
         } else if (place instanceof ViewKifuPlace) {
             return new ViewKifuActivity((ViewKifuPlace) place, viewKifuView, sessionInformation);
         } else if (place instanceof TutorialPlace) {
-            return new TutorialActivity((TutorialPlace) place, tutorialView, placeController, tutorials);
+            return new TutorialActivity((TutorialPlace) place, tutorialView, placeController);
         }
         return null;
     }
