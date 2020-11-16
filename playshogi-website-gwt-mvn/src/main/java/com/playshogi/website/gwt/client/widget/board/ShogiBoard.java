@@ -314,65 +314,74 @@ public class ShogiBoard extends Composite implements ClickHandler {
         pieceWrapper.getImage().addMouseDownHandler(DomEvent::preventDefault);
 
         pieceWrapper.getImage().addClickHandler(event -> {
-            if (canPlayMove()) {
-                if (selectedPiece == pieceWrapper) {
+            if (!canPlayMove()) {
+                return;
+            }
+
+            if (selectedPiece == pieceWrapper) {
+                unselect();
+                return;
+            }
+
+            // Capture an opponent piece?
+            if (selectedPiece != null) {
+                if (!selectedPiece.isInKomadai()
+                        && selectedPiece.getPiece().getOwner() != pieceWrapper.getPiece().getOwner()
+                        && (boardConfiguration.allowIllegalMoves() || shogiRulesEngine.getPossibleTargetSquares(position, selectedPiece.getSquare()).contains(pieceWrapper.getSquare()))) {
+                    NormalMove move = new CaptureMove(selectedPiece.getPiece(),
+                            selectedPiece.getSquare(), pieceWrapper.getSquare(), pieceWrapper.getPiece());
+                    Image image = pieceWrapper.getImage();
+
+                    playMoveOrShowPromotionPopup(move, image);
+                    return;
+                } else {
                     unselect();
-                } else if (selectedPiece != null) {
-                    if (!selectedPiece.isInKomadai()
-                            && selectedPiece.getPiece().getOwner() != pieceWrapper.getPiece().getOwner()
-                            && (boardConfiguration.allowIllegalMoves() || shogiRulesEngine.getPossibleTargetSquares(position, selectedPiece.getSquare()).contains(pieceWrapper.getSquare()))) {
-                        NormalMove move = new CaptureMove(selectedPiece.getPiece(),
-                                selectedPiece.getSquare(), pieceWrapper.getSquare(), pieceWrapper.getPiece());
-                        Image image = pieceWrapper.getImage();
-
-                        playMoveOrShowPromotionPopup(move, image);
-                        return;
-                    } else {
-                        unselect();
-                    }
                 }
-                if (position.getPlayerToMove() == pieceWrapper.getPiece().getOwner()) {
-                    selectedPiece = pieceWrapper;
-                    pieceWrapper.getImage().setStyleName(STYLE_PIECE_SELECTED);
+            }
 
-                    if (!pieceWrapper.isInKomadai()) {
-                        List<Square> possibleTargets = shogiRulesEngine.getPossibleTargetSquares(position,
-                                getSquare(pieceWrapper.getRow(), pieceWrapper.getColumn()));
-                        for (Square square : possibleTargets) {
-                            squareImages[square.getRow() - 1][8 - (square.getColumn() - 1)].setStyleName("gwt" +
-                                    "-square-selected");
-                        }
+            // Select another of our pieces?
+            if (position.getPlayerToMove() == pieceWrapper.getPiece().getOwner()) {
+                selectedPiece = pieceWrapper;
+                pieceWrapper.getImage().setStyleName(STYLE_PIECE_SELECTED);
+
+                if (!pieceWrapper.isInKomadai()) {
+                    List<Square> possibleTargets = shogiRulesEngine.getPossibleTargetSquares(position,
+                            getSquare(pieceWrapper.getRow(), pieceWrapper.getColumn()));
+                    for (Square square : possibleTargets) {
+                        squareImages[square.getRow() - 1][8 - (square.getColumn() - 1)].setStyleName("gwt" +
+                                "-square-selected");
                     }
                 }
             }
         });
 
         if (boardConfiguration.isShowPossibleMovesOnPieceMouseOver()) {
+            setupMouseOverHandler(pieceWrapper);
+        }
+    }
 
-            pieceWrapper.getImage().addMouseOverHandler(event -> {
-                // GWT.log("mouse over");
-                if (selectedPiece == null) {
-                    if (!pieceWrapper.isInKomadai()) {
-                        if (position.getPlayerToMove() == pieceWrapper.getPiece().getOwner()) {
-                            List<Square> possibleTargets =
-                                    shogiRulesEngine.getPossibleTargetSquares(position,
-                                            getSquare(pieceWrapper.getRow(), pieceWrapper.getColumn()));
-                            for (Square square : possibleTargets) {
-                                selectSquare(square);
-                            }
-                            selectPiece(pieceWrapper);
+    private void setupMouseOverHandler(final PieceWrapper pieceWrapper) {
+        pieceWrapper.getImage().addMouseOverHandler(event -> {
+            if (selectedPiece == null) {
+                if (!pieceWrapper.isInKomadai()) {
+                    if (position.getPlayerToMove() == pieceWrapper.getPiece().getOwner()) {
+                        List<Square> possibleTargets =
+                                shogiRulesEngine.getPossibleTargetSquares(position,
+                                        getSquare(pieceWrapper.getRow(), pieceWrapper.getColumn()));
+                        for (Square square : possibleTargets) {
+                            selectSquare(square);
                         }
+                        selectPiece(pieceWrapper);
                     }
                 }
+            }
+        });
 
-            });
-
-            pieceWrapper.getImage().addMouseOutHandler(event -> {
-                if (selectedPiece == null) {
-                    unselectSquares();
-                }
-            });
-        }
+        pieceWrapper.getImage().addMouseOutHandler(event -> {
+            if (selectedPiece == null) {
+                unselectSquares();
+            }
+        });
     }
 
     private void playMoveOrShowPromotionPopup(NormalMove move, Image image) {
