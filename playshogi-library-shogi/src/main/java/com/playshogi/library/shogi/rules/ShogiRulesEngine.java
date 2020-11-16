@@ -140,7 +140,7 @@ public class ShogiRulesEngine implements GameRulesEngine<ShogiPosition> {
         position.getShogiBoardState().setPieceAt(move.getToSquare(), move.getCapturedPiece());
     }
 
-    // what are target squares of a piece from 'from' square
+    // what are the target squares of a piece from 'from' square
     public List<Square> getPossibleTargetSquares(final ShogiPosition position, final Square from) {
         Optional<Piece> piece = position.getPieceAt(from);
         if (piece.isPresent()) {

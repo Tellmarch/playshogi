@@ -87,4 +87,13 @@ public interface TutorialMessages extends Messages {
     @DefaultMessage("Time to practice: find the square which lets your bishop attack 2 pieces at once!")
     String bishopPractice();
 
+    @DefaultMessage("White can escape the bishop.\n" +
+            "Click \"Try again\" to give it another try.")
+    String bishopPracticeFailed();
+
+    @DefaultMessage("Success! From this square, the bishop threatens both the king and the rook. White will not be " +
+            "able to save both. \n" +
+            " Click \"Next\" to go to the next lesson.")
+    String bishopPracticeSuccess();
+
 }

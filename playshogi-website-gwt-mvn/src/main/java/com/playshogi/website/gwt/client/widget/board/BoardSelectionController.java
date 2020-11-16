@@ -18,11 +18,15 @@ public class BoardSelectionController {
     private static final String STYLE_SQUARE_UNSELECTED = "gwt-square-unselected";
 
     private final Image[][] squareImages;
+    private final ShogiBoard shogiBoard;
     private final ShogiRulesEngine shogiRulesEngine = new ShogiRulesEngine();
     private PieceWrapper selectedPiece = null;
 
-    BoardSelectionController(final Image[][] squareImages) {
+    private boolean selectionLocked = false;
+
+    BoardSelectionController(final Image[][] squareImages, final ShogiBoard shogiBoard) {
         this.squareImages = squareImages;
+        this.shogiBoard = shogiBoard;
     }
 
     void selectPiece(final PieceWrapper pieceWrapper) {
@@ -36,10 +40,16 @@ public class BoardSelectionController {
     }
 
     public void selectSquare(final Square square) {
+        if (selectionLocked) {
+            return;
+        }
         squareImages[square.getRow() - 1][8 - (square.getColumn() - 1)].setStyleName(STYLE_SQUARE_SELECTED);
     }
 
     private void unSelectSquare(final Image image) {
+        if (selectionLocked) {
+            return;
+        }
         image.setStyleName(STYLE_SQUARE_UNSELECTED);
     }
 
@@ -90,5 +100,32 @@ public class BoardSelectionController {
 
     PieceWrapper getSelectedPieceWrapper() {
         return selectedPiece;
+    }
+
+    void setupMouseOverHandler(final PieceWrapper pieceWrapper) {
+        pieceWrapper.getImage().addMouseOverHandler(event -> {
+            if (!hasPieceSelected()) {
+                if (!pieceWrapper.isInKomadai()) {
+                    if (shogiBoard.getPosition().getPlayerToMove() == pieceWrapper.getPiece().getOwner()) {
+                        selectPossibleMoves(pieceWrapper, shogiBoard.getPosition());
+                        selectSquare(pieceWrapper.getSquare());
+                    }
+                }
+            }
+        });
+
+        pieceWrapper.getImage().addMouseOutHandler(event -> {
+            if (!hasPieceSelected()) {
+                unselectSquares();
+            }
+        });
+    }
+
+    public void lockSelection() {
+        selectionLocked = true;
+    }
+
+    public void unlockSelection() {
+        selectionLocked = false;
     }
 }

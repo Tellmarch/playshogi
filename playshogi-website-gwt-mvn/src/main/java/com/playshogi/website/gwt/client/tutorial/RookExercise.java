@@ -37,6 +37,7 @@ public class RookExercise implements Tutorial {
 
     @Override
     public void setup() {
+        shogiBoard.getSelectionController().unlockSelection();
         position = new ShogiPosition();
         position.getShogiBoardState().setPieceAt(5, 9, Piece.SENTE_ROOK);
         for (int i = 1; i <= 9; i++) {

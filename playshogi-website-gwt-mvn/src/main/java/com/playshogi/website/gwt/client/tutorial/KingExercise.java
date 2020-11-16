@@ -36,6 +36,7 @@ public class KingExercise implements Tutorial {
 
     @Override
     public void setup() {
+        shogiBoard.getSelectionController().unlockSelection();
         position = new ShogiPosition();
         position.getShogiBoardState().setPieceAt(5, 9, Piece.SENTE_KING);
         position.getShogiBoardState().setPieceAt(2, 2, Piece.GOTE_PAWN);

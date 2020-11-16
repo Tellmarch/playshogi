@@ -33,6 +33,7 @@ public class PieceMovementTutorial implements Tutorial {
 
     @Override
     public void setup() {
+        shogiBoard.getSelectionController().unlockSelection();
         ShogiPosition shogiPosition = new ShogiPosition();
 
         int row = 5;

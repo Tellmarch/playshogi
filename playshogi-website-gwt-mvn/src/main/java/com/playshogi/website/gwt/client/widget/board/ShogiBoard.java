@@ -145,7 +145,7 @@ public class ShogiBoard extends Composite implements ClickHandler {
 
     private void initSquareImages(BoardBundle boardResources, int rows, int columns) {
         Image[][] squareImages = new Image[rows][columns];
-        selectionController = new BoardSelectionController(squareImages);
+        selectionController = new BoardSelectionController(squareImages, this);
 
         for (int row = 0; row < rows; ++row) {
             for (int col = 0; col < columns; ++col) {
@@ -347,27 +347,8 @@ public class ShogiBoard extends Composite implements ClickHandler {
         });
 
         if (boardConfiguration.isShowPossibleMovesOnPieceMouseOver()) {
-            setupMouseOverHandler(pieceWrapper);
+            selectionController.setupMouseOverHandler(pieceWrapper);
         }
-    }
-
-    private void setupMouseOverHandler(final PieceWrapper pieceWrapper) {
-        pieceWrapper.getImage().addMouseOverHandler(event -> {
-            if (!selectionController.hasPieceSelected()) {
-                if (!pieceWrapper.isInKomadai()) {
-                    if (position.getPlayerToMove() == pieceWrapper.getPiece().getOwner()) {
-                        selectionController.selectPossibleMoves(pieceWrapper, position);
-                        selectionController.selectSquare(pieceWrapper.getSquare());
-                    }
-                }
-            }
-        });
-
-        pieceWrapper.getImage().addMouseOutHandler(event -> {
-            if (!selectionController.hasPieceSelected()) {
-                selectionController.unselectSquares();
-            }
-        });
     }
 
     private void playMoveOrShowPromotionPopup(NormalMove move, Image image) {
