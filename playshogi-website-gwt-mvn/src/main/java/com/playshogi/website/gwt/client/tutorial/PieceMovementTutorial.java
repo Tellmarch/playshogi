@@ -12,8 +12,6 @@ import com.playshogi.website.gwt.client.events.tutorial.ChangeTutorialTextEvent;
 import com.playshogi.website.gwt.client.events.tutorial.ChangeTutorialTitleEvent;
 import com.playshogi.website.gwt.client.widget.board.ShogiBoard;
 
-import java.util.List;
-
 public class PieceMovementTutorial implements Tutorial {
 
     private final ShogiBoard shogiBoard;
@@ -45,12 +43,8 @@ public class PieceMovementTutorial implements Tutorial {
         shogiPosition.getShogiBoardState().setPieceAt(5, row, piece);
 
         shogiBoard.setPosition(shogiPosition);
-        List<Square> possibleTargets =
-                shogiRulesEngine.getPossibleTargetSquares(shogiPosition,
-                        Square.of(5, row));
-        for (Square square : possibleTargets) {
-            shogiBoard.getSelectionController().selectSquare(square);
-        }
+        shogiBoard.getSelectionController().selectPossibleMoves(Square.of(5, row), shogiPosition);
+        shogiBoard.getSelectionController().selectSquare(Square.of(5, row));
 
         eventBus.fireEvent(new ChangeTutorialTextEvent(getTutorialText()));
         eventBus.fireEvent(new ChangeTutorialTitleEvent(getTutorialTitle()));

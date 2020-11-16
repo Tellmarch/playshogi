@@ -59,9 +59,13 @@ public class BoardSelectionController {
     }
 
     void selectPossibleMoves(final PieceWrapper pieceWrapper, final ShogiPosition position) {
-        List<Square> possibleTargets = shogiRulesEngine.getPossibleTargetSquares(position, pieceWrapper.getSquare());
-        for (Square square : possibleTargets) {
-            selectSquare(square);
+        selectPossibleMoves(pieceWrapper.getSquare(), position);
+    }
+
+    public void selectPossibleMoves(final Square square, final ShogiPosition position) {
+        List<Square> possibleTargets = shogiRulesEngine.getPossibleTargetSquares(position, square);
+        for (Square targetSquare : possibleTargets) {
+            selectSquare(targetSquare);
         }
     }
 
