@@ -2,7 +2,6 @@ package com.playshogi.website.gwt.client.widget.board;
 
 import com.google.gwt.user.client.ui.Image;
 import com.playshogi.library.models.Square;
-import com.playshogi.library.shogi.models.Piece;
 import com.playshogi.library.shogi.models.moves.DropMove;
 import com.playshogi.library.shogi.models.moves.NormalMove;
 import com.playshogi.library.shogi.models.moves.ShogiMove;
@@ -22,33 +21,25 @@ public class BoardSelectionController {
     private final ShogiRulesEngine shogiRulesEngine = new ShogiRulesEngine();
     private PieceWrapper selectedPiece = null;
 
-    public BoardSelectionController(final Image[][] squareImages) {
+    BoardSelectionController(final Image[][] squareImages) {
         this.squareImages = squareImages;
     }
 
     void selectPiece(final PieceWrapper pieceWrapper) {
         selectedPiece = pieceWrapper;
-        selectPiece(pieceWrapper.getImage());
+        pieceWrapper.getImage().setStyleName(STYLE_PIECE_SELECTED);
     }
 
-    void selectPiece(final Image image) {
-        image.setStyleName(STYLE_PIECE_SELECTED);
-    }
-
-    public void unselectPiece(final PieceWrapper pieceWrapper) {
+    private void unselectPiece(final PieceWrapper pieceWrapper) {
         selectedPiece = null;
-        unselectPiece(pieceWrapper.getImage());
-    }
-
-    public void unselectPiece(final Image image) {
-        image.setStyleName(STYLE_PIECE_UNSELECTED);
+        pieceWrapper.getImage().setStyleName(STYLE_PIECE_UNSELECTED);
     }
 
     public void selectSquare(final Square square) {
         squareImages[square.getRow() - 1][8 - (square.getColumn() - 1)].setStyleName(STYLE_SQUARE_SELECTED);
     }
 
-    void unSelectSquare(final Image image) {
+    private void unSelectSquare(final Image image) {
         image.setStyleName(STYLE_SQUARE_UNSELECTED);
     }
 
@@ -63,8 +54,7 @@ public class BoardSelectionController {
     void unselect() {
         unselectSquares();
         if (selectedPiece != null) {
-            unSelectSquare(selectedPiece.getImage());
-            selectedPiece = null;
+            unselectPiece(selectedPiece);
         }
     }
 
@@ -97,10 +87,4 @@ public class BoardSelectionController {
     PieceWrapper getSelectedPieceWrapper() {
         return selectedPiece;
     }
-
-    Piece getSelectedPiece() {
-        return selectedPiece.getPiece();
-    }
-
-
 }
