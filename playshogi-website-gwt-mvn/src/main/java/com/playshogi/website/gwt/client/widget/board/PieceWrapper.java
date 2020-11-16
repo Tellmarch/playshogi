@@ -62,4 +62,13 @@ public class PieceWrapper {
         return Square.of(((8 - column) + 1), row + 1);
     }
 
+    @Override
+    public String toString() {
+        return "PieceWrapper{" +
+                "piece=" + piece +
+                ", row=" + row +
+                ", column=" + column +
+                ", inKomadai=" + inKomadai +
+                '}';
+    }
 }

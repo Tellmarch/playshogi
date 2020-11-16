@@ -49,7 +49,7 @@ public class PieceMovementTutorial implements Tutorial {
                 shogiRulesEngine.getPossibleTargetSquares(shogiPosition,
                         Square.of(5, row));
         for (Square square : possibleTargets) {
-            shogiBoard.selectSquare(square);
+            shogiBoard.getSelectionController().selectSquare(square);
         }
 
         eventBus.fireEvent(new ChangeTutorialTextEvent(getTutorialText()));
