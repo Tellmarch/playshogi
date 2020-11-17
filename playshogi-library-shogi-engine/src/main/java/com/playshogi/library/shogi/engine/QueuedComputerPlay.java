@@ -1,6 +1,13 @@
 package com.playshogi.library.shogi.engine;
 
+import com.playshogi.library.shogi.models.formats.usi.UsiMoveConverter;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 public class QueuedComputerPlay {
+
+    private static final Logger LOGGER = Logger.getLogger(QueuedComputerPlay.class.getName());
 
     private final static int TIME_MS = 100;
 
@@ -25,8 +32,13 @@ public class QueuedComputerPlay {
             usiConnector.connect();
         }
 
-        PositionEvaluation evaluation = usiConnector.analysePosition(sfen, TIME_MS);
-
-        return evaluation.getBestMove();
+        try {
+            PositionEvaluation evaluation = usiConnector.analysePosition(sfen, TIME_MS);
+            return UsiMoveConverter.fromPsnToUsfSTring(evaluation.getBestMove(), sfen);
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, "Error getting computer evaluation", ex);
+            usiConnector.disconnect();
+            throw new IllegalStateException("Could not get computer move in position " + sfen);
+        }
     }
 }

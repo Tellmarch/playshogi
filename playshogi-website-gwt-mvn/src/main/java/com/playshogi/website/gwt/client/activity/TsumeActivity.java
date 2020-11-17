@@ -2,7 +2,6 @@ package com.playshogi.website.gwt.client.activity;
 
 import com.google.gwt.core.client.Duration;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.place.shared.PlaceController;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -39,7 +38,6 @@ public class TsumeActivity extends MyAbstractActivity {
 
     private final ProblemsServiceAsync problemsService = GWT.create(ProblemsService.class);
     private final KifuServiceAsync kifuService = GWT.create(KifuService.class);
-    private final PlaceController placeController;
     private final TsumeView tsumeView;
     private final SessionInformation sessionInformation;
     private final ProblemController problemController = new ProblemController();
@@ -49,11 +47,10 @@ public class TsumeActivity extends MyAbstractActivity {
     private int numMoves = 0;
     private Duration duration = new Duration();
 
-    public TsumeActivity(final TsumePlace place, final TsumeView tsumeView, final PlaceController placeController,
+    public TsumeActivity(final TsumePlace place, final TsumeView tsumeView,
                          final SessionInformation sessionInformation) {
         this.tsumeView = tsumeView;
         this.tsumeId = place.getTsumeId();
-        this.placeController = placeController;
         this.sessionInformation = sessionInformation;
     }
 
@@ -139,8 +136,6 @@ public class TsumeActivity extends MyAbstractActivity {
                     String resultUsf = result.getUsf();
                     GameRecord gameRecord = UsfFormat.INSTANCE.readSingle(resultUsf);
                     GWT.log("Updating game navigator...");
-                    //TODO: how to update URL?
-                    //placeController.goTo(new TsumePlace(result.getId()));
                     setTsumeId(result.getId());
                     History.newItem("Tsume:" + new TsumePlace.Tokenizer().getToken(getPlace()), false);
                     eventBus.fireEvent(new GameTreeChangedEvent(gameRecord.getGameTree()));

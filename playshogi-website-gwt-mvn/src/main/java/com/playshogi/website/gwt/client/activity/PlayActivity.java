@@ -7,6 +7,7 @@ import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.library.shogi.models.formats.sfen.SfenConverter;
+import com.playshogi.library.shogi.models.formats.usf.UsfMoveConverter;
 import com.playshogi.website.gwt.client.SessionInformation;
 import com.playshogi.website.gwt.client.events.gametree.PositionChangedEvent;
 import com.playshogi.website.gwt.client.place.PlayPlace;
@@ -23,7 +24,6 @@ public class PlayActivity extends MyAbstractActivity {
     }
 
     private final MyEventBinder eventBinder = GWT.create(MyEventBinder.class);
-
     private final ComputerServiceAsync computerService = GWT.create(ComputerService.class);
 
     public PlayActivity(final PlayPlace place, final PlayView playView, final SessionInformation sessionInformation) {
@@ -61,6 +61,8 @@ public class PlayActivity extends MyAbstractActivity {
                         @Override
                         public void onSuccess(final String move) {
                             GWT.log("getComputerMove success: " + move);
+                            playView.getGameNavigator().addMove(UsfMoveConverter.fromUsfString(move,
+                                    playView.getPosition()), false);
                         }
                     });
         }

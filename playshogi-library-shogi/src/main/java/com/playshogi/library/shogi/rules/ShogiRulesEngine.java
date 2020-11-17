@@ -202,6 +202,17 @@ public class ShogiRulesEngine implements GameRulesEngine<ShogiPosition> {
 
     @Override
     public boolean isMoveLegalInPosition(final ShogiPosition position, final Move move) {
+        if (!isMoveLegalInPositionWithoutCheckingKingAttack(position, move)) {
+            return false;
+        }
+
+        playMoveInPosition(position, move);
+        boolean kingInCheck = isPositionCheck(position, position.getPlayerToMove().opposite());
+        undoMoveInPosition(position, move);
+        return !kingInCheck;
+    }
+
+    private boolean isMoveLegalInPositionWithoutCheckingKingAttack(final ShogiPosition position, final Move move) {
         if (move instanceof CaptureMove) {
             return isCaptureMoveLegalInPosition(position, (CaptureMove) move);
         } else if (move instanceof DropMove) {

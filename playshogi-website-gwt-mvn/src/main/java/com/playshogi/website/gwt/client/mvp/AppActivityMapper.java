@@ -52,7 +52,7 @@ public class AppActivityMapper implements ActivityMapper {
         } else if (place instanceof LinksPlace) {
             return new LinksActivity(linksView);
         } else if (place instanceof TsumePlace) {
-            return new TsumeActivity((TsumePlace) place, tsumeView, placeController, sessionInformation);
+            return new TsumeActivity((TsumePlace) place, tsumeView, sessionInformation);
         } else if (place instanceof ByoYomiLandingPlace) {
             return new ByoYomiLandingActivity((ByoYomiLandingPlace) place, byoYomiLandingView, placeController,
                     sessionInformation);

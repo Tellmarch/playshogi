@@ -18,7 +18,7 @@ public class UsiMoveConverterTest {
         assertEquals("2b7G", UsiMoveConverter.fromPsnString("2b7g+", SfenConverter.fromSFEN(goteSfen)).toString());
         assertEquals("2b7g", UsiMoveConverter.fromPsnString("2b7g", SfenConverter.fromSFEN(goteSfen)).toString());
         assertEquals("b*7g", UsiMoveConverter.fromPsnString("B*7g", SfenConverter.fromSFEN(goteSfen2)).toString());
-        assertEquals("B*3c", UsiMoveConverter.fromPsnString("B*3c", SfenConverter.fromSFEN(goteSfen2)).toString());
+        assertEquals("B*3c", UsiMoveConverter.fromPsnString("B*3c", SfenConverter.fromSFEN(senteSfen)).toString());
     }
 
     @Test

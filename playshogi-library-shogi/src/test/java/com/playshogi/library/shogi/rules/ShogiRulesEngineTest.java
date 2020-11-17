@@ -1,10 +1,12 @@
 package com.playshogi.library.shogi.rules;
 
 import com.playshogi.library.models.Square;
+import com.playshogi.library.shogi.models.Piece;
 import com.playshogi.library.shogi.models.PieceType;
 import com.playshogi.library.shogi.models.Player;
 import com.playshogi.library.shogi.models.formats.sfen.SfenConverter;
 import com.playshogi.library.shogi.models.moves.DropMove;
+import com.playshogi.library.shogi.models.moves.NormalMove;
 import com.playshogi.library.shogi.models.moves.ShogiMove;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
 import org.junit.Before;
@@ -43,6 +45,15 @@ public class ShogiRulesEngineTest {
                 Square.of(5, 6))));
         assertFalse(engine.isMoveLegalInPosition(position, new DropMove(Player.BLACK, PieceType.PAWN,
                 Square.of(5, 3))));
+    }
+
+    @Test
+    public void putKingInCheckIsNotLegal() {
+        String sfen = "ln1gkgsnl/1r1s3b1/pppppp1pp/6p2/9/2P6/PP1PPPPPP/1B1K3R1/LNSG1GSNL b -";
+        ShogiPosition position = SfenConverter.fromSFEN(sfen);
+        System.out.println(position);
+        assertFalse(engine.isMoveLegalInPosition(position, new NormalMove(Piece.SENTE_KING,
+                Square.of(6, 8), Square.of(7, 7))));
     }
 
     @Test

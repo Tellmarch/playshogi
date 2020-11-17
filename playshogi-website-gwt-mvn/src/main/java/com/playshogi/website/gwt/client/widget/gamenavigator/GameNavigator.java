@@ -15,7 +15,6 @@ import com.playshogi.library.models.record.GameTree;
 import com.playshogi.library.shogi.models.GameRecordUtils;
 import com.playshogi.library.shogi.models.PieceType;
 import com.playshogi.library.shogi.models.Player;
-import com.playshogi.library.shogi.models.formats.usf.UsfMoveConverter;
 import com.playshogi.library.shogi.models.moves.DropMove;
 import com.playshogi.library.shogi.models.moves.ShogiMove;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
@@ -101,10 +100,11 @@ public class GameNavigator extends Composite implements ClickHandler {
     public void onMovePlayed(final MovePlayedEvent movePlayedEvent) {
         GWT.log(activityId + ": Handling move played event");
         ShogiMove move = movePlayedEvent.getMove();
-        String usfMove = UsfMoveConverter.toUsfString(move);
-        GWT.log("Move played: " + usfMove);
+        GWT.log("Move played: " + move.toString());
         boolean existingMove = gameNavigation.hasMoveInCurrentPosition(move);
         boolean mainMove = Objects.equals(gameNavigation.getMainVariationMove(), move);
+
+        boolean moveLegalInPosition = shogiRulesEngine.isMoveLegalInPosition(gameNavigation.getPosition(), move);
 
         gameNavigation.addMove(move);
         if (!existingMove) {
@@ -158,6 +158,11 @@ public class GameNavigator extends Composite implements ClickHandler {
 
     public GameNavigation<ShogiPosition> getGameNavigation() {
         return gameNavigation;
+    }
+
+    public void addMove(final ShogiMove move, final boolean fromUser) {
+        gameNavigation.addMove(move);
+        firePositionChanged(fromUser);
     }
 
 }
