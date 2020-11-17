@@ -6,6 +6,7 @@ import com.google.gwt.user.client.ui.AcceptsOneWidget;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
+import com.playshogi.library.shogi.models.Player;
 import com.playshogi.library.shogi.models.formats.sfen.SfenConverter;
 import com.playshogi.library.shogi.models.formats.usf.UsfMoveConverter;
 import com.playshogi.website.gwt.client.SessionInformation;
@@ -49,7 +50,7 @@ public class PlayActivity extends MyAbstractActivity {
     public void onPositionChanged(final PositionChangedEvent event) {
         GWT.log("PLAY - POSITION CHANGED EVENT - " + event.isTriggeredByUser());
 
-        if (event.isTriggeredByUser()) {
+        if (event.getPosition().getPlayerToMove() == Player.WHITE) {
             computerService.getComputerMove(sessionInformation.getSessionId(),
                     SfenConverter.toSFEN(event.getPosition()),
                     new AsyncCallback<String>() {

@@ -18,6 +18,7 @@ import com.playshogi.library.shogi.models.Player;
 import com.playshogi.library.shogi.models.moves.DropMove;
 import com.playshogi.library.shogi.models.moves.ShogiMove;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
+import com.playshogi.library.shogi.models.shogivariant.Handicap;
 import com.playshogi.library.shogi.models.shogivariant.ShogiInitialPositionFactory;
 import com.playshogi.library.shogi.rules.ShogiRulesEngine;
 import com.playshogi.website.gwt.client.events.gametree.*;
@@ -84,6 +85,13 @@ public class GameNavigator extends Composite implements ClickHandler {
             GWT.log(activityId + ": Game Navigator deferred execution");
             firePositionChanged(false);
         });
+    }
+
+    public void reset(final Handicap handicap) {
+        ShogiPosition initialPosition = ShogiInitialPositionFactory.createInitialPosition(handicap);
+        gameNavigation.setGameTree(new GameTree(initialPosition), initialPosition, 0);
+
+        firePositionChanged(false);
     }
 
     @EventHandler
