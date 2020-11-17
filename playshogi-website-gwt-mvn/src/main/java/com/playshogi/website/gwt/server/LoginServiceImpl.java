@@ -11,8 +11,6 @@ public class LoginServiceImpl extends RemoteServiceServlet implements LoginServi
 
     private static final Logger LOGGER = Logger.getLogger(LoginServiceImpl.class.getName());
 
-    private static final long serialVersionUID = 1L;
-
     private final Authenticator authenticator = Authenticator.INSTANCE;
 
     @Override

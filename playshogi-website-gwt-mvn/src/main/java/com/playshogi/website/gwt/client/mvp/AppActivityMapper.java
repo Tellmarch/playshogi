@@ -75,7 +75,7 @@ public class AppActivityMapper implements ActivityMapper {
         } else if (place instanceof TutorialPlace) {
             return new TutorialActivity((TutorialPlace) place, tutorialView, placeController);
         } else if (place instanceof PlayPlace) {
-            return new PlayActivity((PlayPlace) place, playView);
+            return new PlayActivity((PlayPlace) place, playView, sessionInformation);
         }
         return null;
     }

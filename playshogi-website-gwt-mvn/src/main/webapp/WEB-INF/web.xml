@@ -47,6 +47,16 @@
     </servlet-mapping>
 
     <servlet>
+        <servlet-name>computer</servlet-name>
+        <servlet-class>com.playshogi.website.gwt.server.ComputerServiceImpl</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>computer</servlet-name>
+        <url-pattern>/playshogiwebsite/computer</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
         <servlet-name>uploadKifu</servlet-name>
         <servlet-class>com.playshogi.website.gwt.server.KifuUploadServlet</servlet-class>
     </servlet>

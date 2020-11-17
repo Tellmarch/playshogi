@@ -15,8 +15,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class PositionSharingServiceImpl extends RemoteServiceServlet implements PositionSharingService {
 
-    private static final long serialVersionUID = 1L;
-
     private final Map<String, ShogiPosition> positions = new ConcurrentHashMap<>();
     private final Map<String, Set<FutureResult>> positionListeners = new ConcurrentHashMap<>();
 
