@@ -23,7 +23,7 @@ public class ProblemStatisticsActivity extends MyAbstractActivity {
     private EventBus eventBus;
 
     public ProblemStatisticsActivity(final ProblemStatisticsView problemStatisticsView,
-                                     SessionInformation sessionInformation) {
+                                     final SessionInformation sessionInformation) {
         this.problemStatisticsView = problemStatisticsView;
         this.sessionInformation = sessionInformation;
     }

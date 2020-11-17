@@ -51,6 +51,7 @@ public class NavigationBar extends Composite {
         flowPanel.add(createHyperlink("Openings", new OpeningsPlace()));
         flowPanel.add(createHyperlink("Game Collections", new GameCollectionsPlace()));
 //        flowPanel.add(createHyperlink("Free Board", new FreeBoardPlace()));
+        flowPanel.add(createHyperlink("Play", new PlayPlace()));
         flowPanel.add(createHyperlink("Links", new LinksPlace()));
         loginHyperlink = createHyperlink("Login/Register", new LoginPlace("login"));
         logoutHyperlink = createHyperlink("Logout", new LoginPlace("logout"));

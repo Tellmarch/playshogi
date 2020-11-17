@@ -39,6 +39,8 @@ public class AppActivityMapper implements ActivityMapper {
     @Inject
     TutorialView tutorialView;
     @Inject
+    PlayView playView;
+    @Inject
     SessionInformation sessionInformation;
     @Inject
     PlaceController placeController;
@@ -72,6 +74,8 @@ public class AppActivityMapper implements ActivityMapper {
             return new ViewKifuActivity((ViewKifuPlace) place, viewKifuView, sessionInformation);
         } else if (place instanceof TutorialPlace) {
             return new TutorialActivity((TutorialPlace) place, tutorialView, placeController);
+        } else if (place instanceof PlayPlace) {
+            return new PlayActivity((PlayPlace) place, playView);
         }
         return null;
     }

@@ -82,7 +82,7 @@ public class GameNavigator extends Composite implements ClickHandler {
         this.eventBus = eventBus;
         eventBinder.bindEventHandlers(this, this.eventBus);
         Scheduler.get().scheduleDeferred(() -> {
-            GWT.log(activityId + ": Game Navigator defered execution");
+            GWT.log(activityId + ": Game Navigator deferred execution");
             firePositionChanged(false);
         });
     }
