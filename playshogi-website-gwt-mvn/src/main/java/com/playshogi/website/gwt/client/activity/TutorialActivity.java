@@ -13,9 +13,9 @@ import com.playshogi.website.gwt.client.events.tutorial.ChangeTutorialTextEvent;
 import com.playshogi.website.gwt.client.events.tutorial.GoNextChapterEvent;
 import com.playshogi.website.gwt.client.events.tutorial.GoPreviousChapterEvent;
 import com.playshogi.website.gwt.client.events.tutorial.TryChapterAgainEvent;
+import com.playshogi.website.gwt.client.i18n.TutorialMessages;
 import com.playshogi.website.gwt.client.place.TutorialPlace;
 import com.playshogi.website.gwt.client.tutorial.Tutorial;
-import com.playshogi.website.gwt.client.tutorial.TutorialMessages;
 import com.playshogi.website.gwt.client.tutorial.Tutorials;
 import com.playshogi.website.gwt.client.ui.TutorialView;
 

@@ -3,6 +3,7 @@ package com.playshogi.website.gwt.client.tutorial;
 import com.google.gwt.core.client.GWT;
 import com.google.web.bindery.event.shared.EventBus;
 import com.playshogi.library.shogi.models.Piece;
+import com.playshogi.website.gwt.client.i18n.TutorialMessages;
 import com.playshogi.website.gwt.client.ui.TutorialView;
 import com.playshogi.website.gwt.client.widget.board.ShogiBoard;
 

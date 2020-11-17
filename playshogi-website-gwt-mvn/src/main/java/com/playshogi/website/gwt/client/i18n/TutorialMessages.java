@@ -1,4 +1,4 @@
-package com.playshogi.website.gwt.client.tutorial;
+package com.playshogi.website.gwt.client.i18n;
 
 import com.google.gwt.i18n.client.Messages;
 

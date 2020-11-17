@@ -10,6 +10,7 @@ import com.playshogi.library.shogi.rules.ShogiRulesEngine;
 import com.playshogi.website.gwt.client.events.gametree.MovePlayedEvent;
 import com.playshogi.website.gwt.client.events.tutorial.ChangeTutorialTextEvent;
 import com.playshogi.website.gwt.client.events.tutorial.ChangeTutorialTitleEvent;
+import com.playshogi.website.gwt.client.i18n.TutorialMessages;
 import com.playshogi.website.gwt.client.widget.board.ShogiBoard;
 
 public class PieceMovementTutorial implements Tutorial {
