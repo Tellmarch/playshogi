@@ -12,6 +12,7 @@ import com.google.inject.Singleton;
 import com.google.web.bindery.event.shared.EventBus;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.library.shogi.models.shogivariant.Handicap;
+import com.playshogi.website.gwt.client.i18n.PlayMessages;
 import com.playshogi.website.gwt.client.widget.board.ShogiBoard;
 import com.playshogi.website.gwt.client.widget.gamenavigator.GameNavigator;
 
@@ -21,6 +22,8 @@ public class PlayView extends Composite {
     private static final String PLAY = "play";
     private final ShogiBoard shogiBoard;
     private final GameNavigator gameNavigator;
+
+    private final PlayMessages messages = GWT.create(PlayMessages.class);
 
     @Inject
     public PlayView() {
@@ -32,14 +35,26 @@ public class PlayView extends Composite {
         FlowPanel panel = new FlowPanel();
 
         final ListBox handicaps = new ListBox();
-        for (Handicap handicap : Handicap.values()) {
-            handicaps.addItem(handicap.name());
-        }
+
+        handicaps.addItem(messages.handicapEven(), Handicap.EVEN.name());
+        handicaps.addItem(messages.handicapSente(), Handicap.SENTE.name());
+        handicaps.addItem(messages.handicapLance(), Handicap.LANCE.name());
+        handicaps.addItem(messages.handicapBishop(), Handicap.BISHOP.name());
+        handicaps.addItem(messages.handicapRook(), Handicap.ROOK.name());
+        handicaps.addItem(messages.handicapRookLance(), Handicap.ROOK_LANCE.name());
+        handicaps.addItem(messages.handicapTwoPieces(), Handicap.TWO_PIECES.name());
+        handicaps.addItem(messages.handicapFourPieces(), Handicap.FOUR_PIECES.name());
+        handicaps.addItem(messages.handicapSixPieces(), Handicap.SIX_PIECES.name());
+        handicaps.addItem(messages.handicapEightPieces(), Handicap.EIGHT_PIECES.name());
+        handicaps.addItem(messages.handicapNinePieces(), Handicap.NINE_PIECES.name());
+        handicaps.addItem(messages.handicapTenPieces(), Handicap.TEN_PIECES.name());
+        handicaps.addItem(messages.handicapThreePawns(), Handicap.THREE_PAWNS.name());
+        handicaps.addItem(messages.handicapNakedKing(), Handicap.NAKED_KING.name());
 
         handicaps.setVisibleItemCount(1);
 
         Button newGameButton = new Button("New game",
-                (ClickHandler) clickEvent -> gameNavigator.reset(Handicap.valueOf(handicaps.getSelectedItemText())));
+                (ClickHandler) clickEvent -> gameNavigator.reset(Handicap.valueOf(handicaps.getSelectedValue())));
 
         panel.add(newGameButton);
         panel.add(handicaps);
