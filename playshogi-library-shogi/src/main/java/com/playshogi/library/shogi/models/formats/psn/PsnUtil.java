@@ -2,9 +2,9 @@ package com.playshogi.library.shogi.models.formats.psn;
 
 import com.playshogi.library.shogi.models.PieceType;
 
-class PsnUtil {
+public class PsnUtil {
 
-    static PieceType pieceFromChar(final char x) {
+    public static PieceType pieceFromChar(final char x) {
         switch (x) {
             case 'P':
                 return PieceType.PAWN;
@@ -26,19 +26,19 @@ class PsnUtil {
         return null;
     }
 
-    static char columnNumber2Char(final int col) {
+    public static char columnNumber2Char(final int col) {
         return (char) (col + '0');
     }
 
-    static int char2ColumnNumber(final char colChar) {
+    public static int char2ColumnNumber(final char colChar) {
         return colChar - '0';
     }
 
-    static char rowNumber2Char(final int row) {
+    public static char rowNumber2Char(final int row) {
         return (char) ('a' + (row - 1));
     }
 
-    static int char2RowNumber(final char row) {
+    public static int char2RowNumber(final char row) {
         return row - 'a' + 1;
     }
 
