@@ -32,6 +32,7 @@ public class Tutorials {
                                 tutorialMessages.goldPractice(), tutorialMessages.goldPracticeSuccess(),
                                 tutorialMessages.goldPracticeFailed()), "9/9/9/4k4/9/5K3/9/9/9 b 4G"),
                 new PieceMovementTutorial(shogiBoard, Piece.SENTE_SILVER, tutorialMessages),
+                new SilverExercise(shogiBoard, tutorialMessages),
                 new PieceMovementTutorial(shogiBoard, Piece.SENTE_KNIGHT, tutorialMessages),
                 new PieceMovementTutorial(shogiBoard, Piece.SENTE_LANCE, tutorialMessages),
                 new PieceMovementTutorial(shogiBoard, Piece.SENTE_PAWN, tutorialMessages),

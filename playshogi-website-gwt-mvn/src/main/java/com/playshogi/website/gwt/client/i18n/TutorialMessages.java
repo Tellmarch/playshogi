@@ -78,6 +78,17 @@ public interface TutorialMessages extends Messages {
     @DefaultMessage("The Silver General")
     String silverTitle();
 
+    @DefaultMessage("Time to practice: move your silver general from the bottom left to the right to capture the " +
+            "tokin, without moving other pieces!")
+    String silverPractice();
+
+    @DefaultMessage("Click \"Try again\" to give it another try.")
+    String silverPracticeFailed();
+
+    @DefaultMessage("Success! The Silver general agility makes it an ideal attacking piece.\n" +
+            "Click \"Next\" to go to the next lesson.")
+    String silverPracticeSuccess();
+
     @DefaultMessage("The Gold General")
     String goldTitle();
 
