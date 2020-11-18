@@ -7,6 +7,7 @@ import com.google.inject.Singleton;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
+import com.playshogi.website.gwt.client.SessionInformation;
 import com.playshogi.website.gwt.client.events.tutorial.*;
 import com.playshogi.website.gwt.client.i18n.TutorialMessages;
 import com.playshogi.website.gwt.client.mvp.AppPlaceHistoryMapper;
@@ -20,15 +21,15 @@ import com.playshogi.website.gwt.client.widget.board.ShogiBoard;
 @Singleton
 public class TutorialView extends Composite {
 
-    private final TutorialMessages tutorialMessages = GWT.create(TutorialMessages.class);
+    private static final String TUTORIAL = "tutorial";
 
     interface MyEventBinder extends EventBinder<TutorialView> {
     }
 
     private final MyEventBinder eventBinder = GWT.create(MyEventBinder.class);
+    private final TutorialMessages tutorialMessages = GWT.create(TutorialMessages.class);
 
-    private static final String TUTORIAL = "tutorial";
-
+    private final SessionInformation sessionInformation;
     private final ShogiBoard shogiBoard;
     private EventBus eventBus;
     private final AppPlaceHistoryMapper historyMapper;
@@ -38,9 +39,10 @@ public class TutorialView extends Composite {
     private PiecesSelectorPanel piecesSelectorPanel;
 
     @Inject
-    public TutorialView(final AppPlaceHistoryMapper historyMapper) {
+    public TutorialView(final AppPlaceHistoryMapper historyMapper, final SessionInformation sessionInformation) {
         GWT.log("Creating tutorial view");
 
+        this.sessionInformation = sessionInformation;
         this.historyMapper = historyMapper;
 
         AbsolutePanel absolutePanel = getRightPanel();
@@ -124,6 +126,10 @@ public class TutorialView extends Composite {
 
     private void setTutorialText(String text) {
         textArea.setText(text);
+    }
+
+    public SessionInformation getSessionInformation() {
+        return sessionInformation;
     }
 
     @EventHandler

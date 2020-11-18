@@ -6,8 +6,12 @@ import com.playshogi.library.shogi.models.Piece;
 import com.playshogi.website.gwt.client.i18n.TutorialMessages;
 import com.playshogi.website.gwt.client.ui.TutorialView;
 import com.playshogi.website.gwt.client.widget.board.ShogiBoard;
+import com.playshogi.website.gwt.shared.services.ComputerService;
+import com.playshogi.website.gwt.shared.services.ComputerServiceAsync;
 
 public class Tutorials {
+
+    private final ComputerServiceAsync computerService = GWT.create(ComputerService.class);
 
     private final Tutorial[] tutorials;
 
@@ -23,6 +27,10 @@ public class Tutorials {
                 new PieceMovementTutorial(shogiBoard, Piece.SENTE_BISHOP, tutorialMessages),
                 new BishopExercise(shogiBoard, tutorialMessages),
                 new PieceMovementTutorial(shogiBoard, Piece.SENTE_GOLD, tutorialMessages),
+                new PositionVsComputerTutorial(shogiBoard, computerService, tutorialView.getSessionInformation(),
+                        new PositionVsComputerTutorial.Messages(tutorialMessages.goldTitle(),
+                                tutorialMessages.goldPractice(), tutorialMessages.goldPracticeSuccess(),
+                                tutorialMessages.goldPracticeFailed()), "9/9/9/4k4/9/5K3/9/9/9 b 4G"),
                 new PieceMovementTutorial(shogiBoard, Piece.SENTE_SILVER, tutorialMessages),
                 new PieceMovementTutorial(shogiBoard, Piece.SENTE_KNIGHT, tutorialMessages),
                 new PieceMovementTutorial(shogiBoard, Piece.SENTE_LANCE, tutorialMessages),
@@ -43,7 +51,7 @@ public class Tutorials {
     }
 
     public boolean hasChapter(int chapter) {
-        return chapter>0 && chapter <= tutorials.length;
+        return chapter > 0 && chapter <= tutorials.length;
     }
 
     public void activate(final EventBus eventBus) {

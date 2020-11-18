@@ -81,6 +81,16 @@ public interface TutorialMessages extends Messages {
     @DefaultMessage("The Gold General")
     String goldTitle();
 
+    @DefaultMessage("Time to practice: use your Gold Generals in hand to checkmate the opponent King!")
+    String goldPractice();
+
+    @DefaultMessage("Click \"Try again\" to give it another try.")
+    String goldPracticeFailed();
+
+    @DefaultMessage("Success! The Gold general is very good to deliver checkmate.\n" +
+            "Click \"Next\" to go to the next lesson.")
+    String goldPracticeSuccess();
+
     @DefaultMessage("The Bishop")
     String bishopTitle();
 

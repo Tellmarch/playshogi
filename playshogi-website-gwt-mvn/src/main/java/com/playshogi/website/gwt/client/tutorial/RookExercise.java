@@ -26,13 +26,13 @@ public class RookExercise implements Tutorial {
     private EventBus eventBus;
     private ShogiPosition position;
 
-    RookExercise(ShogiBoard shogiBoard, TutorialMessages tutorialMessages) {
+    RookExercise(final ShogiBoard shogiBoard, final TutorialMessages tutorialMessages) {
         this.shogiBoard = shogiBoard;
         this.tutorialMessages = tutorialMessages;
     }
 
     @Override
-    public void activate(EventBus eventBus) {
+    public void activate(final EventBus eventBus) {
         this.eventBus = eventBus;
     }
 

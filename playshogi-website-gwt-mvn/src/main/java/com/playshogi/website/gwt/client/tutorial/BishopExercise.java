@@ -19,10 +19,8 @@ public class BishopExercise implements Tutorial {
     private final ShogiRulesEngine rulesEngine = new ShogiRulesEngine();
     private final ShogiBoard shogiBoard;
     private final TutorialMessages tutorialMessages;
-    private int i;
     private EventBus eventBus;
     private ShogiPosition position;
-    private ShogiMove move;
 
     BishopExercise(ShogiBoard shogiBoard, TutorialMessages tutorialMessages) {
         this.shogiBoard = shogiBoard;
@@ -42,7 +40,6 @@ public class BishopExercise implements Tutorial {
         position.getShogiBoardState().setPieceAt(8, 2, Piece.GOTE_ROOK);
         position.getShogiBoardState().setPieceAt(2, 5, Piece.GOTE_ROOK);
         position.getSenteKomadai().addPiece(PieceType.BISHOP);
-        i = 2;
         shogiBoard.setPosition(position);
         shogiBoard.getBoardConfiguration().setAllowIllegalMoves(false);
         shogiBoard.getBoardConfiguration().setPlaySenteMoves(true);
@@ -54,7 +51,7 @@ public class BishopExercise implements Tutorial {
 
     @Override
     public void onMovePlayed(final MovePlayedEvent movePlayedEvent) {
-        move = movePlayedEvent.getMove();
+        ShogiMove move = movePlayedEvent.getMove();
         rulesEngine.playMoveInPosition(position, move);
         shogiBoard.displayPosition();
 
