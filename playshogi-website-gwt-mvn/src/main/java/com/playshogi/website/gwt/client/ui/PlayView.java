@@ -3,6 +3,7 @@ package com.playshogi.website.gwt.client.ui;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -10,6 +11,7 @@ import com.google.gwt.user.client.ui.ListBox;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.web.bindery.event.shared.EventBus;
+import com.playshogi.library.shogi.models.formats.sfen.SfenConverter;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.library.shogi.models.shogivariant.Handicap;
 import com.playshogi.website.gwt.client.i18n.PlayMessages;
@@ -56,7 +58,14 @@ public class PlayView extends Composite {
         Button newGameButton = new Button("New game",
                 (ClickHandler) clickEvent -> gameNavigator.reset(Handicap.valueOf(handicaps.getSelectedValue())));
 
+        Button loadSfenButton = new Button("Load SFEN", (ClickHandler) clickEvent -> {
+            String sfen = Window.prompt("Enter SFEN:", "9/3+P4k/5pg1g/7pP/p2P4L/4G4/PP3P3/1+B2p4/LNS1K2R1 b " +
+                    "G2S3N7Psp");
+            gameNavigator.reset(SfenConverter.fromSFEN(sfen));
+        });
+
         panel.add(newGameButton);
+        panel.add(loadSfenButton);
         panel.add(handicaps);
 
         shogiBoard.setUpperRightPanel(panel);

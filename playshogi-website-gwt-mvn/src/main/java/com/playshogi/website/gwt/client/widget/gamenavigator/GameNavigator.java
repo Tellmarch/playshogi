@@ -88,8 +88,11 @@ public class GameNavigator extends Composite implements ClickHandler {
     }
 
     public void reset(final Handicap handicap) {
-        ShogiPosition initialPosition = ShogiInitialPositionFactory.createInitialPosition(handicap);
-        gameNavigation.setGameTree(new GameTree(initialPosition), initialPosition, 0);
+        reset(ShogiInitialPositionFactory.createInitialPosition(handicap));
+    }
+
+    public void reset(final ShogiPosition position) {
+        gameNavigation.setGameTree(new GameTree(position), position, 0);
 
         firePositionChanged(false);
     }
@@ -111,8 +114,6 @@ public class GameNavigator extends Composite implements ClickHandler {
         GWT.log("Move played: " + move.toString());
         boolean existingMove = gameNavigation.hasMoveInCurrentPosition(move);
         boolean mainMove = Objects.equals(gameNavigation.getMainVariationMove(), move);
-
-        boolean moveLegalInPosition = shogiRulesEngine.isMoveLegalInPosition(gameNavigation.getPosition(), move);
 
         gameNavigation.addMove(move);
         if (!existingMove) {

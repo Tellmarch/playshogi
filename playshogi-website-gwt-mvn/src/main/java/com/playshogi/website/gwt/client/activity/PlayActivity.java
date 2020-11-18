@@ -49,6 +49,7 @@ public class PlayActivity extends MyAbstractActivity {
     @EventHandler
     public void onPositionChanged(final PositionChangedEvent event) {
         GWT.log("PLAY - POSITION CHANGED EVENT - " + event.isTriggeredByUser());
+        GWT.log("Position SFEN: " + SfenConverter.toSFEN(event.getPosition()));
 
         if (event.getPosition().getPlayerToMove() == Player.WHITE) {
             computerService.getComputerMove(sessionInformation.getSessionId(),
