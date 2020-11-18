@@ -56,7 +56,7 @@ public class SilverExercise implements Tutorial {
     public void onMovePlayed(final MovePlayedEvent movePlayedEvent) {
         ShogiMove move = movePlayedEvent.getMove();
 
-        if (move instanceof CaptureMove) {
+        if (move instanceof CaptureMove && ((CaptureMove) move).getPiece() == Piece.SENTE_SILVER) {
             rulesEngine.playMoveInPosition(position, move);
             shogiBoard.displayPosition();
             eventBus.fireEvent(new ChangeTutorialTextEvent(tutorialMessages.silverPracticeSuccess()));
