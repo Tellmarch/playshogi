@@ -12,6 +12,7 @@ public class BoardConfiguration {
     private boolean showGoteKomadai = true;
     private boolean showSenteKomadai = true;
     private boolean allowPromotion = true;
+    private boolean fillGoteKomadaiWithMissingPieces = false;
 
     public BoardConfiguration() {
     }
@@ -104,6 +105,14 @@ public class BoardConfiguration {
         this.allowPromotion = allowPromotion;
     }
 
+    public boolean isFillGoteKomadaiWithMissingPieces() {
+        return fillGoteKomadaiWithMissingPieces;
+    }
+
+    public void setFillGoteKomadaiWithMissingPieces(final boolean fillGoteKomadaiWithMissingPieces) {
+        this.fillGoteKomadaiWithMissingPieces = fillGoteKomadaiWithMissingPieces;
+    }
+
     @Override
     public String toString() {
         return "BoardConfiguration{" +
@@ -118,6 +127,7 @@ public class BoardConfiguration {
                 ", showGoteKomadai=" + showGoteKomadai +
                 ", showSenteKomadai=" + showSenteKomadai +
                 ", allowPromotion=" + allowPromotion +
+                ", fillGoteKomadaiWithMissingPieces=" + fillGoteKomadaiWithMissingPieces +
                 '}';
     }
 }

@@ -3,6 +3,7 @@ package com.playshogi.library.shogi.models.position;
 import com.playshogi.library.models.Position;
 import com.playshogi.library.models.Square;
 import com.playshogi.library.shogi.models.Piece;
+import com.playshogi.library.shogi.models.PieceType;
 import com.playshogi.library.shogi.models.Player;
 import com.playshogi.library.shogi.models.formats.sfen.SfenConverter;
 import com.playshogi.library.shogi.models.shogivariant.ShogiVariant;
@@ -128,6 +129,27 @@ public class ShogiPosition implements Position {
             }
         }
         return squares;
+    }
+
+    /**
+     * This method only works for regular 9x9 shogi without handicap
+     */
+    public void fillGoteKomadaiWithMissingPieces() {
+        goteKomadai.setPiecesOfType(PieceType.PAWN, 18 - senteKomadai.getPiecesOfType(PieceType.PAWN));
+        goteKomadai.setPiecesOfType(PieceType.LANCE, 4 - senteKomadai.getPiecesOfType(PieceType.LANCE));
+        goteKomadai.setPiecesOfType(PieceType.KNIGHT, 4 - senteKomadai.getPiecesOfType(PieceType.KNIGHT));
+        goteKomadai.setPiecesOfType(PieceType.SILVER, 4 - senteKomadai.getPiecesOfType(PieceType.SILVER));
+        goteKomadai.setPiecesOfType(PieceType.GOLD, 4 - senteKomadai.getPiecesOfType(PieceType.GOLD));
+        goteKomadai.setPiecesOfType(PieceType.BISHOP, 2 - senteKomadai.getPiecesOfType(PieceType.BISHOP));
+        goteKomadai.setPiecesOfType(PieceType.ROOK, 2 - senteKomadai.getPiecesOfType(PieceType.ROOK));
+        for (int i = 1; i <= 9; i++) {
+            for (int j = 1; j <= 9; j++) {
+                Optional<Piece> piece = shogiBoardState.getPieceAt(i, j);
+                if (piece.isPresent() && piece.get().getPieceType() != PieceType.KING) {
+                    goteKomadai.removePiece(piece.get().getPieceType());
+                }
+            }
+        }
     }
 
     @Override

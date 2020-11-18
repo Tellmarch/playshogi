@@ -389,6 +389,11 @@ public class ShogiBoard extends Composite implements ClickHandler {
 
     public void setPosition(final ShogiPosition position) {
         this.position = position;
+
+        if (boardConfiguration.isFillGoteKomadaiWithMissingPieces()) {
+            position.fillGoteKomadaiWithMissingPieces();
+        }
+
         displayPosition();
     }
 

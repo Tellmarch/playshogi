@@ -8,7 +8,7 @@ import com.playshogi.library.shogi.models.position.ShogiBoardState;
 import com.playshogi.library.shogi.models.position.ShogiBoardStateImpl;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
 
-import java.util.*;
+import java.util.Optional;
 
 import static com.playshogi.library.shogi.models.formats.usf.UsfUtil.pieceFromChar;
 import static com.playshogi.library.shogi.models.formats.usf.UsfUtil.pieceToString;
@@ -89,18 +89,6 @@ public class SfenConverter {
     public static ShogiPosition fromSFEN(final String sfen) {
         ShogiBoardState shogiBoardState = new ShogiBoardStateImpl(9, 9);
         String[] fields = sfen.split(" ");
-        Collection<PieceType> pieces = new ArrayList<>(Arrays.asList(
-            PieceType.KING, PieceType.KING,
-            PieceType.ROOK, PieceType.ROOK,
-            PieceType.BISHOP, PieceType.BISHOP,
-            PieceType.GOLD, PieceType.GOLD, PieceType.GOLD, PieceType.GOLD,
-            PieceType.SILVER, PieceType.SILVER, PieceType.SILVER, PieceType.SILVER,
-            PieceType.KNIGHT, PieceType.KNIGHT, PieceType.KNIGHT, PieceType.KNIGHT,
-            PieceType.LANCE, PieceType.LANCE, PieceType.LANCE, PieceType.LANCE,
-            PieceType.PAWN, PieceType.PAWN, PieceType.PAWN, PieceType.PAWN, PieceType.PAWN, PieceType.PAWN,
-            PieceType.PAWN, PieceType.PAWN, PieceType.PAWN, PieceType.PAWN, PieceType.PAWN, PieceType.PAWN,
-            PieceType.PAWN, PieceType.PAWN, PieceType.PAWN, PieceType.PAWN, PieceType.PAWN, PieceType.PAWN
-        ));
 
         // Reading board pieces
         String[] rows = fields[0].split("/");
@@ -130,7 +118,6 @@ public class SfenConverter {
                         p = p.getPromotedPiece();
                     }
                     shogiBoardState.setPieceAt(1 + (8 - k++), 1 + i, p);
-                    pieces.remove(p.getPieceType());
                 }
                 prom = false;
             }
@@ -195,18 +182,9 @@ public class SfenConverter {
             }
         }
 
-        // If this is a tsume problem (no sente king) put remaining pieces in gote hand
-        if (pieces.contains(PieceType.KING)) {
-            for (PieceType type : PieceType.values()) {
-                if(type != PieceType.KING) {
-                    int pieceCount = Collections.frequency(pieces, type);
-                    goteKomadai.setPiecesOfType(type, pieceCount - senteKomadai.getPiecesOfType(type));
-                }
-            }
-        }
-
-        if (fields.length > 3)
+        if (fields.length > 3) {
             moveCount = Integer.parseInt(fields[3]);
+        }
 
         return new ShogiPosition(moveCount - 1, player, shogiBoardState, senteKomadai, goteKomadai);
     }
