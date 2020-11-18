@@ -34,6 +34,7 @@ public class Tutorials {
                 new PieceMovementTutorial(shogiBoard, Piece.SENTE_SILVER, tutorialMessages),
                 new SilverExercise(shogiBoard, tutorialMessages),
                 new PieceMovementTutorial(shogiBoard, Piece.SENTE_KNIGHT, tutorialMessages),
+                new KnightExercise(shogiBoard, tutorialMessages),
                 new PieceMovementTutorial(shogiBoard, Piece.SENTE_LANCE, tutorialMessages),
                 new PieceMovementTutorial(shogiBoard, Piece.SENTE_PAWN, tutorialMessages),
         };

@@ -66,7 +66,7 @@ public class PieceMovementTutorial implements Tutorial {
             case LANCE:
                 return tutorialMessages.inProgress();
             case KNIGHT:
-                return tutorialMessages.inProgress();
+                return tutorialMessages.knightIntro();
             case SILVER:
                 return tutorialMessages.inProgress();
             case GOLD:

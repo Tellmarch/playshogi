@@ -75,6 +75,21 @@ public interface TutorialMessages extends Messages {
     @DefaultMessage("The Knight")
     String knightTitle();
 
+    @DefaultMessage("The Knight has a very limited movement in Shogi - it can only move to two squares.\n" +
+            " However, it has the unique ability to jump above other pieces, making it a key piece in attack.")
+    String knightIntro();
+
+    @DefaultMessage("Time to practice: can you spot the knight move that lets you attack 2 of your opponent pieces?")
+    String knightPractice();
+
+    @DefaultMessage("Wrong answer - Click \"Try again\" to give it another try.")
+    String knightPracticeFailed();
+
+    @DefaultMessage("Success! The knight jumped to attack the Silver General and Bishop, and will be able to capture " +
+            "one of the two.\n" +
+            "Click \"Next\" to go to the next lesson.")
+    String knightPracticeSuccess();
+
     @DefaultMessage("The Silver General")
     String silverTitle();
 
