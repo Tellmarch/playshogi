@@ -5,6 +5,7 @@ import com.playshogi.library.shogi.models.Piece;
 import com.playshogi.library.shogi.models.PieceType;
 import com.playshogi.library.shogi.models.Player;
 import com.playshogi.library.shogi.models.formats.sfen.SfenConverter;
+import com.playshogi.library.shogi.models.moves.CaptureMove;
 import com.playshogi.library.shogi.models.moves.DropMove;
 import com.playshogi.library.shogi.models.moves.NormalMove;
 import com.playshogi.library.shogi.models.moves.ShogiMove;
@@ -45,6 +46,17 @@ public class ShogiRulesEngineTest {
                 Square.of(5, 6))));
         assertFalse(engine.isMoveLegalInPosition(position, new DropMove(Player.BLACK, PieceType.PAWN,
                 Square.of(5, 3))));
+    }
+
+    @Test
+    public void testInfiniteLoopPosition() {
+        String sfen = "1n1g5/2s5+R/pp1kp+P1+P1/2pp2pp1/9/2P6/PP1P+s1+n2/1B7/LNSGK1G2 b GL2Psn3p";
+        ShogiPosition position = SfenConverter.fromSFEN(sfen);
+        CaptureMove move = new CaptureMove(Piece.SENTE_PROMOTED_PAWN, Square.of(4, 3), Square.of(5, 3),
+                Piece.GOTE_PAWN);
+        assertTrue(engine.isMoveLegalInPosition(position, move));
+        engine.playMoveInPosition(position, move);
+        assertFalse(engine.isPositionCheckmate(position));
     }
 
     @Test

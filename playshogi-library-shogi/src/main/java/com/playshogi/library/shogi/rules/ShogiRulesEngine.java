@@ -242,11 +242,23 @@ public class ShogiRulesEngine implements GameRulesEngine<ShogiPosition> {
     private boolean isDropMoveLegalInPosition(final ShogiPosition position, final DropMove move) {
         boolean result = isDropMoveValidInPosition(position, move);
         if (result && move.getPieceType() == PieceType.PAWN) {
-            this.playMoveInPosition(position, move);
-            result = !isPositionCheckmate(position);
-            this.undoMoveInPosition(position, move);
+            if (isPawnDropCheck(position, move)) {
+                this.playMoveInPosition(position, move);
+                result = !isPositionCheckmate(position);
+                this.undoMoveInPosition(position, move);
+            }
         }
         return result;
+    }
+
+    private boolean isPawnDropCheck(final ShogiPosition position, final DropMove move) {
+        if (move.isBlackMoving()) {
+            Optional<Piece> piece = position.getPieceAt(move.getToSquare().above().orElse(move.getToSquare()));
+            return piece.isPresent() && piece.get() == Piece.GOTE_KING;
+        } else {
+            Optional<Piece> piece = position.getPieceAt(move.getToSquare().below().orElse(move.getToSquare()));
+            return piece.isPresent() && piece.get() == Piece.SENTE_KING;
+        }
     }
 
     private boolean isDropMoveValidInPosition(final ShogiPosition position, final DropMove move) {
