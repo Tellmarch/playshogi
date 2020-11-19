@@ -46,13 +46,15 @@ public class RookExercise implements Tutorial {
         position = new ShogiPosition();
         position.getShogiBoardState().setPieceAt(5, 9, Piece.SENTE_ROOK);
         for (int i = 1; i <= 9; i++) {
-            position.getShogiBoardState().setPieceAt(i, 3, Piece.GOTE_PAWN);
+            if (i != 5) {
+                position.getShogiBoardState().setPieceAt(i, 3, Piece.GOTE_PAWN);
+            }
         }
+        position.getShogiBoardState().setPieceAt(5, 4, Piece.GOTE_PAWN);
         shogiBoard.setPosition(position);
         shogiBoard.getBoardConfiguration().setAllowIllegalMoves(false);
         shogiBoard.getBoardConfiguration().setPlaySenteMoves(true);
         shogiBoard.getBoardConfiguration().setPlayGoteMoves(false);
-        shogiBoard.getBoardConfiguration().setAllowPromotion(false);
 
         eventBus.fireEvent(new ChangeTutorialTextEvent(tutorialMessages.rookPractice()));
     }

@@ -20,14 +20,16 @@ public interface TutorialMessages extends Messages {
     @DefaultMessage("Welcome to this introduction to Shogi Rules! In this interactive tutorial, you will learn how to" +
             " recognize and move the shogi pieces.<br/><br/>" +
             "The tutorial can be done with traditional Japanese pieces, or international graphics - feel free to " +
-            "change between those at any point with the buttons on the left of the board!")
+            "change between those at any point with the buttons on the left of the board!<br/><br/>" +
+            "When you are ready, click on the Next! button to continue.")
     String intro();
 
     @DefaultMessage("Introduction")
     String introTitle();
 
     @DefaultMessage("The King is your most important piece. If it is captured, you lose the game!<br/>" +
-            "It can move one square in any direction.")
+            "It can move one square in any direction. Try it now!<br/><br/>" +
+            "When you are ready, click on the Next! button to continue.")
     String kingIntro();
 
     @DefaultMessage("The King")
@@ -41,13 +43,15 @@ public interface TutorialMessages extends Messages {
             "Click \"Try again\" to give it another try.")
     String kingPracticeFailed();
 
-    @DefaultMessage("Success! In Shogi, you can capture a piece simply by moving to its square. Unlike chess there is" +
-            " no special movement for captures.<br/><br/>" +
+    @DefaultMessage("Success! In Shogi, you can capture a piece simply by moving to its square. The piece always " +
+            "captures in the same way as it moves.<br/><br/>" +
             "Click \"Next\" to go to the next lesson.")
     String kingPracticeSuccess();
 
     @DefaultMessage("The Rook is your strongest attacking piece.<br/>" +
-            "It can move any number of squares vertically or horizontally, but it can not jump above other pieces.")
+            "It can move any number of squares vertically or horizontally, but it can not jump above other pieces" +
+            ".<br/><br/>" +
+            "When promoting, it also gains the ability to move diagonally by one square.")
     String rookIntro();
 
     @DefaultMessage("The Rook")
@@ -145,11 +149,12 @@ public interface TutorialMessages extends Messages {
     String goldTitle();
 
     @DefaultMessage("The Gold General, closest to the King, has almost the same movements.<br/>" +
-            "However, they can not move back diagonally.<br/><br/>" +
+            "However, it can not move back diagonally.<br/><br/>" +
             "Tip: you can recognize the piece by its big \"hat\".")
     String goldIntro();
 
-    @DefaultMessage("Time to practice: use your Gold Generals in hand to capture the opponent King!")
+    @DefaultMessage("Time to practice: use your Gold Generals in hand to capture the opponent King!<br/><br/>" +
+            "If you are having trouble, you can reset the position with the \"Try again\" button.")
     String goldPractice();
 
     @DefaultMessage("Click \"Try again\" to give it another try.")
@@ -227,4 +232,58 @@ public interface TutorialMessages extends Messages {
             "To learn about Shogi tactics, head to the Problems section.<br/>" +
             "To learn from actual games, head to the Game Collections section.<br/>")
     String practiceSuccess();
+
+    @DefaultMessage("All minor pieces (pawn, lance, knight, silver general) can promote and get the movements of the " +
+            "Gold general.<br/>" +
+            "Time to practice: You only have one pawn on the board - is it enough to checkmate the opponent king?")
+    String promotionPractice();
+
+    @DefaultMessage("Special rules")
+    String specialTitle();
+
+    @DefaultMessage("We are almost done with the shogi rules! Before we move to practice, there are a a couple " +
+            "additional rules to learn.<br/><br/>" +
+            "Click on the Next! button to continue.")
+    String specialIntro();
+
+    @DefaultMessage("Special rules (1/4): Nifu")
+    String nifuTitle();
+
+    @DefaultMessage("Because there are so many pawns, it was decided to put some limit to where we can drop them" +
+            ".<br/>" +
+            "The most important rule is that it is never allowed to have two unpromoted pawn in the same column.<br/>" +
+            "In a tournament, if you drop a pawn in such a position, you instantly lose the game!<br/><br/>" +
+            "Try dropping the pawn that you have in hand without breaking the rules.")
+    String nifuIntro();
+
+    @DefaultMessage("Special rules (2/4): No Pawn Drop mates!")
+    String pawnDropMateTitle();
+
+    @DefaultMessage("Another restriction is that you can not drop a pawn directly in a checkmate!<br/>" +
+            "Dropping check is fine, and pushing a pawn to checkmate is also allowed.<br/><br/>" +
+            "This position is checkmate in 3 moves - make sure to drop the pieces in the right order!")
+    String pawnDropMateIntro();
+
+
+    @DefaultMessage("Special rules (3/4): Repetition")
+    String repetitionTitle();
+
+    @DefaultMessage("Draws are very rare in Shogi - if a position is repeated 4 times, the game ends in a draw. " +
+            "In that case, the players will play another game with opposite colors, to decide on a winner.<br/><br/>" +
+            "Repeating the position 4 times with continuous checks is not allowed and would be an illegal " +
+            "move!<br/><br/>" +
+            "Click on the Next! button to continue.")
+    String repetitionIntro();
+
+    @DefaultMessage("Special rules (4/4): Impasse")
+    String impasseTitle();
+
+    @DefaultMessage("In rare situations, it may become impossible to mate either King, when they escaped to the " +
+            "opponent " +
+            "camp and are protected by promoted pieces. " +
+            "In that case, whoever has the most pieces wins - Rooks and Bishops count 5 points each, all" +
+            " other pieces are 1 point.<br/><br/>" +
+            "That situation is very rare, so no need to remember the exact rule for now.<br/><br/>" +
+            "Click on the Next! button to continue.")
+    String impasseIntro();
 }

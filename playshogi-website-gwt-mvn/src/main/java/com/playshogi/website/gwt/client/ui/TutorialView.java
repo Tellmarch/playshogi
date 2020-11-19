@@ -93,7 +93,8 @@ public class TutorialView extends Composite {
         for (int i = 0; i < tutorials.length; i++) {
             if (tutorials[i] instanceof PieceMovementTutorial
                     || tutorials[i] instanceof PromotionTutorial
-                    || tutorials[i] instanceof CaptureTutorial) {
+                    || tutorials[i] instanceof CaptureTutorial
+                    || tutorials[i] instanceof SpecialRulesTutorial) {
 
                 flowPanel.add(new Hyperlink(tutorials[i].getTutorialTitle(),
                         historyMapper.getToken(new TutorialPlace(i + 1))));

@@ -38,6 +38,16 @@ public class PiecesSelectorPanel extends Composite implements ClickHandler {
 
         radio1.addClickHandler(this);
         radio2.addClickHandler(this);
+        image1.addClickHandler(clickEvent -> {
+            GWT.log("User selected traditional pieces");
+            radio1.setValue(true);
+            eventBus.fireEvent(new PieceStyleSelectedEvent(PieceGraphics.Style.RYOKO));
+        });
+        image2.addClickHandler(clickEvent -> {
+            GWT.log("User selected international pieces");
+            radio2.setValue(true);
+            eventBus.fireEvent(new PieceStyleSelectedEvent(PieceGraphics.Style.HIDETCHI));
+        });
 
         radio1.setValue(true);
 
