@@ -12,9 +12,7 @@ import com.playshogi.website.gwt.client.events.tutorial.*;
 import com.playshogi.website.gwt.client.i18n.TutorialMessages;
 import com.playshogi.website.gwt.client.mvp.AppPlaceHistoryMapper;
 import com.playshogi.website.gwt.client.place.TutorialPlace;
-import com.playshogi.website.gwt.client.tutorial.PieceMovementTutorial;
-import com.playshogi.website.gwt.client.tutorial.Tutorial;
-import com.playshogi.website.gwt.client.tutorial.Tutorials;
+import com.playshogi.website.gwt.client.tutorial.*;
 import com.playshogi.website.gwt.client.widget.PiecesSelectorPanel;
 import com.playshogi.website.gwt.client.widget.board.ShogiBoard;
 
@@ -34,7 +32,7 @@ public class TutorialView extends Composite {
     private EventBus eventBus;
     private final AppPlaceHistoryMapper historyMapper;
     private final Tutorials tutorials;
-    private final TextArea textArea;
+    private final HTML textArea;
     private HTML titleHTML;
     private PiecesSelectorPanel piecesSelectorPanel;
 
@@ -56,8 +54,9 @@ public class TutorialView extends Composite {
 
         verticalPanel.add(shogiBoard);
 
-        textArea = new TextArea();
-        textArea.setSize("782px", "100px");
+        textArea = new HTML();
+        textArea.setSize("782px", "150px");
+        textArea.setStyleName("lesson-content");
         verticalPanel.add(textArea);
 
         initWidget(verticalPanel);
@@ -92,10 +91,11 @@ public class TutorialView extends Composite {
         // Adds an entry for each piece movement tutorial
         Tutorial[] tutorials = this.tutorials.getTutorials();
         for (int i = 0; i < tutorials.length; i++) {
-            if (tutorials[i] instanceof PieceMovementTutorial) {
-                PieceMovementTutorial pieceMovementTutorial = (PieceMovementTutorial) tutorials[i];
+            if (tutorials[i] instanceof PieceMovementTutorial
+                    || tutorials[i] instanceof PromotionTutorial
+                    || tutorials[i] instanceof CaptureTutorial) {
 
-                flowPanel.add(new Hyperlink(pieceMovementTutorial.getTutorialTitle(),
+                flowPanel.add(new Hyperlink(tutorials[i].getTutorialTitle(),
                         historyMapper.getToken(new TutorialPlace(i + 1))));
             }
         }
@@ -125,7 +125,7 @@ public class TutorialView extends Composite {
     }
 
     private void setTutorialText(String text) {
-        textArea.setText(text);
+        textArea.setHTML(text);
     }
 
     public SessionInformation getSessionInformation() {

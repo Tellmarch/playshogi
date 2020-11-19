@@ -8,7 +8,6 @@ import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.library.shogi.rules.ShogiRulesEngine;
 import com.playshogi.website.gwt.client.events.gametree.MovePlayedEvent;
 import com.playshogi.website.gwt.client.events.tutorial.ChangeTutorialTextEvent;
-import com.playshogi.website.gwt.client.events.tutorial.ChangeTutorialTitleEvent;
 import com.playshogi.website.gwt.client.i18n.TutorialMessages;
 import com.playshogi.website.gwt.client.widget.board.ShogiBoard;
 
@@ -23,6 +22,11 @@ public class KnightExercise implements Tutorial {
     KnightExercise(ShogiBoard shogiBoard, TutorialMessages tutorialMessages) {
         this.shogiBoard = shogiBoard;
         this.tutorialMessages = tutorialMessages;
+    }
+
+    @Override
+    public String getTutorialTitle() {
+        return tutorialMessages.knightTitle();
     }
 
     @Override
@@ -41,8 +45,6 @@ public class KnightExercise implements Tutorial {
         shogiBoard.getBoardConfiguration().setPlayGoteMoves(false);
 
         eventBus.fireEvent(new ChangeTutorialTextEvent(tutorialMessages.knightPractice()));
-        eventBus.fireEvent(new ChangeTutorialTitleEvent(tutorialMessages.knightTitle()));
-
     }
 
     @Override
@@ -58,12 +60,9 @@ public class KnightExercise implements Tutorial {
             eventBus.fireEvent(new ChangeTutorialTextEvent(tutorialMessages.knightPracticeSuccess()));
         } else {
             eventBus.fireEvent(new ChangeTutorialTextEvent(tutorialMessages.knightPracticeFailed()));
+            rulesEngine.playMoveInPosition(position, move);
+            shogiBoard.displayPosition();
         }
-
-        rulesEngine.playMoveInPosition(position, move);
-        shogiBoard.displayPosition();
-
-        position.incrementMoveCount();
     }
 
 }

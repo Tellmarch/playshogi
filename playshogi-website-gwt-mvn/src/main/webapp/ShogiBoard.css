@@ -61,6 +61,15 @@
     font-weight: bold;
 }
 
+.lesson-content {
+    font-size: 12pt;
+    color: #0000FF;
+    font-weight: bold;
+    background-color: #d7dde8;
+    margin-top: 5px;
+    margin-left: 5px;
+}
+
 .table-title {
     font-size: 18pt;
     font-weight: bold;

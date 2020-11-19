@@ -2,9 +2,7 @@ package com.playshogi.website.gwt.client.tutorial;
 
 import com.google.web.bindery.event.shared.EventBus;
 import com.playshogi.library.models.Square;
-import com.playshogi.library.shogi.models.Piece;
-import com.playshogi.library.shogi.models.PieceType;
-import com.playshogi.library.shogi.models.moves.DropMove;
+import com.playshogi.library.shogi.models.formats.sfen.SfenConverter;
 import com.playshogi.library.shogi.models.moves.ShogiMove;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.library.shogi.rules.ShogiRulesEngine;
@@ -13,7 +11,7 @@ import com.playshogi.website.gwt.client.events.tutorial.ChangeTutorialTextEvent;
 import com.playshogi.website.gwt.client.i18n.TutorialMessages;
 import com.playshogi.website.gwt.client.widget.board.ShogiBoard;
 
-public class BishopExercise implements Tutorial {
+public class LanceExercise implements Tutorial {
 
     private final ShogiRulesEngine rulesEngine = new ShogiRulesEngine();
     private final ShogiBoard shogiBoard;
@@ -21,14 +19,14 @@ public class BishopExercise implements Tutorial {
     private EventBus eventBus;
     private ShogiPosition position;
 
-    BishopExercise(ShogiBoard shogiBoard, TutorialMessages tutorialMessages) {
+    LanceExercise(ShogiBoard shogiBoard, TutorialMessages tutorialMessages) {
         this.shogiBoard = shogiBoard;
         this.tutorialMessages = tutorialMessages;
     }
 
     @Override
     public String getTutorialTitle() {
-        return tutorialMessages.bishopTitle();
+        return tutorialMessages.lanceTitle();
     }
 
     @Override
@@ -39,36 +37,30 @@ public class BishopExercise implements Tutorial {
     @Override
     public void setup() {
         shogiBoard.getSelectionController().unlockSelection();
-        position = new ShogiPosition();
-        position.getShogiBoardState().setPieceAt(4, 2, Piece.GOTE_KING);
-        position.getShogiBoardState().setPieceAt(8, 2, Piece.GOTE_ROOK);
-        position.getShogiBoardState().setPieceAt(2, 5, Piece.GOTE_ROOK);
-        position.getSenteKomadai().addPiece(PieceType.BISHOP);
+        position = SfenConverter.fromSFEN("9/2k6/9/9/9/2b6/9/9/9 b L");
         shogiBoard.setPosition(position);
         shogiBoard.getBoardConfiguration().setAllowIllegalMoves(false);
         shogiBoard.getBoardConfiguration().setPlaySenteMoves(true);
         shogiBoard.getBoardConfiguration().setPlayGoteMoves(false);
 
-        eventBus.fireEvent(new ChangeTutorialTextEvent(tutorialMessages.bishopPractice()));
+        eventBus.fireEvent(new ChangeTutorialTextEvent(tutorialMessages.lanceExercise()));
     }
 
     @Override
     public void onMovePlayed(final MovePlayedEvent movePlayedEvent) {
         ShogiMove move = movePlayedEvent.getMove();
-        rulesEngine.playMoveInPosition(position, move);
-        shogiBoard.displayPosition();
 
-        if (movePlayedEvent.getMove() instanceof DropMove) {
-            DropMove dropMove = (DropMove) movePlayedEvent.getMove();
-
-            shogiBoard.getSelectionController().selectPossibleMoves(dropMove.getToSquare(), position);
+        if ("L*7g".equals(move.toString()) || "L*7h".equals(move.toString()) || "L*7i".equals(move.toString())) {
+            rulesEngine.playMoveInPosition(position, move);
+            shogiBoard.displayPosition();
+            shogiBoard.getSelectionController().selectSquare(Square.of(7, 2));
+            shogiBoard.getSelectionController().selectSquare(Square.of(7, 6));
             shogiBoard.getSelectionController().lockSelection();
-
-            if (dropMove.getToSquare().equals(Square.of(6, 4))) {
-                eventBus.fireEvent(new ChangeTutorialTextEvent(tutorialMessages.bishopPracticeSuccess()));
-            } else {
-                eventBus.fireEvent(new ChangeTutorialTextEvent(tutorialMessages.bishopPracticeFailed()));
-            }
+            eventBus.fireEvent(new ChangeTutorialTextEvent(tutorialMessages.lancePracticeSuccess()));
+        } else {
+            eventBus.fireEvent(new ChangeTutorialTextEvent(tutorialMessages.lancePracticeFailed()));
+            rulesEngine.playMoveInPosition(position, move);
+            shogiBoard.displayPosition();
         }
     }
 

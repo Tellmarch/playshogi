@@ -9,7 +9,6 @@ import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.library.shogi.rules.ShogiRulesEngine;
 import com.playshogi.website.gwt.client.events.gametree.MovePlayedEvent;
 import com.playshogi.website.gwt.client.events.tutorial.ChangeTutorialTextEvent;
-import com.playshogi.website.gwt.client.events.tutorial.ChangeTutorialTitleEvent;
 import com.playshogi.website.gwt.client.i18n.TutorialMessages;
 import com.playshogi.website.gwt.client.widget.board.ShogiBoard;
 
@@ -21,7 +20,7 @@ public class PieceMovementTutorial implements Tutorial {
     private final ShogiRulesEngine shogiRulesEngine = new ShogiRulesEngine();
     private EventBus eventBus;
 
-    PieceMovementTutorial(ShogiBoard shogiBoard, Piece piece, TutorialMessages tutorialMessages) {
+    PieceMovementTutorial(final ShogiBoard shogiBoard, final Piece piece, final TutorialMessages tutorialMessages) {
         this.shogiBoard = shogiBoard;
         this.piece = piece;
         this.tutorialMessages = tutorialMessages;
@@ -49,11 +48,10 @@ public class PieceMovementTutorial implements Tutorial {
         shogiBoard.getSelectionController().selectSquare(Square.of(5, row));
 
         eventBus.fireEvent(new ChangeTutorialTextEvent(getTutorialText()));
-        eventBus.fireEvent(new ChangeTutorialTitleEvent(getTutorialTitle()));
     }
 
     @Override
-    public void onMovePlayed(MovePlayedEvent movePlayedEvent) {
+    public void onMovePlayed(final MovePlayedEvent movePlayedEvent) {
         shogiRulesEngine.playMoveInPosition(shogiBoard.getPosition(), movePlayedEvent.getMove());
         shogiBoard.getPosition().setPlayerToMove(Player.BLACK);
         shogiBoard.displayPosition();
@@ -62,17 +60,17 @@ public class PieceMovementTutorial implements Tutorial {
     private String getTutorialText() {
         switch (piece.getPieceType()) {
             case PAWN:
-                return tutorialMessages.inProgress();
+                return tutorialMessages.pawnIntro();
             case LANCE:
-                return tutorialMessages.inProgress();
+                return tutorialMessages.lanceIntro();
             case KNIGHT:
                 return tutorialMessages.knightIntro();
             case SILVER:
-                return tutorialMessages.inProgress();
+                return tutorialMessages.silverIntro();
             case GOLD:
-                return tutorialMessages.inProgress();
+                return tutorialMessages.goldIntro();
             case BISHOP:
-                return tutorialMessages.inProgress();
+                return tutorialMessages.bishopIntro();
             case ROOK:
                 return tutorialMessages.rookIntro();
             case KING:
@@ -81,6 +79,7 @@ public class PieceMovementTutorial implements Tutorial {
         return "";
     }
 
+    @Override
     public String getTutorialTitle() {
         switch (piece.getPieceType()) {
             case PAWN:

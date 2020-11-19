@@ -9,29 +9,30 @@ import com.playshogi.library.shogi.rules.ShogiRulesEngine;
 import com.playshogi.website.gwt.client.SessionInformation;
 import com.playshogi.website.gwt.client.events.gametree.MovePlayedEvent;
 import com.playshogi.website.gwt.client.events.tutorial.ChangeTutorialTextEvent;
-import com.playshogi.website.gwt.client.events.tutorial.ChangeTutorialTitleEvent;
 import com.playshogi.website.gwt.client.widget.board.ShogiBoard;
 import com.playshogi.website.gwt.shared.services.ComputerServiceAsync;
 
-public class PositionVsComputerTutorial implements Tutorial {
+public abstract class PositionVsComputerTutorial implements Tutorial {
 
     private final ShogiBoard shogiBoard;
     private final ComputerServiceAsync computerService;
     private final SessionInformation sessionInformation;
-    private final Messages messages;
     private final String positionSfen;
     private final ShogiRulesEngine shogiRulesEngine = new ShogiRulesEngine();
     private EventBus eventBus;
 
     PositionVsComputerTutorial(final ShogiBoard shogiBoard, final ComputerServiceAsync computerService,
-                               final SessionInformation sessionInformation, final Messages messages,
+                               final SessionInformation sessionInformation,
                                final String positionSfen) {
         this.shogiBoard = shogiBoard;
         this.computerService = computerService;
         this.sessionInformation = sessionInformation;
-        this.messages = messages;
         this.positionSfen = positionSfen;
     }
+
+    abstract String getIntroMessage();
+
+    abstract String getSuccessMessage();
 
     @Override
     public void setup() {
@@ -42,8 +43,7 @@ public class PositionVsComputerTutorial implements Tutorial {
         shogiBoard.getBoardConfiguration().setPlayGoteMoves(false);
         shogiBoard.getBoardConfiguration().setAllowPromotion(true);
 
-        eventBus.fireEvent(new ChangeTutorialTextEvent(messages.getIntroMessage()));
-        eventBus.fireEvent(new ChangeTutorialTitleEvent(messages.getTitle()));
+        eventBus.fireEvent(new ChangeTutorialTextEvent(getIntroMessage()));
     }
 
     @Override
@@ -66,7 +66,7 @@ public class PositionVsComputerTutorial implements Tutorial {
                                 UsfMoveConverter.fromUsfString(move, shogiBoard.getPosition()));
                         shogiBoard.displayPosition();
                         if ("RSGN".equals(move)) {
-                            eventBus.fireEvent(new ChangeTutorialTextEvent(messages.getSuccessMessage()));
+                            eventBus.fireEvent(new ChangeTutorialTextEvent(getSuccessMessage()));
                         }
                     }
                 });
@@ -74,38 +74,7 @@ public class PositionVsComputerTutorial implements Tutorial {
 
     @Override
     public void activate(final EventBus eventBus) {
-
         this.eventBus = eventBus;
     }
 
-    static class Messages {
-        private final String title;
-        private final String introMessage;
-        private final String successMessage;
-        private final String failureMessage;
-
-        public Messages(final String title, final String introMessage, final String successMessage,
-                        final String failureMessage) {
-            this.title = title;
-            this.introMessage = introMessage;
-            this.successMessage = successMessage;
-            this.failureMessage = failureMessage;
-        }
-
-        public String getTitle() {
-            return title;
-        }
-
-        public String getIntroMessage() {
-            return introMessage;
-        }
-
-        public String getSuccessMessage() {
-            return successMessage;
-        }
-
-        public String getFailureMessage() {
-            return failureMessage;
-        }
-    }
 }

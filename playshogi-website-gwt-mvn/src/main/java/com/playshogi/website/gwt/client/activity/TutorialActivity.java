@@ -9,10 +9,7 @@ import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.website.gwt.client.events.gametree.MovePlayedEvent;
-import com.playshogi.website.gwt.client.events.tutorial.ChangeTutorialTextEvent;
-import com.playshogi.website.gwt.client.events.tutorial.GoNextChapterEvent;
-import com.playshogi.website.gwt.client.events.tutorial.GoPreviousChapterEvent;
-import com.playshogi.website.gwt.client.events.tutorial.TryChapterAgainEvent;
+import com.playshogi.website.gwt.client.events.tutorial.*;
 import com.playshogi.website.gwt.client.i18n.TutorialMessages;
 import com.playshogi.website.gwt.client.place.TutorialPlace;
 import com.playshogi.website.gwt.client.tutorial.Tutorial;
@@ -57,6 +54,7 @@ public class TutorialActivity extends MyAbstractActivity {
         Tutorial tutorial = tutorials.getChapter(chapter);
         if (tutorial != null) {
             tutorial.setup();
+            eventBus.fireEvent(new ChangeTutorialTitleEvent(tutorial.getTutorialTitle()));
         } else {
             GWT.log("Invalid chapter: " + chapter);
         }

@@ -11,7 +11,6 @@ import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.library.shogi.rules.ShogiRulesEngine;
 import com.playshogi.website.gwt.client.events.gametree.MovePlayedEvent;
 import com.playshogi.website.gwt.client.events.tutorial.ChangeTutorialTextEvent;
-import com.playshogi.website.gwt.client.events.tutorial.ChangeTutorialTitleEvent;
 import com.playshogi.website.gwt.client.i18n.TutorialMessages;
 import com.playshogi.website.gwt.client.widget.board.ShogiBoard;
 
@@ -31,6 +30,11 @@ public class SilverExercise implements Tutorial {
     }
 
     @Override
+    public String getTutorialTitle() {
+        return tutorialMessages.silverTitle();
+    }
+
+    @Override
     public void activate(EventBus eventBus) {
         this.eventBus = eventBus;
     }
@@ -46,7 +50,6 @@ public class SilverExercise implements Tutorial {
         shogiBoard.getBoardConfiguration().setPlayGoteMoves(false);
 
         eventBus.fireEvent(new ChangeTutorialTextEvent(tutorialMessages.silverPractice()));
-        eventBus.fireEvent(new ChangeTutorialTitleEvent(tutorialMessages.silverTitle()));
 
         shogiBoard.getSelectionController().selectSquare(TARGET_SQUARE);
         shogiBoard.getSelectionController().selectSquare(Square.of(9, 9));

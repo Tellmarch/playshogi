@@ -39,6 +39,8 @@ public class PiecesSelectorPanel extends Composite implements ClickHandler {
         radio1.addClickHandler(this);
         radio2.addClickHandler(this);
 
+        radio1.setValue(true);
+
         initWidget(panel);
 
     }

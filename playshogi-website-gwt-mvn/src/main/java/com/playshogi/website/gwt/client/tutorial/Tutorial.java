@@ -10,4 +10,7 @@ public interface Tutorial {
     void onMovePlayed(final MovePlayedEvent movePlayedEvent);
 
     void activate(final EventBus eventBus);
+
+    String getTutorialTitle();
+
 }

@@ -12,7 +12,6 @@ import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.library.shogi.rules.ShogiRulesEngine;
 import com.playshogi.website.gwt.client.events.gametree.MovePlayedEvent;
 import com.playshogi.website.gwt.client.events.tutorial.ChangeTutorialTextEvent;
-import com.playshogi.website.gwt.client.events.tutorial.ChangeTutorialTitleEvent;
 import com.playshogi.website.gwt.client.i18n.TutorialMessages;
 import com.playshogi.website.gwt.client.widget.board.ShogiBoard;
 
@@ -29,6 +28,11 @@ public class RookExercise implements Tutorial {
     RookExercise(final ShogiBoard shogiBoard, final TutorialMessages tutorialMessages) {
         this.shogiBoard = shogiBoard;
         this.tutorialMessages = tutorialMessages;
+    }
+
+    @Override
+    public String getTutorialTitle() {
+        return tutorialMessages.rookTitle();
     }
 
     @Override
@@ -51,7 +55,6 @@ public class RookExercise implements Tutorial {
         shogiBoard.getBoardConfiguration().setAllowPromotion(false);
 
         eventBus.fireEvent(new ChangeTutorialTextEvent(tutorialMessages.rookPractice()));
-        eventBus.fireEvent(new ChangeTutorialTitleEvent(tutorialMessages.rookTitle()));
     }
 
     @Override

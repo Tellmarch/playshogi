@@ -11,7 +11,6 @@ import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.library.shogi.rules.ShogiRulesEngine;
 import com.playshogi.website.gwt.client.events.gametree.MovePlayedEvent;
 import com.playshogi.website.gwt.client.events.tutorial.ChangeTutorialTextEvent;
-import com.playshogi.website.gwt.client.events.tutorial.ChangeTutorialTitleEvent;
 import com.playshogi.website.gwt.client.i18n.TutorialMessages;
 import com.playshogi.website.gwt.client.widget.board.ShogiBoard;
 
@@ -23,11 +22,15 @@ public class KingExercise implements Tutorial {
     private int i;
     private EventBus eventBus;
     private ShogiPosition position;
-    private ShogiMove move;
 
     KingExercise(ShogiBoard shogiBoard, TutorialMessages tutorialMessages) {
         this.shogiBoard = shogiBoard;
         this.tutorialMessages = tutorialMessages;
+    }
+
+    @Override
+    public String getTutorialTitle() {
+        return tutorialMessages.kingTitle();
     }
 
     @Override
@@ -48,12 +51,11 @@ public class KingExercise implements Tutorial {
         shogiBoard.getBoardConfiguration().setPlayGoteMoves(false);
 
         eventBus.fireEvent(new ChangeTutorialTextEvent(tutorialMessages.kingPractice()));
-        eventBus.fireEvent(new ChangeTutorialTitleEvent(tutorialMessages.kingTitle()));
     }
 
     @Override
     public void onMovePlayed(final MovePlayedEvent movePlayedEvent) {
-        move = movePlayedEvent.getMove();
+        ShogiMove move = movePlayedEvent.getMove();
         rulesEngine.playMoveInPosition(position, move);
         shogiBoard.displayPosition();
 
