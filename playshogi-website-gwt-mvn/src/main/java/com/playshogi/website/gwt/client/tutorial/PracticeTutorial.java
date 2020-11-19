@@ -49,6 +49,10 @@ public class PracticeTutorial implements Tutorial {
         shogiBoard.getSelectionController().unlockSelection();
         ShogiPosition shogiPosition = ShogiInitialPositionFactory.createInitialPosition(HANDICAPS[level]);
 
+        shogiBoard.getBoardConfiguration().setAllowIllegalMoves(false);
+        shogiBoard.getBoardConfiguration().setPlaySenteMoves(true);
+        shogiBoard.getBoardConfiguration().setPlayGoteMoves(false);
+
         shogiBoard.setPosition(shogiPosition);
         if (level == 0) {
             eventBus.fireEvent(new ChangeTutorialTextEvent(tutorialMessages.practiceIntro1()));
@@ -56,7 +60,7 @@ public class PracticeTutorial implements Tutorial {
             eventBus.fireEvent(new ChangeTutorialTextEvent(tutorialMessages.practiceIntro2()));
         } else if (level == 2) {
             eventBus.fireEvent(new ChangeTutorialTextEvent(tutorialMessages.practiceIntro3()));
-        } else if (level == 3) {
+        } else {
             eventBus.fireEvent(new ChangeTutorialTextEvent(tutorialMessages.practiceIntro4()));
         }
         getComputerMove();

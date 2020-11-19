@@ -24,6 +24,9 @@ public class PromotionTutorial implements Tutorial {
         shogiBoard.getSelectionController().unlockSelection();
         ShogiPosition shogiPosition = new ShogiPosition();
 
+        shogiBoard.getBoardConfiguration().setAllowIllegalMoves(false);
+        shogiBoard.getBoardConfiguration().setPlaySenteMoves(true);
+        shogiBoard.getBoardConfiguration().setPlayGoteMoves(false);
 
         shogiBoard.setPosition(shogiPosition);
         for (int column = 1; column <= 9; column++) {
