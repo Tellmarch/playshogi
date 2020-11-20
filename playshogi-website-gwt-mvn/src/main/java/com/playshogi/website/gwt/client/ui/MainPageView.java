@@ -28,6 +28,18 @@ public class MainPageView extends Composite {
 
         @Source("com/playshogi/website/gwt/resources/icons/wrench_yellow.png")
         ImageResource wrenchYellow();
+
+        @Source("com/playshogi/website/gwt/resources/background/silver_movement.png")
+        ImageResource learnBackground();
+
+        @Source("com/playshogi/website/gwt/resources/background/tsume.png")
+        ImageResource puzzlesBackground();
+
+        @Source("com/playshogi/website/gwt/resources/background/starting_position.png")
+        ImageResource practiceBackground();
+
+        @Source("com/playshogi/website/gwt/resources/background/game_collection.png")
+        ImageResource collectionsBackground();
     }
 
     private final Resources resources = GWT.create(Resources.class);
@@ -61,68 +73,73 @@ public class MainPageView extends Composite {
     }
 
     private Widget getLearnPanel() {
-        DecoratorPanel defaultPanel = new DecoratorPanel();
-        FlowPanel defaultPanelInternal = new FlowPanel();
-        defaultPanelInternal.add(new HTML("<b>Learn</b>"));
-        defaultPanelInternal.add(new HTML("Learn how to play Shogi with an interactive tutorial!"));
-        defaultPanelInternal.add(new HTML("<br>"));
-        defaultPanelInternal.add(new Image(resources.alarmClockRed()));
-        defaultPanelInternal.add(new Button("Tutorial",
+        DecoratorPanel decoratorPanel = new DecoratorPanel();
+        FlowPanel panel = new FlowPanel();
+        panel.add(new HTML("<b>Learn</b>"));
+        panel.add(new HTML("Learn how to play Shogi with an interactive tutorial!"));
+        panel.add(new HTML("<br>"));
+        Grid grid = new Grid(1, 2);
+        grid.setWidget(0, 0, new Image(resources.learnBackground()));
+        grid.setWidget(0, 1, new Button("Tutorial",
                 (ClickHandler) clickEvent -> placeController.goTo(new TutorialPlace())));
-        defaultPanel.setWidget(defaultPanelInternal);
-        defaultPanelInternal.setWidth("400px");
-        defaultPanelInternal.setHeight("200px");
-        return defaultPanel;
+        panel.add(grid);
+        decoratorPanel.setWidget(panel);
+        panel.setWidth("400px");
+        panel.setHeight("200px");
+        return decoratorPanel;
     }
 
     private Widget getPuzzlesPanel() {
-        DecoratorPanel defaultPanel = new DecoratorPanel();
-        FlowPanel defaultPanelInternal = new FlowPanel();
-        defaultPanelInternal.add(new HTML("<b>Puzzles</b>"));
-        defaultPanelInternal.add(new HTML("Improve your shogi skills by solving puzzles."));
-        defaultPanelInternal.add(new HTML("<br>"));
-        defaultPanelInternal.add(new Image(resources.puzzleBlue()));
-        defaultPanelInternal.add(new Button("TsumeShogi Problems",
+        DecoratorPanel decoratorPanel = new DecoratorPanel();
+        FlowPanel panel = new FlowPanel();
+        panel.add(new HTML("<b>Puzzles</b>"));
+        panel.add(new HTML("Improve your shogi skills by solving puzzles."));
+        panel.add(new HTML("<br>"));
+        panel.add(new Image(resources.puzzleBlue()));
+        panel.add(new Button("TsumeShogi Problems",
                 (ClickHandler) clickEvent -> placeController.goTo(new TsumePlace())));
-        defaultPanelInternal.add(new Image(resources.alarmClockRed()));
-        defaultPanelInternal.add(new Button("ByoYomi Survival",
+        panel.add(new Image(resources.alarmClockRed()));
+        panel.add(new Button("ByoYomi Survival",
                 (ClickHandler) clickEvent -> placeController.goTo(new ByoYomiLandingPlace())));
 
-        defaultPanel.setWidget(defaultPanelInternal);
-        defaultPanelInternal.setWidth("400px");
-        defaultPanelInternal.setHeight("200px");
-        return defaultPanel;
+        decoratorPanel.setWidget(panel);
+        panel.setWidth("400px");
+        panel.setHeight("200px");
+        return decoratorPanel;
     }
 
     private Widget getPracticePanel() {
-        DecoratorPanel defaultPanel = new DecoratorPanel();
-        FlowPanel defaultPanelInternal = new FlowPanel();
-        defaultPanelInternal.add(new HTML("<b>Practice</b>"));
-        defaultPanelInternal.add(new HTML("Practice your playing skills against a computer."));
-        defaultPanelInternal.add(new HTML("<br>"));
-        defaultPanelInternal.add(new Image(resources.speakerGreen()));
-        defaultPanelInternal.add(new Button("Play",
+        DecoratorPanel decoratorPanel = new DecoratorPanel();
+        FlowPanel panel = new FlowPanel();
+        panel.add(new HTML("<b>Practice</b>"));
+        panel.add(new HTML("Practice your playing skills against a computer."));
+        panel.add(new HTML("<br>"));
+        Grid grid = new Grid(1, 2);
+        grid.setWidget(0, 0, new Image(resources.practiceBackground()));
+        grid.setWidget(0, 1, new Button("Play",
                 (ClickHandler) clickEvent -> placeController.goTo(new PlayPlace())));
-        defaultPanel.setWidget(defaultPanelInternal);
-        defaultPanelInternal.setWidth("400px");
-        defaultPanelInternal.setHeight("200px");
-        return defaultPanel;
+        panel.add(grid);
+        decoratorPanel.setWidget(panel);
+        panel.setWidth("400px");
+        panel.setHeight("200px");
+        return decoratorPanel;
     }
 
     private Widget getCollectionsPanel() {
-        DecoratorPanel defaultPanel = new DecoratorPanel();
-        FlowPanel defaultPanelInternal = new FlowPanel();
-        defaultPanelInternal.add(new HTML("<b>Collections</b>"));
-        defaultPanelInternal.add(new HTML("Browse or create collections of Shogi games, from amateur tournament " +
-                "archives to professional title games."));
-        defaultPanelInternal.add(new HTML("<br>"));
-        defaultPanelInternal.add(new Image(resources.wrenchYellow()));
-        defaultPanelInternal.add(new Button("Collections",
+        DecoratorPanel decoratorPanel = new DecoratorPanel();
+        FlowPanel panel = new FlowPanel();
+        panel.add(new HTML("<b>Collections</b>"));
+        panel.add(new HTML("Browse or create collections of Shogi games."));
+        panel.add(new HTML("<br>"));
+        Grid grid = new Grid(1, 2);
+        grid.setWidget(0, 0, new Image(resources.collectionsBackground()));
+        grid.setWidget(0, 1, new Button("Collections",
                 (ClickHandler) clickEvent -> placeController.goTo(new GameCollectionsPlace())));
-        defaultPanel.setWidget(defaultPanelInternal);
-        defaultPanelInternal.setWidth("400px");
-        defaultPanelInternal.setHeight("200px");
-        return defaultPanel;
+        panel.add(grid);
+        decoratorPanel.setWidget(panel);
+        panel.setWidth("400px");
+        panel.setHeight("200px");
+        return decoratorPanel;
     }
 
 
