@@ -16,7 +16,7 @@ import com.playshogi.website.gwt.client.widget.problems.CustomizeSurvivalPanel;
 @Singleton
 public class ByoYomiLandingView extends Composite {
 
-    private PlaceController placeController;
+    private final PlaceController placeController;
 
     interface Resources extends ClientBundle {
         @Source("com/playshogi/website/gwt/resources/icons/alarm-clock_red.png")
