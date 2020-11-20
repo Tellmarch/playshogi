@@ -39,7 +39,11 @@ public class SessionInformation implements AsyncCallback<LoginResult> {
     }
 
     public String getUsername() {
-        return username;
+        if (isLoggedIn()) {
+            return username;
+        } else {
+            return "Guest";
+        }
     }
 
     public String getSessionId() {

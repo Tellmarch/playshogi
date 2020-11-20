@@ -20,8 +20,8 @@ public class ByoYomiLandingActivity extends MyAbstractActivity {
     private final ByoYomiLandingView byoYomiLandingView;
     private final ProblemsServiceAsync problemsService = GWT.create(ProblemsService.class);
 
-    public ByoYomiLandingActivity(ByoYomiLandingPlace place, ByoYomiLandingView byoYomiLandingView,
-                                  PlaceController placeController, SessionInformation sessionInformation) {
+    public ByoYomiLandingActivity(final ByoYomiLandingPlace place, final ByoYomiLandingView byoYomiLandingView,
+                                  final PlaceController placeController, final SessionInformation sessionInformation) {
         this.byoYomiLandingView = byoYomiLandingView;
     }
 
