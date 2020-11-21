@@ -18,7 +18,7 @@ public class PlayShogiAppShell extends Composite {
     public PlayShogiAppShell(final ActivityManager activityManager, final NavigationMenu navigationMenu) {
 
         DockLayoutPanel dockLayoutPanel = new DockLayoutPanel(Unit.EM);
-        dockLayoutPanel.addNorth(navigationMenu, 2);
+        dockLayoutPanel.addNorth(navigationMenu, 2.2);
         dockLayoutPanel.add(appWidget);
 
         initWidget(dockLayoutPanel);

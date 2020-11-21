@@ -129,7 +129,7 @@ public class MainPageView extends Composite {
         DecoratorPanel decoratorPanel = new DecoratorPanel();
         FlowPanel panel = new FlowPanel();
         panel.add(new HTML("<b>Collections</b>"));
-        panel.add(new HTML("Browse or create collections of Shogi games."));
+        panel.add(new HTML("Browse or Create collections of Shogi games."));
         panel.add(new HTML("<br>"));
         Grid grid = new Grid(1, 2);
         grid.setWidget(0, 0, new Image(resources.collectionsBackground()));
