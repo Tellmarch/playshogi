@@ -71,7 +71,7 @@ public class CollectionPropertiesPanel extends Composite {
     private ListBox createVisibilityDropdown() {
         ListBox list = new ListBox();
         list.addItem("Public");
-        list.addItem("Private");
+//        list.addItem("Private");
         list.addItem("Unlisted");
         list.setVisibleItemCount(1);
         return list;
