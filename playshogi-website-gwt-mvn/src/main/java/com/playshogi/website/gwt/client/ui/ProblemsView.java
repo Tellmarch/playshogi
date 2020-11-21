@@ -9,33 +9,24 @@ import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.website.gwt.client.widget.board.ShogiBoard;
 import com.playshogi.website.gwt.client.widget.gamenavigator.GameNavigator;
 import com.playshogi.website.gwt.client.widget.problems.ProblemFeedbackPanel;
-import com.playshogi.website.gwt.client.widget.problems.ProblemOptionsPanel;
 
 @Singleton
-public class TsumeView extends Composite {
+public class ProblemsView extends Composite {
 
-    private static final String TSUME = "tsume";
-
-    private static final int[] MOVES = {3, 5, 7, 9, 11, 13};
+    private static final String PROBLEMS = "problems";
 
     private final ShogiBoard shogiBoard;
     private final GameNavigator gameNavigator;
     private final ProblemFeedbackPanel problemFeedbackPanel;
-    private final ProblemOptionsPanel problemOptionsPanel;
 
     @Inject
-    public TsumeView() {
-        GWT.log("Creating tsume view");
-        shogiBoard = new ShogiBoard(TSUME);
-        gameNavigator = new GameNavigator(TSUME);
-        problemFeedbackPanel = new ProblemFeedbackPanel(gameNavigator, true);
-        problemOptionsPanel = new ProblemOptionsPanel(MOVES);
-
+    public ProblemsView() {
+        GWT.log("Creating Problems view");
+        shogiBoard = new ShogiBoard(PROBLEMS);
+        gameNavigator = new GameNavigator(PROBLEMS);
+        problemFeedbackPanel = new ProblemFeedbackPanel(gameNavigator, false);
         shogiBoard.setUpperRightPanel(problemFeedbackPanel);
-        shogiBoard.setLowerLeftPanel(problemOptionsPanel);
-
         shogiBoard.getBoardConfiguration().setPlayGoteMoves(false);
-
         gameNavigator.getNavigatorConfiguration().setProblemMode(true);
 
         initWidget(shogiBoard);
@@ -50,7 +41,6 @@ public class TsumeView extends Composite {
         shogiBoard.activate(eventBus);
         gameNavigator.activate(eventBus);
         problemFeedbackPanel.activate(eventBus);
-        problemOptionsPanel.activate(eventBus);
     }
 
 }

@@ -38,13 +38,13 @@ public class ProblemFeedbackPanel extends Composite implements ClickHandler {
             "color:green\">Correct!</p>");
 
     private EventBus eventBus;
-    private Button skipButton;
     private ShogiPosition currentPosition = null;
 
-    private final Button tellMeWhyButton;
+    private final Button skipButton;
+    private Button tellMeWhyButton = null;
     private final HTML messagePanel;
 
-    public ProblemFeedbackPanel(final GameNavigator gameNavigator) {
+    public ProblemFeedbackPanel(final GameNavigator gameNavigator, final boolean enableTellMeWhy) {
 
         FlowPanel flowPanel = new FlowPanel();
         if (gameNavigator != null) {
@@ -69,10 +69,12 @@ public class ProblemFeedbackPanel extends Composite implements ClickHandler {
 
         flowPanel.add(messagePanel);
 
-        tellMeWhyButton = new Button("Tell me why!");
-        tellMeWhyButton.addClickHandler(clickEvent -> eventBus.fireEvent(new RequestPositionEvaluationEvent()));
+        if (enableTellMeWhy) {
+            tellMeWhyButton = new Button("Tell me why!");
+            tellMeWhyButton.addClickHandler(clickEvent -> eventBus.fireEvent(new RequestPositionEvaluationEvent()));
 
-        flowPanel.add(tellMeWhyButton);
+            flowPanel.add(tellMeWhyButton);
+        }
 
         initWidget(flowPanel);
     }
@@ -82,7 +84,7 @@ public class ProblemFeedbackPanel extends Composite implements ClickHandler {
         Object source = event.getSource();
         if (source == skipButton) {
             messagePanel.setHTML(chooseHtml);
-            tellMeWhyButton.setVisible(false);
+            setTellMeWhyVisibility(false);
             eventBus.fireEvent(new UserSkippedProblemEvent());
         }
     }
@@ -92,10 +94,10 @@ public class ProblemFeedbackPanel extends Composite implements ClickHandler {
         GWT.log("Problem feedback: handle UserFinishedProblemEvent");
         if (event.isSuccess()) {
             messagePanel.setHTML(correctHtml);
-            tellMeWhyButton.setVisible(false);
+            setTellMeWhyVisibility(false);
         } else {
             messagePanel.setHTML(wrongHtml);
-            tellMeWhyButton.setVisible(true);
+            setTellMeWhyVisibility(true);
         }
     }
 
@@ -103,7 +105,7 @@ public class ProblemFeedbackPanel extends Composite implements ClickHandler {
     public void onUserNavigatedBack(final UserNavigatedBackEvent event) {
         GWT.log("Problem feedback: handle user navigated back event");
         messagePanel.setHTML(chooseHtml);
-        tellMeWhyButton.setVisible(false);
+        setTellMeWhyVisibility(false);
     }
 
     @EventHandler
@@ -117,6 +119,12 @@ public class ProblemFeedbackPanel extends Composite implements ClickHandler {
         this.eventBus = eventBus;
         eventBinder.bindEventHandlers(this, eventBus);
         messagePanel.setHTML(chooseHtml);
-        tellMeWhyButton.setVisible(false);
+        setTellMeWhyVisibility(false);
+    }
+
+    private void setTellMeWhyVisibility(final boolean b) {
+        if (tellMeWhyButton != null) {
+            tellMeWhyButton.setVisible(b);
+        }
     }
 }

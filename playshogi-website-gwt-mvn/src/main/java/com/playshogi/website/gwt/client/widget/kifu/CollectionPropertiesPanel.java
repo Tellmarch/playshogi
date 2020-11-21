@@ -25,6 +25,7 @@ public class CollectionPropertiesPanel extends Composite {
     private final TextBox title;
     private final TextArea description;
     private final ListBox visibility;
+    private final ListBox type;
 
     private DialogBox updateDialogBox;
     private DialogBox createDialogBox;
@@ -33,18 +34,21 @@ public class CollectionPropertiesPanel extends Composite {
     public CollectionPropertiesPanel() {
         FlowPanel verticalPanel = new FlowPanel();
 
-        Grid grid = new Grid(3, 2);
+        Grid grid = new Grid(4, 2);
         grid.setHTML(0, 0, "Title:");
         grid.setHTML(1, 0, "Description:");
         grid.setHTML(2, 0, "Visibility:");
+        grid.setHTML(3, 0, "Type:");
 
         title = createTextBox("My Game Collection");
         description = createTextArea("A collection of games");
         visibility = createVisibilityDropdown();
+        type = createTypeDropdown();
 
         grid.setWidget(0, 1, title);
         grid.setWidget(1, 1, description);
         grid.setWidget(2, 1, visibility);
+        grid.setWidget(3, 1, type);
 
         verticalPanel.add(grid);
 
@@ -76,6 +80,15 @@ public class CollectionPropertiesPanel extends Composite {
         list.setVisibleItemCount(1);
         return list;
     }
+
+    private ListBox createTypeDropdown() {
+        ListBox list = new ListBox();
+        list.addItem("Games");
+        list.addItem("Problems");
+        list.setVisibleItemCount(1);
+        return list;
+    }
+
 
     private DialogBox createUpdateDialogBox() {
         final DialogBox dialogBox = new DialogBox();
@@ -132,6 +145,7 @@ public class CollectionPropertiesPanel extends Composite {
         newDetails.setName(title.getText());
         newDetails.setDescription(description.getText());
         newDetails.setVisibility(visibility.getSelectedItemText());
+        newDetails.setType(type.getSelectedItemText());
 
         eventBus.fireEvent(new SaveGameCollectionDetailsEvent(newDetails));
     }
@@ -141,6 +155,7 @@ public class CollectionPropertiesPanel extends Composite {
         newDetails.setName(title.getText());
         newDetails.setDescription(description.getText());
         newDetails.setVisibility(visibility.getSelectedItemText());
+        newDetails.setType(type.getSelectedItemText());
 
         eventBus.fireEvent(new CreateGameCollectionEvent(newDetails));
     }
@@ -166,6 +181,7 @@ public class CollectionPropertiesPanel extends Composite {
         title.setText("My New Game Collection");
         description.setText("My New Game Collection");
         visibility.setSelectedIndex(1); // Private by default
+        type.setSelectedIndex(0); // Games by default
 
         createDialogBox.center();
         createDialogBox.show();
@@ -178,6 +194,11 @@ public class CollectionPropertiesPanel extends Composite {
         for (int i = 0; i < visibility.getItemCount(); i++) {
             if (visibility.getItemText(i).equalsIgnoreCase(details.getVisibility())) {
                 visibility.setSelectedIndex(i);
+            }
+        }
+        for (int i = 0; i < type.getItemCount(); i++) {
+            if (type.getItemText(i).equalsIgnoreCase(details.getType())) {
+                type.setSelectedIndex(i);
             }
         }
     }

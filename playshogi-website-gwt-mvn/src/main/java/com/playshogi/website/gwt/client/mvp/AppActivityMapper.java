@@ -41,6 +41,8 @@ public class AppActivityMapper implements ActivityMapper {
     @Inject
     PlayView playView;
     @Inject
+    ProblemsView problemsView;
+    @Inject
     SessionInformation sessionInformation;
     @Inject
     PlaceController placeController;
@@ -76,6 +78,8 @@ public class AppActivityMapper implements ActivityMapper {
             return new TutorialActivity((TutorialPlace) place, tutorialView, placeController);
         } else if (place instanceof PlayPlace) {
             return new PlayActivity((PlayPlace) place, playView, sessionInformation);
+        } else if (place instanceof ProblemsPlace) {
+            return new ProblemsActivity((ProblemsPlace) place, problemsView, sessionInformation);
         }
         return null;
     }
