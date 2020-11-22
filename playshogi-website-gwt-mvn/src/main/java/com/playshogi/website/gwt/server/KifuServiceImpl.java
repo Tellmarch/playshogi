@@ -138,7 +138,8 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
         details.setName(gameSet.getName());
         details.setDescription(gameSet.getDescription());
         details.setVisibility(gameSet.getVisibility().toString().toLowerCase());
-        if (details.getName().contains("Tsume")) {
+        // TODO: this is a temporary hack...
+        if (details.getName().contains("Tsume") || details.getName().contains("Castle")) {
             details.setType("problems");
         } else {
             details.setType("games");

@@ -68,6 +68,8 @@ public class NavigationMenu extends Composite {
         menu.addItem(new MenuItem("Collections", collectionsMenu));
         collectionsMenu.addItem("Openings Explorer", (Command) () -> placeController.goTo(new OpeningsPlace()));
         collectionsMenu.addItem("Game Collections", (Command) () -> placeController.goTo(new GameCollectionsPlace()));
+        collectionsMenu.addItem("New/Import kifu", (Command) () -> placeController.goTo(new NewKifuPlace()));
+        collectionsMenu.addItem("New/Import problem", (Command) () -> placeController.goTo(new ProblemEditorPlace()));
 
 
         MenuBar aboutMenu = new MenuBar(true);
