@@ -148,4 +148,11 @@ public class ShogiInitialPositionFactory {
         }
     }
 
+    public static ShogiPosition createEmptyTsumePosition() {
+        ShogiPosition position = new ShogiPosition();
+        position.getShogiBoardState().setPieceAt(5, 1, Piece.GOTE_KING);
+        position.fillGoteKomadaiWithMissingPieces();
+        return position;
+
+    }
 }
