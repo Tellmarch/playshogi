@@ -21,7 +21,8 @@ public class QueuedKifuAnalyzer {
         QUEUED,
         IN_PROGRESS,
         COMPLETED,
-        NOT_STARTED
+        NOT_STARTED,
+        ERROR
     }
 
     private static final int CAPACITY = 10;
@@ -63,10 +64,6 @@ public class QueuedKifuAnalyzer {
             throw new IllegalStateException("QueuedTsumeSolver is shutdown");
         }
 
-        if (!usiConnector.isConnected()) {
-            usiConnector.connect();
-        }
-
         queue.add(kifuUsf);
     }
 
@@ -83,12 +80,27 @@ public class QueuedKifuAnalyzer {
     }
 
     private void doAnalyse(final String kifuUsf) {
+        if (shutdown) {
+            return;
+        }
+
+        if (!usiConnector.isConnected()) {
+            usiConnector.connect();
+        }
+
         GameRecord gameRecord = UsfFormat.INSTANCE.readSingle(kifuUsf);
         kifuEvaluations.put(kifuUsf, new CopyOnWriteArrayList<>());
         kifuStatus.put(kifuUsf, Status.IN_PROGRESS);
 
-        usiConnector.analyzeKifu(gameRecord.getGameTree(), TIME_MS,
-                evaluation -> kifuEvaluations.get(kifuUsf).add(evaluation));
+        try {
+            usiConnector.analyzeKifu(gameRecord.getGameTree(), TIME_MS,
+                    evaluation -> kifuEvaluations.get(kifuUsf).add(evaluation));
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, "Error getting computer game analysis", ex);
+            usiConnector.disconnect();
+            kifuStatus.put(kifuUsf, Status.ERROR);
+            return;
+        }
 
         kifuStatus.put(kifuUsf, Status.COMPLETED);
     }

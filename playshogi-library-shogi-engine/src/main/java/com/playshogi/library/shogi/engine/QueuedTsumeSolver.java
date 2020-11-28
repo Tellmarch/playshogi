@@ -3,14 +3,17 @@ package com.playshogi.library.shogi.engine;
 import com.playshogi.library.shogi.models.formats.sfen.SfenConverter;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 public class QueuedTsumeSolver {
 
-    private final EngineConfiguration engineConfiguration;
+    private static final Logger LOGGER = Logger.getLogger(QueuedTsumeSolver.class.getName());
+
     private final USIConnector usiConnector;
     private volatile boolean shutdown = false;
 
     public QueuedTsumeSolver(final EngineConfiguration engineConfiguration) {
-        this.engineConfiguration = engineConfiguration;
         usiConnector = new USIConnector(engineConfiguration);
     }
 
@@ -27,7 +30,13 @@ public class QueuedTsumeSolver {
             usiConnector.connect();
         }
 
-        return usiConnector.analyseTsume(sfen);
+        try {
+            return usiConnector.analyseTsume(sfen);
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, "Error getting computer tsume evaluation", ex);
+            usiConnector.disconnect();
+            throw new IllegalStateException("Could not get computer tsume move in position " + sfen);
+        }
     }
 
     public synchronized void shutDown() {
