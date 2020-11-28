@@ -5,6 +5,8 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 
+import static org.junit.Assert.assertEquals;
+
 @Ignore
 public class QueuedTsumeSolverTest {
 
@@ -27,5 +29,13 @@ public class QueuedTsumeSolverTest {
         }
 
         queuedTsumeSolver.shutDown();
+    }
+
+    @Test
+    public void yaneuraOuBug() {
+        final QueuedTsumeSolver queuedTsumeSolver = new QueuedTsumeSolver(EngineConfiguration.TSUME_ENGINE);
+        PositionEvaluation evaluation = queuedTsumeSolver.analyseTsume("4k4/9/4P4/8r/9/9/9/9/9 b " +
+                "Gr2b3g4s4n4l17p");
+        assertEquals("G*5b", evaluation.getBestMove());
     }
 }

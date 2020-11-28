@@ -25,7 +25,7 @@ public class USIConnector {
     private boolean connected = false;
     private Process process;
 
-    public USIConnector(EngineConfiguration engineConfiguration) {
+    public USIConnector(final EngineConfiguration engineConfiguration) {
         this.engineConfiguration = engineConfiguration;
     }
 
@@ -44,6 +44,11 @@ public class USIConnector {
 
             sendCommand(output, "usi");
             readUntil(input, "usiok");
+
+            for (String option : engineConfiguration.getOptions()) {
+                sendCommand(output, option);
+            }
+
             sendCommand(output, "isready");
             readUntil(input, "readyok");
             sendCommand(output, "usinewgame");
