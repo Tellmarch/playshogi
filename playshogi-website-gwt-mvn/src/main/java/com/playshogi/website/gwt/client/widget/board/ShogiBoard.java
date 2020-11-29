@@ -320,6 +320,16 @@ public class ShogiBoard extends Composite implements ClickHandler {
         if (boardConfiguration.isShowPossibleMovesOnPieceMouseOver() && !boardConfiguration.isPositionEditingMode()) {
             selectionController.setupMouseOverHandler(pieceWrapper);
         }
+
+        if (boardConfiguration.isPositionEditingMode()) {
+            pieceWrapper.getImage().addMouseWheelHandler(mouseWheelEvent -> {
+                if (!pieceWrapper.isInKomadai()) {
+                    position.getShogiBoardState().setPieceAt(pieceWrapper.getSquare(),
+                            pieceWrapper.getPiece().getNextPieceInEditCycle());
+                }
+                displayPosition();
+            });
+        }
     }
 
     private void playMoveOrShowPromotionPopup(NormalMove move, Image image) {

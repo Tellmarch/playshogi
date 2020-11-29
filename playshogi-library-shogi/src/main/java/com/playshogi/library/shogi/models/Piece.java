@@ -92,6 +92,10 @@ public enum Piece {
         return getPiece(pieceType, player.opposite(), promoted);
     }
 
+    public Piece getNextPieceInEditCycle() {
+        return promoted ? opposite().getUnpromotedPiece() : getPromotedPiece();
+    }
+
     @Override
     public String toString() {
         return pieceType.name() + ", " + player + (promoted ? ", promoted" : "");
@@ -112,14 +116,6 @@ public enum Piece {
 
     public static Piece getPiece(final PieceType pieceType, final Player player) {
         return player == BLACK ? allPieces[pieceType.ordinal() * 4 + 2] : allPieces[pieceType.ordinal() * 4];
-    }
-
-    public static Piece getOppositePiece(final Piece piece) {
-        if (piece == null) {
-            return null;
-        } else {
-            return piece.opposite();
-        }
     }
 
 }

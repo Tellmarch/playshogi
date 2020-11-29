@@ -31,7 +31,7 @@ class InvertedShogiBoardState extends ShogiBoardState {
 
     @Override
     public void setPieceAt(final Square square, final Piece piece) {
-        original.setPieceAt(square.opposite(), Piece.getOppositePiece(piece.opposite()));
+        original.setPieceAt(square.opposite(), piece.opposite());
     }
 
     @Override

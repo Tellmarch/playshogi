@@ -57,5 +57,9 @@ public class ProblemEditorView extends Composite {
     public void onEditModeSelectedEvent(final EditModeSelectedEvent event) {
         GWT.log("Problem editor: handle EditModeSelectedEvent - " + event.isEditMode());
         shogiBoard.getBoardConfiguration().setPositionEditingMode(event.isEditMode());
+        // Exiting board editing mode
+        if (!event.isEditMode()) {
+            gameNavigator.reset(shogiBoard.getPosition());
+        }
     }
 }
