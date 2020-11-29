@@ -6,8 +6,8 @@ public class BoardConfiguration {
     private boolean showPossibleMovesOnPieceSelection = true;
     private boolean showPossibleMovesOnPieceMouseOver = true;
     private boolean alternateSenteAndGoteMoves = true;
-    private boolean playSenteMoves = true;
-    private boolean playGoteMoves = true;
+    private boolean playBlackMoves = true;
+    private boolean playWhiteMoves = true;
     private boolean positionEditingMode = false;
     private boolean showGoteKomadai = true;
     private boolean showSenteKomadai = true;
@@ -57,20 +57,20 @@ public class BoardConfiguration {
         this.alternateSenteAndGoteMoves = alternateSenteAndGoteMoves;
     }
 
-    public boolean isPlaySenteMoves() {
-        return playSenteMoves;
+    public boolean isPlayBlackMoves() {
+        return playBlackMoves;
     }
 
-    public void setPlaySenteMoves(final boolean playSenteMoves) {
-        this.playSenteMoves = playSenteMoves;
+    public void setPlayBlackMoves(final boolean playBlackMoves) {
+        this.playBlackMoves = playBlackMoves;
     }
 
-    public boolean isPlayGoteMoves() {
-        return playGoteMoves;
+    public boolean isPlayWhiteMoves() {
+        return playWhiteMoves;
     }
 
-    public void setPlayGoteMoves(final boolean playGoteMoves) {
-        this.playGoteMoves = playGoteMoves;
+    public void setPlayWhiteMoves(final boolean playWhiteMoves) {
+        this.playWhiteMoves = playWhiteMoves;
     }
 
     public boolean isPositionEditingMode() {
@@ -121,8 +121,8 @@ public class BoardConfiguration {
                 ", showPossibleMovesOnPieceSelection=" + showPossibleMovesOnPieceSelection +
                 ", showPossibleMovesOnPieceMouseOver=" + showPossibleMovesOnPieceMouseOver +
                 ", alternateSenteAndGoteMoves=" + alternateSenteAndGoteMoves +
-                ", playSenteMoves=" + playSenteMoves +
-                ", playGoteMoves=" + playGoteMoves +
+                ", playBlackMoves=" + playBlackMoves +
+                ", playWhiteMoves=" + playWhiteMoves +
                 ", positionEditingMode=" + positionEditingMode +
                 ", showGoteKomadai=" + showGoteKomadai +
                 ", showSenteKomadai=" + showSenteKomadai +

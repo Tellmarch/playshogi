@@ -31,6 +31,8 @@ import java.util.Optional;
 
 import static com.playshogi.website.gwt.client.widget.board.BoardLayout.TATAMI_LEFT_MARGIN;
 import static com.playshogi.website.gwt.client.widget.board.BoardLayout.TATAMI_TOP_MARGIN;
+import static com.playshogi.website.gwt.client.widget.board.PieceWrapper.BLACK_KOMADAI_ROW;
+import static com.playshogi.website.gwt.client.widget.board.PieceWrapper.WHITE_KOMADAI_ROW;
 
 public class ShogiBoard extends Composite implements ClickHandler {
 
@@ -39,14 +41,10 @@ public class ShogiBoard extends Composite implements ClickHandler {
 
     private final MyEventBinder eventBinder = GWT.create(MyEventBinder.class);
 
-    private final BoardConfiguration boardConfiguration;
     private final ShogiRulesEngine shogiRulesEngine = new ShogiRulesEngine();
-    private ShogiPosition position;
-    private PieceGraphics.Style style = PieceGraphics.Style.RYOKO;
 
-    private final List<PieceWrapper> boardPieceWrappers = new ArrayList<>();
-    private final List<PieceWrapper> senteKomadaiPieceWrappers = new ArrayList<>();
-    private final List<PieceWrapper> goteKomadaiPieceWrappers = new ArrayList<>();
+    private final String activityId;
+    private final BoardConfiguration boardConfiguration;
 
     private final AbsolutePanel absolutePanel;
     private final BoardLayout layout;
@@ -54,15 +52,19 @@ public class ShogiBoard extends Composite implements ClickHandler {
     private final Image goteKomadaiImage;
     private final Image senteKomadaiImage;
 
-    private Widget upperRightPanel;
-    private Widget lowerLeftPanel;
+    private final List<PieceWrapper> boardPieceWrappers = new ArrayList<>();
+    private final List<PieceWrapper> senteKomadaiPieceWrappers = new ArrayList<>();
+    private final List<PieceWrapper> goteKomadaiPieceWrappers = new ArrayList<>();
 
     private final PromotionPopupController promotionPopupController;
     private BoardSelectionController selectionController;
 
-    private EventBus eventBus;
+    private Widget upperRightPanel;
+    private Widget lowerLeftPanel;
 
-    private final String activityId;
+    private EventBus eventBus;
+    private ShogiPosition position;
+    private PieceGraphics.Style style = PieceGraphics.Style.RYOKO;
 
     public ShogiBoard(final String activityId) {
         this(activityId, new BoardConfiguration());
@@ -135,17 +137,26 @@ public class ShogiBoard extends Composite implements ClickHandler {
 
                 if (selectedPieceWrapper.isInKomadai()) {
                     DropMove move = new DropMove(piece.getOwner(), piece.getPieceType(), clickedSquare);
-                    if (boardConfiguration.allowIllegalMoves() ||
-                            shogiRulesEngine.isMoveLegalInPosition(position, move)) {
-                        playMove(move);
+                    if (boardConfiguration.isPositionEditingMode()) {
+                        shogiRulesEngine.playMoveInPosition(position, move);
+                        displayPosition();
+                    } else {
+                        if (boardConfiguration.allowIllegalMoves() ||
+                                shogiRulesEngine.isMoveLegalInPosition(position, move)) {
+                            playMove(move);
+                        }
                     }
                 } else {
                     Square selectedSquare = selectedPieceWrapper.getSquare();
-                    if (boardConfiguration.allowIllegalMoves() ||
-                            shogiRulesEngine.getPossibleTargetSquares(position, selectedSquare).contains(clickedSquare)) {
-                        NormalMove move = new NormalMove(piece, selectedSquare, clickedSquare);
-
-                        playMoveOrShowPromotionPopup(move, image);
+                    NormalMove move = new NormalMove(piece, selectedSquare, clickedSquare);
+                    if (boardConfiguration.isPositionEditingMode()) {
+                        shogiRulesEngine.playMoveInPosition(position, move);
+                        displayPosition();
+                    } else {
+                        if (boardConfiguration.allowIllegalMoves() ||
+                                shogiRulesEngine.getPossibleTargetSquares(position, selectedSquare).contains(clickedSquare)) {
+                            playMoveOrShowPromotionPopup(move, image);
+                        }
                     }
                 }
 
@@ -248,7 +259,8 @@ public class ShogiBoard extends Composite implements ClickHandler {
 
     private Image createKomadaiPieceImage(Piece piece, boolean sente) {
         final Image image = new Image(PieceGraphics.getPieceImage(piece, style));
-        PieceWrapper pieceWrapper = new PieceWrapper(piece, image, sente ? -1 : -2, sente ? -1 : -2);
+        PieceWrapper pieceWrapper = new PieceWrapper(piece, image, sente ? BLACK_KOMADAI_ROW : WHITE_KOMADAI_ROW,
+                sente ? BLACK_KOMADAI_ROW : WHITE_KOMADAI_ROW);
         pieceWrapper.setInKomadai(true);
         boardPieceWrappers.add(pieceWrapper);
 
@@ -268,7 +280,7 @@ public class ShogiBoard extends Composite implements ClickHandler {
         pieceWrapper.getImage().addMouseDownHandler(DomEvent::preventDefault);
 
         pieceWrapper.getImage().addClickHandler(event -> {
-            if (!canPlayMove()) {
+            if (!canPlayMove() && !boardConfiguration.isPositionEditingMode()) {
                 return;
             }
 
@@ -296,16 +308,16 @@ public class ShogiBoard extends Composite implements ClickHandler {
             }
 
             // Select one of our pieces?
-            if (position.getPlayerToMove() == pieceWrapper.getPiece().getOwner()) {
+            if (position.getPlayerToMove() == pieceWrapper.getPiece().getOwner() || boardConfiguration.isPositionEditingMode()) {
                 selectionController.selectPiece(pieceWrapper);
 
-                if (!pieceWrapper.isInKomadai()) {
+                if (!pieceWrapper.isInKomadai() && !boardConfiguration.isPositionEditingMode()) {
                     selectionController.selectPossibleMoves(pieceWrapper, position);
                 }
             }
         });
 
-        if (boardConfiguration.isShowPossibleMovesOnPieceMouseOver()) {
+        if (boardConfiguration.isShowPossibleMovesOnPieceMouseOver() && !boardConfiguration.isPositionEditingMode()) {
             selectionController.setupMouseOverHandler(pieceWrapper);
         }
     }
@@ -335,14 +347,36 @@ public class ShogiBoard extends Composite implements ClickHandler {
         Object source = event.getSource();
         if (source == senteKomadaiImage && selectionController.hasPieceSelected()
                 && boardConfiguration.isPositionEditingMode()) {
-            selectionController.getSelectedPieceWrapper().setInKomadai(true);
-            displaySenteKomadai();
+            PieceWrapper wrapper = selectionController.getSelectedPieceWrapper();
+            GWT.log("Moving piece to sente komadai: " + wrapper);
+            if (wrapper.isInKomadai()) {
+                if (wrapper.getRow() == BLACK_KOMADAI_ROW) { // Already in sente Komadai
+                    return;
+                } else {
+                    position.getGoteKomadai().removePiece(wrapper.getPiece().getPieceType());
+                }
+            } else {
+                position.getShogiBoardState().setPieceAt(wrapper.getSquare(), null);
+            }
+            position.getSenteKomadai().addPiece(wrapper.getPiece().getPieceType());
             selectionController.unselect();
+            displayPosition();
         } else if (source == goteKomadaiImage && selectionController.hasPieceSelected()
                 && boardConfiguration.isPositionEditingMode()) {
-            selectionController.getSelectedPieceWrapper().setInKomadai(true);
-            displayGoteKomadai();
+            PieceWrapper wrapper = selectionController.getSelectedPieceWrapper();
+            GWT.log("Moving piece to gote komadai: " + wrapper);
+            if (wrapper.isInKomadai()) {
+                if (wrapper.getRow() == WHITE_KOMADAI_ROW) { // Already in gote Komadai
+                    return;
+                } else {
+                    position.getSenteKomadai().removePiece(wrapper.getPiece().getPieceType());
+                }
+            } else {
+                position.getShogiBoardState().setPieceAt(wrapper.getSquare(), null);
+            }
+            position.getGoteKomadai().addPiece(wrapper.getPiece().getPieceType());
             selectionController.unselect();
+            displayPosition();
         }
     }
 
@@ -365,16 +399,16 @@ public class ShogiBoard extends Composite implements ClickHandler {
     }
 
     public boolean canPlayMove() {
-        return position.getPlayerToMove() == Player.BLACK ? boardConfiguration.isPlaySenteMoves() :
-                boardConfiguration.isPlayGoteMoves();
+        return position.getPlayerToMove() == Player.BLACK ? boardConfiguration.isPlayBlackMoves() :
+                boardConfiguration.isPlayWhiteMoves();
     }
 
     public void setPlaySenteMoves(final boolean playSenteMoves) {
-        boardConfiguration.setPlaySenteMoves(playSenteMoves);
+        boardConfiguration.setPlayBlackMoves(playSenteMoves);
     }
 
     public void setPlayGoteMoves(final boolean playGoteMoves) {
-        boardConfiguration.setPlayGoteMoves(playGoteMoves);
+        boardConfiguration.setPlayWhiteMoves(playGoteMoves);
     }
 
     public BoardConfiguration getBoardConfiguration() {

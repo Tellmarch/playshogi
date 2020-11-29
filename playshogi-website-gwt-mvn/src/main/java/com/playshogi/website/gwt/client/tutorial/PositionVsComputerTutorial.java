@@ -39,8 +39,8 @@ public abstract class PositionVsComputerTutorial implements Tutorial {
         shogiBoard.getSelectionController().unlockSelection();
         shogiBoard.setPosition(SfenConverter.fromSFEN(positionSfen));
         shogiBoard.getBoardConfiguration().setAllowIllegalMoves(false);
-        shogiBoard.getBoardConfiguration().setPlaySenteMoves(true);
-        shogiBoard.getBoardConfiguration().setPlayGoteMoves(false);
+        shogiBoard.getBoardConfiguration().setPlayBlackMoves(true);
+        shogiBoard.getBoardConfiguration().setPlayWhiteMoves(false);
         shogiBoard.getBoardConfiguration().setAllowPromotion(true);
 
         eventBus.fireEvent(new ChangeTutorialTextEvent(getIntroMessage()));

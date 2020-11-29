@@ -25,8 +25,8 @@ public class PromotionTutorial implements Tutorial {
         ShogiPosition shogiPosition = new ShogiPosition();
 
         shogiBoard.getBoardConfiguration().setAllowIllegalMoves(false);
-        shogiBoard.getBoardConfiguration().setPlaySenteMoves(true);
-        shogiBoard.getBoardConfiguration().setPlayGoteMoves(false);
+        shogiBoard.getBoardConfiguration().setPlayBlackMoves(true);
+        shogiBoard.getBoardConfiguration().setPlayWhiteMoves(false);
 
         shogiBoard.setPosition(shogiPosition);
         for (int column = 1; column <= 9; column++) {

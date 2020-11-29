@@ -26,7 +26,7 @@ public class ProblemsView extends Composite {
         gameNavigator = new GameNavigator(PROBLEMS);
         problemFeedbackPanel = new ProblemFeedbackPanel(gameNavigator, false);
         shogiBoard.setUpperRightPanel(problemFeedbackPanel);
-        shogiBoard.getBoardConfiguration().setPlayGoteMoves(false);
+        shogiBoard.getBoardConfiguration().setPlayWhiteMoves(false);
         gameNavigator.getNavigatorConfiguration().setProblemMode(true);
 
         initWidget(shogiBoard);

@@ -50,8 +50,8 @@ public class PracticeTutorial implements Tutorial {
         ShogiPosition shogiPosition = ShogiInitialPositionFactory.createInitialPosition(HANDICAPS[level]);
 
         shogiBoard.getBoardConfiguration().setAllowIllegalMoves(false);
-        shogiBoard.getBoardConfiguration().setPlaySenteMoves(true);
-        shogiBoard.getBoardConfiguration().setPlayGoteMoves(false);
+        shogiBoard.getBoardConfiguration().setPlayBlackMoves(true);
+        shogiBoard.getBoardConfiguration().setPlayWhiteMoves(false);
 
         shogiBoard.setPosition(shogiPosition);
         if (level == 0) {

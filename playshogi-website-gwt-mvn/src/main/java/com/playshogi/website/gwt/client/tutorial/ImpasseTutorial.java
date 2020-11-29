@@ -35,8 +35,8 @@ public class ImpasseTutorial implements Tutorial {
         shogiBoard.setPosition(SfenConverter.fromSFEN("6+P+PK/4+R+P+N+P+P/4+B+P+P+S+P/9/9/9/+p+p+b+r5/g+n+p+p5/k+p+p6" +
                 " b GS2L2P2g2s2n2l2p"));
         shogiBoard.getBoardConfiguration().setAllowIllegalMoves(false);
-        shogiBoard.getBoardConfiguration().setPlaySenteMoves(false);
-        shogiBoard.getBoardConfiguration().setPlayGoteMoves(false);
+        shogiBoard.getBoardConfiguration().setPlayBlackMoves(false);
+        shogiBoard.getBoardConfiguration().setPlayWhiteMoves(false);
 
         eventBus.fireEvent(new ChangeTutorialTextEvent(tutorialMessages.impasseIntro()));
     }

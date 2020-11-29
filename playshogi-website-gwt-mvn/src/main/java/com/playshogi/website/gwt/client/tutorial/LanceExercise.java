@@ -40,8 +40,8 @@ public class LanceExercise implements Tutorial {
         position = SfenConverter.fromSFEN("9/2k6/9/9/9/2b6/9/9/9 b L");
         shogiBoard.setPosition(position);
         shogiBoard.getBoardConfiguration().setAllowIllegalMoves(false);
-        shogiBoard.getBoardConfiguration().setPlaySenteMoves(true);
-        shogiBoard.getBoardConfiguration().setPlayGoteMoves(false);
+        shogiBoard.getBoardConfiguration().setPlayBlackMoves(true);
+        shogiBoard.getBoardConfiguration().setPlayWhiteMoves(false);
 
         eventBus.fireEvent(new ChangeTutorialTextEvent(tutorialMessages.lanceExercise()));
     }

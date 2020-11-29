@@ -34,8 +34,8 @@ public class RepetitionTutorial implements Tutorial {
 
         shogiBoard.setPosition(ShogiInitialPositionFactory.createInitialPosition());
         shogiBoard.getBoardConfiguration().setAllowIllegalMoves(false);
-        shogiBoard.getBoardConfiguration().setPlaySenteMoves(false);
-        shogiBoard.getBoardConfiguration().setPlayGoteMoves(false);
+        shogiBoard.getBoardConfiguration().setPlayBlackMoves(false);
+        shogiBoard.getBoardConfiguration().setPlayWhiteMoves(false);
 
         eventBus.fireEvent(new ChangeTutorialTextEvent(tutorialMessages.repetitionIntro()));
     }

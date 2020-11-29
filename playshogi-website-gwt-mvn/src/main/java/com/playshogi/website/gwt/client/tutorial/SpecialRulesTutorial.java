@@ -37,8 +37,8 @@ public class SpecialRulesTutorial implements Tutorial {
 
         shogiBoard.setPosition(position);
         shogiBoard.getBoardConfiguration().setAllowIllegalMoves(false);
-        shogiBoard.getBoardConfiguration().setPlaySenteMoves(false);
-        shogiBoard.getBoardConfiguration().setPlayGoteMoves(false);
+        shogiBoard.getBoardConfiguration().setPlayBlackMoves(false);
+        shogiBoard.getBoardConfiguration().setPlayWhiteMoves(false);
 
         eventBus.fireEvent(new ChangeTutorialTextEvent(tutorialMessages.specialIntro()));
     }

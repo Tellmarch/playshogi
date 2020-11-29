@@ -34,7 +34,7 @@ public class TsumeView extends Composite {
         shogiBoard.setUpperRightPanel(problemFeedbackPanel);
         shogiBoard.setLowerLeftPanel(problemOptionsPanel);
 
-        shogiBoard.getBoardConfiguration().setPlayGoteMoves(false);
+        shogiBoard.getBoardConfiguration().setPlayWhiteMoves(false);
 
         gameNavigator.getNavigatorConfiguration().setProblemMode(true);
 

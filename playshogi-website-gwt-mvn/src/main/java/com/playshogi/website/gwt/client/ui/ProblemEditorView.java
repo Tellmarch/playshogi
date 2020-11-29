@@ -32,6 +32,7 @@ public class ProblemEditorView extends Composite {
     public ProblemEditorView() {
         GWT.log("Creating problem editor view");
         shogiBoard = new ShogiBoard(PROBLEM_EDITOR);
+        shogiBoard.getBoardConfiguration().setPositionEditingMode(true);
         gameNavigator = new GameNavigator(PROBLEM_EDITOR);
 
         kifuEditorPanel = new KifuEditorPanel(gameNavigator);

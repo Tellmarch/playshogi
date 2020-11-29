@@ -5,8 +5,13 @@ import com.playshogi.library.models.Square;
 import com.playshogi.library.shogi.models.Piece;
 
 public class PieceWrapper {
+
+    static final int BLACK_KOMADAI_ROW = -1;
+    static final int WHITE_KOMADAI_ROW = -2;
+
     private Piece piece;
     private Image image;
+    // Coordinates from top left, starting at 0
     private int row;
     private int column;
     private boolean inKomadai = false;

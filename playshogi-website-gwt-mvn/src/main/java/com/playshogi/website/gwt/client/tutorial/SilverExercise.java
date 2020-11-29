@@ -46,8 +46,8 @@ public class SilverExercise implements Tutorial {
 
         shogiBoard.setPosition(position);
         shogiBoard.getBoardConfiguration().setAllowIllegalMoves(false);
-        shogiBoard.getBoardConfiguration().setPlaySenteMoves(true);
-        shogiBoard.getBoardConfiguration().setPlayGoteMoves(false);
+        shogiBoard.getBoardConfiguration().setPlayBlackMoves(true);
+        shogiBoard.getBoardConfiguration().setPlayWhiteMoves(false);
 
         eventBus.fireEvent(new ChangeTutorialTextEvent(tutorialMessages.silverPractice()));
 
