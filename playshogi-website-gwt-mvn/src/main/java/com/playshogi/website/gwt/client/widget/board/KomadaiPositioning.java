@@ -1,7 +1,7 @@
 package com.playshogi.website.gwt.client.widget.board;
 
-import static com.playshogi.website.gwt.client.widget.board.ShogiBoard.SQUARE_HEIGHT;
-import static com.playshogi.website.gwt.client.widget.board.ShogiBoard.SQUARE_WIDTH;
+import static com.playshogi.website.gwt.client.widget.board.BoardLayout.SQUARE_HEIGHT;
+import static com.playshogi.website.gwt.client.widget.board.BoardLayout.SQUARE_WIDTH;
 
 class KomadaiPositioning {
 

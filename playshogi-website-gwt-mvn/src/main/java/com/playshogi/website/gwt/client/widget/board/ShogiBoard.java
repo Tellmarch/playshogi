@@ -29,20 +29,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static com.playshogi.website.gwt.client.widget.board.BoardLayout.TATAMI_LEFT_MARGIN;
+import static com.playshogi.website.gwt.client.widget.board.BoardLayout.TATAMI_TOP_MARGIN;
+
 public class ShogiBoard extends Composite implements ClickHandler {
 
     interface MyEventBinder extends EventBinder<ShogiBoard> {
     }
 
     private final MyEventBinder eventBinder = GWT.create(MyEventBinder.class);
-
-    private static final int TATAMI_LEFT_MARGIN = 10;
-    private static final int TATAMI_TOP_MARGIN = 10;
-    private static final int TATAMI_INSIDE_MARGIN = 5;
-    private static final int BOARD_LEFT_MARGIN = 11;
-    private static final int BOARD_TOP_MARGIN = 11;
-    static final int SQUARE_WIDTH = 43;
-    static final int SQUARE_HEIGHT = 48;
 
     private final BoardConfiguration boardConfiguration;
     private final ShogiRulesEngine shogiRulesEngine = new ShogiRulesEngine();
@@ -54,21 +49,13 @@ public class ShogiBoard extends Composite implements ClickHandler {
     private final List<PieceWrapper> goteKomadaiPieceWrappers = new ArrayList<>();
 
     private final AbsolutePanel absolutePanel;
-    private final int boardLeft;
-    private final int boardTop;
+    private final BoardLayout layout;
+
     private final Image goteKomadaiImage;
     private final Image senteKomadaiImage;
-    private final int senteKomadaiX;
-    private final int senteKomadaiY;
-    private final int komadaiWidth;
 
     private Widget upperRightPanel;
-    private final int upperRightPanelX;
-    private final int upperRightPanelY;
-
     private Widget lowerLeftPanel;
-    private final int lowerLeftPanelX;
-    private final int lowerLeftPanelY;
 
     private final PromotionPopupController promotionPopupController;
     private BoardSelectionController selectionController;
@@ -96,41 +83,19 @@ public class ShogiBoard extends Composite implements ClickHandler {
 
         BoardBundle boardResources = GWT.create(BoardBundle.class);
         absolutePanel = new AbsolutePanel();
-        Image ban = new Image(boardResources.ban_kaya_a());
-        Image grid = new Image(boardResources.masu_dot());
-        Image coordinates = new Image(boardResources.scoordE());
-        Image tatami = new Image(boardResources.bg_tatami());
+
         goteKomadaiImage = new Image(boardResources.ghand());
         senteKomadaiImage = new Image(boardResources.shand());
 
-        komadaiWidth = goteKomadaiImage.getWidth();
-
-        absolutePanel.setSize(tatami.getWidth() + "px", tatami.getHeight() + "px");
-        absolutePanel.add(tatami, 0, 0);
+        layout = new BoardLayout(boardResources, absolutePanel, goteKomadaiImage, senteKomadaiImage);
 
         if (boardConfiguration.isShowGoteKomadai()) {
-            absolutePanel.add(goteKomadaiImage, TATAMI_LEFT_MARGIN, TATAMI_TOP_MARGIN);
+            layout.addGoteKomadai(goteKomadaiImage);
         }
-
-        boardLeft = TATAMI_LEFT_MARGIN + komadaiWidth + TATAMI_INSIDE_MARGIN;
-        boardTop = TATAMI_TOP_MARGIN;
-
-        absolutePanel.add(ban, boardLeft, boardTop);
-        absolutePanel.add(grid, boardLeft, boardTop);
-        absolutePanel.add(coordinates, boardLeft, boardTop);
-
-        senteKomadaiX = boardLeft + ban.getWidth() + TATAMI_INSIDE_MARGIN;
-        senteKomadaiY = TATAMI_TOP_MARGIN + ban.getHeight() - senteKomadaiImage.getHeight();
 
         if (boardConfiguration.isShowSenteKomadai()) {
-            absolutePanel.add(senteKomadaiImage, senteKomadaiX, senteKomadaiY);
+            layout.addSenteKomadai(senteKomadaiImage);
         }
-
-        upperRightPanelX = senteKomadaiX;
-        upperRightPanelY = TATAMI_TOP_MARGIN;
-
-        lowerLeftPanelX = TATAMI_LEFT_MARGIN;
-        lowerLeftPanelY = TATAMI_TOP_MARGIN + goteKomadaiImage.getHeight() + TATAMI_INSIDE_MARGIN;
 
         initSquareImages(boardResources, position.getRows(), position.getColumns());
 
@@ -152,7 +117,7 @@ public class ShogiBoard extends Composite implements ClickHandler {
                 final Image image = new Image(boardResources.empty());
 
                 squareImages[row][col] = image;
-                absolutePanel.add(image, getX(col), getY(row));
+                absolutePanel.add(image, layout.getX(col), layout.getY(row));
 
                 setupSquareClickHandler(image, row, col);
             }
@@ -231,7 +196,7 @@ public class ShogiBoard extends Composite implements ClickHandler {
 
                     setupPieceEventHandlers(pieceWrapper);
 
-                    absolutePanel.add(image, getX(col), getY(row));
+                    absolutePanel.add(image, layout.getX(col), layout.getY(row));
                 }
             }
         }
@@ -248,12 +213,13 @@ public class ShogiBoard extends Composite implements ClickHandler {
         PieceType[] pieceTypes = PieceType.values();
         int[] sentePieces = position.getSenteKomadai().getPieces();
         for (int i = 0; i < sentePieces.length; i++) {
-            Point[] piecesPositions = KomadaiPositioning.getPiecesPositions(i, sentePieces[i], true, komadaiWidth);
+            Point[] piecesPositions = KomadaiPositioning.getPiecesPositions(i, sentePieces[i], true,
+                    layout.getKomadaiWidth());
             for (Point point : piecesPositions) {
                 Piece piece = Piece.getPiece(pieceTypes[i], Player.BLACK);
                 Image image = createKomadaiPieceImage(piece, true);
 
-                absolutePanel.add(image, senteKomadaiX + point.x, senteKomadaiY + point.y);
+                absolutePanel.add(image, layout.getSenteKomadaiX() + point.x, layout.getSenteKomadaiY() + point.y);
             }
         }
     }
@@ -269,7 +235,8 @@ public class ShogiBoard extends Composite implements ClickHandler {
         PieceType[] pieceTypes = PieceType.values();
         int[] gotePieces = position.getGoteKomadai().getPieces();
         for (int i = 0; i < gotePieces.length; i++) {
-            Point[] piecesPositions = KomadaiPositioning.getPiecesPositions(i, gotePieces[i], false, komadaiWidth);
+            Point[] piecesPositions = KomadaiPositioning.getPiecesPositions(i, gotePieces[i], false,
+                    layout.getKomadaiWidth());
             for (Point point : piecesPositions) {
                 Piece piece = Piece.getPiece(pieceTypes[i], Player.WHITE);
                 Image image = createKomadaiPieceImage(piece, false);
@@ -295,14 +262,6 @@ public class ShogiBoard extends Composite implements ClickHandler {
 
     private static Square getSquare(final int row, final int col) {
         return Square.of(((8 - col) + 1), row + 1);
-    }
-
-    private int getY(final int row) {
-        return boardTop + BOARD_TOP_MARGIN + row * SQUARE_HEIGHT;
-    }
-
-    private int getX(final int col) {
-        return boardLeft + BOARD_LEFT_MARGIN + col * SQUARE_WIDTH;
     }
 
     private void setupPieceEventHandlers(final PieceWrapper pieceWrapper) {
@@ -429,9 +388,7 @@ public class ShogiBoard extends Composite implements ClickHandler {
 
         if (panel != null) {
             this.upperRightPanel = panel;
-            panel.setWidth(senteKomadaiImage.getWidth() + "px");
-            panel.setHeight((senteKomadaiY - boardTop - BOARD_TOP_MARGIN) + "px");
-            absolutePanel.add(panel, upperRightPanelX, upperRightPanelY);
+            layout.addUpperRightPanel(panel);
         }
     }
 
@@ -442,9 +399,7 @@ public class ShogiBoard extends Composite implements ClickHandler {
 
         if (panel != null) {
             this.lowerLeftPanel = panel;
-            panel.setWidth(senteKomadaiImage.getWidth() + "px");
-            panel.setHeight((senteKomadaiY - boardTop - BOARD_TOP_MARGIN) + "px");
-            absolutePanel.add(panel, lowerLeftPanelX, lowerLeftPanelY);
+            layout.addLowerLeftPanel(panel);
         }
     }
 
