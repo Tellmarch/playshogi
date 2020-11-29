@@ -5,6 +5,9 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.web.bindery.event.shared.EventBus;
+import com.google.web.bindery.event.shared.binder.EventBinder;
+import com.google.web.bindery.event.shared.binder.EventHandler;
+import com.playshogi.website.gwt.client.events.kifu.EditModeSelectedEvent;
 import com.playshogi.website.gwt.client.widget.board.ShogiBoard;
 import com.playshogi.website.gwt.client.widget.gamenavigator.GameNavigator;
 import com.playshogi.website.gwt.client.widget.kifu.KifuEditorPanel;
@@ -14,6 +17,12 @@ import com.playshogi.website.gwt.client.widget.kifu.PositionEditingPanel;
 public class ProblemEditorView extends Composite {
 
     private static final String PROBLEM_EDITOR = "pbeditor";
+
+    interface MyEventBinder extends EventBinder<ProblemEditorView> {
+    }
+
+    private final MyEventBinder eventBinder = GWT.create(MyEventBinder.class);
+
     private final ShogiBoard shogiBoard;
     private final GameNavigator gameNavigator;
     private final KifuEditorPanel kifuEditorPanel;
@@ -36,10 +45,16 @@ public class ProblemEditorView extends Composite {
 
     public void activate(final EventBus eventBus) {
         GWT.log("Activating problem editor view");
+        eventBinder.bindEventHandlers(this, eventBus);
         shogiBoard.activate(eventBus);
         gameNavigator.activate(eventBus);
         kifuEditorPanel.activate(eventBus);
         positionEditingPanel.activate(eventBus);
     }
 
+    @EventHandler
+    public void onEditModeSelectedEvent(final EditModeSelectedEvent event) {
+        GWT.log("Problem editor: handle EditModeSelectedEvent - " + event.isEditMode());
+        shogiBoard.getBoardConfiguration().setPositionEditingMode(event.isEditMode());
+    }
 }
