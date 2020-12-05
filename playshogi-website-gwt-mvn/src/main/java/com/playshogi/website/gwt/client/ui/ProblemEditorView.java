@@ -2,14 +2,21 @@ package com.playshogi.website.gwt.client.ui;
 
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
+import com.playshogi.library.models.record.GameNavigation;
+import com.playshogi.library.models.record.GameTree;
+import com.playshogi.library.shogi.models.position.ShogiPosition;
+import com.playshogi.library.shogi.models.shogivariant.ShogiInitialPositionFactory;
+import com.playshogi.library.shogi.rules.ShogiRulesEngine;
 import com.playshogi.website.gwt.client.events.kifu.EditModeSelectedEvent;
 import com.playshogi.website.gwt.client.widget.board.ShogiBoard;
 import com.playshogi.website.gwt.client.widget.gamenavigator.GameNavigator;
+import com.playshogi.website.gwt.client.widget.kifu.GameTreePanel;
 import com.playshogi.website.gwt.client.widget.kifu.KifuEditorPanel;
 import com.playshogi.website.gwt.client.widget.kifu.PositionEditingPanel;
 
@@ -27,13 +34,17 @@ public class ProblemEditorView extends Composite {
     private final GameNavigator gameNavigator;
     private final KifuEditorPanel kifuEditorPanel;
     private final PositionEditingPanel positionEditingPanel;
+    private final GameTreePanel gameTreePanel;
 
     @Inject
     public ProblemEditorView() {
         GWT.log("Creating problem editor view");
         shogiBoard = new ShogiBoard(PROBLEM_EDITOR);
         shogiBoard.getBoardConfiguration().setPositionEditingMode(true);
-        gameNavigator = new GameNavigator(PROBLEM_EDITOR);
+
+        GameNavigation<ShogiPosition> gameNavigation = new GameNavigation<>(new ShogiRulesEngine(),
+                new GameTree(), ShogiInitialPositionFactory.createInitialPosition());
+        gameNavigator = new GameNavigator(PROBLEM_EDITOR, gameNavigation);
 
         kifuEditorPanel = new KifuEditorPanel(gameNavigator);
         positionEditingPanel = new PositionEditingPanel();
@@ -41,7 +52,12 @@ public class ProblemEditorView extends Composite {
         shogiBoard.setUpperRightPanel(kifuEditorPanel);
         shogiBoard.setLowerLeftPanel(positionEditingPanel);
 
-        initWidget(shogiBoard);
+        HorizontalPanel horizontalPanel = new HorizontalPanel();
+        horizontalPanel.add(shogiBoard);
+        gameTreePanel = new GameTreePanel(PROBLEM_EDITOR, gameNavigation);
+        horizontalPanel.add(gameTreePanel);
+
+        initWidget(horizontalPanel);
     }
 
     public void activate(final EventBus eventBus) {
@@ -51,6 +67,7 @@ public class ProblemEditorView extends Composite {
         gameNavigator.activate(eventBus);
         kifuEditorPanel.activate(eventBus);
         positionEditingPanel.activate(eventBus);
+        gameTreePanel.activate(eventBus);
     }
 
     @EventHandler
@@ -61,5 +78,7 @@ public class ProblemEditorView extends Composite {
         if (!event.isEditMode()) {
             gameNavigator.reset(shogiBoard.getPosition());
         }
+        // To reset selection/handlers
+        shogiBoard.displayPosition();
     }
 }

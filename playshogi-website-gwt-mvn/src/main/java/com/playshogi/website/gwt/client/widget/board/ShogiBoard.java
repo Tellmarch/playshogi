@@ -326,8 +326,8 @@ public class ShogiBoard extends Composite implements ClickHandler {
                 if (!pieceWrapper.isInKomadai()) {
                     position.getShogiBoardState().setPieceAt(pieceWrapper.getSquare(),
                             pieceWrapper.getPiece().getNextPieceInEditCycle());
+                    displayPosition();
                 }
-                displayPosition();
             });
         }
     }

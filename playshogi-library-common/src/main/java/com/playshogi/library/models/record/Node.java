@@ -68,4 +68,11 @@ public class Node {
         return null;
     }
 
+    @Override
+    public String toString() {
+        return "Node{" +
+                "children.size=" + children.size() +
+                ", move=" + move +
+                '}';
+    }
 }
