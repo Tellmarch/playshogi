@@ -22,6 +22,12 @@ public class UserRepository {
     private static final String GET_USER_PB_STATS = "SELECT * from playshogi.ps_userpbstats WHERE  user_id = ? ORDER " +
             "BY timestamp_attempted DESC;";
 
+    private static final String INSERT_USER_HIGHSCORE = "INSERT INTO `playshogi`.`ps_highscore` "
+            + "(`name`, `score`, `user_id`, `event`)" + " VALUES ( ?, ?, ?, ?);";
+
+    private static final String GET_USER_HIGHSCORES = "SELECT name, max(score) as score FROM ps_highscore WHERE event" +
+            " = ? GROUP BY name ORDER BY score DESC LIMIT 20;";
+
     private final DbConnection dbConnection;
 
     public UserRepository(final DbConnection dbConnection) {
@@ -97,7 +103,7 @@ public class UserRepository {
         return key;
     }
 
-    public void insertUserPbStats(PersistentUserProblemStats userProblemStats) {
+    public void insertUserPbStats(final PersistentUserProblemStats userProblemStats) {
 
         Connection connection = dbConnection.getConnection();
         try (PreparedStatement preparedStatement = connection.prepareStatement(INSERT_USER_PB_STATS)) {
@@ -142,6 +148,23 @@ public class UserRepository {
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error looking up the user pb stats", e);
             return new ArrayList<>();
+        }
+    }
+
+    public void insertUserHighScore(final String name, final int score, final Integer userId, final String event) {
+
+        Connection connection = dbConnection.getConnection();
+        try (PreparedStatement preparedStatement = connection.prepareStatement(INSERT_USER_HIGHSCORE)) {
+            preparedStatement.setString(1, name);
+            preparedStatement.setInt(2, score);
+            SqlUtils.setInteger(preparedStatement, 3, userId);
+            preparedStatement.setString(4, event);
+            preparedStatement.executeUpdate();
+
+            LOGGER.log(Level.INFO, "Inserted user high score");
+
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error saving the user high score in db", e);
         }
     }
 }

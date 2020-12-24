@@ -136,13 +136,15 @@ public class ByoYomiActivity extends MyAbstractActivity {
     }
 
     private void stop() {
+        GWT.log("Stop byo yomi activity");
         int timeSec = byoYomiDuration.elapsedMillis() / 1000;
         if (place.getMaxTimeSec() > 0 && timeSec > place.getMaxTimeSec()) {
             timeSec = place.getMaxTimeSec();
         }
         if (place.isDefault()) {
+            GWT.log("Saving high score");
             String username = sessionInformation.getUsername();
-            if (username == null) {
+            if (username == null || "Guest".equals(username)) {
                 username = Window.prompt("What is your name?", "Guest");
             }
             problemsService.saveHighScore(username, solved, new FireAndForgetCallback());
