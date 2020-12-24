@@ -146,11 +146,19 @@ public class ProblemsServiceImpl extends RemoteServiceServlet implements Problem
 
     @Override
     public void saveHighScore(final String userName, final int score) {
-        String sanitizedUserName = userName.length() > 20 ? userName.substring(0, 20) : userName;
-        if (!highScores.containsKey(sanitizedUserName) || highScores.get(sanitizedUserName) < score) {
-            highScores.put(sanitizedUserName, score);
+        LOGGER.log(Level.INFO, "Saving high score: " + userName + " " + score);
+        try {
+            if (userName == null) {
+                return;
+            }
+            String sanitizedUserName = userName.length() > 20 ? userName.substring(0, 20) : userName;
+            if (!highScores.containsKey(sanitizedUserName) || highScores.get(sanitizedUserName) < score) {
+                highScores.put(sanitizedUserName, score);
+            }
+            userRepository.insertUserHighScore(userName, score, null, "byoyomi");
+        } catch (Exception ex) {
+            LOGGER.log(Level.WARNING, "Exception in saveHighScore:", ex);
         }
-        userRepository.insertUserHighScore(userName, score, null, "byoyomi");
     }
 
     @Override

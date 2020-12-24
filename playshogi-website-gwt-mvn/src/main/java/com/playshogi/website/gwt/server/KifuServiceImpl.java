@@ -183,46 +183,52 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
     @Override
     public PositionDetails getPositionDetails(final String sfen, final String gameSetId) {
         LOGGER.log(Level.INFO, "querying position details:\n" + sfen + " " + gameSetId);
-        // TODO validate permissions
+        try {
+            // TODO validate permissions
 
-        int gameSetIdInt = Integer.parseInt(gameSetId);
-        int positionId = positionRepository.getPositionIdBySfen(sfen);
+            int gameSetIdInt = Integer.parseInt(gameSetId);
+            int positionId = positionRepository.getPositionIdBySfen(sfen);
 
-        if (positionId == -1) {
-            LOGGER.log(Level.INFO, "position not in database: \n" + sfen);
+            if (positionId == -1) {
+                LOGGER.log(Level.INFO, "position not in database: \n" + sfen);
+                return null;
+            }
+
+            PersistentGameSetPos stats = gameSetRepository.getGameSetPositionStats(positionId, gameSetIdInt);
+            List<PersistentGameSetMove> moveStats = gameSetRepository.getGameSetPositionMoveStats(positionId,
+                    gameSetIdInt);
+
+            PositionMoveDetails[] details = new PositionMoveDetails[moveStats.size()];
+            for (int i = 0; i < details.length; i++) {
+                PersistentGameSetMove move = moveStats.get(i);
+                String newSfen = positionRepository.getPositionSfenById(move.getNewPositionId());
+                details[i] = new PositionMoveDetails(move.getMoveUsf(), move.getMoveOccurrences(),
+                        move.getNewPositionOccurences(), move.getSenteWins(), move.getGoteWins(), newSfen);
+            }
+
+            // TODO remove special case once database is properly populated
+            List<PersistentGame> gamesForPosition = gameSetIdInt == 1 ? kifuRepository.getGamesForPosition(positionId) :
+                    kifuRepository.getGamesForPosition(positionId, gameSetIdInt);
+
+            SimpleDateFormat yearDateFormat = new SimpleDateFormat("yyyy");
+
+            String[] kifuIds = new String[gamesForPosition.size()];
+            String[] kifuDescs = new String[gamesForPosition.size()];
+            for (int i = 0; i < kifuIds.length; i++) {
+                PersistentGame persistentGame = gamesForPosition.get(i);
+                kifuIds[i] = String.valueOf(persistentGame.getKifuId());
+                kifuDescs[i] = persistentGame.getSenteName() + " - " + persistentGame.getGoteName();
+                if (persistentGame.getDatePlayed() != null) {
+                    kifuDescs[i] += " (" + yearDateFormat.format(persistentGame.getDatePlayed()) + ")";
+                }
+            }
+
+            return new PositionDetails(stats.getTotal(), stats.getSenteWins(), stats.getGoteWins(), details, kifuIds,
+                    kifuDescs);
+        } catch (Exception ex) {
+            LOGGER.log(Level.WARNING, "Exception in getPositionDetails:", ex);
             return null;
         }
-
-        PersistentGameSetPos stats = gameSetRepository.getGameSetPositionStats(positionId, gameSetIdInt);
-        List<PersistentGameSetMove> moveStats = gameSetRepository.getGameSetPositionMoveStats(positionId, gameSetIdInt);
-
-        PositionMoveDetails[] details = new PositionMoveDetails[moveStats.size()];
-        for (int i = 0; i < details.length; i++) {
-            PersistentGameSetMove move = moveStats.get(i);
-            String newSfen = positionRepository.getPositionSfenById(move.getNewPositionId());
-            details[i] = new PositionMoveDetails(move.getMoveUsf(), move.getMoveOccurrences(),
-                    move.getNewPositionOccurences(), move.getSenteWins(), move.getGoteWins(), newSfen);
-        }
-
-        // TODO remove special case once database is properly populated
-        List<PersistentGame> gamesForPosition = gameSetIdInt == 1 ? kifuRepository.getGamesForPosition(positionId) :
-                kifuRepository.getGamesForPosition(positionId, gameSetIdInt);
-
-        SimpleDateFormat yearDateFormat = new SimpleDateFormat("yyyy");
-
-        String[] kifuIds = new String[gamesForPosition.size()];
-        String[] kifuDescs = new String[gamesForPosition.size()];
-        for (int i = 0; i < kifuIds.length; i++) {
-            PersistentGame persistentGame = gamesForPosition.get(i);
-            kifuIds[i] = String.valueOf(persistentGame.getKifuId());
-            kifuDescs[i] = persistentGame.getSenteName() + " - " + persistentGame.getGoteName();
-            if (persistentGame.getDatePlayed() != null) {
-                kifuDescs[i] += " (" + yearDateFormat.format(persistentGame.getDatePlayed()) + ")";
-            }
-        }
-
-        return new PositionDetails(stats.getTotal(), stats.getSenteWins(), stats.getGoteWins(), details, kifuIds,
-                kifuDescs);
     }
 
     @Override
