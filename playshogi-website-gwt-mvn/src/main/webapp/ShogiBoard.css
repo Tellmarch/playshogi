@@ -74,3 +74,8 @@
     font-size: 18pt;
     font-weight: bold;
 }
+
+.board-canvas {
+    z-index: 5;
+    pointer-events: none;
+}

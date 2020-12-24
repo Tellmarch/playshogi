@@ -1,8 +1,10 @@
 package com.playshogi.website.gwt.client.widget.board;
 
+import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Widget;
+import com.playshogi.library.models.Square;
 
 class BoardLayout {
     static final int TATAMI_LEFT_MARGIN = 10;
@@ -28,7 +30,7 @@ class BoardLayout {
     private final AbsolutePanel absolutePanel;
 
     BoardLayout(final BoardBundle boardResources, final AbsolutePanel absolutePanel, final Image goteKomadaiImage,
-                final Image senteKomadaiImage) {
+                final Image senteKomadaiImage, final Canvas canvas) {
         this.absolutePanel = absolutePanel;
 
         komadaiWidth = goteKomadaiImage.getWidth();
@@ -42,6 +44,12 @@ class BoardLayout {
         Image tatami = new Image(boardResources.bg_tatami());
 
         absolutePanel.setSize(tatami.getWidth() + "px", tatami.getHeight() + "px");
+        if (canvas != null) {
+            canvas.setSize(tatami.getWidth() + "px", tatami.getHeight() + "px");
+            canvas.setCoordinateSpaceWidth(tatami.getWidth());
+            canvas.setCoordinateSpaceHeight(tatami.getHeight());
+            absolutePanel.add(canvas, 0, 0);
+        }
         absolutePanel.add(tatami, 0, 0);
         absolutePanel.add(ban, boardLeft, boardTop);
         absolutePanel.add(grid, boardLeft, boardTop);
@@ -95,5 +103,13 @@ class BoardLayout {
 
     int getX(final int col) {
         return boardLeft + BOARD_LEFT_MARGIN + col * SQUARE_WIDTH;
+    }
+
+    int getY(final Square square) {
+        return getY(square.getRow() - 1);
+    }
+
+    int getX(final Square square) {
+        return getX(9 - square.getColumn());
     }
 }
