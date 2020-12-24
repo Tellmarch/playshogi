@@ -176,36 +176,40 @@ public class TsumeActivity extends MyAbstractActivity {
                     @Override
                     public void onSuccess(PositionEvaluationDetails result) {
                         GWT.log("TsumeActivity - received position evaluation\n" + result);
-                        switch (result.getTsumeAnalysis().getResult()) {
-                            case TSUME:
-                                Window.alert("Gote is still in Tsume - Your solution may be longer, or the puzzle has" +
-                                        " multiple solutions.");
-                                break;
-                            case NOT_CHECK:
-                                Window.alert("Gote is not in check - To solve a Tsume problem, every move needs to be" +
-                                        " a check.");
-                                break;
-                            case ESCAPE:
-                                String escapeMove = result.getTsumeAnalysis().getEscapeMove();
-                                ShogiMove move = UsfMoveConverter.fromUsfString(escapeMove,
-                                        tsumeView.getCurrentPosition());
-                                eventBus.fireEvent(new HighlightMoveEvent(move));
-                                Scheduler.get().scheduleFixedDelay(() -> {
-                                    String message;
-                                    if (move instanceof NormalMove && ((NormalMove) move).getPiece() == Piece.GOTE_KING) {
-                                        Square toSquare = ((NormalMove) move).getToSquare();
-                                        message = "If Gote escapes to " + toSquare + ", there is no mate.";
-                                    } else {
-                                        message =
-                                                "If Gote plays the highlighted move (" + KifMoveConverter.toKifStringShort(move) + "), there is no mate.";
-                                    }
-                                    Window.alert(message);
-                                    return false;
-                                }, 100);
-                                break;
-                        }
-
+                        processPositionEvaluationResult(result);
                     }
                 });
+    }
+
+    private void processPositionEvaluationResult(final PositionEvaluationDetails result) {
+        switch (result.getTsumeAnalysis().getResult()) {
+            case TSUME:
+                Window.alert("Gote is still in Tsume - Your solution may be longer, or the puzzle has" +
+                        " multiple solutions.");
+                break;
+            case NOT_CHECK:
+                Window.alert("Gote is not in check - To solve a Tsume problem, every move needs to be" +
+                        " a check.");
+                break;
+            case ESCAPE:
+                String escapeMove = result.getTsumeAnalysis().getEscapeMove();
+                ShogiMove move = UsfMoveConverter.fromUsfString(escapeMove,
+                        tsumeView.getCurrentPosition());
+                eventBus.fireEvent(new HighlightMoveEvent(move));
+                Scheduler.get().scheduleFixedDelay(() -> {
+                    String message;
+                    if (move instanceof NormalMove && ((NormalMove) move).getPiece() == Piece.GOTE_KING) {
+                        Square toSquare = ((NormalMove) move).getToSquare();
+                        message = "If Gote escapes to " + toSquare + ", there is no mate.";
+                    } else {
+                        message =
+                                "If Gote plays the highlighted move (" + KifMoveConverter.toKifStringShort(move) + ")" +
+                                        ", there is no mate.";
+                    }
+                    Window.alert(message);
+                    return false;
+                }, 100);
+                break;
+        }
     }
 }
