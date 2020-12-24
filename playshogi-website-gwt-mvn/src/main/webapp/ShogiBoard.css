@@ -79,3 +79,8 @@
     z-index: 5;
     pointer-events: none;
 }
+
+.board-highlight-canvas {
+    z-index: 6;
+    pointer-events: none;
+}

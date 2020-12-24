@@ -1,6 +1,5 @@
 package com.playshogi.website.gwt.client.widget.board;
 
-import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -91,12 +90,9 @@ public class ShogiBoard extends Composite implements ClickHandler {
         goteKomadaiImage = new Image(boardResources.ghand());
         senteKomadaiImage = new Image(boardResources.shand());
 
-        Canvas canvas = Canvas.createIfSupported();
-        canvas.addStyleName("board-canvas");
+        layout = new BoardLayout(boardResources, absolutePanel, goteKomadaiImage, senteKomadaiImage);
 
-        layout = new BoardLayout(boardResources, absolutePanel, goteKomadaiImage, senteKomadaiImage, canvas);
-
-        decorationController = new BoardDecorationController(this, canvas, layout);
+        decorationController = new BoardDecorationController(this, layout);
 
         if (boardConfiguration.isShowGoteKomadai()) {
             layout.addGoteKomadai(goteKomadaiImage);
@@ -183,6 +179,7 @@ public class ShogiBoard extends Composite implements ClickHandler {
         GWT.log(position.toString());
 
         selectionController.unselect();
+        decorationController.clear();
 
         displayBoardPieces();
 
@@ -466,6 +463,7 @@ public class ShogiBoard extends Composite implements ClickHandler {
     @EventHandler
     public void onHighlightMove(final HighlightMoveEvent event) {
         selectionController.highlightMove(event.getMove());
+        decorationController.highlightMove(event.getMove());
     }
 
     @EventHandler

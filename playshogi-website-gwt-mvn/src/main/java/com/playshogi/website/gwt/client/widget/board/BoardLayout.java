@@ -28,9 +28,11 @@ class BoardLayout {
     private final int lowerLeftPanelY;
 
     private final AbsolutePanel absolutePanel;
+    private final int width;
+    private final int height;
 
     BoardLayout(final BoardBundle boardResources, final AbsolutePanel absolutePanel, final Image goteKomadaiImage,
-                final Image senteKomadaiImage, final Canvas canvas) {
+                final Image senteKomadaiImage) {
         this.absolutePanel = absolutePanel;
 
         komadaiWidth = goteKomadaiImage.getWidth();
@@ -43,13 +45,11 @@ class BoardLayout {
         Image ban = new Image(boardResources.ban_kaya_a());
         Image tatami = new Image(boardResources.bg_tatami());
 
-        absolutePanel.setSize(tatami.getWidth() + "px", tatami.getHeight() + "px");
-        if (canvas != null) {
-            canvas.setSize(tatami.getWidth() + "px", tatami.getHeight() + "px");
-            canvas.setCoordinateSpaceWidth(tatami.getWidth());
-            canvas.setCoordinateSpaceHeight(tatami.getHeight());
-            absolutePanel.add(canvas, 0, 0);
-        }
+        width = tatami.getWidth();
+        height = tatami.getHeight();
+
+        absolutePanel.setSize(width + "px", height + "px");
+
         absolutePanel.add(tatami, 0, 0);
         absolutePanel.add(ban, boardLeft, boardTop);
         absolutePanel.add(grid, boardLeft, boardTop);
@@ -63,6 +63,15 @@ class BoardLayout {
 
         lowerLeftPanelX = TATAMI_LEFT_MARGIN;
         lowerLeftPanelY = TATAMI_TOP_MARGIN + goteKomadaiImage.getHeight() + TATAMI_INSIDE_MARGIN;
+    }
+
+    void addCanvas(final Canvas canvas) {
+        if (canvas != null) {
+            canvas.setSize(width + "px", height + "px");
+            canvas.setCoordinateSpaceWidth(width);
+            canvas.setCoordinateSpaceHeight(height);
+            absolutePanel.add(canvas, 0, 0);
+        }
     }
 
     void addGoteKomadai(final Image goteKomadaiImage) {

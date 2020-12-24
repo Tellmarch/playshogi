@@ -2,31 +2,92 @@ package com.playshogi.website.gwt.client.widget.board;
 
 import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.canvas.dom.client.Context2d;
-import com.google.gwt.core.client.GWT;
 import com.playshogi.library.models.Square;
+import com.playshogi.library.shogi.models.moves.NormalMove;
+import com.playshogi.library.shogi.models.moves.ShogiMove;
 
 import static com.playshogi.website.gwt.client.widget.board.BoardLayout.SQUARE_HEIGHT;
 import static com.playshogi.website.gwt.client.widget.board.BoardLayout.SQUARE_WIDTH;
 
 class BoardDecorationController {
-    private final ShogiBoard shogiBoard;
-    private final Canvas canvas; // May be null if not supported by the browser
+    private static final int ARROW_HEAD_LENGTH = 10;
+    private static final int ARROW_WIDTH = 8;
+
+    private final Canvas staticCanvas; // May be null if not supported by the browser
+    private final Canvas highlightCanvas; // May be null if not supported by the browser
     private final BoardLayout layout;
 
-    BoardDecorationController(final ShogiBoard shogiBoard, final Canvas canvas, final BoardLayout layout) {
-        this.shogiBoard = shogiBoard;
-        this.canvas = canvas;
+    BoardDecorationController(final ShogiBoard shogiBoard, final BoardLayout layout) {
         this.layout = layout;
+        staticCanvas = Canvas.createIfSupported();
+        staticCanvas.addStyleName("board-canvas");
+        layout.addCanvas(staticCanvas);
+        highlightCanvas = Canvas.createIfSupported();
+        highlightCanvas.addStyleName("board-highlight-canvas");
+        layout.addCanvas(highlightCanvas);
     }
 
-    void drawCircle(final Square square) {
-        GWT.log("CANVAS" + canvas.getCoordinateSpaceWidth() + " " + canvas.getCoordinateSpaceHeight());
-        Context2d context2d = canvas.getContext2d();
+    private void drawCircle(final Square square) {
+        if (staticCanvas == null) return;
+        Context2d context2d = staticCanvas.getContext2d();
         context2d.setLineWidth(5);
         context2d.setStrokeStyle("#0000FF");
         context2d.beginPath();
         context2d.arc(layout.getX(square) + (SQUARE_WIDTH >> 1), layout.getY(square) + (SQUARE_HEIGHT >> 1),
                 (SQUARE_WIDTH >> 1) + 2, 0, 2 * Math.PI);
         context2d.stroke();
+    }
+
+    private void drawArrow(final Canvas canvas, final Square fromSquare, final Square toSquare) {
+        drawArrow(canvas,
+                layout.getX(fromSquare) + SQUARE_WIDTH / 2,
+                layout.getY(fromSquare) + SQUARE_HEIGHT / 2,
+                layout.getX(toSquare) + SQUARE_WIDTH / 2,
+                layout.getY(toSquare) + SQUARE_HEIGHT / 2);
+    }
+
+    private void drawArrow(final Canvas canvas, final int fromX, final int fromY, final int toX, final int toY) {
+        if (canvas == null) return;
+        Context2d ctx = canvas.getContext2d();
+        ctx.setStrokeStyle("#cc0000");
+        ctx.setLineWidth(ARROW_WIDTH);
+
+        double angle = Math.atan2(toY - fromY, toX - fromX);
+
+        double adjustedToX = toX - Math.cos(angle) * ((ARROW_WIDTH * 1.15));
+        double adjustedToY = toY - Math.sin(angle) * ((ARROW_WIDTH * 1.15));
+
+        ctx.beginPath();
+        ctx.moveTo(fromX, fromY);
+        ctx.lineTo(adjustedToX, adjustedToY);
+
+        ctx.moveTo(adjustedToX, adjustedToY);
+        ctx.lineTo(adjustedToX - ARROW_HEAD_LENGTH * Math.cos(angle - Math.PI / 7),
+                adjustedToY - ARROW_HEAD_LENGTH * Math.sin(angle - Math.PI / 7));
+        ctx.lineTo(adjustedToX - ARROW_HEAD_LENGTH * Math.cos(angle + Math.PI / 7),
+                adjustedToY - ARROW_HEAD_LENGTH * Math.sin(angle + Math.PI / 7));
+        ctx.lineTo(adjustedToX, adjustedToY);
+        ctx.lineTo(adjustedToX - ARROW_HEAD_LENGTH * Math.cos(angle - Math.PI / 7),
+                adjustedToY - ARROW_HEAD_LENGTH * Math.sin(angle - Math.PI / 7));
+
+        ctx.stroke();
+    }
+
+    void highlightMove(final ShogiMove move) {
+        clear(highlightCanvas);
+        if (move instanceof NormalMove) {
+            NormalMove normalMove = (NormalMove) move;
+            drawArrow(highlightCanvas, normalMove.getFromSquare(), normalMove.getToSquare());
+        }
+    }
+
+    private void clear(final Canvas canvas) {
+        if (canvas == null) return;
+        canvas.getContext2d().clearRect(0, 0, canvas.getCoordinateSpaceWidth(), canvas.getCoordinateSpaceHeight());
+    }
+
+    void clear() {
+        clear(staticCanvas);
+        clear(highlightCanvas);
     }
 }
