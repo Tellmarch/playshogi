@@ -2,12 +2,15 @@ package com.playshogi.library.shogi.models.formats.usi;
 
 import com.playshogi.library.models.Square;
 import com.playshogi.library.shogi.models.Piece;
+import com.playshogi.library.shogi.models.Player;
 import com.playshogi.library.shogi.models.formats.psn.PsnUtil;
+import com.playshogi.library.shogi.models.formats.sfen.SfenConverter;
 import com.playshogi.library.shogi.models.moves.*;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
 
 import java.util.Optional;
 
+import static com.playshogi.library.shogi.models.Player.BLACK;
 import static com.playshogi.library.shogi.models.formats.psn.PsnUtil.char2ColumnNumber;
 import static com.playshogi.library.shogi.models.formats.psn.PsnUtil.char2RowNumber;
 
@@ -47,6 +50,10 @@ public class UsiMoveConverter {
     }
 
     public static String fromPsnToUsfSTring(final String moveStr, final String sfen) {
+        return fromPsnToUsfSTring(moveStr, SfenConverter.extractPlayer(sfen));
+    }
+
+    public static String fromPsnToUsfSTring(final String moveStr, final Player player) {
 
         int length = moveStr.length();
 
@@ -66,8 +73,7 @@ public class UsiMoveConverter {
                     Character.toUpperCase(moveStr.charAt(3));
         } else if (moveStr.charAt(1) == '*') {
             // In USF, the player is indicated by the case
-            char player = sfen.charAt(sfen.indexOf(" ") + 1);
-            if (player == 'b') {
+            if (player == BLACK) {
                 return moveStr;
             } else {
                 return String.valueOf(Character.toLowerCase(moveStr.charAt(0))) +

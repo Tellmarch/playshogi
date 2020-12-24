@@ -2,7 +2,9 @@ package com.playshogi.library.shogi.engine;
 
 import com.playshogi.library.models.record.GameNavigation;
 import com.playshogi.library.models.record.GameTree;
+import com.playshogi.library.shogi.models.Player;
 import com.playshogi.library.shogi.models.formats.sfen.SfenConverter;
+import com.playshogi.library.shogi.models.formats.usi.UsiMoveConverter;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.library.shogi.models.shogivariant.ShogiInitialPositionFactory;
 import com.playshogi.library.shogi.rules.ShogiRulesEngine;
@@ -100,7 +102,7 @@ public class USIConnector {
         }
     }
 
-    public PositionEvaluation analyseTsume(String sfen) {
+    public PositionEvaluation analyseTsume(final String sfen) {
         if (!connected) {
             throw new IllegalStateException("Engine is not connected");
         }
@@ -110,10 +112,10 @@ public class USIConnector {
         sendCommand(output, "position sfen " + sfen + " 0");
         sendCommand(output, "go mate 2000");
 
-        return readTsumeResult(input);
+        return readTsumeResult(input, sfen);
     }
 
-    private PositionEvaluation readTsumeResult(Scanner input) {
+    private PositionEvaluation readTsumeResult(final Scanner input, final String sfen) {
         List<PrincipalVariation> principalVariationHistory = new ArrayList<>();
 
         String nextLine;
@@ -127,9 +129,11 @@ public class USIConnector {
         if (split[1].equals("nomate") || split[1].equals("timeout")) {
             return new PositionEvaluation(new PrincipalVariation[]{}, null, null);
         } else {
+            Player player = SfenConverter.extractPlayer(sfen);
             StringBuilder variation = new StringBuilder();
             for (int i = 1; i < split.length; i++) {
-                variation.append(split[i]).append(" ");
+                variation.append(UsiMoveConverter.fromPsnToUsfSTring(split[i], player)).append(" ");
+                player = player.opposite();
             }
             int numMoves = split.length - 1;
             PrincipalVariation principalVariation = new PrincipalVariation();
@@ -151,10 +155,10 @@ public class USIConnector {
         sendCommand(output, "position sfen " + sfen + " 0");
         sendCommand(output, "go btime 0 wtime 0 byoyomi " + timeMs);
 
-        return readEvaluation(input);
+        return readEvaluation(input, sfen);
     }
 
-    private PositionEvaluation readEvaluation(Scanner input) {
+    private PositionEvaluation readEvaluation(final Scanner input, final String sfen) {
         List<PrincipalVariation> principalVariationHistory = new ArrayList<>();
 
         String nextLine;
@@ -166,7 +170,7 @@ public class USIConnector {
                 break;
             }
 
-            principalVariationHistory.add(parsePrincipalVariation(nextLine));
+            principalVariationHistory.add(parsePrincipalVariation(nextLine, sfen));
         } while (true);
 
         String[] split = nextLine.split(" ");
@@ -183,7 +187,7 @@ public class USIConnector {
                 ponderMove);
     }
 
-    private PrincipalVariation parsePrincipalVariation(String line) {
+    private PrincipalVariation parsePrincipalVariation(final String line, final String sfen) {
         PrincipalVariation principalVariation = new PrincipalVariation();
         String[] split = line.split(" ");
         for (int i = 0; i < split.length; i++) {
@@ -226,9 +230,11 @@ public class USIConnector {
                     ++i;
                     continue;
                 case "pv":
+                    Player player = SfenConverter.extractPlayer(sfen);
                     StringBuilder variation = new StringBuilder();
                     for (int j = i + 1; j < split.length; j++) {
-                        variation.append(split[j]).append(" ");
+                        variation.append(UsiMoveConverter.fromPsnToUsfSTring(split[j], player)).append(" ");
+                        player = player.opposite();
                     }
                     principalVariation.setPrincipalVariation(variation.toString());
                     return principalVariation;

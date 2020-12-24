@@ -10,6 +10,7 @@ import com.playshogi.library.shogi.models.position.ShogiPosition;
 
 import java.util.Optional;
 
+import static com.playshogi.library.shogi.models.Player.BLACK;
 import static com.playshogi.library.shogi.models.formats.usf.UsfUtil.pieceFromChar;
 import static com.playshogi.library.shogi.models.formats.usf.UsfUtil.pieceToString;
 
@@ -187,5 +188,10 @@ public class SfenConverter {
         }
 
         return new ShogiPosition(moveCount - 1, player, shogiBoardState, senteKomadai, goteKomadai);
+    }
+
+    public static Player extractPlayer(final String sfen) {
+        char playerChar = sfen.charAt(sfen.indexOf(" ") + 1);
+        return playerChar == 'b' ? BLACK : Player.WHITE;
     }
 }
