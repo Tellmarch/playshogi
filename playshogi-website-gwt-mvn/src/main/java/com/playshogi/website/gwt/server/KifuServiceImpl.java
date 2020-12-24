@@ -240,7 +240,7 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
         if (position.hasSenteKingOnBoard()) {
             return analyseNormalPosition(sessionId, sfen);
         } else {
-            return analyseTsumePosition(sessionId, position);
+            return analyseTsumePosition(sessionId, position, sfen);
         }
     }
 
@@ -260,7 +260,8 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
         }
     }
 
-    private PositionEvaluationDetails analyseTsumePosition(final String sessionId, final ShogiPosition position) {
+    private PositionEvaluationDetails analyseTsumePosition(final String sessionId, final ShogiPosition position,
+                                                           final String sfen) {
         EscapeTsumeResult result = tsumeEscapeSolver.escapeTsume(position);
         LOGGER.log(Level.INFO, "Tsume analysis: " + result);
         PositionEvaluationDetails details = new PositionEvaluationDetails();
@@ -270,11 +271,13 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
             tsumeDetails.setEscapeMove(result.getEscapeMove().getUsfString());
         }
         details.setTsumeAnalysis(tsumeDetails);
+        details.setSfen(sfen);
         return details;
     }
 
     private PositionEvaluationDetails convertPositionEvaluation(final PositionEvaluation evaluation) {
         PositionEvaluationDetails details = new PositionEvaluationDetails();
+        details.setSfen(evaluation.getSfen());
         details.setBestMove(evaluation.getBestMove());
         details.setPonderMove(evaluation.getPonderMove());
         details.setPrincipalVariationHistory(Arrays.stream(evaluation.getPrincipalVariationHistory()).map(

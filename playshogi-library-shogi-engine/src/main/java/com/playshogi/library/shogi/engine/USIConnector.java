@@ -127,7 +127,7 @@ public class USIConnector {
         String[] split = nextLine.split(" ");
 
         if (split[1].equals("nomate") || split[1].equals("timeout")) {
-            return new PositionEvaluation(new PrincipalVariation[]{}, null, null);
+            return new PositionEvaluation(sfen, new PrincipalVariation[]{}, null, null);
         } else {
             Player player = SfenConverter.extractPlayer(sfen);
             StringBuilder variation = new StringBuilder();
@@ -140,7 +140,7 @@ public class USIConnector {
             principalVariation.setForcedMate(true);
             principalVariation.setNumMovesBeforeMate(numMoves);
             principalVariation.setPrincipalVariation(variation.toString());
-            return new PositionEvaluation(new PrincipalVariation[]{principalVariation}, split[1], null);
+            return new PositionEvaluation(sfen, new PrincipalVariation[]{principalVariation}, split[1], null);
         }
     }
 
@@ -183,7 +183,7 @@ public class USIConnector {
             ponderMove = split[3];
         }
 
-        return new PositionEvaluation(principalVariationHistory.toArray(new PrincipalVariation[0]), bestMove,
+        return new PositionEvaluation(sfen, principalVariationHistory.toArray(new PrincipalVariation[0]), bestMove,
                 ponderMove);
     }
 

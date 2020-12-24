@@ -5,12 +5,21 @@ import java.util.Arrays;
 
 public class PositionEvaluationDetails implements Serializable {
 
+    private String sfen;
     private PrincipalVariationDetails[] principalVariationHistory;
     private String bestMove;
     private String ponderMove;
     private EscapeTsumeDetails tsumeAnalysis;
 
     public PositionEvaluationDetails() {
+    }
+
+    public String getSfen() {
+        return sfen;
+    }
+
+    public void setSfen(final String sfen) {
+        this.sfen = sfen;
     }
 
     public PrincipalVariationDetails[] getPrincipalVariationHistory() {
@@ -48,10 +57,11 @@ public class PositionEvaluationDetails implements Serializable {
     @Override
     public String toString() {
         return "PositionEvaluationDetails{" +
-                "principalVariationHistory=" + Arrays.toString(principalVariationHistory) +
+                "sfen='" + sfen + '\'' +
+                ", principalVariationHistory=" + Arrays.toString(principalVariationHistory) +
                 ", bestMove='" + bestMove + '\'' +
                 ", ponderMove='" + ponderMove + '\'' +
-                ", tsumeAnalysis='" + tsumeAnalysis + '\'' +
+                ", tsumeAnalysis=" + tsumeAnalysis +
                 '}';
     }
 }

@@ -4,14 +4,21 @@ import java.util.Arrays;
 
 public class PositionEvaluation {
 
+    private final String sfen;
     private final PrincipalVariation[] principalVariationHistory;
     private final String bestMove;
     private final String ponderMove;
 
-    public PositionEvaluation(PrincipalVariation[] principalVariationHistory, String bestMove, String ponderMove) {
+    public PositionEvaluation(final String sfen, final PrincipalVariation[] principalVariationHistory,
+                              final String bestMove, final String ponderMove) {
+        this.sfen = sfen;
         this.principalVariationHistory = principalVariationHistory;
         this.bestMove = bestMove;
         this.ponderMove = ponderMove;
+    }
+
+    public String getSfen() {
+        return sfen;
     }
 
     public PrincipalVariation[] getPrincipalVariationHistory() {
@@ -29,7 +36,8 @@ public class PositionEvaluation {
     @Override
     public String toString() {
         return "PositionEvaluation{" +
-                "principalVariationHistory=" + Arrays.toString(principalVariationHistory) +
+                "sfen='" + sfen + '\'' +
+                ", principalVariationHistory=" + Arrays.toString(principalVariationHistory) +
                 ", bestMove='" + bestMove + '\'' +
                 ", ponderMove='" + ponderMove + '\'' +
                 '}';

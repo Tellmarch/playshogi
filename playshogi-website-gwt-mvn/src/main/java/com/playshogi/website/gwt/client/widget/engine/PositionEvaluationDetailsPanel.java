@@ -10,8 +10,15 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
+import com.playshogi.library.shogi.models.formats.kif.KifMoveConverter;
+import com.playshogi.library.shogi.models.formats.sfen.SfenConverter;
+import com.playshogi.library.shogi.models.formats.usf.UsfMoveConverter;
+import com.playshogi.library.shogi.models.moves.ShogiMove;
+import com.playshogi.library.shogi.models.position.ShogiPosition;
+import com.playshogi.library.shogi.rules.ShogiRulesEngine;
 import com.playshogi.website.gwt.client.events.kifu.PositionEvaluationEvent;
 import com.playshogi.website.gwt.client.events.kifu.RequestPositionEvaluationEvent;
+import com.playshogi.website.gwt.shared.models.PositionEvaluationDetails;
 import com.playshogi.website.gwt.shared.models.PrincipalVariationDetails;
 
 import java.util.ArrayList;
@@ -23,9 +30,12 @@ public class PositionEvaluationDetailsPanel extends Composite {
 
     private final MyEventBinder eventBinder = GWT.create(MyEventBinder.class);
 
+    private final CellTable<PrincipalVariationDetails> table;
+    private final ShogiRulesEngine shogiRulesEngine = new ShogiRulesEngine();
+
     private EventBus eventBus;
 
-    private final CellTable<PrincipalVariationDetails> table;
+    private PositionEvaluationDetails evaluation;
 
     public PositionEvaluationDetailsPanel() {
         GWT.log("Creating PositionEvaluationDetailsPanel");
@@ -78,8 +88,18 @@ public class PositionEvaluationDetailsPanel extends Composite {
 
         TextColumn<PrincipalVariationDetails> variationColumn = new TextColumn<PrincipalVariationDetails>() {
             @Override
-            public String getValue(final PrincipalVariationDetails object) {
-                return String.valueOf(object.getPrincipalVariation());
+            public String getValue(final PrincipalVariationDetails details) {
+                String pvString = details.getPrincipalVariation();
+                String[] usfMoves = pvString.trim().split(" ");
+                ShogiPosition position = SfenConverter.fromSFEN(evaluation.getSfen());
+                String result = "";
+                for (String usfMove : usfMoves) {
+                    ShogiMove move = UsfMoveConverter.fromUsfString(usfMove, position);
+                    shogiRulesEngine.playMoveInPosition(position, move);
+                    result += KifMoveConverter.toKifStringShort(move) + " ";
+                }
+
+                return result;
             }
         };
         table.addColumn(variationColumn, "Principal variation");
@@ -92,7 +112,8 @@ public class PositionEvaluationDetailsPanel extends Composite {
     @EventHandler
     public void onPositionEvaluationEvent(final PositionEvaluationEvent event) {
         GWT.log("PositionEvaluationDetailsPanel: handle PositionEvaluationEvent");
-        PrincipalVariationDetails[] principalVariationHistory = event.getEvaluation().getPrincipalVariationHistory();
+        evaluation = event.getEvaluation();
+        PrincipalVariationDetails[] principalVariationHistory = evaluation.getPrincipalVariationHistory();
         table.setRowCount(principalVariationHistory.length);
         ArrayList<PrincipalVariationDetails> list = new ArrayList<>(principalVariationHistory.length);
         for (int i = principalVariationHistory.length - 1; i >= 0; i--) {
