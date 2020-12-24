@@ -3,6 +3,7 @@ package com.playshogi.website.gwt.client.widget.board;
 import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.playshogi.library.models.Square;
+import com.playshogi.library.shogi.models.moves.DropMove;
 import com.playshogi.library.shogi.models.moves.NormalMove;
 import com.playshogi.library.shogi.models.moves.ShogiMove;
 
@@ -78,6 +79,17 @@ class BoardDecorationController {
         if (move instanceof NormalMove) {
             NormalMove normalMove = (NormalMove) move;
             drawArrow(highlightCanvas, normalMove.getFromSquare(), normalMove.getToSquare());
+        } else if (move instanceof DropMove) {
+            DropMove dropMove = (DropMove) move;
+
+            KomadaiPositioning.Point[] points =
+                    KomadaiPositioning.getPiecesPositions(dropMove.getPieceType().ordinal(), 1, move.isBlackMoving(),
+                            layout.getKomadaiWidth());
+
+            drawArrow(highlightCanvas, layout.getGoteKomadaiX() + points[0].x + SQUARE_WIDTH / 2,
+                    layout.getGoteKomadaiX() + points[0].y + SQUARE_HEIGHT / 2,
+                    layout.getX(dropMove.getToSquare()) + SQUARE_WIDTH / 2,
+                    layout.getY(dropMove.getToSquare()) + SQUARE_HEIGHT / 2);
         }
     }
 

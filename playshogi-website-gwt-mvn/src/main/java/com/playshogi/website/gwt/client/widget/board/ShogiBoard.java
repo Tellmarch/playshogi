@@ -29,8 +29,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static com.playshogi.website.gwt.client.widget.board.BoardLayout.TATAMI_LEFT_MARGIN;
-import static com.playshogi.website.gwt.client.widget.board.BoardLayout.TATAMI_TOP_MARGIN;
 import static com.playshogi.website.gwt.client.widget.board.PieceWrapper.BLACK_KOMADAI_ROW;
 import static com.playshogi.website.gwt.client.widget.board.PieceWrapper.WHITE_KOMADAI_ROW;
 
@@ -256,7 +254,7 @@ public class ShogiBoard extends Composite implements ClickHandler {
                 Piece piece = Piece.getPiece(pieceTypes[i], Player.WHITE);
                 Image image = createKomadaiPieceImage(piece, false);
 
-                absolutePanel.add(image, TATAMI_LEFT_MARGIN + point.x, TATAMI_TOP_MARGIN + point.y);
+                absolutePanel.add(image, layout.getGoteKomadaiX() + point.x, layout.getGoteKomadaiY() + point.y);
             }
         }
     }

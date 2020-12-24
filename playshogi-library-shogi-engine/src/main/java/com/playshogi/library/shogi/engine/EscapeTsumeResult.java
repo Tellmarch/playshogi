@@ -39,17 +39,4 @@ public class EscapeTsumeResult {
                 '}';
     }
 
-    public String toPrettyString() {
-        switch (result) {
-            case TSUME:
-                return "The position is Tsume!";
-            case NOT_CHECK:
-                return "Gote is not in check!";
-            case ESCAPE:
-                return "Gote can escape with the move " + escapeMove + "!";
-            default:
-                throw new IllegalArgumentException("Unknown type: " + result);
-        }
-    }
-
 }

@@ -19,6 +19,8 @@ class BoardLayout {
     private final int boardTop;
     private final int senteKomadaiX;
     private final int senteKomadaiY;
+    private final int goteKomadaiX;
+    private final int goteKomadaiY;
     private final int komadaiWidth;
 
     private final int upperRightPanelX;
@@ -58,6 +60,9 @@ class BoardLayout {
         senteKomadaiX = boardLeft + ban.getWidth() + TATAMI_INSIDE_MARGIN;
         senteKomadaiY = TATAMI_TOP_MARGIN + ban.getHeight() - senteKomadaiImage.getHeight();
 
+        goteKomadaiX = TATAMI_LEFT_MARGIN;
+        goteKomadaiY = TATAMI_TOP_MARGIN;
+
         upperRightPanelX = senteKomadaiX;
         upperRightPanelY = TATAMI_TOP_MARGIN;
 
@@ -75,7 +80,7 @@ class BoardLayout {
     }
 
     void addGoteKomadai(final Image goteKomadaiImage) {
-        absolutePanel.add(goteKomadaiImage, TATAMI_LEFT_MARGIN, TATAMI_TOP_MARGIN);
+        absolutePanel.add(goteKomadaiImage, goteKomadaiX, goteKomadaiY);
     }
 
     void addSenteKomadai(final Image senteKomadaiImage) {
@@ -100,6 +105,14 @@ class BoardLayout {
 
     int getSenteKomadaiY() {
         return senteKomadaiY;
+    }
+
+    int getGoteKomadaiX() {
+        return goteKomadaiX;
+    }
+
+    int getGoteKomadaiY() {
+        return goteKomadaiY;
     }
 
     int getKomadaiWidth() {

@@ -264,7 +264,12 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
         EscapeTsumeResult result = tsumeEscapeSolver.escapeTsume(position);
         LOGGER.log(Level.INFO, "Tsume analysis: " + result);
         PositionEvaluationDetails details = new PositionEvaluationDetails();
-        details.setTsumeAnalysis(result.toPrettyString());
+        EscapeTsumeDetails tsumeDetails = new EscapeTsumeDetails();
+        tsumeDetails.setResult(EscapeTsumeDetails.ResultEnum.valueOf(result.getResult().name()));
+        if (result.getEscapeMove() != null) {
+            tsumeDetails.setEscapeMove(result.getEscapeMove().getUsfString());
+        }
+        details.setTsumeAnalysis(tsumeDetails);
         return details;
     }
 

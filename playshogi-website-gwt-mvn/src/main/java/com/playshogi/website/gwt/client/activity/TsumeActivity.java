@@ -2,6 +2,7 @@ package com.playshogi.website.gwt.client.activity;
 
 import com.google.gwt.core.client.Duration;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -9,12 +10,19 @@ import com.google.gwt.user.client.ui.AcceptsOneWidget;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
+import com.playshogi.library.models.Square;
 import com.playshogi.library.models.record.GameRecord;
+import com.playshogi.library.shogi.models.Piece;
+import com.playshogi.library.shogi.models.formats.kif.KifMoveConverter;
 import com.playshogi.library.shogi.models.formats.sfen.SfenConverter;
 import com.playshogi.library.shogi.models.formats.usf.UsfFormat;
+import com.playshogi.library.shogi.models.formats.usf.UsfMoveConverter;
+import com.playshogi.library.shogi.models.moves.NormalMove;
+import com.playshogi.library.shogi.models.moves.ShogiMove;
 import com.playshogi.website.gwt.client.SessionInformation;
 import com.playshogi.website.gwt.client.controller.ProblemController;
 import com.playshogi.website.gwt.client.events.gametree.GameTreeChangedEvent;
+import com.playshogi.website.gwt.client.events.gametree.HighlightMoveEvent;
 import com.playshogi.website.gwt.client.events.kifu.RequestPositionEvaluationEvent;
 import com.playshogi.website.gwt.client.events.puzzles.ProblemNumMovesSelectedEvent;
 import com.playshogi.website.gwt.client.events.puzzles.UserFinishedProblemEvent;
@@ -168,7 +176,35 @@ public class TsumeActivity extends MyAbstractActivity {
                     @Override
                     public void onSuccess(PositionEvaluationDetails result) {
                         GWT.log("TsumeActivity - received position evaluation\n" + result);
-                        Window.alert(result.getTsumeAnalysis());
+                        switch (result.getTsumeAnalysis().getResult()) {
+                            case TSUME:
+                                Window.alert("Gote is still in Tsume - Your solution may be longer, or the puzzle has" +
+                                        " multiple solutions.");
+                                break;
+                            case NOT_CHECK:
+                                Window.alert("Gote is not in check - To solve a Tsume problem, every move needs to be" +
+                                        " a check.");
+                                break;
+                            case ESCAPE:
+                                String escapeMove = result.getTsumeAnalysis().getEscapeMove();
+                                ShogiMove move = UsfMoveConverter.fromUsfString(escapeMove,
+                                        tsumeView.getCurrentPosition());
+                                eventBus.fireEvent(new HighlightMoveEvent(move));
+                                Scheduler.get().scheduleFixedDelay(() -> {
+                                    String message;
+                                    if (move instanceof NormalMove && ((NormalMove) move).getPiece() == Piece.GOTE_KING) {
+                                        Square toSquare = ((NormalMove) move).getToSquare();
+                                        message = "If Gote escapes to " + toSquare + ", there is no mate.";
+                                    } else {
+                                        message =
+                                                "If Gote plays the highlighted move (" + KifMoveConverter.toKifStringShort(move) + "), there is no mate.";
+                                    }
+                                    Window.alert(message);
+                                    return false;
+                                }, 100);
+                                break;
+                        }
+
                     }
                 });
     }

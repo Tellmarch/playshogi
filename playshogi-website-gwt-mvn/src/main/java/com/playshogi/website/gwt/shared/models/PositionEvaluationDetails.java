@@ -8,7 +8,7 @@ public class PositionEvaluationDetails implements Serializable {
     private PrincipalVariationDetails[] principalVariationHistory;
     private String bestMove;
     private String ponderMove;
-    private String tsumeAnalysis;
+    private EscapeTsumeDetails tsumeAnalysis;
 
     public PositionEvaluationDetails() {
     }
@@ -37,11 +37,11 @@ public class PositionEvaluationDetails implements Serializable {
         this.ponderMove = ponderMove;
     }
 
-    public String getTsumeAnalysis() {
+    public EscapeTsumeDetails getTsumeAnalysis() {
         return tsumeAnalysis;
     }
 
-    public void setTsumeAnalysis(String tsumeAnalysis) {
+    public void setTsumeAnalysis(EscapeTsumeDetails tsumeAnalysis) {
         this.tsumeAnalysis = tsumeAnalysis;
     }
 
