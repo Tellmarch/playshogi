@@ -1,6 +1,7 @@
 package com.playshogi.website.gwt.client.activity;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -171,7 +172,8 @@ public class ViewKifuActivity extends MyAbstractActivity {
                 moveCount)), false);
 
         if (analysisResult != null && analysisResult.getDetails().length > moveCount) {
-            eventBus.fireEvent(new PositionEvaluationEvent(analysisResult.getDetails()[moveCount]));
+            Scheduler.get().scheduleDeferred(() ->
+                    eventBus.fireEvent(new PositionEvaluationEvent(analysisResult.getDetails()[moveCount])));
         }
     }
 

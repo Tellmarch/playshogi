@@ -86,8 +86,11 @@ class BoardDecorationController {
                     KomadaiPositioning.getPiecesPositions(dropMove.getPieceType().ordinal(), 1, move.isBlackMoving(),
                             layout.getKomadaiWidth());
 
-            drawArrow(highlightCanvas, layout.getGoteKomadaiX() + points[0].x + SQUARE_WIDTH / 2,
-                    layout.getGoteKomadaiX() + points[0].y + SQUARE_HEIGHT / 2,
+            int komadaiX = move.isBlackMoving() ? layout.getSenteKomadaiX() : layout.getGoteKomadaiX();
+            int komadaiY = move.isBlackMoving() ? layout.getSenteKomadaiY() : layout.getGoteKomadaiY();
+
+            drawArrow(highlightCanvas, komadaiX + points[0].x + SQUARE_WIDTH / 2,
+                    komadaiY + points[0].y + SQUARE_HEIGHT / 2,
                     layout.getX(dropMove.getToSquare()) + SQUARE_WIDTH / 2,
                     layout.getY(dropMove.getToSquare()) + SQUARE_HEIGHT / 2);
         }

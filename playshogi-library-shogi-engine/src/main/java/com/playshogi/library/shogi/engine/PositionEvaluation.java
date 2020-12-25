@@ -5,6 +5,7 @@ import java.util.Arrays;
 public class PositionEvaluation {
 
     private final String sfen;
+    // All moves in USF notation
     private final PrincipalVariation[] principalVariationHistory;
     private final String bestMove;
     private final String ponderMove;

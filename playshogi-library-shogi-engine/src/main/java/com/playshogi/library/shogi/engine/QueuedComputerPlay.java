@@ -1,7 +1,5 @@
 package com.playshogi.library.shogi.engine;
 
-import com.playshogi.library.shogi.models.formats.usi.UsiMoveConverter;
-
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -34,7 +32,7 @@ public class QueuedComputerPlay {
 
         try {
             PositionEvaluation evaluation = usiConnector.analysePosition(sfen, TIME_MS);
-            return UsiMoveConverter.fromPsnToUsfSTring(evaluation.getBestMove(), sfen);
+            return evaluation.getBestMove();
         } catch (Exception ex) {
             LOGGER.log(Level.SEVERE, "Error getting computer evaluation", ex);
             usiConnector.disconnect();

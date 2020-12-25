@@ -6,7 +6,7 @@ import java.util.Arrays;
 public class PositionEvaluationDetails implements Serializable {
 
     private String sfen;
-    private PrincipalVariationDetails[] principalVariationHistory;
+    private PrincipalVariationDetails[] principalVariationHistory; // Index 0 is oldest (least accurate) eval
     private String bestMove;
     private String ponderMove;
     private EscapeTsumeDetails tsumeAnalysis;

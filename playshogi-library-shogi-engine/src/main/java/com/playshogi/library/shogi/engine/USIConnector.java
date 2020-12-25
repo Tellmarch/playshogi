@@ -140,7 +140,8 @@ public class USIConnector {
             principalVariation.setForcedMate(true);
             principalVariation.setNumMovesBeforeMate(numMoves);
             principalVariation.setPrincipalVariation(variation.toString());
-            return new PositionEvaluation(sfen, new PrincipalVariation[]{principalVariation}, split[1], null);
+            String bestMove = UsiMoveConverter.fromPsnToUsfSTring(split[1], sfen);
+            return new PositionEvaluation(sfen, new PrincipalVariation[]{principalVariation}, bestMove, null);
         }
     }
 
@@ -177,10 +178,10 @@ public class USIConnector {
         if (!"bestmove".equals(split[0])) {
             LOGGER.log(Level.SEVERE, "Unexpected bestmove line: " + nextLine);
         }
-        String bestMove = split[1];
+        String bestMove = UsiMoveConverter.fromPsnToUsfSTring(split[1], sfen);
         String ponderMove = "";
         if (split.length == 4) {
-            ponderMove = split[3];
+            ponderMove = UsiMoveConverter.fromPsnToUsfSTring(split[3], sfen);
         }
 
         return new PositionEvaluation(sfen, principalVariationHistory.toArray(new PrincipalVariation[0]), bestMove,

@@ -38,7 +38,7 @@ public class ViewKifuView extends Composite {
         shogiBoard.setUpperRightPanel(kifuNavigationPanel);
         shogiBoard.setLowerLeftPanel(kifuInformationPanel);
 
-        positionEvaluationDetailsPanel = new PositionEvaluationDetailsPanel();
+        positionEvaluationDetailsPanel = new PositionEvaluationDetailsPanel(shogiBoard);
         kifuEvaluationChartPanel = new KifuEvaluationChartPanel();
 
         HorizontalPanel horizontalPanel = new HorizontalPanel();

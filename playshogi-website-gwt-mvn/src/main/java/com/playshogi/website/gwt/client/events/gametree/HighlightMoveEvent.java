@@ -5,7 +5,7 @@ import com.playshogi.library.shogi.models.moves.ShogiMove;
 
 public class HighlightMoveEvent extends GenericEvent {
 
-    private final ShogiMove move;
+    private final ShogiMove move; // If null, clear highlights
 
     public HighlightMoveEvent(final ShogiMove move) {
         this.move = move;
