@@ -35,7 +35,7 @@ public class KifMoveConverter {
         Square toSquare;
         char firstChar = str.charAt(0);
         if (firstChar == '同') {
-            // capture
+            // same square
             toSquare = ((ToSquareMove) previousMove).getToSquare();
             pos++;
         } else if (firstChar >= '１' && firstChar <= '９') {
@@ -118,13 +118,23 @@ public class KifMoveConverter {
         }
     }
 
-    public static String toKifStringShort(final ShogiMove move) {
-
+    public static String toKifStringShort(final ShogiMove move, final ShogiMove previousMove) {
         if (move instanceof NormalMove) {
             NormalMove normalMove = (NormalMove) move;
 
-            return "" + KifUtils.getJapaneseWesternNumber(normalMove.getToSquare().getColumn()) + KifUtils.getJapaneseNumber(normalMove.getToSquare().getRow())
-                    + KifUtils.getJapanesePieceSymbol(normalMove.getPiece()) + (normalMove.isPromote() ? "成" : "");
+
+            String dest = "" +
+                    KifUtils.getJapaneseWesternNumber(normalMove.getToSquare().getColumn()) +
+                    KifUtils.getJapaneseNumber(normalMove.getToSquare().getRow());
+
+            if (previousMove instanceof ToSquareMove) {
+                ToSquareMove toSquareMove = (ToSquareMove) previousMove;
+                if (((NormalMove) move).getToSquare().equals(toSquareMove.getToSquare())) {
+                    dest = "同";
+                }
+            }
+
+            return dest + KifUtils.getJapanesePieceSymbol(normalMove.getPiece()) + (normalMove.isPromote() ? "成" : "");
 
         } else if (move instanceof DropMove) {
             DropMove dropMove = (DropMove) move;
@@ -141,5 +151,9 @@ public class KifMoveConverter {
         } else {
             throw new IllegalArgumentException("Unknown move type " + move);
         }
+    }
+
+    public static String toKifStringShort(final ShogiMove move) {
+        return toKifStringShort(move, null);
     }
 }

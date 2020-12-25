@@ -93,10 +93,12 @@ public class PositionEvaluationDetailsPanel extends Composite {
                 String[] usfMoves = pvString.trim().split(" ");
                 ShogiPosition position = SfenConverter.fromSFEN(evaluation.getSfen());
                 String result = "";
+                ShogiMove previousMove = null;
                 for (String usfMove : usfMoves) {
                     ShogiMove move = UsfMoveConverter.fromUsfString(usfMove, position);
                     shogiRulesEngine.playMoveInPosition(position, move);
-                    result += KifMoveConverter.toKifStringShort(move) + " ";
+                    result += KifMoveConverter.toKifStringShort(move, previousMove) + " ";
+                    previousMove = move;
                 }
 
                 return result;
