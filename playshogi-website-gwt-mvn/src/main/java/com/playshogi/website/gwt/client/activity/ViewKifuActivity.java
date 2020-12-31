@@ -166,14 +166,16 @@ public class ViewKifuActivity extends MyAbstractActivity {
     public void onPositionChangedEvent(final PositionChangedEvent event) {
         GWT.log("ViewKifuActivity handling PositionChangedEvent");
 
+        //TODO: do all this only if we are in mainline
+
         int moveCount = event.getPosition().getMoveCount();
         //Update URL with the new move count
         History.newItem("ViewKifu:" + new ViewKifuPlace.Tokenizer().getToken(new ViewKifuPlace(kifuId,
                 moveCount)), false);
 
         if (analysisResult != null && analysisResult.getDetails().length > moveCount) {
-            Scheduler.get().scheduleDeferred(() ->
-                    eventBus.fireEvent(new PositionEvaluationEvent(analysisResult.getDetails()[moveCount])));
+            PositionEvaluationDetails detail = analysisResult.getDetails()[moveCount];
+            Scheduler.get().scheduleDeferred(() -> eventBus.fireEvent(new PositionEvaluationEvent(detail)));
         }
     }
 

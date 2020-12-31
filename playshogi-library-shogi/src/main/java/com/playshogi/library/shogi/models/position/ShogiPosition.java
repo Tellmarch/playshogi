@@ -154,7 +154,7 @@ public class ShogiPosition implements Position {
 
     @Override
     public String toString() {
-        return shogiBoardState.toString();
+        return playerToMove.name() + " to move:\n" + shogiBoardState.toString();
     }
 
     @Override

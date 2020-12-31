@@ -13,7 +13,9 @@ import com.playshogi.library.models.record.GameTree;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.library.shogi.models.shogivariant.ShogiInitialPositionFactory;
 import com.playshogi.library.shogi.rules.ShogiRulesEngine;
+import com.playshogi.website.gwt.client.events.gametree.PositionChangedEvent;
 import com.playshogi.website.gwt.client.events.kifu.EditModeSelectedEvent;
+import com.playshogi.website.gwt.client.events.kifu.SwitchPlayerToPlayEvent;
 import com.playshogi.website.gwt.client.widget.board.ShogiBoard;
 import com.playshogi.website.gwt.client.widget.gamenavigator.GameNavigator;
 import com.playshogi.website.gwt.client.widget.kifu.GameTreePanel;
@@ -35,6 +37,8 @@ public class ProblemEditorView extends Composite {
     private final KifuEditorPanel kifuEditorPanel;
     private final PositionEditingPanel positionEditingPanel;
     private final GameTreePanel gameTreePanel;
+
+    private EventBus eventBus;
 
     @Inject
     public ProblemEditorView() {
@@ -62,6 +66,7 @@ public class ProblemEditorView extends Composite {
 
     public void activate(final EventBus eventBus) {
         GWT.log("Activating problem editor view");
+        this.eventBus = eventBus;
         eventBinder.bindEventHandlers(this, eventBus);
         shogiBoard.activate(eventBus);
         gameNavigator.activate(eventBus);
@@ -80,5 +85,12 @@ public class ProblemEditorView extends Composite {
         }
         // To reset selection/handlers
         shogiBoard.displayPosition();
+    }
+
+    @EventHandler
+    public void onSwitchPlayerToPlay(final SwitchPlayerToPlayEvent event) {
+        GWT.log("Problem editor: handle SwitchPlayerToPlayEvent");
+        shogiBoard.getPosition().setPlayerToMove(shogiBoard.getPosition().getPlayerToMove().opposite());
+        eventBus.fireEvent(new PositionChangedEvent(shogiBoard.getPosition(), true));
     }
 }

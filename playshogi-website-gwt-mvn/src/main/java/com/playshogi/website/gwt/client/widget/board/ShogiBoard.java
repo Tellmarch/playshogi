@@ -139,7 +139,7 @@ public class ShogiBoard extends Composite implements ClickHandler {
                 if (selectedPieceWrapper.isInKomadai()) {
                     DropMove move = new DropMove(piece.getOwner(), piece.getPieceType(), clickedSquare);
                     if (boardConfiguration.isPositionEditingMode()) {
-                        shogiRulesEngine.playMoveInPosition(position, move);
+                        shogiRulesEngine.playMoveInPosition(position, move, false);
                         displayPosition();
                     } else {
                         if (boardConfiguration.allowIllegalMoves() ||
@@ -151,7 +151,7 @@ public class ShogiBoard extends Composite implements ClickHandler {
                     Square selectedSquare = selectedPieceWrapper.getSquare();
                     NormalMove move = new NormalMove(piece, selectedSquare, clickedSquare);
                     if (boardConfiguration.isPositionEditingMode()) {
-                        shogiRulesEngine.playMoveInPosition(position, move);
+                        shogiRulesEngine.playMoveInPosition(position, move, false);
                         displayPosition();
                     } else {
                         if (boardConfiguration.allowIllegalMoves() ||

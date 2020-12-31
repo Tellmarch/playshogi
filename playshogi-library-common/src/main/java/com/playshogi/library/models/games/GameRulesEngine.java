@@ -7,6 +7,8 @@ public interface GameRulesEngine<P extends Position> {
 
     void playMoveInPosition(P position, Move move);
 
+    void playMoveInPosition(P position, Move move, boolean incrementMoveCount);
+
     void undoMoveInPosition(P position, Move move);
 
     boolean isMoveLegalInPosition(P position, Move move);

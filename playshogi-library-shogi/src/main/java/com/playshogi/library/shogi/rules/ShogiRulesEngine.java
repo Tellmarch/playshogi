@@ -51,6 +51,11 @@ public class ShogiRulesEngine implements GameRulesEngine<ShogiPosition> {
 
     @Override
     public void playMoveInPosition(final ShogiPosition position, final Move move) {
+        playMoveInPosition(position, move, true);
+    }
+
+    @Override
+    public void playMoveInPosition(final ShogiPosition position, final Move move, final boolean incrementMoveCount) {
         if (move instanceof CaptureMove) {
             playCaptureMove(position, (CaptureMove) move);
         } else if (move instanceof DropMove) {
@@ -58,7 +63,9 @@ public class ShogiRulesEngine implements GameRulesEngine<ShogiPosition> {
         } else if (move instanceof NormalMove) {
             playNormalMove(position, (NormalMove) move);
         }
-        position.incrementMoveCount();
+        if (incrementMoveCount) {
+            position.incrementMoveCount();
+        }
     }
 
     private void playCaptureMove(final ShogiPosition position, final CaptureMove move) {
