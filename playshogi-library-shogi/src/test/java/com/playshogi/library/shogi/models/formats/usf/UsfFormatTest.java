@@ -2,7 +2,12 @@ package com.playshogi.library.shogi.models.formats.usf;
 
 import com.playshogi.library.models.record.GameRecord;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 public class UsfFormatTest {
 
@@ -29,5 +34,14 @@ public class UsfFormatTest {
         GameRecord gameRecord = UsfFormat.INSTANCE.read(usfGame).get(0);
         String result = UsfFormat.INSTANCE.write(gameRecord.getGameTree());
         Assert.assertEquals(usfGame, result);
+    }
+
+    @Ignore
+    @Test
+    public void readTest1() throws IOException {
+        String path = "src/test/resources/usf/test1.usf";
+        String usfGame = new String(Files.readAllBytes(Paths.get(path)));
+        GameRecord gameRecord = UsfFormat.INSTANCE.read(usfGame).get(0);
+        Assert.assertNotNull(gameRecord.getGameTree());
     }
 }

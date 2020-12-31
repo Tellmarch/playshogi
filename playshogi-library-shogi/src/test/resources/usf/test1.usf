@@ -1,0 +1,112 @@
+USF:1.0
+^*:SLNTSLNT2g2f8c8dSLNT2f2e8d8e6i7h4a3b2e2d2c2d2h2dp*2c2d2fSLNT
+.0
+#Bienvenue sur www.playshogi.com!
+#Cette leçon est le premier chapitre d'une série de kifus intéractifs présentant les débuts de parties pour les joueurs débutants.
+#Dans cette leçon, nous allons présenter les premiers coups d'une ouverture très jouée par les débutants, le "double wing attack" (traduction?).
+.
+#Au shogi, la tour est la pièce la plus puissante pour attaquer. Dans cette ouverture, les deux joueurs décident d'utiliser leur tour pour attaquer immédiatement et directement avec.
+~ARROW,2h2c,3,0,0,(240,0,0,255),(240,0,0,255)
+~ARROW,8b8g,3,0,0,(240,0,0,255),(240,0,0,255)
+.
+#Quiz : quel est le premier coup pour attaquer directement avec la tour fixe?
+X:PLAYSHOGI:QUIZ
+X:PLAYSHOGI:QUIZ-WRONGMSG:Essaie encore ! Il faut commencer par ouvrir la voie de la tour.
+.
+#Bonne réponse !  En avançant le pion avec le support de la tour, Sente commence l'attaque de la façon la plus directe possible.
+X:PLAYSHOGI:CORRECT
+.
+#On entre dans l'ouverture dite "double wing attack" lorsque les deux joueurs adoptent cette stratégie d'attaque directe avec la tour fixe.
+.
+#L'objectif est de pousser le pion jusqu'au camp adverse, avec le support de la tour, pour forcer des échanges et ouvrir la ligne de la tour.
+~ARROW,2f2e,3,0,0,(240,0,0,255),(240,0,0,255)
+~ARROW,2e2d,3,0,0,(240,30,144,255),(240,30,144,255)
+~ARROW,2d2c,3,0,0,(255,0,191,155),(255,0,191,155)
+.
+#On continue donc dans cette voie...
+.
+#Et Gote fait de même.
+#Quiz : Cependant, il y a un piège ! Quel serait ton prochain coup ?
+X:PLAYSHOGI:QUIZ
+X:PLAYSHOGI:QUIZ-WRONGMSG:Essaie encore ! Il faut commencer par renforcer sa défense.
+.
+#<HTML>Bonne réponse !  On commence par consolider sa position, avant de lancer les hostilités.
+#Pourquoi est-ce nécessaire? <a href="special:goForward">Continuer</a><HTML>
+X:PLAYSHOGI:CORRECT
+.
+#Gote se renforce de la même façon.
+.
+#Maintenant que l'on a assuré la défense, on peut engager les hostilités. Au shogi, le début du combat se traduit souvent par des pions venant en contact.
+#Quiz : quelle va être la réponse de Gote?
+X:PLAYSHOGI:QUIZ
+X:PLAYSHOGI:QUIZ-WRONGMSG:Essaie encore ! Il faut faire quelque chose à propos de ce pion
+.
+#L'attaque sur 23 est trop forte, Gote n'a pas d'autre choix que d'échanger.
+X:PLAYSHOGI:CORRECT
+.
+#<HTML>On peut alors reprendre le pion, et menacer le très dangereux <a href="move:P*2c">P*23</a>.</HTML>
+.
+#Pour parer cette menace, Gote parachute un pion, menaçant de capturer la tour.
+#Quiz : comment protéger la tour, tout en empechant Gote d'échanger le pion de sa tour au prochain coup?
+~ARROW,2c2d,3,0,0,(255,255,0,0),(255,255,0,0)
+X:PLAYSHOGI:QUIZ
+X:PLAYSHOGI:QUIZ-WRONGMSG:Essaie encore ! Il faut bouger la tour, mais où?
+.
+#Bonne réponse ! En revenant sur cette case, la tour controle la 6eme rangée et empêche le pion blanc d'avancer.
+~ARROW,2f8f,3,0,0,(240,0,0,255),(240,0,0,255)
+X:PLAYSHOGI:CORRECT
+.
+#Ceci conclut cette leçon sur le "double wing attack". N'hésite pas à essayer de le jouer contre d'autres joueurs, par exemple sur le serveur 81dojo.com !
+.10
+.2d2h
+#Non. Il ne s'agit pas d'un mauvais coup, mais...
+X:PLAYSHOGI:INCORRECT
+.8e8f
+#<HTML>...rien n'empêche gote d'échanger son pion au prochain coup.
+#<a href="special:goLastBranch">Retour</a></HTML>
+.7
+.8e8f
+#Non! Continuer à jouer symmétrique n'est pas possible ici.
+X:PLAYSHOGI:INCORRECT
+.2d2C
+#<HTML>Sente peut promouvoir son pion en premier, et a l'initiative pour capturer les pièces en suivant. Il a l'avantage.
+#<a href="special:goLastBranch">Retour</a></HTML>
+.4
+.7i7h
+#<HTML>Pas tout à fait. L'idée est la bonne, protéger la case en 87, mais la structure des pièces ne serait pas idéale, le fou se retrouvant sans protection.
+#<a href="special:goBack">Retour</a></HTML>
+X:PLAYSHOGI:INCORRECT
+.4
+.2e2d
+#<HTML>Non ! Si l'on attaque sans prendre de précautions, cela risque de mal tourner...
+#<a href="special:goForward">Pourquoi?</a> <a href="special:goBack">Retour</a></HTML>
+X:PLAYSHOGI:INCORRECT
+.2c2d
+#Gote commence par échanger le pion..
+.2h2d
+.8e8f
+#Et lance son attaque. La différence est qu'il a maintenant un pion en main.
+.8g8f
+#Quiz : Quel va être son prochain coup?
+X:PLAYSHOGI:QUIZ
+X:PLAYSHOGI:QUIZ-WRONGMSG:Ce n'est pas le bon coup, essaie encore !
+.p*8g
+#Bonne réponse ! Avec ce coup, Gote prend l'initiative. Le fou ne peut pas s'échapper...
+X:PLAYSHOGI:CORRECT
+.P*2c
+#Sente peut tenter de contre-attaquer avec un coup similaire...
+.8g8H
+#<HTML>Mais Gote prend le fou en premier, et a désormais l'initiative. La partie est loin d'être perdue, mais il sera difficile pour Sente de reprendre l'avantage.
+#<a href="special:goStartVariation">Retour</a></HTML>
+.9
+.8b8f
+#<HTML>Non ! Ce coup semble être le coup normal, mais il y avait ici un "Tesuji", un coup astucieux.
+#<a href="special:goBack">Retour</a></HTML>
+X:PLAYSHOGI:INCORRECT
+.0
+.
+.
+.7g7f
+#<HTML>Non ! Ce coup est le premier coup le plus joué au Shogi, mais il ne correspond pas à l'ouverture du "Double wing attack".
+#<a href="special:goBack">Retour</a></HTML>
+X:PLAYSHOGI:INCORRECT

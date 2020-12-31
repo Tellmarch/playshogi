@@ -51,6 +51,10 @@ public class UsfMoveConverter {
             row1 = UsfUtil.char2RowNumber(usfMove.charAt(1));
             piece = shogiPosition.getPieceAt(Square.of(col1, row1)).orElse(null);
         }
+        if (piece == null) {
+            System.out.println(shogiPosition);
+            throw new IllegalArgumentException("Illegal move " + usfMove);
+        }
         if (usfMove.charAt(3) == '*') {
             // TODO
             // to komadai
