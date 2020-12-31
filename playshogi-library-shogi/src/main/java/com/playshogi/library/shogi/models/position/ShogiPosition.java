@@ -18,8 +18,8 @@ public class ShogiPosition implements Position {
     private int moveCount;
     private Player playerToMove;
     private MutableShogiBoardState shogiBoardState;
-    private KomadaiState senteKomadai;
-    private KomadaiState goteKomadai;
+    private MutableKomadaiState senteKomadai;
+    private MutableKomadaiState goteKomadai;
 
     public ShogiPosition() {
         this(ShogiVariant.NORMAL_SHOGI);
@@ -27,11 +27,11 @@ public class ShogiPosition implements Position {
 
     public ShogiPosition(final ShogiVariant shogiVariant) {
         this(0, Player.BLACK, new ShogiBoardStateImpl(shogiVariant.getBoardWidth(), shogiVariant.getBoardHeight()),
-                new KomadaiState(), new KomadaiState());
+                new MutableKomadaiState(), new MutableKomadaiState());
     }
 
     public ShogiPosition(int moveCount, final Player playerToMove, final MutableShogiBoardState shogiBoardState,
-                         final KomadaiState senteKomadai, final KomadaiState goteKomadai) {
+                         final MutableKomadaiState senteKomadai, final MutableKomadaiState goteKomadai) {
         this.moveCount = moveCount;
         this.playerToMove = playerToMove;
         this.shogiBoardState = shogiBoardState;
@@ -77,19 +77,19 @@ public class ShogiPosition implements Position {
         return shogiBoardState.getHeight();
     }
 
-    public KomadaiState getSenteKomadai() {
+    public MutableKomadaiState getSenteKomadai() {
         return senteKomadai;
     }
 
-    public void setSenteKomadai(final KomadaiState senteKomadai) {
+    public void setSenteKomadai(final MutableKomadaiState senteKomadai) {
         this.senteKomadai = senteKomadai;
     }
 
-    public KomadaiState getGoteKomadai() {
+    public MutableKomadaiState getGoteKomadai() {
         return goteKomadai;
     }
 
-    public void setGoteKomadai(final KomadaiState goteKomadai) {
+    public void setGoteKomadai(final MutableKomadaiState goteKomadai) {
         this.goteKomadai = goteKomadai;
     }
 

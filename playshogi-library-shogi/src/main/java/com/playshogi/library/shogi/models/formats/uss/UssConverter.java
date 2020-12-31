@@ -6,7 +6,7 @@ import com.playshogi.library.shogi.models.PieceType;
 import com.playshogi.library.shogi.models.Player;
 import com.playshogi.library.shogi.models.formats.sfen.LineReader;
 import com.playshogi.library.shogi.models.formats.sfen.StringLineReader;
-import com.playshogi.library.shogi.models.position.KomadaiState;
+import com.playshogi.library.shogi.models.position.MutableKomadaiState;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
 
 /**
@@ -96,7 +96,7 @@ public class UssConverter {
         }
     }
 
-    private static void readPiecesInHand(final String line, final KomadaiState komadai) {
+    private static void readPiecesInHand(final String line, final MutableKomadaiState komadai) {
         String piecesString = line.substring(line.indexOf(":") + 1).trim();
         if ("nothing".equalsIgnoreCase(piecesString)) {
             return;

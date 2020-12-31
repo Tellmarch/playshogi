@@ -3,7 +3,7 @@ package com.playshogi.library.shogi.models.formats.sfen;
 import com.playshogi.library.shogi.models.Piece;
 import com.playshogi.library.shogi.models.PieceType;
 import com.playshogi.library.shogi.models.Player;
-import com.playshogi.library.shogi.models.position.KomadaiState;
+import com.playshogi.library.shogi.models.position.MutableKomadaiState;
 import com.playshogi.library.shogi.models.position.MutableShogiBoardState;
 import com.playshogi.library.shogi.models.position.ShogiBoardStateImpl;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
@@ -124,8 +124,8 @@ public class SfenConverter {
             }
         }
 
-        KomadaiState senteKomadai = new KomadaiState();
-        KomadaiState goteKomadai = new KomadaiState();
+        MutableKomadaiState senteKomadai = new MutableKomadaiState();
+        MutableKomadaiState goteKomadai = new MutableKomadaiState();
 
         int moveCount = 1;
         Player player = Player.BLACK;

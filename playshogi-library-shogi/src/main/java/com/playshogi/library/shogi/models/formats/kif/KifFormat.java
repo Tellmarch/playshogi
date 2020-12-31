@@ -10,7 +10,7 @@ import com.playshogi.library.shogi.models.formats.sfen.LineReader;
 import com.playshogi.library.shogi.models.formats.sfen.StringLineReader;
 import com.playshogi.library.shogi.models.moves.ShogiMove;
 import com.playshogi.library.shogi.models.moves.SpecialMove;
-import com.playshogi.library.shogi.models.position.KomadaiState;
+import com.playshogi.library.shogi.models.position.MutableKomadaiState;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.library.shogi.models.shogivariant.ShogiInitialPositionFactory;
 import com.playshogi.library.shogi.rules.ShogiRulesEngine;
@@ -159,7 +159,7 @@ public enum KifFormat implements GameRecordFormat {
                     if (startingPosition == null) {
                         startingPosition = new ShogiPosition();
                     }
-                    KomadaiState komadai = startingPosition.getGoteKomadai();
+                    MutableKomadaiState komadai = startingPosition.getGoteKomadai();
                     readPiecesInHand(value, komadai);
                     lineReader.nextLine(); //  ９ ８ ７ ６ ５ ４ ３ ２ １
 
@@ -184,7 +184,7 @@ public enum KifFormat implements GameRecordFormat {
                     if (startingPosition == null) {
                         startingPosition = new ShogiPosition();
                     }
-                    KomadaiState komadai = startingPosition.getSenteKomadai();
+                    MutableKomadaiState komadai = startingPosition.getSenteKomadai();
                     readPiecesInHand(value, komadai);
                     break;
                 }
@@ -265,7 +265,7 @@ public enum KifFormat implements GameRecordFormat {
         return Arrays.asList(new GameRecord(gameInformation, gameTree, gameResult));
     }
 
-    private void readPiecesInHand(final String value, final KomadaiState komadai) {
+    private void readPiecesInHand(final String value, final MutableKomadaiState komadai) {
         if (value.equals("なし")) {
             // nothing in hand
             return;
