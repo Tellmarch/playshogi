@@ -17,7 +17,7 @@ public class ShogiPosition implements Position {
     // How many moves were played in the position (starts at 0)
     private int moveCount;
     private Player playerToMove;
-    private ShogiBoardState shogiBoardState;
+    private MutableShogiBoardState shogiBoardState;
     private KomadaiState senteKomadai;
     private KomadaiState goteKomadai;
 
@@ -30,7 +30,7 @@ public class ShogiPosition implements Position {
                 new KomadaiState(), new KomadaiState());
     }
 
-    public ShogiPosition(int moveCount, final Player playerToMove, final ShogiBoardState shogiBoardState,
+    public ShogiPosition(int moveCount, final Player playerToMove, final MutableShogiBoardState shogiBoardState,
                          final KomadaiState senteKomadai, final KomadaiState goteKomadai) {
         this.moveCount = moveCount;
         this.playerToMove = playerToMove;
@@ -61,11 +61,11 @@ public class ShogiPosition implements Position {
         return playerToMove;
     }
 
-    public ShogiBoardState getShogiBoardState() {
+    public MutableShogiBoardState getShogiBoardState() {
         return shogiBoardState;
     }
 
-    public void setShogiBoardState(final ShogiBoardState shogiBoardState) {
+    public void setShogiBoardState(final MutableShogiBoardState shogiBoardState) {
         this.shogiBoardState = shogiBoardState;
     }
 

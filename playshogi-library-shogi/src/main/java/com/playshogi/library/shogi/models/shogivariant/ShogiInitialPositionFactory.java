@@ -3,7 +3,7 @@ package com.playshogi.library.shogi.models.shogivariant;
 import com.playshogi.library.shogi.models.Piece;
 import com.playshogi.library.shogi.models.PieceType;
 import com.playshogi.library.shogi.models.Player;
-import com.playshogi.library.shogi.models.position.ShogiBoardState;
+import com.playshogi.library.shogi.models.position.MutableShogiBoardState;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
 
 public class ShogiInitialPositionFactory {
@@ -14,7 +14,7 @@ public class ShogiInitialPositionFactory {
 
     public static ShogiPosition createInitialPosition(final Handicap handicap) {
         ShogiPosition shogiPosition = new ShogiPosition(ShogiVariant.NORMAL_SHOGI);
-        ShogiBoardState shogiBoardState = shogiPosition.getShogiBoardState();
+        MutableShogiBoardState shogiBoardState = shogiPosition.getShogiBoardState();
 
         setWhitePieces(shogiBoardState, handicap);
         setBlackPieces(shogiBoardState);
@@ -32,7 +32,7 @@ public class ShogiInitialPositionFactory {
         return shogiPosition;
     }
 
-    private static void setWhitePieces(final ShogiBoardState shogiBoardState, final Handicap handicap) {
+    private static void setWhitePieces(final MutableShogiBoardState shogiBoardState, final Handicap handicap) {
         shogiBoardState.setPieceAt(5, 1, Piece.GOTE_KING);
 
         if (handicap == Handicap.NAKED_KING || handicap == Handicap.THREE_PAWNS) {
@@ -129,7 +129,7 @@ public class ShogiInitialPositionFactory {
         }
     }
 
-    private static void setBlackPieces(final ShogiBoardState shogiBoardState) {
+    private static void setBlackPieces(final MutableShogiBoardState shogiBoardState) {
         shogiBoardState.setPieceAt(1, 9, Piece.SENTE_LANCE);
         shogiBoardState.setPieceAt(2, 9, Piece.SENTE_KNIGHT);
         shogiBoardState.setPieceAt(3, 9, Piece.SENTE_SILVER);

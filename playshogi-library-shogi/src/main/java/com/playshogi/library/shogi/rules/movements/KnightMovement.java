@@ -3,9 +3,6 @@ package com.playshogi.library.shogi.rules.movements;
 import com.playshogi.library.models.Square;
 import com.playshogi.library.shogi.models.position.ShogiBoardState;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class KnightMovement extends AbstractPieceMovement {
 
     private static final int[][] KNIGHT_ALLOWED_DCOL_DROW = {{+1, -2}, {-1, -2}};

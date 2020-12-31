@@ -6,7 +6,7 @@ import com.playshogi.library.shogi.models.Player;
 
 import java.util.Optional;
 
-public class ShogiBoardStateImpl extends ShogiBoardState {
+public class ShogiBoardStateImpl extends MutableShogiBoardState {
 
     private ShogiBoardState invert;
 

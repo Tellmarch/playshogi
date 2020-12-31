@@ -4,7 +4,7 @@ import com.playshogi.library.shogi.models.Piece;
 import com.playshogi.library.shogi.models.PieceType;
 import com.playshogi.library.shogi.models.Player;
 import com.playshogi.library.shogi.models.position.KomadaiState;
-import com.playshogi.library.shogi.models.position.ShogiBoardState;
+import com.playshogi.library.shogi.models.position.MutableShogiBoardState;
 import com.playshogi.library.shogi.models.position.ShogiBoardStateImpl;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
 
@@ -88,7 +88,7 @@ public class SfenConverter {
     }
 
     public static ShogiPosition fromSFEN(final String sfen) {
-        ShogiBoardState shogiBoardState = new ShogiBoardStateImpl(9, 9);
+        MutableShogiBoardState shogiBoardState = new ShogiBoardStateImpl(9, 9);
         String[] fields = sfen.split(" ");
 
         // Reading board pieces

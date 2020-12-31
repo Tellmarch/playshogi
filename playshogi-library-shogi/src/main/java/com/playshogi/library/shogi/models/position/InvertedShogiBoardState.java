@@ -6,10 +6,10 @@ import com.playshogi.library.shogi.models.Player;
 
 import java.util.Optional;
 
-class InvertedShogiBoardState extends ShogiBoardState {
-    private final ShogiBoardState original;
+class InvertedShogiBoardState extends MutableShogiBoardState {
+    private final MutableShogiBoardState original;
 
-    public InvertedShogiBoardState(final ShogiBoardState original) {
+    InvertedShogiBoardState(final MutableShogiBoardState original) {
         this.original = original;
     }
 
