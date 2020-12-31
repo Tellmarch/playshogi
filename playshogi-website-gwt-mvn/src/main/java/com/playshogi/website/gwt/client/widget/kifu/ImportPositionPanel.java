@@ -7,6 +7,7 @@ import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.ui.*;
 import com.google.web.bindery.event.shared.EventBus;
 import com.playshogi.library.models.record.GameRecord;
+import com.playshogi.library.shogi.models.formats.kif.KifFormat;
 import com.playshogi.library.shogi.models.formats.sfen.SfenConverter;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.website.gwt.client.events.gametree.PositionChangedEvent;
@@ -88,15 +89,21 @@ public class ImportPositionPanel extends Composite implements ClickHandler {
         Object source = event.getSource();
         if (source == loadFromTextButton) {
             importPositionFromText();
-        } else if (source == sfenButton) {
+        } else if (source == sfenButton && isEmptyOrTemplate()) {
             textArea.setText(SFEN_EXAMPLE);
             textArea.setSelectionRange(0, textArea.getText().length());
             textArea.setFocus(true);
-        } else if (source == kifButton) {
+        } else if (source == kifButton && isEmptyOrTemplate()) {
             textArea.setText(KIF_EXAMPLE);
             textArea.setSelectionRange(0, textArea.getText().length());
             textArea.setFocus(true);
         }
+    }
+
+    private boolean isEmptyOrTemplate() {
+        return textArea.getText().isEmpty()
+                || textArea.getText().equals(KIF_EXAMPLE)
+                || textArea.getText().equals(SFEN_EXAMPLE);
     }
 
     public void activate(final EventBus eventBus) {
@@ -113,6 +120,7 @@ public class ImportPositionPanel extends Composite implements ClickHandler {
             position = SfenConverter.fromSFEN(textArea.getText());
         } else if (kifButton.getValue()) {
             GWT.log("Will parse as KIF position");
+            position = KifFormat.INSTANCE.readPosition(textArea.getText());
         } else if (psnButton.getValue()) {
             GWT.log("Will parse as PSN position");
         }

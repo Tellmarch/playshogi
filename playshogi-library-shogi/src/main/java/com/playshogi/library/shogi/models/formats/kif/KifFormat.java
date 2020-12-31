@@ -2,6 +2,7 @@ package com.playshogi.library.shogi.models.formats.kif;
 
 import com.playshogi.library.models.Square;
 import com.playshogi.library.models.record.*;
+import com.playshogi.library.shogi.models.GameRecordUtils;
 import com.playshogi.library.shogi.models.Player;
 import com.playshogi.library.shogi.models.formats.kif.KifUtils.PieceParsingResult;
 import com.playshogi.library.shogi.models.formats.sfen.GameRecordFormat;
@@ -44,103 +45,159 @@ public enum KifFormat implements GameRecordFormat {
         while (!l.startsWith("手数")) {
             l = l.trim();
             if (l.isEmpty() || l.startsWith("#")) {
-                l = lineReader.nextLine();
-                continue;
+                if (lineReader.hasNextLine()) {
+                    l = lineReader.nextLine();
+                    continue;
+                } else {
+                    break;
+                }
             }
 
             if (l.equals("先手番")) {
                 // sente to play
-                l = lineReader.nextLine();
-                continue;
+                if (lineReader.hasNextLine()) {
+                    l = lineReader.nextLine();
+                    continue;
+                } else {
+                    break;
+                }
             }
 
             if (l.equals("後手番")) {
                 // gote to play
                 goteToPlay = true;
-                l = lineReader.nextLine();
-                continue;
+                if (lineReader.hasNextLine()) {
+                    l = lineReader.nextLine();
+                    continue;
+                } else {
+                    break;
+                }
             }
 
             String[] sp = l.split("：", 2);
             if (sp.length < 2) {
                 System.out.println("WARNING : unable to parse line " + l + " in file " + "???" + " , ignored.");
-                l = lineReader.nextLine();
-                continue;
+                if (lineReader.hasNextLine()) {
+                    l = lineReader.nextLine();
+                    continue;
+                } else {
+                    break;
+                }
             }
             String field = sp[0];
             String value = sp[1];
-            if (field.equals("開始日時")) {
-                date = value;
-            } else if (field.equals("棋戦")) {
-                tournament = value;
-            } else if (field.equals("終了日時")) {
-                // ending time? ignore.
-            } else if (field.equals("戦型")) {
-                opening = value;
-            } else if (field.equals("場所")) {
-                place = value;
-            } else if (field.equals("持ち時間") || field.equals("対局日")) {
-                time = value;
-            } else if (field.equals("手合割")) {
-                handicap = value;
-                if (!value.startsWith("平手")) {
-                    // TODO
-                    // System.out.println("Handicap game, we ignore for
-                    // now");
-                    return null;
-                }
-            } else if (field.equals("後手") || field.equals("上手")) { // gote /
-                // handicap
-                // giver
-                gote = value;
-            } else if (field.equals("先手") || field.equals("下手")) { // sente /
-                // handicap
-                // receiver
-                sente = value;
-            } else if (field.equals("備考")) {
-                // TODO : what is it?
-            } else if (field.equals("作者")) {
-                // TODO: author
-            } else if (field.equals("作意")) {
-                // TODO: conception
-            } else if (field.equals("発表誌")) {
-                // TODO: magazine
-            } else if (field.equals("目安時間")) {
-                // TODO: estimated time
-            } else if (field.equals("思考時間")) {
-                // TODO: think time
-            } else if (field.equals("詰手数")) {
-                // TODO: nr of moves
-            } else if (field.equals("表題")) {
-                // TODO : what is it?
-            } else if (field.equals("消費時間")) {
-                // Time used : ignored.
-            } else if (field.equals("後手の持駒")) {
-                // gote pieces in hand
-                startingPosition = new ShogiPosition();
-                KomadaiState komadai = startingPosition.getGoteKomadai();
-                readPiecesInHand(value, komadai);
-                lineReader.nextLine(); //  ９ ８ ７ ６ ５ ４ ３ ２ １
-                lineReader.nextLine(); // +---------------------------+
-                for (int row = 1; row <= 9; row++) {
-                    l = lineReader.nextLine();
-                    int pos = 1;
-                    for (int column = 9; column >= 1; column--) {
-                        PieceParsingResult pieceParsingResult = KifUtils.readPiece(l, pos);
-                        pos = pieceParsingResult.nextPosition;
-                        startingPosition.getShogiBoardState().setPieceAt(Square.of(column, row),
-                                pieceParsingResult.piece);
+            switch (field) {
+                case "開始日時":
+                    date = value;
+                    break;
+                case "棋戦":
+                    tournament = value;
+                    break;
+                case "終了日時":
+                    // ending time? ignore.
+                    break;
+                case "戦型":
+                    opening = value;
+                    break;
+                case "場所":
+                    place = value;
+                    break;
+                case "持ち時間":
+                case "対局日":
+                    time = value;
+                    break;
+                case "手合割":
+                    handicap = value;
+                    if (!value.startsWith("平手")) {
+                        // TODO
+                        // System.out.println("Handicap game, we ignore for
+                        // now");
+                        return null;
                     }
+                    break;
+                case "後手":
+                case "上手":  // gote /
+                    // handicap
+                    // giver
+                    gote = value;
+                    break;
+                case "先手":
+                case "下手":  // sente /
+                    // handicap
+                    // receiver
+                    sente = value;
+                    break;
+                case "備考":
+                    // TODO : what is it?
+                    break;
+                case "作者":
+                    // TODO: author
+                    break;
+                case "作意":
+                    // TODO: conception
+                    break;
+                case "発表誌":
+                    // TODO: magazine
+                    break;
+                case "目安時間":
+                    // TODO: estimated time
+                    break;
+                case "思考時間":
+                    // TODO: think time
+                    break;
+                case "詰手数":
+                    // TODO: nr of moves
+                    break;
+                case "表題":
+                    // TODO : what is it?
+                    break;
+                case "消費時間":
+                    // Time used : ignored.
+                    break;
+                case "後手の持駒": {
+                    // gote pieces in hand
+                    if (startingPosition == null) {
+                        startingPosition = new ShogiPosition();
+                    }
+                    KomadaiState komadai = startingPosition.getGoteKomadai();
+                    readPiecesInHand(value, komadai);
+                    lineReader.nextLine(); //  ９ ８ ７ ６ ５ ４ ３ ２ １
+
+                    lineReader.nextLine(); // +---------------------------+
+
+                    for (int row = 1; row <= 9; row++) {
+                        l = lineReader.nextLine();
+                        int pos = 1;
+                        for (int column = 9; column >= 1; column--) {
+                            PieceParsingResult pieceParsingResult = KifUtils.readPiece(l, pos);
+                            pos = pieceParsingResult.nextPosition;
+                            startingPosition.getShogiBoardState().setPieceAt(Square.of(column, row),
+                                    pieceParsingResult.piece);
+                        }
+                    }
+                    lineReader.nextLine(); // +---------------------------+
+
+                    break;
                 }
-                lineReader.nextLine(); // +---------------------------+
-            } else if (field.equals("先手の持駒")) {
-                // sente pieces in hand
-                KomadaiState komadai = startingPosition.getSenteKomadai();
-                readPiecesInHand(value, komadai);
-            } else {
-                System.out.println("WARNING : unknown field " + l + " in file " + "???" + " , ignored !");
+                case "先手の持駒": {
+                    // sente pieces in hand
+                    if (startingPosition == null) {
+                        startingPosition = new ShogiPosition();
+                    }
+                    KomadaiState komadai = startingPosition.getSenteKomadai();
+                    readPiecesInHand(value, komadai);
+                    break;
+                }
+                default:
+                    System.out.println("WARNING : unknown field " + l + " in file " + "???" + " , ignored !");
+                    break;
             }
-            l = lineReader.nextLine();
+
+            if (lineReader.hasNextLine()) {
+                l = lineReader.nextLine();
+            } else {
+                break;
+            }
         }
         // s.next();
         // s.useDelimiter("[ \r\n]");
@@ -240,4 +297,13 @@ public enum KifFormat implements GameRecordFormat {
         throw new UnsupportedOperationException();
     }
 
+    public ShogiPosition readPosition(final String position) {
+        List<GameRecord> gameRecords = read(position);
+        if (gameRecords.size() == 0) {
+            return null;
+        }
+
+        GameRecord record = gameRecords.get(0);
+        return GameRecordUtils.getinitialPosition(record);
+    }
 }

@@ -1,7 +1,9 @@
 package com.playshogi.library.shogi.models.formats.kif;
 
 import com.playshogi.library.models.record.GameRecord;
+import com.playshogi.library.shogi.models.formats.sfen.SfenConverter;
 import com.playshogi.library.shogi.models.formats.usf.UsfFormat;
+import com.playshogi.library.shogi.models.position.ShogiPosition;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -259,6 +261,41 @@ public class KifFormatTest {
             "後手：BBB\n" +
             "手数＝33  ▲４六同銀  まで";
 
+    private final String KIF_ONLY_POSITION = "後手の持駒：角　歩\n" +
+            "  ９ ８ ７ ６ ５ ４ ３ ２ １\n" +
+            "+---------------------------+\n" +
+            "|v香v桂 ・v金 ・ ・ ・v桂v香|一\n" +
+            "| ・v玉v銀 ・v金 ・ ・v飛 ・|二\n" +
+            "| ・v歩v歩v歩v歩 ・ ・v歩v歩|三\n" +
+            "|v歩 ・ ・ ・ ・v銀v歩 ・ ・|四\n" +
+            "| ・ ・ ・ ・ ・ ・ ・ 歩 ・|五\n" +
+            "| 歩 ・ 歩 歩 ・ 銀 歩 ・ 歩|六\n" +
+            "| ・ 歩 銀 ・ 歩 ・ ・ ・ ・|七\n" +
+            "| ・ 玉 金 ・ ・ ・ ・ 飛 ・|八\n" +
+            "| 香 桂 ・ ・ ・ 金 ・ 桂 香|九\n" +
+            "+---------------------------+\n" +
+            "先手の持駒：角　歩\n" +
+            "後手番\n";
+
+    private final String KIF_ONLY_POSITION_DOKORO = "#KIF version=2.0 encoding=UTF-8\n" +
+            "後手の持駒：なし\n" +
+            "  ９ ８ ７ ６ ５ ４ ３ ２ １\n" +
+            "+---------------------------+\n" +
+            "|v香v桂v銀v金v玉v金v銀v桂v香|一\n" +
+            "| ・v飛 ・ ・ ・ ・ ・ 馬 ・|二\n" +
+            "|v歩v歩v歩v歩v歩v歩 ・v歩v歩|三\n" +
+            "| ・ ・ ・ ・ ・ ・v歩 ・ ・|四\n" +
+            "| ・ ・ ・ ・ ・ ・ ・ ・ ・|五\n" +
+            "| ・ ・ 歩 ・ ・ ・ ・ ・ ・|六\n" +
+            "| 歩 歩 ・ 歩 歩 歩 歩 歩 歩|七\n" +
+            "| ・ ・ ・ ・ ・ ・ ・ 飛 ・|八\n" +
+            "| 香 桂 銀 金 玉 金 銀 桂 香|九\n" +
+            "+---------------------------+\n" +
+            "先手の持駒：角\n" +
+            "後手番\n" +
+            "先手：\n" +
+            "後手：\n";
+
     private final String ANOTHER_KIF = "先手：AAA 初段\n" +
             "後手：BBB 初段\n" +
             "開始日時：2020/09/28 22:00:12\n" +
@@ -414,4 +451,25 @@ public class KifFormatTest {
                 "GD:2020/09/28 22:00:12\n" +
                 "GQ:UNKNOWN", UsfFormat.INSTANCE.write(kif));
     }
+
+    @Test
+    public void readPosition() {
+        ShogiPosition pos = KifFormat.INSTANCE.readPosition(KIF_GOTE_POSITION);
+        assertEquals("ln1g3nl/1ks1g2r1/1pppp2pp/p4sp2/7P1/P1PP1SP1P/1PS1P4/1KG4R1/LN3G1NL w BPbp",
+                SfenConverter.toSFEN(pos));
+    }
+
+    @Test
+    public void readOnlyPosition() {
+        ShogiPosition pos = KifFormat.INSTANCE.readPosition(KIF_ONLY_POSITION);
+        assertEquals("ln1g3nl/1ks1g2r1/1pppp2pp/p4sp2/7P1/P1PP1SP1P/1PS1P4/1KG4R1/LN3G1NL w BPbp",
+                SfenConverter.toSFEN(pos));
+    }
+
+    @Test
+    public void readOnlyPositionDokoro() {
+        ShogiPosition pos = KifFormat.INSTANCE.readPosition(KIF_ONLY_POSITION_DOKORO);
+        assertEquals("lnsgkgsnl/1r5+B1/pppppp1pp/6p2/9/2P6/PP1PPPPPP/7R1/LNSGKGSNL w B", SfenConverter.toSFEN(pos));
+    }
+
 }
