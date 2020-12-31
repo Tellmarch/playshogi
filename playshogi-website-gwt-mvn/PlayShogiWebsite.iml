@@ -69,7 +69,6 @@
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.mortbay.jasper:apache-el:8.0.9.M3" level="project" />
     <orderEntry type="library" name="Maven: com.google.gwt.eventbinder:eventbinder:1.1.0" level="project" />
     <orderEntry type="library" name="Maven: com.googlecode.gwt-charts:gwt-charts:0.9.10" level="project" />
-    <orderEntry type="module" module-name="playshogi-library-common" />
     <orderEntry type="module" module-name="playshogi-library-shogi" />
     <orderEntry type="module" module-name="playshogi-library-shogi-files" />
     <orderEntry type="module" module-name="playshogi-library-database" />

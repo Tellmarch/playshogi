@@ -61,12 +61,6 @@
         </dependency>
         <dependency>
             <groupId>com.playshogi</groupId>
-            <artifactId>playshogi-library-common</artifactId>
-            <version>1.0-SNAPSHOT</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.playshogi</groupId>
             <artifactId>playshogi-library-shogi</artifactId>
             <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>

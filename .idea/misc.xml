@@ -4,7 +4,6 @@
     <option name="originalFiles">
       <list>
         <option value="$PROJECT_DIR$/playshogi-website-gwt-mvn/pom.xml" />
-        <option value="$PROJECT_DIR$/playshogi-library-common/pom.xml" />
         <option value="$PROJECT_DIR$/playshogi-library-database/pom.xml" />
         <option value="$PROJECT_DIR$/playshogi-library-shogi-files/pom.xml" />
         <option value="$PROJECT_DIR$/playshogi-library-shogi/pom.xml" />

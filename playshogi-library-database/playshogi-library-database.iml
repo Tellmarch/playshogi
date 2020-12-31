@@ -22,7 +22,6 @@
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="inheritedJdk" />
-    <orderEntry type="module" module-name="playshogi-library-common" />
     <orderEntry type="module" module-name="playshogi-library-shogi" />
     <orderEntry type="module" module-name="playshogi-library-shogi-files" />
     <orderEntry type="library" name="Maven: mysql:mysql-connector-java:8.0.17" level="project" />
