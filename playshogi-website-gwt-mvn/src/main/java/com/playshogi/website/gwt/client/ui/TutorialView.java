@@ -32,7 +32,7 @@ public class TutorialView extends Composite {
     private EventBus eventBus;
     private final AppPlaceHistoryMapper historyMapper;
     private final Tutorials tutorials;
-    private final HTML textArea;
+    private final HTML commentHTML;
     private HTML titleHTML;
     private PiecesSelectorPanel piecesSelectorPanel;
 
@@ -54,10 +54,10 @@ public class TutorialView extends Composite {
 
         verticalPanel.add(shogiBoard);
 
-        textArea = new HTML();
-        textArea.setSize("782px", "150px");
-        textArea.setStyleName("lesson-content");
-        verticalPanel.add(textArea);
+        commentHTML = new HTML();
+        commentHTML.setSize("782px", "150px");
+        commentHTML.setStyleName("lesson-content");
+        verticalPanel.add(commentHTML);
 
         initWidget(verticalPanel);
     }
@@ -126,7 +126,7 @@ public class TutorialView extends Composite {
     }
 
     private void setTutorialText(String text) {
-        textArea.setHTML(text);
+        commentHTML.setHTML(text);
     }
 
     public SessionInformation getSessionInformation() {

@@ -3,6 +3,8 @@ package com.playshogi.website.gwt.client.ui;
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.TextArea;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.web.bindery.event.shared.EventBus;
@@ -37,6 +39,8 @@ public class ProblemEditorView extends Composite {
     private final KifuEditorPanel kifuEditorPanel;
     private final PositionEditingPanel positionEditingPanel;
     private final GameTreePanel gameTreePanel;
+    private final GameNavigation<ShogiPosition> gameNavigation;
+    private final TextArea textArea;
 
     private EventBus eventBus;
 
@@ -46,7 +50,7 @@ public class ProblemEditorView extends Composite {
         shogiBoard = new ShogiBoard(PROBLEM_EDITOR);
         shogiBoard.getBoardConfiguration().setPositionEditingMode(true);
 
-        GameNavigation<ShogiPosition> gameNavigation = new GameNavigation<>(new ShogiRulesEngine(),
+        gameNavigation = new GameNavigation<>(new ShogiRulesEngine(),
                 new GameTree(), ShogiInitialPositionFactory.createInitialPosition());
         gameNavigator = new GameNavigator(PROBLEM_EDITOR, gameNavigation);
 
@@ -56,8 +60,18 @@ public class ProblemEditorView extends Composite {
         shogiBoard.setUpperRightPanel(kifuEditorPanel);
         shogiBoard.setLowerLeftPanel(positionEditingPanel);
 
+
+        VerticalPanel verticalPanel = new VerticalPanel();
+
+        verticalPanel.add(shogiBoard);
+        textArea = new TextArea();
+        textArea.setSize("782px", "150px");
+        textArea.setStyleName("lesson-content");
+        verticalPanel.add(textArea);
+
         HorizontalPanel horizontalPanel = new HorizontalPanel();
-        horizontalPanel.add(shogiBoard);
+
+        horizontalPanel.add(verticalPanel);
         gameTreePanel = new GameTreePanel(PROBLEM_EDITOR, gameNavigation);
         horizontalPanel.add(gameTreePanel);
 
@@ -92,5 +106,9 @@ public class ProblemEditorView extends Composite {
         GWT.log("Problem editor: handle SwitchPlayerToPlayEvent");
         shogiBoard.getPosition().setPlayerToMove(shogiBoard.getPosition().getPlayerToMove().opposite());
         eventBus.fireEvent(new PositionChangedEvent(shogiBoard.getPosition(), true));
+    }
+
+    public GameNavigation<ShogiPosition> getGameNavigation() {
+        return gameNavigation;
     }
 }

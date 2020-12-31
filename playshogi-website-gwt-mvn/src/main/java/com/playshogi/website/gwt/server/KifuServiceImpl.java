@@ -61,7 +61,7 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
 
         GameRecord gameRecord = UsfFormat.INSTANCE.readSingle(kifuUsf);
         String name = UUID.randomUUID().toString();
-        int kifuId = kifuRepository.saveKifu(gameRecord, name, 1, KifuType.GAME);
+        int kifuId = kifuRepository.saveKifu(gameRecord, name, loginResult.getUserId(), KifuType.GAME);
         return String.valueOf(kifuId);
     }
 

@@ -49,18 +49,22 @@ public class GameTreePanel extends Composite {
     @EventHandler
     public void onGameTreeChanged(final GameTreeChangedEvent gameTreeChangedEvent) {
         GWT.log(activityId + " GameTreePanel: Handling game tree changed event - move " + gameTreeChangedEvent.getGoToMove());
+        populateTree();
 
     }
 
     @EventHandler
     public void onNewVariationPlayed(final NewVariationPlayedEvent event) {
         GWT.log(activityId + " GameTreePanel: Handling NewVariationPlayedEvent");
+        populateTree();
+    }
 
+
+    private void populateTree() {
         tree.clear();
         Node node = gameNavigation.getGameTree().getRootNode();
         populateMainVariationAndBranches(tree, node, 0);
     }
-
 
     /**
      * Add all the moves of the main variation to parent

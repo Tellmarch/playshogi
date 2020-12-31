@@ -1,16 +1,21 @@
 package com.playshogi.website.gwt.client.activity;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
+import com.playshogi.library.models.record.GameInformation;
 import com.playshogi.library.models.record.GameRecord;
+import com.playshogi.library.models.record.GameResult;
+import com.playshogi.library.models.record.GameTree;
 import com.playshogi.library.shogi.models.formats.usf.UsfFormat;
 import com.playshogi.website.gwt.client.SessionInformation;
 import com.playshogi.website.gwt.client.events.gametree.GameTreeChangedEvent;
 import com.playshogi.website.gwt.client.events.kifu.GameInformationChangedEvent;
+import com.playshogi.website.gwt.client.events.kifu.GameRecordExportRequestedEvent;
 import com.playshogi.website.gwt.client.events.kifu.GameRecordSaveRequestedEvent;
 import com.playshogi.website.gwt.client.events.kifu.ImportGameRecordEvent;
 import com.playshogi.website.gwt.client.place.ProblemEditorPlace;
@@ -65,8 +70,9 @@ public class ProblemEditorActivity extends MyAbstractActivity {
     }
 
     @EventHandler
-    public void onGameRecordSaveRequested(final GameRecordSaveRequestedEvent gameRecordSaveRequestedEvent) {
+    public void onGameRecordSaveRequested(final GameRecordSaveRequestedEvent event) {
         GWT.log("problem editor Activity Handling GameRecordSaveRequestedEvent");
+        gameRecord = getGameRecord();
         String usfString = UsfFormat.INSTANCE.write(gameRecord);
         GWT.log(usfString);
         kifuService.saveKifu(sessionInformation.getSessionId(), usfString, new AsyncCallback<String>() {
@@ -81,6 +87,20 @@ public class ProblemEditorActivity extends MyAbstractActivity {
                 GWT.log("Error while saving Kifu: ", caught);
             }
         });
+    }
+
+    @EventHandler
+    public void onGameRecordExportRequested(final GameRecordExportRequestedEvent event) {
+        GWT.log("problem editor Activity Handling GameRecordExportRequestedEvent");
+        gameRecord = getGameRecord();
+        String usfString = UsfFormat.INSTANCE.write(gameRecord);
+        GWT.log(usfString);
+        Window.alert(usfString);
+    }
+
+    private GameRecord getGameRecord() {
+        GameTree gameTree = problemEditorView.getGameNavigation().getGameTree();
+        return new GameRecord(new GameInformation(), gameTree, GameResult.UNKNOWN);
     }
 
 }

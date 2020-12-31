@@ -3,7 +3,6 @@ package com.playshogi.website.gwt.client.widget.kifu;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -14,6 +13,7 @@ import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.website.gwt.client.events.gametree.EndOfVariationReachedEvent;
 import com.playshogi.website.gwt.client.events.gametree.NewVariationPlayedEvent;
 import com.playshogi.website.gwt.client.events.gametree.UserNavigatedBackEvent;
+import com.playshogi.website.gwt.client.events.kifu.GameRecordExportRequestedEvent;
 import com.playshogi.website.gwt.client.events.kifu.GameRecordSaveRequestedEvent;
 import com.playshogi.website.gwt.client.widget.gamenavigator.GameNavigator;
 
@@ -27,6 +27,7 @@ public class KifuEditorPanel extends Composite implements ClickHandler {
     private EventBus eventBus;
     private final Button importButton;
     private final Button saveButton;
+    private final Button exportButton;
 
     private final ImportKifuPanel importKifuPanel = new ImportKifuPanel();
 
@@ -34,23 +35,21 @@ public class KifuEditorPanel extends Composite implements ClickHandler {
 
         FlowPanel verticalPanel = new FlowPanel();
 
-        importButton = new Button("Import kifu");
-        importButton.addClickHandler(this);
-
+        importButton = new Button("Import kifu", this);
         verticalPanel.add(importButton);
 
-        verticalPanel.add(new HTML(SafeHtmlUtils.fromSafeConstant("<br>")));
-
+        verticalPanel.add(new HTML("<br/>"));
         verticalPanel.add(gameNavigator);
+        verticalPanel.add(new HTML("<br/>"));
 
-        verticalPanel.add(new HTML(SafeHtmlUtils.fromSafeConstant("<br>")));
-
-        saveButton = new Button("Save kifu");
-        saveButton.addClickHandler(this);
-
+        saveButton = new Button("Save kifu", this);
         verticalPanel.add(saveButton);
 
-        verticalPanel.add(new HTML(SafeHtmlUtils.fromSafeConstant("<br>")));
+        verticalPanel.add(new HTML("<br/>"));
+
+        exportButton = new Button("Export kifu", this);
+        verticalPanel.add(exportButton);
+
 
         initWidget(verticalPanel);
     }
@@ -64,6 +63,9 @@ public class KifuEditorPanel extends Composite implements ClickHandler {
         } else if (source == saveButton) {
             GWT.log("Kifu editor: request saving kifu");
             eventBus.fireEvent(new GameRecordSaveRequestedEvent());
+        } else if (source == exportButton) {
+            GWT.log("Kifu editor: request exporting kifu");
+            eventBus.fireEvent(new GameRecordExportRequestedEvent());
         }
     }
 
@@ -88,7 +90,5 @@ public class KifuEditorPanel extends Composite implements ClickHandler {
         eventBinder.bindEventHandlers(this, eventBus);
         importKifuPanel.activate(eventBus);
     }
-
-
 
 }
