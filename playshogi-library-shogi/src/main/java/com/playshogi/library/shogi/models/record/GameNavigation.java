@@ -2,30 +2,30 @@ package com.playshogi.library.shogi.models.record;
 
 import com.playshogi.library.models.EditMove;
 import com.playshogi.library.models.Move;
-import com.playshogi.library.models.Position;
-import com.playshogi.library.models.games.GameRulesEngine;
+import com.playshogi.library.shogi.models.position.ShogiPosition;
+import com.playshogi.library.shogi.rules.ShogiRulesEngine;
 
-public class GameNavigation<P extends Position> {
+public class GameNavigation {
 
     private GameTree gameTree;
     private Node currentNode;
-    private P position;
-    private final GameRulesEngine<P> gameRulesEngine;
+    private ShogiPosition position;
+    private final ShogiRulesEngine gameRulesEngine;
 
-    @SuppressWarnings("unchecked")
-    public GameNavigation(final GameRulesEngine<P> gameRulesEngine, final GameTree gameTree, final P startPosition) {
+    public GameNavigation(final ShogiRulesEngine gameRulesEngine, final GameTree gameTree,
+                          final ShogiPosition startPosition) {
         this.gameRulesEngine = gameRulesEngine;
         this.gameTree = gameTree;
         this.currentNode = gameTree.getRootNode();
         if (currentNode.getMove() instanceof EditMove) {
             EditMove editMove = (EditMove) currentNode.getMove();
-            this.position = (P) editMove.getPosition().clonePosition();
+            this.position = (ShogiPosition) editMove.getPosition().clonePosition();
         } else {
-            this.position = (P) startPosition.clonePosition();
+            this.position = (ShogiPosition) startPosition.clonePosition();
         }
     }
 
-    public P getPosition() {
+    public ShogiPosition getPosition() {
         return position;
     }
 
@@ -125,11 +125,10 @@ public class GameNavigation<P extends Position> {
         return gameTree;
     }
 
-    @SuppressWarnings("unchecked")
-    public void setGameTree(final GameTree gameTree, final P startingPosition, final int goToMove) {
+    public void setGameTree(final GameTree gameTree, final ShogiPosition startingPosition, final int goToMove) {
         this.gameTree = gameTree;
         this.currentNode = gameTree.getRootNode();
-        this.position = (P) startingPosition.clonePosition();
+        this.position = (ShogiPosition) startingPosition.clonePosition();
 
         for (int i = 0; i < goToMove; i++) {
             moveForward();

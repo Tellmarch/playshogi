@@ -17,7 +17,7 @@ import java.util.List;
 public class GameRecordUtils {
 
     public static void print(final GameRecord gameRecord) {
-        GameNavigation<ShogiPosition> gameNavigation = new GameNavigation<>(new ShogiRulesEngine(),
+        GameNavigation gameNavigation = new GameNavigation(new ShogiRulesEngine(),
                 gameRecord.getGameTree(),
                 ShogiInitialPositionFactory.createInitialPosition());
 
@@ -29,7 +29,7 @@ public class GameRecordUtils {
     }
 
     public static List<Move> getMainVariationMoves(final GameRecord gameRecord) {
-        GameNavigation<ShogiPosition> gameNavigation = new GameNavigation<>(new ShogiRulesEngine(),
+        GameNavigation gameNavigation = new GameNavigation(new ShogiRulesEngine(),
                 gameRecord.getGameTree(),
                 ShogiInitialPositionFactory.createInitialPosition());
         ArrayList<Move> moves = new ArrayList<>();
@@ -58,7 +58,7 @@ public class GameRecordUtils {
 
         return () -> new Iterator<ShogiPosition>() {
 
-            GameNavigation<ShogiPosition> gameNavigation = new GameNavigation<>(new ShogiRulesEngine(),
+            GameNavigation gameNavigation = new GameNavigation(new ShogiRulesEngine(),
                     gameRecord.getGameTree(),
                     ShogiInitialPositionFactory.createInitialPosition());
 

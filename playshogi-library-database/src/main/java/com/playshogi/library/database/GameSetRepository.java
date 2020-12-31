@@ -5,7 +5,6 @@ import com.playshogi.library.database.models.PersistentKifu.KifuType;
 import com.playshogi.library.models.Move;
 import com.playshogi.library.shogi.models.formats.usf.UsfMoveConverter;
 import com.playshogi.library.shogi.models.moves.ShogiMove;
-import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.library.shogi.models.record.GameNavigation;
 import com.playshogi.library.shogi.models.record.GameRecord;
 import com.playshogi.library.shogi.models.record.GameResult;
@@ -297,7 +296,7 @@ public class GameSetRepository {
 
         GameRecord gameRecord = kifu.getKifu();
 
-        GameNavigation<ShogiPosition> gameNavigation = new GameNavigation<>(new ShogiRulesEngine(),
+        GameNavigation gameNavigation = new GameNavigation(new ShogiRulesEngine(),
                 gameRecord.getGameTree(),
                 ShogiInitialPositionFactory.createInitialPosition());
 
@@ -361,7 +360,7 @@ public class GameSetRepository {
         boolean senteWin = gameRecord.getGameResult() == GameResult.BLACK_WIN;
         boolean goteWin = gameRecord.getGameResult() == GameResult.WHITE_WIN;
 
-        GameNavigation<ShogiPosition> gameNavigation = new GameNavigation<>(new ShogiRulesEngine(),
+        GameNavigation gameNavigation = new GameNavigation(new ShogiRulesEngine(),
                 gameRecord.getGameTree(),
                 ShogiInitialPositionFactory.createInitialPosition());
 

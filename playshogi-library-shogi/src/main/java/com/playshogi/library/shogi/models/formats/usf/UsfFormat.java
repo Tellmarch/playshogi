@@ -76,8 +76,7 @@ public enum UsfFormat implements GameRecordFormat {
             }
         }
 
-        GameNavigation<ShogiPosition> gameNavigation = new GameNavigation<>(new ShogiRulesEngine(),
-                gameTree, startingPosition);
+        GameNavigation gameNavigation = new GameNavigation(new ShogiRulesEngine(), gameTree, startingPosition);
 
         // What follows is the move sequence
         String moves = l.substring(l.indexOf(':') + 1);
@@ -217,7 +216,7 @@ public enum UsfFormat implements GameRecordFormat {
      * plays a move sequence represented by a String, with each move occupying 4
      * characters.
      */
-    private static void playMoveSequence(final GameNavigation<ShogiPosition> gameNavigation, final String moves) {
+    private static void playMoveSequence(final GameNavigation gameNavigation, final String moves) {
         // each move takes exactly 4 characters
         int numberOfMoves = moves.length() / 4;
         for (int i = 0; i < numberOfMoves; i++) {

@@ -9,7 +9,6 @@ import com.playshogi.library.models.EditMove;
 import com.playshogi.library.models.Move;
 import com.playshogi.library.shogi.models.formats.kif.KifMoveConverter;
 import com.playshogi.library.shogi.models.moves.ShogiMove;
-import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.library.shogi.models.record.GameNavigation;
 import com.playshogi.library.shogi.models.record.Node;
 import com.playshogi.website.gwt.client.events.gametree.GameTreeChangedEvent;
@@ -25,11 +24,11 @@ public class GameTreePanel extends Composite {
     private final MyEventBinder eventBinder = GWT.create(MyEventBinder.class);
 
     private final String activityId;
-    private final GameNavigation<ShogiPosition> gameNavigation;
+    private final GameNavigation gameNavigation;
     private final Tree tree;
     private EventBus eventBus;
 
-    public GameTreePanel(final String activityId, final GameNavigation<ShogiPosition> gameNavigation) {
+    public GameTreePanel(final String activityId, final GameNavigation gameNavigation) {
         this.activityId = activityId;
         this.gameNavigation = gameNavigation;
         FlowPanel panel = new FlowPanel();

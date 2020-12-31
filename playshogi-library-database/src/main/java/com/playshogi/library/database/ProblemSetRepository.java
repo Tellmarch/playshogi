@@ -6,7 +6,6 @@ import com.playshogi.library.models.Move;
 import com.playshogi.library.shogi.ShogiUtils;
 import com.playshogi.library.shogi.models.features.FeatureTag;
 import com.playshogi.library.shogi.models.moves.SpecialMove;
-import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.library.shogi.models.record.GameNavigation;
 import com.playshogi.library.shogi.models.record.GameRecord;
 
@@ -37,7 +36,7 @@ public class ProblemSetRepository {
 
         int kifuId = kifuRep.saveKifu(gameRecord, problemName, authorId, PersistentKifu.KifuType.GAME);
 
-        GameNavigation<ShogiPosition> gameNavigation = ShogiUtils.getNavigation(gameRecord);
+        GameNavigation gameNavigation = ShogiUtils.getNavigation(gameRecord);
 
         int lastPositionId = rep.getOrSavePosition(gameNavigation.getPosition());
         kifuRep.saveKifuPosition(kifuId, lastPositionId);

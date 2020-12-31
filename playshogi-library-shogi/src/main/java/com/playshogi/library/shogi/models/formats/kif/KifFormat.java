@@ -213,8 +213,7 @@ public enum KifFormat implements GameRecordFormat {
         } else {
             gameTree = new GameTree(startingPosition);
         }
-        GameNavigation<ShogiPosition> gameNavigation = new GameNavigation<>(new ShogiRulesEngine(),
-                gameTree, startingPosition);
+        GameNavigation gameNavigation = new GameNavigation(new ShogiRulesEngine(), gameTree, startingPosition);
 
         GameResult gameResult = GameResult.UNKNOWN;
 

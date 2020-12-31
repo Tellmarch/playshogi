@@ -17,7 +17,7 @@ public enum GoldAtHeadFeature implements Feature {
 
     @Override
     public boolean hasFeature(GameRecord gameRecord) {
-        GameNavigation<ShogiPosition> gameNavigation = ShogiUtils.getNavigation(gameRecord);
+        GameNavigation gameNavigation = ShogiUtils.getNavigation(gameRecord);
 
         gameNavigation.moveToEndOfVariation();
         Move lastMove = gameNavigation.getCurrentMove();

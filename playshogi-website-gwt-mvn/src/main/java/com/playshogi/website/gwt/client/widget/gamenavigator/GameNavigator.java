@@ -36,7 +36,7 @@ public class GameNavigator extends Composite implements ClickHandler {
     private final Button previousButton;
     private final Button nextButton;
     private final Button lastButton;
-    private final GameNavigation<ShogiPosition> gameNavigation;
+    private final GameNavigation gameNavigation;
     private final ShogiRulesEngine shogiRulesEngine = new ShogiRulesEngine();
 
     private EventBus eventBus;
@@ -46,16 +46,16 @@ public class GameNavigator extends Composite implements ClickHandler {
     private final String activityId;
 
     public GameNavigator(final String activityId) {
-        this(activityId, new NavigatorConfiguration(), new GameNavigation<>(new ShogiRulesEngine(), new GameTree(),
+        this(activityId, new NavigatorConfiguration(), new GameNavigation(new ShogiRulesEngine(), new GameTree(),
                 ShogiInitialPositionFactory.createInitialPosition()));
     }
 
-    public GameNavigator(final String activityId, final GameNavigation<ShogiPosition> gameNavigation) {
+    public GameNavigator(final String activityId, final GameNavigation gameNavigation) {
         this(activityId, new NavigatorConfiguration(), gameNavigation);
     }
 
     private GameNavigator(final String activityId, final NavigatorConfiguration navigatorConfiguration,
-                          final GameNavigation<ShogiPosition> gameNavigation) {
+                          final GameNavigation gameNavigation) {
         GWT.log(activityId + ": Creating game navigator");
 
         this.activityId = activityId;
@@ -169,7 +169,7 @@ public class GameNavigator extends Composite implements ClickHandler {
         return navigatorConfiguration;
     }
 
-    public GameNavigation<ShogiPosition> getGameNavigation() {
+    public GameNavigation getGameNavigation() {
         return gameNavigation;
     }
 

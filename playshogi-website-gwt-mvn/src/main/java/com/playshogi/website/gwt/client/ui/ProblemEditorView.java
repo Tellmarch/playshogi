@@ -10,7 +10,6 @@ import com.google.inject.Singleton;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
-import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.library.shogi.models.record.GameNavigation;
 import com.playshogi.library.shogi.models.record.GameTree;
 import com.playshogi.library.shogi.models.shogivariant.ShogiInitialPositionFactory;
@@ -39,7 +38,7 @@ public class ProblemEditorView extends Composite {
     private final KifuEditorPanel kifuEditorPanel;
     private final PositionEditingPanel positionEditingPanel;
     private final GameTreePanel gameTreePanel;
-    private final GameNavigation<ShogiPosition> gameNavigation;
+    private final GameNavigation gameNavigation;
     private final TextArea textArea;
 
     private EventBus eventBus;
@@ -50,7 +49,7 @@ public class ProblemEditorView extends Composite {
         shogiBoard = new ShogiBoard(PROBLEM_EDITOR);
         shogiBoard.getBoardConfiguration().setPositionEditingMode(true);
 
-        gameNavigation = new GameNavigation<>(new ShogiRulesEngine(),
+        gameNavigation = new GameNavigation(new ShogiRulesEngine(),
                 new GameTree(), ShogiInitialPositionFactory.createInitialPosition());
         gameNavigator = new GameNavigator(PROBLEM_EDITOR, gameNavigation);
 
@@ -108,7 +107,7 @@ public class ProblemEditorView extends Composite {
         eventBus.fireEvent(new PositionChangedEvent(shogiBoard.getPosition(), true));
     }
 
-    public GameNavigation<ShogiPosition> getGameNavigation() {
+    public GameNavigation getGameNavigation() {
         return gameNavigation;
     }
 }

@@ -88,7 +88,7 @@ public class USIConnector {
             throw new IllegalStateException("Engine is not connected");
         }
 
-        GameNavigation<ShogiPosition> gameNavigation = new GameNavigation<>(new ShogiRulesEngine(),
+        GameNavigation gameNavigation = new GameNavigation(new ShogiRulesEngine(),
                 gameTree, ShogiInitialPositionFactory.createInitialPosition());
 
         ShogiPosition position = gameNavigation.getPosition();
