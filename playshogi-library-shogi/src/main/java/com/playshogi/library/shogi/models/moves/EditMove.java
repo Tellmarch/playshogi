@@ -1,15 +1,15 @@
 package com.playshogi.library.shogi.models.moves;
 
-import com.playshogi.library.shogi.models.position.Position;
+import com.playshogi.library.shogi.models.position.ReadOnlyShogiPosition;
 
 public class EditMove implements Move {
-    private final Position position;
+    private final ReadOnlyShogiPosition position;
 
-    public EditMove(final Position position) {
+    public EditMove(final ReadOnlyShogiPosition position) {
         this.position = position;
     }
 
-    public Position getPosition() {
+    public ReadOnlyShogiPosition getPosition() {
         return position;
     }
 

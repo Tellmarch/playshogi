@@ -169,7 +169,7 @@ public class ShogiPosition implements ReadOnlyShogiPosition {
     }
 
     @Override
-    public Position clonePosition() {
+    public ShogiPosition clonePosition() {
         // TODO optimize... maybe...
         return SfenConverter.fromSFEN(SfenConverter.toSFEN(this));
     }

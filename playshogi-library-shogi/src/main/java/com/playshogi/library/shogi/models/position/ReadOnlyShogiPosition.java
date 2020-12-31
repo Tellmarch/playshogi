@@ -6,7 +6,7 @@ import com.playshogi.library.shogi.models.Player;
 import java.util.List;
 import java.util.Optional;
 
-public interface ReadOnlyShogiPosition extends Position {
+public interface ReadOnlyShogiPosition {
     int getMoveCount();
 
     Player getPlayerToMove();
@@ -32,4 +32,6 @@ public interface ReadOnlyShogiPosition extends Position {
     boolean hasSenteKingOnBoard();
 
     List<Square> getAllSquares();
+
+    ShogiPosition clonePosition();
 }

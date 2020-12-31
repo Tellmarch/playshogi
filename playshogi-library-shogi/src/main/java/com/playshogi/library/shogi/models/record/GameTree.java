@@ -1,7 +1,7 @@
 package com.playshogi.library.shogi.models.record;
 
 import com.playshogi.library.shogi.models.moves.EditMove;
-import com.playshogi.library.shogi.models.position.Position;
+import com.playshogi.library.shogi.models.position.ReadOnlyShogiPosition;
 
 public class GameTree {
 
@@ -11,7 +11,7 @@ public class GameTree {
         this(new Node(null));
     }
 
-    public GameTree(final Position startingPosition) {
+    public GameTree(final ReadOnlyShogiPosition startingPosition) {
         this(new Node(new EditMove(startingPosition)));
     }
 
