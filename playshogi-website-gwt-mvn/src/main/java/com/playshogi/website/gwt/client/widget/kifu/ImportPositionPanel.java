@@ -9,6 +9,7 @@ import com.google.web.bindery.event.shared.EventBus;
 import com.playshogi.library.models.record.GameRecord;
 import com.playshogi.library.shogi.models.formats.kif.KifFormat;
 import com.playshogi.library.shogi.models.formats.sfen.SfenConverter;
+import com.playshogi.library.shogi.models.formats.uss.UssConverter;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.website.gwt.client.events.gametree.PositionChangedEvent;
 import com.playshogi.website.gwt.client.events.kifu.ImportGameRecordEvent;
@@ -32,6 +33,20 @@ public class ImportPositionPanel extends Composite implements ClickHandler {
             "+---------------------------+\n" +
             "先手の持駒：角　歩\n" +
             "後手番\n";
+    private static final String USS_EXAMPLE = "White in hand: R2 G4 S N3 L4 P17 \n" +
+            "  9  8  7  6  5  4  3  2  1\n" +
+            "+---------------------------+\n" +
+            "| *  *  *  *  * wB+wK  *  * |a\n" +
+            "| *  *  *  *  *  *  *  * bB+|b\n" +
+            "| *  *  *  *  * bP+wS  *  * |c\n" +
+            "| *  *  *  *  *  *  *  *  * |d\n" +
+            "| *  *  *  *  *  *  *  *  * |e\n" +
+            "| *  *  *  *  *  *  *  *  * |f\n" +
+            "| *  *  *  *  *  *  *  *  * |g\n" +
+            "| *  *  *  *  *  *  *  *  * |h\n" +
+            "| *  *  *  *  *  *  *  *  * |i\n" +
+            "+---------------------------+\n" +
+            "Black in hand: S2 N ";
 
     private final Button loadFromTextButton;
     private final TextArea textArea;
@@ -41,7 +56,7 @@ public class ImportPositionPanel extends Composite implements ClickHandler {
     private String collectionId;
     private final RadioButton sfenButton;
     private final RadioButton kifButton;
-    private final RadioButton psnButton;
+    private final RadioButton ussButton;
 
     public ImportPositionPanel() {
 
@@ -60,18 +75,18 @@ public class ImportPositionPanel extends Composite implements ClickHandler {
         verticalPanel.add(textArea);
 
         sfenButton = new RadioButton("format", "SFEN");
-        kifButton = new RadioButton("format", "KIF diagram");
-        psnButton = new RadioButton("format", "PSN diagram");
+        kifButton = new RadioButton("format", "KIF/BOD diagram");
+        ussButton = new RadioButton("format", "USS diagram");
 
         sfenButton.addClickHandler(this);
         kifButton.addClickHandler(this);
-        psnButton.addClickHandler(this);
+        ussButton.addClickHandler(this);
 
 
         FlowPanel radiosPanel = new FlowPanel();
         radiosPanel.add(sfenButton);
         radiosPanel.add(kifButton);
-        radiosPanel.add(psnButton);
+        radiosPanel.add(ussButton);
         verticalPanel.add(radiosPanel);
 
         loadFromTextButton = new Button("Import from text");
@@ -95,6 +110,10 @@ public class ImportPositionPanel extends Composite implements ClickHandler {
             textArea.setFocus(true);
         } else if (source == kifButton && isEmptyOrTemplate()) {
             textArea.setText(KIF_EXAMPLE);
+            textArea.setSelectionRange(0, textArea.getText().length());
+            textArea.setFocus(true);
+        } else if (source == ussButton && isEmptyOrTemplate()) {
+            textArea.setText(USS_EXAMPLE);
             textArea.setSelectionRange(0, textArea.getText().length());
             textArea.setFocus(true);
         }
@@ -121,8 +140,9 @@ public class ImportPositionPanel extends Composite implements ClickHandler {
         } else if (kifButton.getValue()) {
             GWT.log("Will parse as KIF position");
             position = KifFormat.INSTANCE.readPosition(textArea.getText());
-        } else if (psnButton.getValue()) {
-            GWT.log("Will parse as PSN position");
+        } else if (ussButton.getValue()) {
+            GWT.log("Will parse as USS position");
+            position = UssConverter.fromUSS(textArea.getText());
         }
         if (position != null) {
             GWT.log("Firing position changed event...");
