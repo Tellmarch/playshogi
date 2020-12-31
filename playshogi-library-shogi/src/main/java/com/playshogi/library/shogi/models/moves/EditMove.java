@@ -1,4 +1,6 @@
-package com.playshogi.library.models;
+package com.playshogi.library.shogi.models.moves;
+
+import com.playshogi.library.shogi.models.position.Position;
 
 public class EditMove implements Move {
     private final Position position;

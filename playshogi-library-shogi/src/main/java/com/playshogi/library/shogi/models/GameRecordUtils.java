@@ -1,7 +1,7 @@
 package com.playshogi.library.shogi.models;
 
-import com.playshogi.library.models.EditMove;
-import com.playshogi.library.models.Move;
+import com.playshogi.library.shogi.models.moves.EditMove;
+import com.playshogi.library.shogi.models.moves.Move;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.library.shogi.models.record.GameNavigation;
 import com.playshogi.library.shogi.models.record.GameRecord;

@@ -1,6 +1,5 @@
 package com.playshogi.library.shogi.models.formats.kif;
 
-import com.playshogi.library.models.Square;
 import com.playshogi.library.shogi.models.GameRecordUtils;
 import com.playshogi.library.shogi.models.Player;
 import com.playshogi.library.shogi.models.formats.kif.KifUtils.PieceParsingResult;
@@ -11,6 +10,7 @@ import com.playshogi.library.shogi.models.moves.ShogiMove;
 import com.playshogi.library.shogi.models.moves.SpecialMove;
 import com.playshogi.library.shogi.models.position.MutableKomadaiState;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
+import com.playshogi.library.shogi.models.position.Square;
 import com.playshogi.library.shogi.models.record.*;
 import com.playshogi.library.shogi.models.shogivariant.ShogiInitialPositionFactory;
 import com.playshogi.library.shogi.rules.ShogiRulesEngine;

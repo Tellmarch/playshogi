@@ -1,7 +1,7 @@
 package com.playshogi.library.shogi.models.record;
 
-import com.playshogi.library.models.EditMove;
-import com.playshogi.library.models.Position;
+import com.playshogi.library.shogi.models.moves.EditMove;
+import com.playshogi.library.shogi.models.position.Position;
 
 public class GameTree {
 

@@ -1,12 +1,12 @@
 package com.playshogi.library.shogi.models.formats.usi;
 
-import com.playshogi.library.models.Square;
 import com.playshogi.library.shogi.models.Piece;
 import com.playshogi.library.shogi.models.Player;
 import com.playshogi.library.shogi.models.formats.psn.PsnUtil;
 import com.playshogi.library.shogi.models.formats.sfen.SfenConverter;
 import com.playshogi.library.shogi.models.moves.*;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
+import com.playshogi.library.shogi.models.position.Square;
 
 import java.util.Optional;
 

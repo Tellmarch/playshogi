@@ -1,4 +1,4 @@
-package com.playshogi.library.models;
+package com.playshogi.library.shogi.models.position;
 
 import java.util.ArrayList;
 import java.util.List;

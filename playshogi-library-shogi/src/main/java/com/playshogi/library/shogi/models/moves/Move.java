@@ -1,4 +1,4 @@
-package com.playshogi.library.models;
+package com.playshogi.library.shogi.models.moves;
 
 public interface Move {
 

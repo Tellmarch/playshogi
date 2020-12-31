@@ -1,13 +1,13 @@
 package com.playshogi.library.shogi.rules.movements;
 
-import com.playshogi.library.models.Square;
 import com.playshogi.library.shogi.models.formats.sfen.SfenConverter;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
+import com.playshogi.library.shogi.models.position.Square;
 import org.junit.Test;
 
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class KnightMovementTest {
 

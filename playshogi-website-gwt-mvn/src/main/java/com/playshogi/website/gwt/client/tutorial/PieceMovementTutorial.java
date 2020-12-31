@@ -1,11 +1,11 @@
 package com.playshogi.website.gwt.client.tutorial;
 
 import com.google.web.bindery.event.shared.EventBus;
-import com.playshogi.library.models.Square;
 import com.playshogi.library.shogi.models.Piece;
 import com.playshogi.library.shogi.models.PieceType;
 import com.playshogi.library.shogi.models.Player;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
+import com.playshogi.library.shogi.models.position.Square;
 import com.playshogi.library.shogi.rules.ShogiRulesEngine;
 import com.playshogi.website.gwt.client.events.gametree.MovePlayedEvent;
 import com.playshogi.website.gwt.client.events.tutorial.ChangeTutorialTextEvent;

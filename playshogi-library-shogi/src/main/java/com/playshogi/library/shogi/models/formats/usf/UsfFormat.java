@@ -1,11 +1,11 @@
 package com.playshogi.library.shogi.models.formats.usf;
 
-import com.playshogi.library.models.EditMove;
-import com.playshogi.library.models.Move;
 import com.playshogi.library.shogi.models.formats.sfen.GameRecordFormat;
 import com.playshogi.library.shogi.models.formats.sfen.LineReader;
 import com.playshogi.library.shogi.models.formats.sfen.SfenConverter;
 import com.playshogi.library.shogi.models.formats.sfen.StringLineReader;
+import com.playshogi.library.shogi.models.moves.EditMove;
+import com.playshogi.library.shogi.models.moves.Move;
 import com.playshogi.library.shogi.models.moves.ShogiMove;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.library.shogi.models.record.*;

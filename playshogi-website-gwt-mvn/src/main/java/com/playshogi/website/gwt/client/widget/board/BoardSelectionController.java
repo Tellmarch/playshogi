@@ -1,11 +1,11 @@
 package com.playshogi.website.gwt.client.widget.board;
 
 import com.google.gwt.user.client.ui.Image;
-import com.playshogi.library.models.Square;
 import com.playshogi.library.shogi.models.moves.DropMove;
 import com.playshogi.library.shogi.models.moves.NormalMove;
 import com.playshogi.library.shogi.models.moves.ShogiMove;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
+import com.playshogi.library.shogi.models.position.Square;
 import com.playshogi.library.shogi.rules.ShogiRulesEngine;
 
 import java.util.List;

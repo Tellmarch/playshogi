@@ -1,23 +1,18 @@
 package com.playshogi.library.shogi.rules;
 
-import com.playshogi.library.models.Move;
-import com.playshogi.library.models.Square;
-import com.playshogi.library.models.games.GameRulesEngine;
 import com.playshogi.library.shogi.models.Piece;
 import com.playshogi.library.shogi.models.PieceType;
 import com.playshogi.library.shogi.models.Player;
-import com.playshogi.library.shogi.models.moves.CaptureMove;
-import com.playshogi.library.shogi.models.moves.DropMove;
-import com.playshogi.library.shogi.models.moves.NormalMove;
-import com.playshogi.library.shogi.models.moves.ShogiMove;
+import com.playshogi.library.shogi.models.moves.*;
 import com.playshogi.library.shogi.models.position.KomadaiState;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
+import com.playshogi.library.shogi.models.position.Square;
 import com.playshogi.library.shogi.models.shogivariant.ShogiVariant;
 import com.playshogi.library.shogi.rules.movements.*;
 
 import java.util.*;
 
-public class ShogiRulesEngine implements GameRulesEngine<ShogiPosition> {
+public class ShogiRulesEngine {
 
     private static final EnumMap<Piece, PieceMovement> PIECE_MOVEMENTS = new EnumMap<>(Piece.class);
 
@@ -49,12 +44,10 @@ public class ShogiRulesEngine implements GameRulesEngine<ShogiPosition> {
         this.shogiVariant = shogiVariant;
     }
 
-    @Override
     public void playMoveInPosition(final ShogiPosition position, final Move move) {
         playMoveInPosition(position, move, true);
     }
 
-    @Override
     public void playMoveInPosition(final ShogiPosition position, final Move move, final boolean incrementMoveCount) {
         if (move instanceof CaptureMove) {
             playCaptureMove(position, (CaptureMove) move);
@@ -101,7 +94,6 @@ public class ShogiRulesEngine implements GameRulesEngine<ShogiPosition> {
         position.getMutableShogiBoardState().setPieceAt(move.getFromSquare(), null);
     }
 
-    @Override
     public void undoMoveInPosition(final ShogiPosition position, final Move move) {
         Objects.requireNonNull(move);
         Objects.requireNonNull(position);
@@ -207,7 +199,6 @@ public class ShogiRulesEngine implements GameRulesEngine<ShogiPosition> {
         }
     }
 
-    @Override
     public boolean isMoveLegalInPosition(final ShogiPosition position, final Move move) {
         if (!isMoveLegalInPositionWithoutCheckingKingAttack(position, move)) {
             return false;

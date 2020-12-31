@@ -1,6 +1,5 @@
 package com.playshogi.library.shogi.models.moves;
 
-import com.playshogi.library.models.Move;
 import com.playshogi.library.shogi.models.Player;
 import com.playshogi.library.shogi.models.formats.usf.UsfMoveConverter;
 

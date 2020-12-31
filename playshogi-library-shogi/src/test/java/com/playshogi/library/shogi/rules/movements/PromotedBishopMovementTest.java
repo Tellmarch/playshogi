@@ -1,7 +1,7 @@
 package com.playshogi.library.shogi.rules.movements;
 
-import com.playshogi.library.models.Square;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
+import com.playshogi.library.shogi.models.position.Square;
 import org.junit.Before;
 import org.junit.Test;
 

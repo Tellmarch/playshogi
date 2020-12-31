@@ -1,10 +1,10 @@
 package com.playshogi.library.shogi.models.formats.psn;
 
-import com.playshogi.library.models.Square;
 import com.playshogi.library.shogi.models.Piece;
 import com.playshogi.library.shogi.models.PieceType;
 import com.playshogi.library.shogi.models.moves.*;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
+import com.playshogi.library.shogi.models.position.Square;
 
 import java.util.Optional;
 

@@ -1,8 +1,8 @@
 package com.playshogi.website.gwt.client.widget.board;
 
 import com.google.gwt.user.client.ui.Image;
-import com.playshogi.library.models.Square;
 import com.playshogi.library.shogi.models.Piece;
+import com.playshogi.library.shogi.models.position.Square;
 
 public class PieceWrapper {
 

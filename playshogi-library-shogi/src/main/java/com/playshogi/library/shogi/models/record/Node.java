@@ -1,6 +1,6 @@
 package com.playshogi.library.shogi.models.record;
 
-import com.playshogi.library.models.Move;
+import com.playshogi.library.shogi.models.moves.Move;
 
 import java.util.ArrayList;
 import java.util.List;

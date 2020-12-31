@@ -2,10 +2,10 @@ package com.playshogi.website.gwt.client.widget.board;
 
 import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.canvas.dom.client.Context2d;
-import com.playshogi.library.models.Square;
 import com.playshogi.library.shogi.models.moves.DropMove;
 import com.playshogi.library.shogi.models.moves.NormalMove;
 import com.playshogi.library.shogi.models.moves.ShogiMove;
+import com.playshogi.library.shogi.models.position.Square;
 
 import static com.playshogi.website.gwt.client.widget.board.BoardLayout.SQUARE_HEIGHT;
 import static com.playshogi.website.gwt.client.widget.board.BoardLayout.SQUARE_WIDTH;

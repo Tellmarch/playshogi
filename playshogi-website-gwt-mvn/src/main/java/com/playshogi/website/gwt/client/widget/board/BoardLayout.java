@@ -4,7 +4,7 @@ import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Widget;
-import com.playshogi.library.models.Square;
+import com.playshogi.library.shogi.models.position.Square;
 
 class BoardLayout {
     static final int TATAMI_LEFT_MARGIN = 10;

@@ -1,8 +1,8 @@
 package com.playshogi.library.shogi.rules.movements;
 
-import com.playshogi.library.models.Square;
 import com.playshogi.library.shogi.models.Piece;
 import com.playshogi.library.shogi.models.position.ShogiBoardState;
+import com.playshogi.library.shogi.models.position.Square;
 
 import java.util.ArrayList;
 import java.util.List;

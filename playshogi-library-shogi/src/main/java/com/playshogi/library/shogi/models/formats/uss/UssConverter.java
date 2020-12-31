@@ -1,6 +1,5 @@
 package com.playshogi.library.shogi.models.formats.uss;
 
-import com.playshogi.library.models.Square;
 import com.playshogi.library.shogi.models.Piece;
 import com.playshogi.library.shogi.models.PieceType;
 import com.playshogi.library.shogi.models.Player;
@@ -8,6 +7,7 @@ import com.playshogi.library.shogi.models.formats.sfen.LineReader;
 import com.playshogi.library.shogi.models.formats.sfen.StringLineReader;
 import com.playshogi.library.shogi.models.position.MutableKomadaiState;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
+import com.playshogi.library.shogi.models.position.Square;
 
 /**
  * USS (Unnamed Shogi Standard) - Format of shogi positions found in old websites

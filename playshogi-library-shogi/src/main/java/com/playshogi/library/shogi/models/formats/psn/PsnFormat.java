@@ -1,10 +1,10 @@
 package com.playshogi.library.shogi.models.formats.psn;
 
-import com.playshogi.library.models.Move;
 import com.playshogi.library.shogi.models.Player;
 import com.playshogi.library.shogi.models.formats.sfen.GameRecordFormat;
 import com.playshogi.library.shogi.models.formats.sfen.LineReader;
 import com.playshogi.library.shogi.models.formats.sfen.StringLineReader;
+import com.playshogi.library.shogi.models.moves.Move;
 import com.playshogi.library.shogi.models.moves.ShogiMove;
 import com.playshogi.library.shogi.models.moves.SpecialMove;
 import com.playshogi.library.shogi.models.moves.SpecialMoveType;
