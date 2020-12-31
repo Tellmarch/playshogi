@@ -171,7 +171,7 @@ public enum KifFormat implements GameRecordFormat {
                         for (int column = 9; column >= 1; column--) {
                             PieceParsingResult pieceParsingResult = KifUtils.readPiece(l, pos);
                             pos = pieceParsingResult.nextPosition;
-                            startingPosition.getShogiBoardState().setPieceAt(Square.of(column, row),
+                            startingPosition.getMutableShogiBoardState().setPieceAt(Square.of(column, row),
                                     pieceParsingResult.piece);
                         }
                     }

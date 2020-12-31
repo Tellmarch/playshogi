@@ -326,7 +326,7 @@ public class ShogiBoard extends Composite implements ClickHandler {
         if (boardConfiguration.isPositionEditingMode()) {
             pieceWrapper.getImage().addMouseWheelHandler(mouseWheelEvent -> {
                 if (!pieceWrapper.isInKomadai()) {
-                    position.getShogiBoardState().setPieceAt(pieceWrapper.getSquare(),
+                    position.getMutableShogiBoardState().setPieceAt(pieceWrapper.getSquare(),
                             pieceWrapper.getPiece().getNextPieceInEditCycle());
                     displayPosition();
                 }
@@ -368,7 +368,7 @@ public class ShogiBoard extends Composite implements ClickHandler {
                     position.getGoteKomadai().removePiece(wrapper.getPiece().getPieceType());
                 }
             } else {
-                position.getShogiBoardState().setPieceAt(wrapper.getSquare(), null);
+                position.getMutableShogiBoardState().setPieceAt(wrapper.getSquare(), null);
             }
             position.getSenteKomadai().addPiece(wrapper.getPiece().getPieceType());
             selectionController.unselect();
@@ -384,7 +384,7 @@ public class ShogiBoard extends Composite implements ClickHandler {
                     position.getSenteKomadai().removePiece(wrapper.getPiece().getPieceType());
                 }
             } else {
-                position.getShogiBoardState().setPieceAt(wrapper.getSquare(), null);
+                position.getMutableShogiBoardState().setPieceAt(wrapper.getSquare(), null);
             }
             position.getGoteKomadai().addPiece(wrapper.getPiece().getPieceType());
             selectionController.unselect();

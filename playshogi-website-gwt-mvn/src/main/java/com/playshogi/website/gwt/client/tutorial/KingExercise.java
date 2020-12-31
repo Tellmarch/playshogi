@@ -42,8 +42,8 @@ public class KingExercise implements Tutorial {
     public void setup() {
         shogiBoard.getSelectionController().unlockSelection();
         position = new ShogiPosition();
-        position.getShogiBoardState().setPieceAt(5, 9, Piece.SENTE_KING);
-        position.getShogiBoardState().setPieceAt(2, 2, Piece.GOTE_PAWN);
+        position.getMutableShogiBoardState().setPieceAt(5, 9, Piece.SENTE_KING);
+        position.getMutableShogiBoardState().setPieceAt(2, 2, Piece.GOTE_PAWN);
         i = 2;
         shogiBoard.setPosition(position);
         shogiBoard.getBoardConfiguration().setAllowIllegalMoves(false);

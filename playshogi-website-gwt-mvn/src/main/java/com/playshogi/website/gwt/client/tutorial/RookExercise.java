@@ -44,13 +44,13 @@ public class RookExercise implements Tutorial {
     public void setup() {
         shogiBoard.getSelectionController().unlockSelection();
         position = new ShogiPosition();
-        position.getShogiBoardState().setPieceAt(5, 9, Piece.SENTE_ROOK);
+        position.getMutableShogiBoardState().setPieceAt(5, 9, Piece.SENTE_ROOK);
         for (int i = 1; i <= 9; i++) {
             if (i != 5) {
-                position.getShogiBoardState().setPieceAt(i, 3, Piece.GOTE_PAWN);
+                position.getMutableShogiBoardState().setPieceAt(i, 3, Piece.GOTE_PAWN);
             }
         }
-        position.getShogiBoardState().setPieceAt(5, 4, Piece.GOTE_PAWN);
+        position.getMutableShogiBoardState().setPieceAt(5, 4, Piece.GOTE_PAWN);
         shogiBoard.setPosition(position);
         shogiBoard.getBoardConfiguration().setAllowIllegalMoves(false);
         shogiBoard.getBoardConfiguration().setPlayBlackMoves(true);

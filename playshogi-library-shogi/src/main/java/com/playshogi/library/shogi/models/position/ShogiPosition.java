@@ -61,7 +61,11 @@ public class ShogiPosition implements Position {
         return playerToMove;
     }
 
-    public MutableShogiBoardState getShogiBoardState() {
+    public ShogiBoardState getShogiBoardState() {
+        return shogiBoardState;
+    }
+
+    public MutableShogiBoardState getMutableShogiBoardState() {
         return shogiBoardState;
     }
 

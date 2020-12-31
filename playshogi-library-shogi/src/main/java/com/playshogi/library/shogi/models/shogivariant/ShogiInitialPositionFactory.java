@@ -14,7 +14,7 @@ public class ShogiInitialPositionFactory {
 
     public static ShogiPosition createInitialPosition(final Handicap handicap) {
         ShogiPosition shogiPosition = new ShogiPosition(ShogiVariant.NORMAL_SHOGI);
-        MutableShogiBoardState shogiBoardState = shogiPosition.getShogiBoardState();
+        MutableShogiBoardState shogiBoardState = shogiPosition.getMutableShogiBoardState();
 
         setWhitePieces(shogiBoardState, handicap);
         setBlackPieces(shogiBoardState);
@@ -150,9 +150,9 @@ public class ShogiInitialPositionFactory {
 
     public static ShogiPosition createEmptyTsumePosition(final boolean withSenteKing) {
         ShogiPosition position = new ShogiPosition();
-        position.getShogiBoardState().setPieceAt(5, 1, Piece.GOTE_KING);
+        position.getMutableShogiBoardState().setPieceAt(5, 1, Piece.GOTE_KING);
         if (withSenteKing) {
-            position.getShogiBoardState().setPieceAt(5, 9, Piece.SENTE_KING);
+            position.getMutableShogiBoardState().setPieceAt(5, 9, Piece.SENTE_KING);
         }
         position.fillGoteKomadaiWithMissingPieces();
         return position;

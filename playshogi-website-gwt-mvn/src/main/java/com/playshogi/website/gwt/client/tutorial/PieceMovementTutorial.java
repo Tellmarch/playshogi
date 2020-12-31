@@ -41,7 +41,7 @@ public class PieceMovementTutorial implements Tutorial {
             row = 7;
         }
 
-        shogiPosition.getShogiBoardState().setPieceAt(5, row, piece);
+        shogiPosition.getMutableShogiBoardState().setPieceAt(5, row, piece);
 
         shogiBoard.setPosition(shogiPosition);
         shogiBoard.getSelectionController().selectPossibleMoves(Square.of(5, row), shogiPosition);

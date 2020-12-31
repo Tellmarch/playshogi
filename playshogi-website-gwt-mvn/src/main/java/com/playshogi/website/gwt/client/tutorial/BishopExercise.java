@@ -40,9 +40,9 @@ public class BishopExercise implements Tutorial {
     public void setup() {
         shogiBoard.getSelectionController().unlockSelection();
         position = new ShogiPosition();
-        position.getShogiBoardState().setPieceAt(4, 2, Piece.GOTE_KING);
-        position.getShogiBoardState().setPieceAt(8, 2, Piece.GOTE_ROOK);
-        position.getShogiBoardState().setPieceAt(2, 5, Piece.GOTE_ROOK);
+        position.getMutableShogiBoardState().setPieceAt(4, 2, Piece.GOTE_KING);
+        position.getMutableShogiBoardState().setPieceAt(8, 2, Piece.GOTE_ROOK);
+        position.getMutableShogiBoardState().setPieceAt(2, 5, Piece.GOTE_ROOK);
         position.getSenteKomadai().addPiece(PieceType.BISHOP);
         shogiBoard.setPosition(position);
         shogiBoard.getBoardConfiguration().setAllowIllegalMoves(false);

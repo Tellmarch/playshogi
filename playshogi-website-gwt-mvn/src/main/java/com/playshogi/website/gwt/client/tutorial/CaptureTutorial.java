@@ -26,8 +26,8 @@ public class CaptureTutorial implements Tutorial {
     public void setup() {
         shogiBoard.getSelectionController().unlockSelection();
         ShogiPosition position = new ShogiPosition();
-        position.getShogiBoardState().setPieceAt(5, 5, Piece.SENTE_KING);
-        position.getShogiBoardState().setPieceAt(4, 4, Piece.GOTE_PAWN);
+        position.getMutableShogiBoardState().setPieceAt(5, 5, Piece.SENTE_KING);
+        position.getMutableShogiBoardState().setPieceAt(4, 4, Piece.GOTE_PAWN);
         shogiBoard.setPosition(position);
         shogiBoard.getBoardConfiguration().setAllowIllegalMoves(false);
         shogiBoard.getBoardConfiguration().setPlayBlackMoves(true);

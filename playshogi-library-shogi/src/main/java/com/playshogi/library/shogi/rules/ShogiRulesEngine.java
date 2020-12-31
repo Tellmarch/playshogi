@@ -75,15 +75,15 @@ public class ShogiRulesEngine implements GameRulesEngine<ShogiPosition> {
             position.getGoteKomadai().addPiece(move.getCapturedPiece().getPieceType());
         }
         if (move.isPromote()) {
-            position.getShogiBoardState().setPieceAt(move.getToSquare(), move.getPiece().getPromotedPiece());
+            position.getMutableShogiBoardState().setPieceAt(move.getToSquare(), move.getPiece().getPromotedPiece());
         } else {
-            position.getShogiBoardState().setPieceAt(move.getToSquare(), move.getPiece());
+            position.getMutableShogiBoardState().setPieceAt(move.getToSquare(), move.getPiece());
         }
-        position.getShogiBoardState().setPieceAt(move.getFromSquare(), null);
+        position.getMutableShogiBoardState().setPieceAt(move.getFromSquare(), null);
     }
 
     private void playDropMove(final ShogiPosition position, final DropMove move) {
-        position.getShogiBoardState().setPieceAt(move.getToSquare(),
+        position.getMutableShogiBoardState().setPieceAt(move.getToSquare(),
                 Piece.getPiece(move.getPieceType(), move.getPlayer()));
         if (move.getPlayer() == Player.BLACK) {
             position.getSenteKomadai().removePiece(move.getPieceType());
@@ -94,11 +94,11 @@ public class ShogiRulesEngine implements GameRulesEngine<ShogiPosition> {
 
     private void playNormalMove(final ShogiPosition position, final NormalMove move) {
         if (move.isPromote()) {
-            position.getShogiBoardState().setPieceAt(move.getToSquare(), move.getPiece().getPromotedPiece());
+            position.getMutableShogiBoardState().setPieceAt(move.getToSquare(), move.getPiece().getPromotedPiece());
         } else {
-            position.getShogiBoardState().setPieceAt(move.getToSquare(), move.getPiece());
+            position.getMutableShogiBoardState().setPieceAt(move.getToSquare(), move.getPiece());
         }
-        position.getShogiBoardState().setPieceAt(move.getFromSquare(), null);
+        position.getMutableShogiBoardState().setPieceAt(move.getFromSquare(), null);
     }
 
     @Override
@@ -117,11 +117,11 @@ public class ShogiRulesEngine implements GameRulesEngine<ShogiPosition> {
 
     private void undoNormalMove(final ShogiPosition position, final NormalMove move) {
         if (move.isPromote()) {
-            position.getShogiBoardState().setPieceAt(move.getFromSquare(), move.getPiece().getUnpromotedPiece());
+            position.getMutableShogiBoardState().setPieceAt(move.getFromSquare(), move.getPiece().getUnpromotedPiece());
         } else {
-            position.getShogiBoardState().setPieceAt(move.getFromSquare(), move.getPiece());
+            position.getMutableShogiBoardState().setPieceAt(move.getFromSquare(), move.getPiece());
         }
-        position.getShogiBoardState().setPieceAt(move.getToSquare(), null);
+        position.getMutableShogiBoardState().setPieceAt(move.getToSquare(), null);
     }
 
     private void undoDropMove(final ShogiPosition position, final DropMove move) {
@@ -130,7 +130,7 @@ public class ShogiRulesEngine implements GameRulesEngine<ShogiPosition> {
         } else {
             position.getGoteKomadai().addPiece(move.getPieceType());
         }
-        position.getShogiBoardState().setPieceAt(move.getToSquare(), null);
+        position.getMutableShogiBoardState().setPieceAt(move.getToSquare(), null);
     }
 
     private void undoCaptureMove(final ShogiPosition position, final CaptureMove move) {
@@ -140,11 +140,11 @@ public class ShogiRulesEngine implements GameRulesEngine<ShogiPosition> {
             position.getGoteKomadai().removePiece(move.getCapturedPiece().getPieceType());
         }
         if (move.isPromote()) {
-            position.getShogiBoardState().setPieceAt(move.getFromSquare(), move.getPiece().getUnpromotedPiece());
+            position.getMutableShogiBoardState().setPieceAt(move.getFromSquare(), move.getPiece().getUnpromotedPiece());
         } else {
-            position.getShogiBoardState().setPieceAt(move.getFromSquare(), move.getPiece());
+            position.getMutableShogiBoardState().setPieceAt(move.getFromSquare(), move.getPiece());
         }
-        position.getShogiBoardState().setPieceAt(move.getToSquare(), move.getCapturedPiece());
+        position.getMutableShogiBoardState().setPieceAt(move.getToSquare(), move.getCapturedPiece());
     }
 
     // what are the target squares of a piece from 'from' square

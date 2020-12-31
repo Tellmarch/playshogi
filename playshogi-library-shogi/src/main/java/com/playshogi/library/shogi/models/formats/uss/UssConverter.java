@@ -62,7 +62,7 @@ public class UssConverter {
                 if (" * ".equals(piece)) {
                     continue;
                 }
-                position.getShogiBoardState().setPieceAt(Square.of(column, row), readPiece(piece));
+                position.getMutableShogiBoardState().setPieceAt(Square.of(column, row), readPiece(piece));
             }
         }
 
