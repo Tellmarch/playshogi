@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class ShogiPosition implements Position {
+public class ShogiPosition implements ReadOnlyShogiPosition {
 
     // How many moves were played in the position (starts at 0)
     private int moveCount;
@@ -39,6 +39,7 @@ public class ShogiPosition implements Position {
         this.goteKomadai = goteKomadai;
     }
 
+    @Override
     public int getMoveCount() {
         return moveCount;
     }
@@ -57,10 +58,12 @@ public class ShogiPosition implements Position {
         this.playerToMove = playerToMove;
     }
 
+    @Override
     public Player getPlayerToMove() {
         return playerToMove;
     }
 
+    @Override
     public ShogiBoardState getShogiBoardState() {
         return shogiBoardState;
     }
@@ -69,14 +72,17 @@ public class ShogiPosition implements Position {
         return shogiBoardState;
     }
 
+    @Override
     public int getColumns() {
         return shogiBoardState.getWidth();
     }
 
+    @Override
     public int getRows() {
         return shogiBoardState.getHeight();
     }
 
+    @Override
     public KomadaiState getSenteKomadai() {
         return senteKomadai;
     }
@@ -85,6 +91,7 @@ public class ShogiPosition implements Position {
         return senteKomadai;
     }
 
+    @Override
     public KomadaiState getGoteKomadai() {
         return goteKomadai;
     }
@@ -93,22 +100,27 @@ public class ShogiPosition implements Position {
         return goteKomadai;
     }
 
+    @Override
     public Optional<Piece> getPieceAt(final Square square) {
         return shogiBoardState.getPieceAt(square);
     }
 
+    @Override
     public boolean isEmptySquare(final Square square) {
         return !shogiBoardState.getPieceAt(square).isPresent();
     }
 
+    @Override
     public boolean hasBlackPieceAt(final Square square) {
         return shogiBoardState.getPieceAt(square).isPresent() && shogiBoardState.getPieceAt(square).get().isBlackPiece();
     }
 
+    @Override
     public boolean hasWhitePieceAt(final Square square) {
         return shogiBoardState.getPieceAt(square).isPresent() && shogiBoardState.getPieceAt(square).get().isWhitePiece();
     }
 
+    @Override
     public boolean hasSenteKingOnBoard() {
         for (int i = 1; i <= getRows(); i++) {
             for (int j = 1; j <= getColumns(); j++) {
@@ -121,6 +133,7 @@ public class ShogiPosition implements Position {
     /**
      * @return list of squares of the board
      */
+    @Override
     public List<Square> getAllSquares() {
         List<Square> squares = new ArrayList<>();
         for (int row = 1; row <= shogiBoardState.getLastRow(); row++) {
