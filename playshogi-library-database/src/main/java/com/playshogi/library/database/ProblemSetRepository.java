@@ -3,12 +3,12 @@ package com.playshogi.library.database;
 import com.playshogi.library.database.models.PersistentKifu;
 import com.playshogi.library.database.models.PersistentProblem;
 import com.playshogi.library.models.Move;
-import com.playshogi.library.models.record.GameNavigation;
-import com.playshogi.library.models.record.GameRecord;
 import com.playshogi.library.shogi.ShogiUtils;
 import com.playshogi.library.shogi.models.features.FeatureTag;
 import com.playshogi.library.shogi.models.moves.SpecialMove;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
+import com.playshogi.library.shogi.models.record.GameNavigation;
+import com.playshogi.library.shogi.models.record.GameRecord;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

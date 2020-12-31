@@ -1,7 +1,7 @@
 package com.playshogi.library.shogi.models.formats.psn;
 
-import com.playshogi.library.models.record.GameRecord;
 import com.playshogi.library.shogi.models.formats.usf.UsfFormat;
+import com.playshogi.library.shogi.models.record.GameRecord;
 import org.junit.Test;
 
 import java.util.List;

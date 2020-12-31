@@ -1,4 +1,4 @@
-package com.playshogi.library.models.record;
+package com.playshogi.library.shogi.models.record;
 
 public enum GameResult {
     BLACK_WIN, // Black may be sente or the handicap receiver

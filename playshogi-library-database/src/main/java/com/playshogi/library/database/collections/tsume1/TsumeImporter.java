@@ -3,9 +3,9 @@ package com.playshogi.library.database.collections.tsume1;
 import com.playshogi.library.database.DbConnection;
 import com.playshogi.library.database.ProblemSetRepository;
 import com.playshogi.library.database.models.PersistentProblem;
-import com.playshogi.library.models.record.GameRecord;
 import com.playshogi.library.shogi.files.GameRecordFileReader;
 import com.playshogi.library.shogi.models.formats.kif.KifFormat;
+import com.playshogi.library.shogi.models.record.GameRecord;
 
 import java.io.File;
 import java.io.IOException;

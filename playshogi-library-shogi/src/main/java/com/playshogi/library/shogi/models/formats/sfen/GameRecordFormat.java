@@ -1,7 +1,7 @@
 package com.playshogi.library.shogi.models.formats.sfen;
 
-import com.playshogi.library.models.record.GameRecord;
-import com.playshogi.library.models.record.GameTree;
+import com.playshogi.library.shogi.models.record.GameRecord;
+import com.playshogi.library.shogi.models.record.GameTree;
 
 import java.util.List;
 

@@ -1,7 +1,7 @@
 package com.playshogi.website.gwt.client.events.kifu;
 
 import com.google.web.bindery.event.shared.binder.GenericEvent;
-import com.playshogi.library.models.record.GameRecord;
+import com.playshogi.library.shogi.models.record.GameRecord;
 
 public class ImportGameRecordEvent extends GenericEvent {
     private final GameRecord gameRecord;

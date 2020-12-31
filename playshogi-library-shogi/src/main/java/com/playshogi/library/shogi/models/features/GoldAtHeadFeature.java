@@ -2,13 +2,13 @@ package com.playshogi.library.shogi.models.features;
 
 import com.playshogi.library.models.Move;
 import com.playshogi.library.models.Square;
-import com.playshogi.library.models.record.GameNavigation;
-import com.playshogi.library.models.record.GameRecord;
 import com.playshogi.library.shogi.ShogiUtils;
 import com.playshogi.library.shogi.models.Piece;
 import com.playshogi.library.shogi.models.PieceType;
 import com.playshogi.library.shogi.models.moves.DropMove;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
+import com.playshogi.library.shogi.models.record.GameNavigation;
+import com.playshogi.library.shogi.models.record.GameRecord;
 
 import java.util.Optional;
 

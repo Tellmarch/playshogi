@@ -3,12 +3,12 @@ package com.playshogi.library.database;
 import com.playshogi.library.database.models.*;
 import com.playshogi.library.database.models.PersistentKifu.KifuType;
 import com.playshogi.library.models.Move;
-import com.playshogi.library.models.record.GameNavigation;
-import com.playshogi.library.models.record.GameRecord;
-import com.playshogi.library.models.record.GameResult;
 import com.playshogi.library.shogi.models.formats.usf.UsfMoveConverter;
 import com.playshogi.library.shogi.models.moves.ShogiMove;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
+import com.playshogi.library.shogi.models.record.GameNavigation;
+import com.playshogi.library.shogi.models.record.GameRecord;
+import com.playshogi.library.shogi.models.record.GameResult;
 import com.playshogi.library.shogi.models.shogivariant.ShogiInitialPositionFactory;
 import com.playshogi.library.shogi.rules.ShogiRulesEngine;
 

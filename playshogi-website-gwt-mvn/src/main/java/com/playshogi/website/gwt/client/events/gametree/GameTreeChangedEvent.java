@@ -1,7 +1,7 @@
 package com.playshogi.website.gwt.client.events.gametree;
 
 import com.google.web.bindery.event.shared.binder.GenericEvent;
-import com.playshogi.library.models.record.GameTree;
+import com.playshogi.library.shogi.models.record.GameTree;
 
 public class GameTreeChangedEvent extends GenericEvent {
     private final GameTree gameTree;

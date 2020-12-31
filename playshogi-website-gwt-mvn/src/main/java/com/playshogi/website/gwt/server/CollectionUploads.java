@@ -1,6 +1,6 @@
 package com.playshogi.website.gwt.server;
 
-import com.playshogi.library.models.record.GameCollection;
+import com.playshogi.library.shogi.models.record.GameCollection;
 
 import java.util.Map;
 import java.util.UUID;

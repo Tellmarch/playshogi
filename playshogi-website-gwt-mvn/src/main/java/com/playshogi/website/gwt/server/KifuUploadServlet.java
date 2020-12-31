@@ -1,12 +1,12 @@
 package com.playshogi.website.gwt.server;
 
 import com.google.gwt.thirdparty.guava.common.io.Closeables;
-import com.playshogi.library.models.record.GameCollection;
-import com.playshogi.library.models.record.GameRecord;
 import com.playshogi.library.shogi.files.ScannerLineReader;
 import com.playshogi.library.shogi.models.formats.kif.KifFormat;
 import com.playshogi.library.shogi.models.formats.psn.PsnFormat;
 import com.playshogi.library.shogi.models.formats.usf.UsfFormat;
+import com.playshogi.library.shogi.models.record.GameCollection;
+import com.playshogi.library.shogi.models.record.GameRecord;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;

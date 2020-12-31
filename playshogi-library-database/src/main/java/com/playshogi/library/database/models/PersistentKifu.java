@@ -1,6 +1,6 @@
 package com.playshogi.library.database.models;
 
-import com.playshogi.library.models.record.GameRecord;
+import com.playshogi.library.shogi.models.record.GameRecord;
 
 import java.util.Date;
 

@@ -1,7 +1,7 @@
 package com.playshogi.library.shogi.files;
 
-import com.playshogi.library.models.record.GameRecord;
 import com.playshogi.library.shogi.models.formats.sfen.GameRecordFormat;
+import com.playshogi.library.shogi.models.record.GameRecord;
 
 import java.io.File;
 import java.io.IOException;

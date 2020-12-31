@@ -7,13 +7,13 @@ import com.playshogi.library.database.models.PersistentGameSet;
 import com.playshogi.library.database.models.PersistentGameSetMove;
 import com.playshogi.library.database.models.PersistentGameSetPos;
 import com.playshogi.library.database.models.PersistentKifu.KifuType;
-import com.playshogi.library.models.record.GameCollection;
-import com.playshogi.library.models.record.GameInformation;
-import com.playshogi.library.models.record.GameRecord;
 import com.playshogi.library.shogi.engine.*;
 import com.playshogi.library.shogi.models.formats.sfen.SfenConverter;
 import com.playshogi.library.shogi.models.formats.usf.UsfFormat;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
+import com.playshogi.library.shogi.models.record.GameCollection;
+import com.playshogi.library.shogi.models.record.GameInformation;
+import com.playshogi.library.shogi.models.record.GameRecord;
 import com.playshogi.website.gwt.shared.models.*;
 import com.playshogi.website.gwt.shared.services.KifuService;
 

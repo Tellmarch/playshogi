@@ -1,9 +1,9 @@
 package com.playshogi.library.shogi.models.formats.kif;
 
-import com.playshogi.library.models.record.GameRecord;
 import com.playshogi.library.shogi.models.formats.sfen.SfenConverter;
 import com.playshogi.library.shogi.models.formats.usf.UsfFormat;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
+import com.playshogi.library.shogi.models.record.GameRecord;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;

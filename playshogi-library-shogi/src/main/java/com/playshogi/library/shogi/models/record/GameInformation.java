@@ -1,4 +1,4 @@
-package com.playshogi.library.models.record;
+package com.playshogi.library.shogi.models.record;
 
 public class GameInformation {
 

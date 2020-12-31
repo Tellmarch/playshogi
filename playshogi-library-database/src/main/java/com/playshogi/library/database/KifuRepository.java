@@ -3,8 +3,8 @@ package com.playshogi.library.database;
 import com.playshogi.library.database.models.PersistentGame;
 import com.playshogi.library.database.models.PersistentKifu;
 import com.playshogi.library.database.models.PersistentKifu.KifuType;
-import com.playshogi.library.models.record.GameRecord;
 import com.playshogi.library.shogi.models.formats.usf.UsfFormat;
+import com.playshogi.library.shogi.models.record.GameRecord;
 
 import java.sql.*;
 import java.util.ArrayList;

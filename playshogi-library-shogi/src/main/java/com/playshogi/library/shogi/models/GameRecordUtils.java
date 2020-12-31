@@ -2,11 +2,11 @@ package com.playshogi.library.shogi.models;
 
 import com.playshogi.library.models.EditMove;
 import com.playshogi.library.models.Move;
-import com.playshogi.library.models.record.GameNavigation;
-import com.playshogi.library.models.record.GameRecord;
-import com.playshogi.library.models.record.GameTree;
-import com.playshogi.library.models.record.Node;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
+import com.playshogi.library.shogi.models.record.GameNavigation;
+import com.playshogi.library.shogi.models.record.GameRecord;
+import com.playshogi.library.shogi.models.record.GameTree;
+import com.playshogi.library.shogi.models.record.Node;
 import com.playshogi.library.shogi.models.shogivariant.ShogiInitialPositionFactory;
 import com.playshogi.library.shogi.rules.ShogiRulesEngine;
 

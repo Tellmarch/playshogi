@@ -1,6 +1,6 @@
 package com.playshogi.library.shogi.models.formats.usf;
 
-import com.playshogi.library.models.record.GameRecord;
+import com.playshogi.library.shogi.models.record.GameRecord;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
