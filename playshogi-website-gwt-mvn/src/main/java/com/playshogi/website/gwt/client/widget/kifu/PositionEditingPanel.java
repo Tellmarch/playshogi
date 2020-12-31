@@ -20,10 +20,13 @@ public class PositionEditingPanel extends Composite implements ClickHandler {
 
     private final MyEventBinder eventBinder = GWT.create(MyEventBinder.class);
 
+    private final ImportPositionPanel importPositionPanel = new ImportPositionPanel();
+
     private final Button toPlayButton;
     private final Button initialPositionButton;
     private final Button twoKingsButton;
     private final Button oneKingButton;
+    private final Button importPositionButton;
     private final RadioButton radio1;
     private final RadioButton radio2;
     private EventBus eventBus;
@@ -50,6 +53,13 @@ public class PositionEditingPanel extends Composite implements ClickHandler {
                 (ClickHandler) clickEvent -> eventBus.fireEvent(new PositionChangedEvent(ShogiInitialPositionFactory.createInitialPosition(), true)));
         flowPanel.add(initialPositionButton);
 
+        importPositionButton = new Button("Import position",
+                (ClickHandler) clickEvent -> {
+                    GWT.log("Position editing panel: Opening the import position box");
+                    importPositionPanel.showInDialog(null);
+                });
+        flowPanel.add(importPositionButton);
+
         toPlayButton = new Button("Sente to play",
                 (ClickHandler) clickEvent -> eventBus.fireEvent(new SwitchPlayerToPlayEvent()));
         flowPanel.add(toPlayButton);
@@ -71,6 +81,7 @@ public class PositionEditingPanel extends Composite implements ClickHandler {
         GWT.log("Activating PositionEditingPanel");
         this.eventBus = eventBus;
         eventBinder.bindEventHandlers(this, eventBus);
+        importPositionPanel.activate(eventBus);
     }
 
     @Override
@@ -82,6 +93,7 @@ public class PositionEditingPanel extends Composite implements ClickHandler {
             twoKingsButton.setEnabled(true);
             initialPositionButton.setEnabled(true);
             toPlayButton.setEnabled(true);
+            importPositionButton.setEnabled(true);
         } else if (radio2.getValue()) {
             GWT.log("Switching to play mode");
             eventBus.fireEvent(new EditModeSelectedEvent(false));
@@ -89,6 +101,7 @@ public class PositionEditingPanel extends Composite implements ClickHandler {
             twoKingsButton.setEnabled(false);
             initialPositionButton.setEnabled(false);
             toPlayButton.setEnabled(false);
+            importPositionButton.setEnabled(false);
         }
     }
 
