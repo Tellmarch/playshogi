@@ -77,11 +77,19 @@ public class ShogiPosition implements Position {
         return shogiBoardState.getHeight();
     }
 
-    public MutableKomadaiState getSenteKomadai() {
+    public KomadaiState getSenteKomadai() {
         return senteKomadai;
     }
 
-    public MutableKomadaiState getGoteKomadai() {
+    public MutableKomadaiState getMutableSenteKomadai() {
+        return senteKomadai;
+    }
+
+    public KomadaiState getGoteKomadai() {
+        return goteKomadai;
+    }
+
+    public MutableKomadaiState getMutableGoteKomadai() {
         return goteKomadai;
     }
 

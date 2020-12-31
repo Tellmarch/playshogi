@@ -39,7 +39,7 @@ public class UssConverter {
         ShogiPosition position = new ShogiPosition();
         String line = lineReader.nextLine();
         if (line.startsWith("White in hand:")) {
-            readPiecesInHand(line, position.getGoteKomadai());
+            readPiecesInHand(line, position.getMutableGoteKomadai());
             line = lineReader.nextLine();
         }
         if (!"9  8  7  6  5  4  3  2  1".equals(line.trim())) {
@@ -74,7 +74,7 @@ public class UssConverter {
         if (lineReader.hasNextLine()) {
             line = lineReader.nextLine();
             if (line.startsWith("Black in hand:")) {
-                readPiecesInHand(line, position.getSenteKomadai());
+                readPiecesInHand(line, position.getMutableSenteKomadai());
             }
         }
         return position;

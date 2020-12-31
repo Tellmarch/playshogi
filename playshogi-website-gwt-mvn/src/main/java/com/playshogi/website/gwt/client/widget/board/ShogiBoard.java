@@ -365,12 +365,12 @@ public class ShogiBoard extends Composite implements ClickHandler {
                 if (wrapper.getRow() == BLACK_KOMADAI_ROW) { // Already in sente Komadai
                     return;
                 } else {
-                    position.getGoteKomadai().removePiece(wrapper.getPiece().getPieceType());
+                    position.getMutableGoteKomadai().removePiece(wrapper.getPiece().getPieceType());
                 }
             } else {
                 position.getMutableShogiBoardState().setPieceAt(wrapper.getSquare(), null);
             }
-            position.getSenteKomadai().addPiece(wrapper.getPiece().getPieceType());
+            position.getMutableSenteKomadai().addPiece(wrapper.getPiece().getPieceType());
             selectionController.unselect();
             displayPosition();
         } else if (source == goteKomadaiImage && selectionController.hasPieceSelected()
@@ -381,12 +381,12 @@ public class ShogiBoard extends Composite implements ClickHandler {
                 if (wrapper.getRow() == WHITE_KOMADAI_ROW) { // Already in gote Komadai
                     return;
                 } else {
-                    position.getSenteKomadai().removePiece(wrapper.getPiece().getPieceType());
+                    position.getMutableSenteKomadai().removePiece(wrapper.getPiece().getPieceType());
                 }
             } else {
                 position.getMutableShogiBoardState().setPieceAt(wrapper.getSquare(), null);
             }
-            position.getGoteKomadai().addPiece(wrapper.getPiece().getPieceType());
+            position.getMutableGoteKomadai().addPiece(wrapper.getPiece().getPieceType());
             selectionController.unselect();
             displayPosition();
         }

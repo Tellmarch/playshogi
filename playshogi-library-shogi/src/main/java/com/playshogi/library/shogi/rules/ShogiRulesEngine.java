@@ -70,9 +70,9 @@ public class ShogiRulesEngine implements GameRulesEngine<ShogiPosition> {
 
     private void playCaptureMove(final ShogiPosition position, final CaptureMove move) {
         if (move.getPlayer() == Player.BLACK) {
-            position.getSenteKomadai().addPiece(move.getCapturedPiece().getPieceType());
+            position.getMutableSenteKomadai().addPiece(move.getCapturedPiece().getPieceType());
         } else {
-            position.getGoteKomadai().addPiece(move.getCapturedPiece().getPieceType());
+            position.getMutableGoteKomadai().addPiece(move.getCapturedPiece().getPieceType());
         }
         if (move.isPromote()) {
             position.getMutableShogiBoardState().setPieceAt(move.getToSquare(), move.getPiece().getPromotedPiece());
@@ -86,9 +86,9 @@ public class ShogiRulesEngine implements GameRulesEngine<ShogiPosition> {
         position.getMutableShogiBoardState().setPieceAt(move.getToSquare(),
                 Piece.getPiece(move.getPieceType(), move.getPlayer()));
         if (move.getPlayer() == Player.BLACK) {
-            position.getSenteKomadai().removePiece(move.getPieceType());
+            position.getMutableSenteKomadai().removePiece(move.getPieceType());
         } else {
-            position.getGoteKomadai().removePiece(move.getPieceType());
+            position.getMutableGoteKomadai().removePiece(move.getPieceType());
         }
     }
 
@@ -126,18 +126,18 @@ public class ShogiRulesEngine implements GameRulesEngine<ShogiPosition> {
 
     private void undoDropMove(final ShogiPosition position, final DropMove move) {
         if (move.getPlayer() == Player.BLACK) {
-            position.getSenteKomadai().addPiece(move.getPieceType());
+            position.getMutableSenteKomadai().addPiece(move.getPieceType());
         } else {
-            position.getGoteKomadai().addPiece(move.getPieceType());
+            position.getMutableGoteKomadai().addPiece(move.getPieceType());
         }
         position.getMutableShogiBoardState().setPieceAt(move.getToSquare(), null);
     }
 
     private void undoCaptureMove(final ShogiPosition position, final CaptureMove move) {
         if (move.getPlayer() == Player.BLACK) {
-            position.getSenteKomadai().removePiece(move.getCapturedPiece().getPieceType());
+            position.getMutableSenteKomadai().removePiece(move.getCapturedPiece().getPieceType());
         } else {
-            position.getGoteKomadai().removePiece(move.getCapturedPiece().getPieceType());
+            position.getMutableGoteKomadai().removePiece(move.getCapturedPiece().getPieceType());
         }
         if (move.isPromote()) {
             position.getMutableShogiBoardState().setPieceAt(move.getFromSquare(), move.getPiece().getUnpromotedPiece());

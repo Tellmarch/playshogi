@@ -159,7 +159,7 @@ public enum KifFormat implements GameRecordFormat {
                     if (startingPosition == null) {
                         startingPosition = new ShogiPosition();
                     }
-                    MutableKomadaiState komadai = startingPosition.getGoteKomadai();
+                    MutableKomadaiState komadai = startingPosition.getMutableGoteKomadai();
                     readPiecesInHand(value, komadai);
                     lineReader.nextLine(); //  ９ ８ ７ ６ ５ ４ ３ ２ １
 
@@ -184,7 +184,7 @@ public enum KifFormat implements GameRecordFormat {
                     if (startingPosition == null) {
                         startingPosition = new ShogiPosition();
                     }
-                    MutableKomadaiState komadai = startingPosition.getSenteKomadai();
+                    MutableKomadaiState komadai = startingPosition.getMutableSenteKomadai();
                     readPiecesInHand(value, komadai);
                     break;
                 }

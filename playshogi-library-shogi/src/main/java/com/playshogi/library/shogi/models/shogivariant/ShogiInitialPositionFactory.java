@@ -20,9 +20,9 @@ public class ShogiInitialPositionFactory {
         setBlackPieces(shogiBoardState);
 
         if (handicap == Handicap.THREE_PAWNS) {
-            shogiPosition.getGoteKomadai().addPiece(PieceType.PAWN);
-            shogiPosition.getGoteKomadai().addPiece(PieceType.PAWN);
-            shogiPosition.getGoteKomadai().addPiece(PieceType.PAWN);
+            shogiPosition.getMutableGoteKomadai().addPiece(PieceType.PAWN);
+            shogiPosition.getMutableGoteKomadai().addPiece(PieceType.PAWN);
+            shogiPosition.getMutableGoteKomadai().addPiece(PieceType.PAWN);
         }
 
         if (handicap != Handicap.EVEN && handicap != Handicap.SENTE) {
