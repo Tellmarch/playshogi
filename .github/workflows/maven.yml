@@ -29,9 +29,6 @@ jobs:
         key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
         restore-keys: ${{ runner.os }}-m2
 
-    - name: Install playshogi-library-common
-      run: mvn -B install --file playshogi-library-common/pom.xml
-
     - name: Install playshogi-library-shogi
       run: mvn -B install --file playshogi-library-shogi/pom.xml
 
