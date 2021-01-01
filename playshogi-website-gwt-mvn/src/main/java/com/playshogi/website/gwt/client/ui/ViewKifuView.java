@@ -5,6 +5,7 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.web.bindery.event.shared.EventBus;
+import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.website.gwt.client.events.gametree.PositionChangedEvent;
 import com.playshogi.website.gwt.client.widget.board.ShogiBoard;
@@ -20,6 +21,12 @@ import java.util.Optional;
 public class ViewKifuView extends Composite {
 
     private static final String VIEWKIFU = "viewkifu";
+
+    interface MyEventBinder extends EventBinder<ViewKifuView> {
+    }
+
+    private final MyEventBinder eventBinder = GWT.create(MyEventBinder.class);
+
     private final ShogiBoard shogiBoard;
     private final GameNavigator gameNavigator;
     private final KifuNavigationPanel kifuNavigationPanel;
@@ -65,6 +72,7 @@ public class ViewKifuView extends Composite {
 
     public void activate(final EventBus eventBus, final String kifuId) {
         GWT.log("Activating ViewKifuView");
+        eventBinder.bindEventHandlers(this, eventBus);
         shogiBoard.activate(eventBus);
         gameNavigator.activate(eventBus);
         kifuInformationPanel.activate(eventBus);
