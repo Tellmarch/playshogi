@@ -1,7 +1,6 @@
 package com.playshogi.library.shogi.models.record;
 
 import com.playshogi.library.shogi.models.moves.Move;
-import com.playshogi.library.shogi.models.position.ReadOnlyShogiPosition;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.library.shogi.rules.ShogiRulesEngine;
 
@@ -119,10 +118,10 @@ public class GameNavigation {
         return gameTree;
     }
 
-    public void setGameTree(final GameTree gameTree, final ReadOnlyShogiPosition startingPosition, final int goToMove) {
+    public void setGameTree(final GameTree gameTree, final int goToMove) {
         this.gameTree = gameTree;
         this.currentNode = gameTree.getRootNode();
-        this.position = startingPosition.clonePosition();
+        this.position = gameTree.getInitialPosition().clonePosition();
 
         for (int i = 0; i < goToMove; i++) {
             moveForward();
