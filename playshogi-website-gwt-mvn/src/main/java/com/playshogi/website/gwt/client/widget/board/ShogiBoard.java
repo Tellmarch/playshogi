@@ -453,6 +453,10 @@ public class ShogiBoard extends Composite implements ClickHandler {
         return selectionController;
     }
 
+    public BoardDecorationController getDecorationController() {
+        return decorationController;
+    }
+
     @EventHandler
     public void onPositionChanged(final PositionChangedEvent event) {
         setPosition(event.getPosition());

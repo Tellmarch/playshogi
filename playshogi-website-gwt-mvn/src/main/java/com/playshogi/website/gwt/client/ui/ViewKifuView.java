@@ -1,13 +1,19 @@
 package com.playshogi.website.gwt.client.ui;
 
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.shared.GWT;
+import com.google.gwt.regexp.shared.MatchResult;
+import com.google.gwt.regexp.shared.RegExp;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
+import com.playshogi.library.shogi.models.formats.usf.UsfUtil;
+import com.playshogi.library.shogi.models.position.Square;
 import com.playshogi.website.gwt.client.events.gametree.PositionChangedEvent;
+import com.playshogi.website.gwt.client.widget.board.Color;
 import com.playshogi.website.gwt.client.widget.board.ShogiBoard;
 import com.playshogi.website.gwt.client.widget.engine.KifuEvaluationChartPanel;
 import com.playshogi.website.gwt.client.widget.engine.PositionEvaluationDetailsPanel;
@@ -21,6 +27,7 @@ import java.util.Optional;
 public class ViewKifuView extends Composite {
 
     private static final String VIEWKIFU = "viewkifu";
+    private static final RegExp ARROW_PATTERN = RegExp.compile("ARROW,(....),.,.,.,\\((\\d*),(\\d*),(\\d*),(\\d*)\\)");
 
     interface MyEventBinder extends EventBinder<ViewKifuView> {
     }
@@ -93,6 +100,30 @@ public class ViewKifuView extends Composite {
             textArea.setText(comment.get());
         } else {
             textArea.setText("");
+        }
+        Scheduler.get().scheduleDeferred(this::drawObjects);
+
+    }
+
+    private void drawObjects() {
+        Optional<String> objects = gameNavigator.getGameNavigation().getCurrentNode().getObjects();
+        if (objects.isPresent()) {
+            for (String object : objects.get().split("\n")) {
+                GWT.log("OBJECT: " + object);
+                if (object.startsWith("ARROW,")) {
+                    MatchResult result = ARROW_PATTERN.exec(object);
+
+                    String coordinates = result.getGroup(1);
+                    Square from = Square.of(UsfUtil.char2ColumnNumber(coordinates.charAt(0)),
+                            UsfUtil.char2RowNumber(coordinates.charAt(1)));
+                    Square to = Square.of(UsfUtil.char2ColumnNumber(coordinates.charAt(2)),
+                            UsfUtil.char2RowNumber(coordinates.charAt(3)));
+                    GWT.log("Drawing arrow from " + from + " to " + to);
+                    Color c = new Color(Integer.parseInt(result.getGroup(2)), Integer.parseInt(result.getGroup(3)),
+                            Integer.parseInt(result.getGroup(4)), Integer.parseInt(result.getGroup(5)));
+                    shogiBoard.getDecorationController().drawArrow(from, to, c);
+                }
+            }
         }
     }
 }
