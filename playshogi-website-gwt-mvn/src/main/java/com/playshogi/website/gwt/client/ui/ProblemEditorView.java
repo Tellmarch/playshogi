@@ -22,6 +22,8 @@ import com.playshogi.website.gwt.client.widget.kifu.GameTreePanel;
 import com.playshogi.website.gwt.client.widget.kifu.KifuEditorPanel;
 import com.playshogi.website.gwt.client.widget.kifu.PositionEditingPanel;
 
+import java.util.Optional;
+
 @Singleton
 public class ProblemEditorView extends Composite {
 
@@ -86,6 +88,10 @@ public class ProblemEditorView extends Composite {
         gameTreePanel.activate(eventBus);
     }
 
+    public GameNavigation getGameNavigation() {
+        return gameNavigation;
+    }
+
     @EventHandler
     public void onEditModeSelectedEvent(final EditModeSelectedEvent event) {
         GWT.log("Problem editor: handle EditModeSelectedEvent - " + event.isEditMode());
@@ -105,7 +111,18 @@ public class ProblemEditorView extends Composite {
         eventBus.fireEvent(new PositionChangedEvent(shogiBoard.getPosition(), true));
     }
 
-    public GameNavigation getGameNavigation() {
-        return gameNavigation;
+    @EventHandler
+    public void onPositionChanged(final PositionChangedEvent event) {
+        GWT.log("Problem editor: handle PositionChangedEvent");
+
+        Optional<String> comment = gameNavigation.getCurrentComment();
+        if (comment.isPresent()) {
+            textArea.setText(comment.get());
+        } else {
+            textArea.setText("");
+        }
+
     }
+
+
 }

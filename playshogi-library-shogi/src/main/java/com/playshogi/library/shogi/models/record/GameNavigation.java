@@ -4,6 +4,8 @@ import com.playshogi.library.shogi.models.moves.Move;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.library.shogi.rules.ShogiRulesEngine;
 
+import java.util.Optional;
+
 public class GameNavigation {
 
     private GameTree gameTree;
@@ -28,6 +30,10 @@ public class GameNavigation {
 
     public Move getCurrentMove() {
         return currentNode.getMove();
+    }
+
+    public Optional<String> getCurrentComment() {
+        return currentNode.getComment();
     }
 
     public boolean canMoveBack() {
