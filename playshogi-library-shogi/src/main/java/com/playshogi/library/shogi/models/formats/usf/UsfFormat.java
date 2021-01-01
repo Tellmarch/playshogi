@@ -69,9 +69,11 @@ public enum UsfFormat implements GameRecordFormat {
     private static String toUSFString(final GameRecord gameRecord) {
         StringBuilder builder = new StringBuilder("USF:1.0\n");
 
-        writePreviewString(gameRecord, builder);
+        boolean needNodes = writePreviewString(gameRecord, builder);
         writeGameTags(gameRecord, builder);
-        writeNodes(gameRecord, builder);
+        if (needNodes) {
+            writeNodes(gameRecord, builder);
+        }
 
         return builder.toString();
     }
@@ -101,11 +103,15 @@ public enum UsfFormat implements GameRecordFormat {
         }
     }
 
-    private static void writePreviewString(final GameRecord gameRecord, final StringBuilder builder) {
+    private static boolean writePreviewString(final GameRecord gameRecord, final StringBuilder builder) {
+        boolean needNodesSection = false;
         GameTree gameTree = gameRecord.getGameTree();
         builder.append("^");
         builder.append(getResultChar(gameRecord.getGameResult()));
         Node n = gameTree.getRootNode();
+        if (n.getComment().isPresent()) {
+            needNodesSection = true;
+        }
         if (n.getMove() instanceof EditMove) {
             EditMove editMove = (EditMove) n.getMove();
             String sfen = SfenConverter.toSFEN(editMove.getPosition());
@@ -115,10 +121,18 @@ public enum UsfFormat implements GameRecordFormat {
         }
         builder.append(":");
         while (n.hasChildren()) {
-            n = n.getChildren().get(0);
+            List<Node> children = n.getChildren();
+            if (children.size() > 1) {
+                needNodesSection = true;
+            }
+            n = children.get(0);
             builder.append(UsfMoveConverter.toUsfString((ShogiMove) n.getMove()));
+            if (n.getComment().isPresent()) {
+                needNodesSection = true;
+            }
         }
         builder.append('\n');
+        return needNodesSection;
     }
 
     private static void writeNodes(final GameRecord gameRecord, final StringBuilder builder) {
