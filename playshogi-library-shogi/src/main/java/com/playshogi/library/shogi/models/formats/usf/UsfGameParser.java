@@ -6,6 +6,7 @@ import com.playshogi.library.shogi.models.moves.Move;
 import com.playshogi.library.shogi.models.record.*;
 import com.playshogi.library.shogi.rules.ShogiRulesEngine;
 
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -116,7 +117,12 @@ class UsfGameParser {
 
     private void readComment(final String line) {
         // we just add the comment line to the current node's comment
-        gameNavigation.getCurrentNode().setComment(gameNavigation.getCurrentNode().getComment() + "\n" + line.substring(1));
+        Optional<String> comment = gameNavigation.getCurrentNode().getComment();
+        if (comment.isPresent()) {
+            gameNavigation.getCurrentNode().setComment(comment.get() + "\n" + line.substring(1));
+        } else {
+            gameNavigation.getCurrentNode().setComment(line.substring(1));
+        }
     }
 
     private void readDotLine(final String l) {
@@ -125,8 +131,7 @@ class UsfGameParser {
         }
 
         String r = l.substring(1);
-        // Next can be 1)Nothing 2)Move number 3)New move
-        // 4)MoveNumber:new move
+        // Next can be 1)Nothing 2)Move number 3)New move 4)MoveNumber:new move
         if (r.isEmpty()) {
             // Empty : we just go to the next move
             gameNavigation.moveForwardInLastVariation();

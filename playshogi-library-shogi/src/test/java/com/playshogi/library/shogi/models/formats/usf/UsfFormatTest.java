@@ -2,7 +2,6 @@ package com.playshogi.library.shogi.models.formats.usf;
 
 import com.playshogi.library.shogi.models.record.GameRecord;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -60,7 +59,6 @@ public class UsfFormatTest {
         Assert.assertEquals(expected, result);
     }
 
-    @Ignore
     @Test
     public void readTest1() throws IOException {
         String path = "src/test/resources/usf/test1.usf";

@@ -5,6 +5,7 @@ import com.playshogi.library.shogi.models.moves.Move;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 public class Node {
 
@@ -13,6 +14,8 @@ public class Node {
 
     private Move move;
     private String comment = null;
+    private MoveAnnotation annotation = MoveAnnotation.NONE;
+    private Integer evaluation = null;
 
     public Node(final Move move) {
         this.move = move;
@@ -34,8 +37,8 @@ public class Node {
         this.move = move;
     }
 
-    public String getComment() {
-        return comment;
+    public Optional<String> getComment() {
+        return Optional.ofNullable(comment);
     }
 
     public void setComment(final String comment) {
@@ -44,6 +47,22 @@ public class Node {
 
     public List<Node> getChildren() {
         return children;
+    }
+
+    public MoveAnnotation getAnnotation() {
+        return annotation;
+    }
+
+    public void setAnnotation(final MoveAnnotation annotation) {
+        this.annotation = annotation;
+    }
+
+    public Optional<Integer> getEvaluation() {
+        return Optional.ofNullable(evaluation);
+    }
+
+    public void setEvaluation(final Integer evaluation) {
+        this.evaluation = evaluation;
     }
 
     public void addChild(final Node node) {
@@ -73,6 +92,8 @@ public class Node {
         return "Node{" +
                 "children.size=" + children.size() +
                 ", move=" + move +
+                ", comment=" + comment +
+                ", annotation=" + annotation.getShortString() +
                 '}';
     }
 }

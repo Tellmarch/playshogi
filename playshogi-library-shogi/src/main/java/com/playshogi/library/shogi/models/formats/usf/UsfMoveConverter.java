@@ -12,7 +12,8 @@ public class UsfMoveConverter {
     public static final String[] specialStrings = {"", "DUMY", "SLNT", "RSGN", "BREK", "JISO", "TIME", "FOUL", "VICT",
             "MATE", "REPT", "NMAT", "++++", "++..", "+...", "====", "-...", "--..", "----", "=88=", "+88-"};
 
-    public static final SpecialMoveType[] specialTypes = {null, null, null, SpecialMoveType.RESIGN, null,
+    public static final SpecialMoveType[] specialTypes = {null, null, SpecialMoveType.SILENT, SpecialMoveType.RESIGN,
+            null,
             SpecialMoveType.JISHOGI, SpecialMoveType.TIMEOUT, SpecialMoveType.ILLEGAL_MOVE, null,
             SpecialMoveType.CHECKMATE, SpecialMoveType.SENNICHITE, null, null, null, null, null, null, null, null,
             null, null};
@@ -39,7 +40,7 @@ public class UsfMoveConverter {
 
         // Probably not, let's figure out the coordinates
         int col1 = 0, col2, row1 = 0, row2;
-        boolean promotion = false;
+        boolean promotion;
         boolean drop = false;
         Piece piece;
         if (usfMove.charAt(1) == '*') {

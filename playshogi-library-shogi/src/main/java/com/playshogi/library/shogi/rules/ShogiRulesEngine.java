@@ -45,7 +45,11 @@ public class ShogiRulesEngine {
     }
 
     public void playMoveInPosition(final ShogiPosition position, final Move move) {
-        playMoveInPosition(position, move, true);
+        playMoveInPosition(position, move, !isSilentMove(move));
+    }
+
+    private boolean isSilentMove(final Move move) {
+        return move instanceof SpecialMove && ((SpecialMove) move).getSpecialMoveType() == SpecialMoveType.SILENT;
     }
 
     public void playMoveInPosition(final ShogiPosition position, final Move move, final boolean incrementMoveCount) {
@@ -104,7 +108,9 @@ public class ShogiRulesEngine {
         } else if (move instanceof NormalMove) {
             undoNormalMove(position, (NormalMove) move);
         }
-        position.decrementMoveCount();
+        if (!isSilentMove(move)) {
+            position.decrementMoveCount();
+        }
     }
 
     private void undoNormalMove(final ShogiPosition position, final NormalMove move) {
