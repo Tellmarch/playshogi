@@ -14,6 +14,7 @@ import com.playshogi.website.gwt.client.events.gametree.EndOfVariationReachedEve
 import com.playshogi.website.gwt.client.events.gametree.NewVariationPlayedEvent;
 import com.playshogi.website.gwt.client.events.gametree.UserNavigatedBackEvent;
 import com.playshogi.website.gwt.client.events.kifu.GameRecordExportRequestedEvent;
+import com.playshogi.website.gwt.client.events.kifu.GameRecordPreviewRequestedEvent;
 import com.playshogi.website.gwt.client.events.kifu.GameRecordSaveRequestedEvent;
 import com.playshogi.website.gwt.client.widget.gamenavigator.GameNavigator;
 
@@ -28,6 +29,7 @@ public class KifuEditorPanel extends Composite implements ClickHandler {
     private final Button importButton;
     private final Button saveButton;
     private final Button exportButton;
+    private final Button previewButton;
 
     private final ImportKifuPanel importKifuPanel = new ImportKifuPanel();
 
@@ -50,6 +52,9 @@ public class KifuEditorPanel extends Composite implements ClickHandler {
         exportButton = new Button("Export kifu", this);
         verticalPanel.add(exportButton);
 
+        previewButton = new Button("Preview kifu", this);
+        verticalPanel.add(previewButton);
+
 
         initWidget(verticalPanel);
     }
@@ -66,6 +71,9 @@ public class KifuEditorPanel extends Composite implements ClickHandler {
         } else if (source == exportButton) {
             GWT.log("Kifu editor: request exporting kifu");
             eventBus.fireEvent(new GameRecordExportRequestedEvent());
+        } else if (source == previewButton) {
+            GWT.log("Kifu editor: request preview kifu");
+            eventBus.fireEvent(new GameRecordPreviewRequestedEvent());
         }
     }
 

@@ -1,6 +1,7 @@
 package com.playshogi.website.gwt.client.activity;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.place.shared.PlaceController;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
@@ -14,10 +15,8 @@ import com.playshogi.library.shogi.models.record.GameResult;
 import com.playshogi.library.shogi.models.record.GameTree;
 import com.playshogi.website.gwt.client.SessionInformation;
 import com.playshogi.website.gwt.client.events.gametree.GameTreeChangedEvent;
-import com.playshogi.website.gwt.client.events.kifu.GameInformationChangedEvent;
-import com.playshogi.website.gwt.client.events.kifu.GameRecordExportRequestedEvent;
-import com.playshogi.website.gwt.client.events.kifu.GameRecordSaveRequestedEvent;
-import com.playshogi.website.gwt.client.events.kifu.ImportGameRecordEvent;
+import com.playshogi.website.gwt.client.events.kifu.*;
+import com.playshogi.website.gwt.client.place.PreviewKifuPlace;
 import com.playshogi.website.gwt.client.place.ProblemEditorPlace;
 import com.playshogi.website.gwt.client.ui.ProblemEditorView;
 import com.playshogi.website.gwt.shared.services.KifuService;
@@ -39,11 +38,13 @@ public class ProblemEditorActivity extends MyAbstractActivity {
     private EventBus eventBus;
 
     private final SessionInformation sessionInformation;
+    private final PlaceController placeController;
 
     public ProblemEditorActivity(final ProblemEditorPlace place, final ProblemEditorView problemEditorView,
-                                 final SessionInformation sessionInformation) {
+                                 final SessionInformation sessionInformation, final PlaceController placeController) {
         this.problemEditorView = problemEditorView;
         this.sessionInformation = sessionInformation;
+        this.placeController = placeController;
     }
 
     @Override
@@ -57,7 +58,7 @@ public class ProblemEditorActivity extends MyAbstractActivity {
 
     @Override
     public void onStop() {
-        GWT.log("Stopping new kifu activity");
+        GWT.log("Stopping problem editor activity");
         super.onStop();
     }
 
@@ -96,6 +97,14 @@ public class ProblemEditorActivity extends MyAbstractActivity {
         String usfString = UsfFormat.INSTANCE.write(gameRecord);
         GWT.log(usfString);
         Window.alert(usfString);
+    }
+
+    @EventHandler
+    public void onGameRecordPreviewRequested(final GameRecordPreviewRequestedEvent event) {
+        GWT.log("problem editor Activity Handling GameRecordPreviewRequestedEvent");
+        gameRecord = getGameRecord();
+        String usfString = UsfFormat.INSTANCE.write(gameRecord);
+        placeController.goTo(new PreviewKifuPlace(usfString, 0));
     }
 
     private GameRecord getGameRecord() {

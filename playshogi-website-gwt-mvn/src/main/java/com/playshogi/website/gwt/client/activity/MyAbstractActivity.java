@@ -9,6 +9,11 @@ public abstract class MyAbstractActivity extends AbstractActivity {
 
     private static final VersionInformation VERSION_INFORMATION = new VersionInformation();
 
+    /**
+     * This method is called when opening an activity.
+     * Be careful when firing events in this method, as they may still be caught by the previous activity handlers.
+     * Prefer using "scheduleDeferred" when it is needed, to make sure the activity switch is complete first.
+     */
     public abstract void start(AcceptsOneWidget panel, EventBus eventBus);
 
     @Override

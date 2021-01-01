@@ -17,6 +17,7 @@ import com.playshogi.website.gwt.client.events.gametree.GameTreeChangedEvent;
 import com.playshogi.website.gwt.client.events.gametree.MoveSelectedEvent;
 import com.playshogi.website.gwt.client.events.gametree.PositionChangedEvent;
 import com.playshogi.website.gwt.client.events.kifu.*;
+import com.playshogi.website.gwt.client.place.PreviewKifuPlace;
 import com.playshogi.website.gwt.client.place.ViewKifuPlace;
 import com.playshogi.website.gwt.client.ui.ViewKifuView;
 import com.playshogi.website.gwt.shared.models.AnalysisRequestResult;
@@ -43,6 +44,7 @@ public class ViewKifuActivity extends MyAbstractActivity {
     private final SessionInformation sessionInformation;
 
     private final String kifuId;
+    private final String kifuUsf;
     private final int initialMoveCount;
     private AnalysisRequestResult analysisResult;
 
@@ -51,6 +53,16 @@ public class ViewKifuActivity extends MyAbstractActivity {
         this.viewKifuView = viewKifuView;
         this.sessionInformation = sessionInformation;
         kifuId = place.getKifuId();
+        kifuUsf = null;
+        initialMoveCount = place.getMove();
+    }
+
+    public ViewKifuActivity(final PreviewKifuPlace place, final ViewKifuView viewKifuView,
+                            final SessionInformation sessionInformation) {
+        this.viewKifuView = viewKifuView;
+        this.sessionInformation = sessionInformation;
+        kifuUsf = place.getKifuUsf();
+        kifuId = null;
         initialMoveCount = place.getMove();
     }
 
@@ -62,22 +74,32 @@ public class ViewKifuActivity extends MyAbstractActivity {
         viewKifuView.activate(eventBus, kifuId);
         containerWidget.setWidget(viewKifuView.asWidget());
 
-        kifuService.getKifuUsf(sessionInformation.getSessionId(), kifuId, new AsyncCallback<String>() {
+        if (kifuUsf != null) {
+            Scheduler.get().scheduleDeferred(() ->
+                    loadUsf(kifuUsf)
+            );
+        } else {
+            kifuService.getKifuUsf(sessionInformation.getSessionId(), kifuId, new AsyncCallback<String>() {
 
-            @Override
-            public void onSuccess(final String usf) {
-                GWT.log("Kifu loaded successfully: " + usf);
-                gameRecord = UsfFormat.INSTANCE.readSingle(usf);
+                @Override
+                public void onSuccess(final String usf) {
+                    loadUsf(usf);
+                }
 
-                eventBus.fireEvent(new GameTreeChangedEvent(gameRecord.getGameTree(), initialMoveCount));
-                eventBus.fireEvent(new GameInformationChangedEvent(gameRecord.getGameInformation()));
-            }
+                @Override
+                public void onFailure(final Throwable caught) {
+                    GWT.log("Error while loqding the kifu: " + caught);
+                }
+            });
+        }
+    }
 
-            @Override
-            public void onFailure(final Throwable caught) {
-                GWT.log("Error while loqding the kifu: " + caught);
-            }
-        });
+    private void loadUsf(final String usf) {
+        GWT.log("Loading Kifu from USF: " + usf);
+        gameRecord = UsfFormat.INSTANCE.readSingle(usf);
+
+        eventBus.fireEvent(new GameTreeChangedEvent(gameRecord.getGameTree(), initialMoveCount));
+        eventBus.fireEvent(new GameInformationChangedEvent(gameRecord.getGameInformation()));
     }
 
     @Override
@@ -169,14 +191,21 @@ public class ViewKifuActivity extends MyAbstractActivity {
         //TODO: do all this only if we are in mainline
 
         int moveCount = event.getPosition().getMoveCount();
-        //Update URL with the new move count
-        History.newItem("ViewKifu:" + new ViewKifuPlace.Tokenizer().getToken(new ViewKifuPlace(kifuId,
-                moveCount)), false);
+
+        if (!isPreviewOnly()) {
+            //Update URL with the new move count
+            History.newItem("ViewKifu:" + new ViewKifuPlace.Tokenizer().getToken(new ViewKifuPlace(kifuId,
+                    moveCount)), false);
+        }
 
         if (analysisResult != null && analysisResult.getDetails().length > moveCount) {
             PositionEvaluationDetails detail = analysisResult.getDetails()[moveCount];
             Scheduler.get().scheduleDeferred(() -> eventBus.fireEvent(new PositionEvaluationEvent(detail)));
         }
+    }
+
+    private boolean isPreviewOnly() {
+        return kifuUsf != null;
     }
 
     @EventHandler

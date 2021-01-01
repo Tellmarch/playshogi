@@ -76,6 +76,8 @@ public class AppActivityMapper implements ActivityMapper {
             return new NewKifuActivity((NewKifuPlace) place, newKifuView, sessionInformation);
         } else if (place instanceof ViewKifuPlace) {
             return new ViewKifuActivity((ViewKifuPlace) place, viewKifuView, sessionInformation);
+        } else if (place instanceof PreviewKifuPlace) {
+            return new ViewKifuActivity((PreviewKifuPlace) place, viewKifuView, sessionInformation);
         } else if (place instanceof TutorialPlace) {
             return new TutorialActivity((TutorialPlace) place, tutorialView, placeController);
         } else if (place instanceof PlayPlace) {
@@ -83,7 +85,8 @@ public class AppActivityMapper implements ActivityMapper {
         } else if (place instanceof ProblemsPlace) {
             return new ProblemsActivity((ProblemsPlace) place, problemsView, sessionInformation);
         } else if (place instanceof ProblemEditorPlace) {
-            return new ProblemEditorActivity((ProblemEditorPlace) place, problemEditorView, sessionInformation);
+            return new ProblemEditorActivity((ProblemEditorPlace) place, problemEditorView, sessionInformation,
+                    placeController);
         }
         return null;
     }
