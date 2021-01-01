@@ -45,9 +45,6 @@ public class PieceMovementTest {
         String sfen = "lnsg3nl/2k2gr2/ppbp1p1pp/2p1P4/4s1S2/5B3/PPPP1P1PP/2S1GGR2/LN4KNL b 2Pp";
         ShogiPosition position = SfenConverter.fromSFEN(sfen);
 
-        System.out.println("Testing " + pieceMovement.getClass().getSimpleName());
-        System.out.println(position);
-
         ShogiBoardState boardState = position.getShogiBoardState();
 
         for (Square from : position.getAllSquares()) {
