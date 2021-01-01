@@ -80,7 +80,7 @@ public class SfenConverter {
         return res + " " + c;
     }
 
-    public static String toSFENWithMoveCount(final ShogiPosition pos) {
+    public static String toSFENWithMoveCount(final ReadOnlyShogiPosition pos) {
         return toSFEN(pos) + " " + (pos.getMoveCount() + 1);
     }
 

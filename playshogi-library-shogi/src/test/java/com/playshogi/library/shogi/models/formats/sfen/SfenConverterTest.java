@@ -1,9 +1,10 @@
 package com.playshogi.library.shogi.models.formats.sfen;
 
 import com.playshogi.library.shogi.models.position.ShogiPosition;
+import com.playshogi.library.shogi.models.shogivariant.ShogiInitialPositionFactory;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class SfenConverterTest {
 
@@ -20,5 +21,11 @@ public class SfenConverterTest {
     public void testFromSFENAndToSFENWithMoveCount() {
         ShogiPosition position = SfenConverter.fromSFEN(sfen);
         assertEquals(sfenWithMoveCount, SfenConverter.toSFENWithMoveCount(position));
+    }
+
+    @Test
+    public void testFromSFENAndToSFENWithMoveCountInitial() {
+        assertEquals("lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1",
+                SfenConverter.toSFENWithMoveCount(ShogiInitialPositionFactory.READ_ONLY_INITIAL_POSITION));
     }
 }
