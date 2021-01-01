@@ -303,6 +303,6 @@ public enum KifFormat implements GameRecordFormat {
         }
 
         GameRecord record = gameRecords.get(0);
-        return GameRecordUtils.getinitialPosition(record);
+        return GameRecordUtils.getInitialPosition(record).clonePosition();
     }
 }

@@ -15,6 +15,7 @@ import com.playshogi.library.shogi.models.PieceType;
 import com.playshogi.library.shogi.models.Player;
 import com.playshogi.library.shogi.models.moves.DropMove;
 import com.playshogi.library.shogi.models.moves.ShogiMove;
+import com.playshogi.library.shogi.models.position.ReadOnlyShogiPosition;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.library.shogi.models.record.GameNavigation;
 import com.playshogi.library.shogi.models.record.GameTree;
@@ -105,7 +106,7 @@ public class GameNavigator extends Composite implements ClickHandler {
     public void onGameTreeChanged(final GameTreeChangedEvent gameTreeChangedEvent) {
         GWT.log(activityId + " GameNavigator: Handling game tree changed event - move " + gameTreeChangedEvent.getGoToMove());
         GameTree gameTree = gameTreeChangedEvent.getGameTree();
-        ShogiPosition startingPosition = GameRecordUtils.getinitialPosition(gameTree);
+        ReadOnlyShogiPosition startingPosition = GameRecordUtils.getInitialPosition(gameTree);
         gameNavigation.setGameTree(gameTree, startingPosition, gameTreeChangedEvent.getGoToMove());
 
         firePositionChanged(false);

@@ -250,8 +250,7 @@ public enum UsfFormat implements GameRecordFormat {
         Node n = gameTree.getRootNode();
         if (n.getMove() instanceof EditMove) {
             EditMove editMove = (EditMove) n.getMove();
-            ShogiPosition position = (ShogiPosition) editMove.getPosition();
-            builder.append(SfenConverter.toSFEN(position));
+            builder.append(SfenConverter.toSFEN(editMove.getPosition()));
         }
         builder.append(":");
         while (n.hasChildren()) {

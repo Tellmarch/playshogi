@@ -2,6 +2,7 @@ package com.playshogi.library.shogi.models;
 
 import com.playshogi.library.shogi.models.moves.EditMove;
 import com.playshogi.library.shogi.models.moves.Move;
+import com.playshogi.library.shogi.models.position.ReadOnlyShogiPosition;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.library.shogi.models.record.GameNavigation;
 import com.playshogi.library.shogi.models.record.GameRecord;
@@ -40,15 +41,15 @@ public class GameRecordUtils {
         return moves;
     }
 
-    public static ShogiPosition getinitialPosition(final GameRecord gameRecord) {
-        return getinitialPosition(gameRecord.getGameTree());
+    public static ReadOnlyShogiPosition getInitialPosition(final GameRecord gameRecord) {
+        return getInitialPosition(gameRecord.getGameTree());
     }
 
-    public static ShogiPosition getinitialPosition(final GameTree gameTree) {
+    public static ReadOnlyShogiPosition getInitialPosition(final GameTree gameTree) {
         Node rootNode = gameTree.getRootNode();
         if (rootNode.getMove() instanceof EditMove) {
             EditMove editMove = (EditMove) rootNode.getMove();
-            return (ShogiPosition) editMove.getPosition();
+            return editMove.getPosition();
         } else {
             return ShogiInitialPositionFactory.createInitialPosition();
         }

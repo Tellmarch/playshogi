@@ -4,9 +4,12 @@ import com.playshogi.library.shogi.models.Piece;
 import com.playshogi.library.shogi.models.PieceType;
 import com.playshogi.library.shogi.models.Player;
 import com.playshogi.library.shogi.models.position.MutableShogiBoardState;
+import com.playshogi.library.shogi.models.position.ReadOnlyShogiPosition;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
 
 public class ShogiInitialPositionFactory {
+
+    public static final ReadOnlyShogiPosition READ_ONLY_INITIAL_POSITION = createInitialPosition();
 
     public static ShogiPosition createInitialPosition() {
         return createInitialPosition(Handicap.EVEN);

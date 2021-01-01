@@ -3,10 +3,7 @@ package com.playshogi.library.shogi.models.formats.sfen;
 import com.playshogi.library.shogi.models.Piece;
 import com.playshogi.library.shogi.models.PieceType;
 import com.playshogi.library.shogi.models.Player;
-import com.playshogi.library.shogi.models.position.MutableKomadaiState;
-import com.playshogi.library.shogi.models.position.MutableShogiBoardState;
-import com.playshogi.library.shogi.models.position.ShogiBoardStateImpl;
-import com.playshogi.library.shogi.models.position.ShogiPosition;
+import com.playshogi.library.shogi.models.position.*;
 
 import java.util.Optional;
 
@@ -19,7 +16,7 @@ public class SfenConverter {
 
     private static final PieceType[] PIECE_TYPE_VALUES = PieceType.values();
 
-    public static String toSFEN(final ShogiPosition pos) {
+    public static String toSFEN(final ReadOnlyShogiPosition pos) {
         StringBuilder res = new StringBuilder();
         int numspace = 0;
         // First, the pieces on board
