@@ -83,22 +83,22 @@ public enum UsfFormat implements GameRecordFormat {
         if (gameInformation != null) {
             String sente = gameInformation.getSente();
             if (sente != null && !sente.isEmpty()) {
-                builder.append("\nBN:").append(sente);
+                builder.append("BN:").append(sente).append('\n');
             }
 
             String gote = gameInformation.getGote();
             if (gote != null && !gote.isEmpty()) {
-                builder.append("\nWN:").append(gote);
+                builder.append("WN:").append(gote).append('\n');
             }
 
             String date = gameInformation.getDate();
             if (date != null && !date.isEmpty()) {
-                builder.append("\nGD:").append(date);
+                builder.append("GD:").append(date).append('\n');
             }
 
             String venue = gameInformation.getVenue();
             if (venue != null && !venue.isEmpty()) {
-                builder.append("\nGQ:").append(venue);
+                builder.append("GQ:").append(venue).append('\n');
             }
         }
     }

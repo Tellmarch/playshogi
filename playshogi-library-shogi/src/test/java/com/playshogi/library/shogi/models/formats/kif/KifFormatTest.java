@@ -404,7 +404,7 @@ public class KifFormatTest {
                 "BN:AAA(1779)\n" +
                 "WN:BBB(1795)\n" +
                 "GD:Aug 31, 2020 6:39:53 PM\n" +
-                "GQ:UNKNOWN", UsfFormat.INSTANCE.write(kif24));
+                "GQ:UNKNOWN\n", UsfFormat.INSTANCE.write(kif24));
     }
 
     @Test
@@ -418,7 +418,7 @@ public class KifFormatTest {
                 "BN:AAA\n" +
                 "WN:BBB\n" +
                 "GD:2020/08/10\n" +
-                "GQ:81Dojo", UsfFormat.INSTANCE.write(kif81));
+                "GQ:81Dojo\n", UsfFormat.INSTANCE.write(kif81));
     }
 
     @Test
@@ -435,7 +435,7 @@ public class KifFormatTest {
                 "BN:AAA\n" +
                 "WN:BBB\n" +
                 "GD:1000-1-1\n" +
-                "GQ:UNKNOWN", UsfFormat.INSTANCE.write(kif));
+                "GQ:UNKNOWN\n", UsfFormat.INSTANCE.write(kif));
     }
 
     @Test
@@ -449,7 +449,7 @@ public class KifFormatTest {
                 "BN:AAA 初段\n" +
                 "WN:BBB 初段\n" +
                 "GD:2020/09/28 22:00:12\n" +
-                "GQ:UNKNOWN", UsfFormat.INSTANCE.write(kif));
+                "GQ:UNKNOWN\n", UsfFormat.INSTANCE.write(kif));
     }
 
     @Test

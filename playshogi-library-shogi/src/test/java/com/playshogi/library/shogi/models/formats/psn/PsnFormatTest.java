@@ -176,7 +176,7 @@ public class PsnFormatTest {
                 "BN:AAA aaa\n" +
                 "WN:BBB bbb\n" +
                 "GD:19/07/2013\n" +
-                "GQ:ESC/WOSC 2013", UsfFormat.INSTANCE.write(record));
+                "GQ:ESC/WOSC 2013\n", UsfFormat.INSTANCE.write(record));
     }
 
     @Test
@@ -190,7 +190,7 @@ public class PsnFormatTest {
                 "BN:Takeshi Fujii\n" +
                 "WN:Yoshiharu Habu\n" +
                 "GD:19700101\n" +
-                "GQ:Shinjin'o vs, Meijin", UsfFormat.INSTANCE.write(record));
+                "GQ:Shinjin'o vs, Meijin\n", UsfFormat.INSTANCE.write(record));
     }
 
     @Test
@@ -206,7 +206,7 @@ public class PsnFormatTest {
                 "BN:BBB\n" +
                 "WN:CCC\n" +
                 "GD:20020824\n" +
-                "GQ:European Championship 2002", UsfFormat.INSTANCE.write(records.get(0)));
+                "GQ:European Championship 2002\n", UsfFormat.INSTANCE.write(records.get(0)));
         assertEquals("USF:1.0\n" +
                 "^b:7g7f8c8d7i6h3c3d6h7g5c5d5g5f8b5b2h5h7a6b6i7h6b5c3i4h5a4b4g4f5c6d4h4g4b3b3g3f7c7d7g6f8a7c5i4h6d" +
                 "6e6f7g5d5e5f5e5b5eP*5f5e5b4h3i6a5a6g6f6e5d3i2h6c6d4i3h1c1d1g1f3a4b7g6h4b5c6h6g5a4b2i3g6d6e5h5i5b6b" +
@@ -216,6 +216,6 @@ public class PsnFormatTest {
                 "BN:EEEE\n" +
                 "WN:FFF\n" +
                 "GD:20020824\n" +
-                "GQ:European Championship 2002", UsfFormat.INSTANCE.write(records.get(1)));
+                "GQ:European Championship 2002\n", UsfFormat.INSTANCE.write(records.get(1)));
     }
 }
