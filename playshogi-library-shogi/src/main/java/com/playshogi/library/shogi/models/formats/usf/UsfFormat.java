@@ -7,9 +7,7 @@ import com.playshogi.library.shogi.models.formats.sfen.StringLineReader;
 import com.playshogi.library.shogi.models.moves.EditMove;
 import com.playshogi.library.shogi.models.moves.Move;
 import com.playshogi.library.shogi.models.moves.ShogiMove;
-import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.library.shogi.models.record.*;
-import com.playshogi.library.shogi.models.shogivariant.ShogiInitialPositionFactory;
 import com.playshogi.library.shogi.rules.ShogiRulesEngine;
 
 import java.util.Arrays;
@@ -57,22 +55,18 @@ public enum UsfFormat implements GameRecordFormat {
 
         // We will know start building the game tree
 
-        ShogiPosition startingPosition;
         GameTree gameTree;
         // If the next character is ":", the game is starting from start
         // position.
         if (l.charAt(2) == ':') {
-            startingPosition = ShogiInitialPositionFactory.createInitialPosition();
             gameTree = new GameTree();
         } else {
             // We read the starting position, in a SFEN that goes up to ":"
             String sfen = l.substring(2, l.indexOf(':'));
             if (SfenConverter.INITIAL_POSITION_SFEN.equals(sfen)) {
-                startingPosition = ShogiInitialPositionFactory.createInitialPosition();
                 gameTree = new GameTree();
             } else {
-                startingPosition = SfenConverter.fromSFEN(sfen);
-                gameTree = new GameTree(startingPosition);
+                gameTree = new GameTree(SfenConverter.fromSFEN(sfen));
             }
         }
 
@@ -250,7 +244,10 @@ public enum UsfFormat implements GameRecordFormat {
         Node n = gameTree.getRootNode();
         if (n.getMove() instanceof EditMove) {
             EditMove editMove = (EditMove) n.getMove();
-            builder.append(SfenConverter.toSFEN(editMove.getPosition()));
+            String sfen = SfenConverter.toSFEN(editMove.getPosition());
+            if (!SfenConverter.INITIAL_POSITION_SFEN.equals(sfen)) {
+                builder.append(sfen);
+            }
         }
         builder.append(":");
         while (n.hasChildren()) {

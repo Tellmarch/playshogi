@@ -12,7 +12,7 @@ import static com.playshogi.library.shogi.models.formats.usf.UsfUtil.pieceFromCh
 import static com.playshogi.library.shogi.models.formats.usf.UsfUtil.pieceToString;
 
 public class SfenConverter {
-    public static final String INITIAL_POSITION_SFEN = "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b";
+    public static final String INITIAL_POSITION_SFEN = "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b -";
 
     private static final PieceType[] PIECE_TYPE_VALUES = PieceType.values();
 

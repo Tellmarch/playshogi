@@ -6,6 +6,7 @@ import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.library.shogi.models.formats.kif.KifMoveConverter;
+import com.playshogi.library.shogi.models.formats.sfen.SfenConverter;
 import com.playshogi.library.shogi.models.moves.EditMove;
 import com.playshogi.library.shogi.models.moves.Move;
 import com.playshogi.library.shogi.models.moves.ShogiMove;
@@ -120,7 +121,7 @@ public class GameTreePanel extends Composite {
     private void setMove(final TreeItem item, final Move move, final int moveCount) {
         if (move != null) {
             if (move instanceof EditMove) {
-                item.setText("START");
+                item.setText("START (" + SfenConverter.toSFEN(((EditMove) move).getPosition()) + ")");
             } else if (move instanceof ShogiMove) {
                 item.setText(moveCount + ". " + KifMoveConverter.toKifStringShort((ShogiMove) move));
             } else {
