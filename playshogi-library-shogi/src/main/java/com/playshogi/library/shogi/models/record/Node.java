@@ -49,6 +49,10 @@ public class Node {
         return children;
     }
 
+    public Node getFirstChild() {
+        return children.get(0);
+    }
+
     public MoveAnnotation getAnnotation() {
         return annotation;
     }

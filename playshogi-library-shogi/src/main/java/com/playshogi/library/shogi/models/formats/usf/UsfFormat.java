@@ -10,6 +10,7 @@ import com.playshogi.library.shogi.models.record.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public enum UsfFormat implements GameRecordFormat {
     INSTANCE;
@@ -66,25 +67,17 @@ public enum UsfFormat implements GameRecordFormat {
     }
 
     private static String toUSFString(final GameRecord gameRecord) {
-        GameTree gameTree = gameRecord.getGameTree();
-        GameInformation gameInformation = gameRecord.getGameInformation();
-
         StringBuilder builder = new StringBuilder("USF:1.0\n");
-        builder.append("^");
-        builder.append(getResultChar(gameRecord.getGameResult()));
-        Node n = gameTree.getRootNode();
-        if (n.getMove() instanceof EditMove) {
-            EditMove editMove = (EditMove) n.getMove();
-            String sfen = SfenConverter.toSFEN(editMove.getPosition());
-            if (!SfenConverter.INITIAL_POSITION_SFEN.equals(sfen)) {
-                builder.append(sfen);
-            }
-        }
-        builder.append(":");
-        while (n.hasChildren()) {
-            n = n.getChildren().get(0);
-            builder.append(UsfMoveConverter.toUsfString((ShogiMove) n.getMove()));
-        }
+
+        writePreviewString(gameRecord, builder);
+        writeGameTags(gameRecord, builder);
+        writeNodes(gameRecord, builder);
+
+        return builder.toString();
+    }
+
+    private static void writeGameTags(final GameRecord gameRecord, final StringBuilder builder) {
+        GameInformation gameInformation = gameRecord.getGameInformation();
         if (gameInformation != null) {
             String sente = gameInformation.getSente();
             if (sente != null && !sente.isEmpty()) {
@@ -105,9 +98,103 @@ public enum UsfFormat implements GameRecordFormat {
             if (venue != null && !venue.isEmpty()) {
                 builder.append("\nGQ:").append(venue);
             }
-
         }
-        return builder.toString();
+    }
+
+    private static void writePreviewString(final GameRecord gameRecord, final StringBuilder builder) {
+        GameTree gameTree = gameRecord.getGameTree();
+        builder.append("^");
+        builder.append(getResultChar(gameRecord.getGameResult()));
+        Node n = gameTree.getRootNode();
+        if (n.getMove() instanceof EditMove) {
+            EditMove editMove = (EditMove) n.getMove();
+            String sfen = SfenConverter.toSFEN(editMove.getPosition());
+            if (!SfenConverter.INITIAL_POSITION_SFEN.equals(sfen)) {
+                builder.append(sfen);
+            }
+        }
+        builder.append(":");
+        while (n.hasChildren()) {
+            n = n.getChildren().get(0);
+            builder.append(UsfMoveConverter.toUsfString((ShogiMove) n.getMove()));
+        }
+        builder.append('\n');
+    }
+
+    private static void writeNodes(final GameRecord gameRecord, final StringBuilder builder) {
+        Node node = gameRecord.getGameTree().getRootNode();
+
+        int nodeCount = 0;
+        builder.append(".0\n");
+        writeNodeTags(node, builder);
+
+        while (node.hasChildren()) {
+            node = node.getChildren().get(0);
+            builder.append(".\n");
+            writeNodeTags(node, builder);
+            nodeCount++;
+        }
+
+        while (true) {
+
+            Node next = getNextSibling(node);
+            while (node.getParent() != null && next == null) {
+                nodeCount--;
+                node = node.getParent();
+                next = getNextSibling(node);
+            }
+
+            if (next == null) {
+                break;
+            }
+
+            builder.append('.');
+            builder.append(nodeCount - 1); // We go back to the parent node to insert the new sibling
+            builder.append('\n');
+
+            node = next;
+
+            builder.append('.');
+            builder.append(node.getMove().toString());
+            builder.append('\n');
+            writeNodeTags(node, builder);
+
+
+            while (node.hasChildren()) {
+                node = node.getChildren().get(0);
+                builder.append('.');
+                builder.append(node.getMove().toString());
+                builder.append('\n');
+                writeNodeTags(node, builder);
+                nodeCount++;
+            }
+        }
+
+    }
+
+    private static Node getNextSibling(final Node node) {
+        if (node.getParent() == null) {
+            return null;
+        }
+        List<Node> siblings = node.getParent().getChildren();
+        int index = siblings.indexOf(node);
+        if (index < siblings.size() - 1) {
+            return siblings.get(index + 1);
+        } else {
+            return null;
+        }
+    }
+
+    private static void writeNodeTags(final Node node, final StringBuilder builder) {
+        Optional<String> comment = node.getComment();
+        if (comment.isPresent()) {
+            String[] lines = comment.get().split("\n");
+            for (String line : lines) {
+                builder.append('#');
+                builder.append(line);
+                builder.append('\n');
+            }
+        }
     }
 
     private static char getResultChar(final GameResult gameResult) {
@@ -127,31 +214,4 @@ public enum UsfFormat implements GameRecordFormat {
                 throw (new IllegalArgumentException("Unknown result type: " + gameResult));
         }
     }
-
-//    /**
-//     * Gives the USF string representing the whole tree.
-//     *
-//     * @return
-//     */
-    // public String toUSFString(final GameTree gameTree) {
-    // String endline = System.getProperty("line.separator");
-    // String res = "^*:";
-    // List<Integer> var = mainLine();
-    // // First, preview string (main line)
-    // res += varToUSFString(var) + endline;
-    //
-    // // Then, for every variation
-    // while (true) {
-    // List<Integer> var2 = nextVariation(var);
-    // if (var2 == null) {
-    // // no more variation? end of loop
-    // break;
-    // }
-    // // We write the USF string of this variation
-    // res += varToUSFString(var2, firstDiff(var, var2)) + endline;
-    // var = var2;
-    // }
-    // return res;
-    // }
-
 }
