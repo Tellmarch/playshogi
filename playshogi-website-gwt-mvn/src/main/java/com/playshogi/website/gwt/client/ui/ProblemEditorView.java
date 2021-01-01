@@ -121,7 +121,6 @@ public class ProblemEditorView extends Composite {
         } else {
             textArea.setText("");
         }
-
     }
 
 
