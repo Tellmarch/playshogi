@@ -13,9 +13,12 @@ public class Node {
     private final List<Node> children = new ArrayList<>();
 
     private Move move;
+
     private String comment = null;
     private MoveAnnotation annotation = MoveAnnotation.NONE;
     private Integer evaluation = null;
+    private String objects = null;
+    private String additionalTags = null;
 
     public Node(final Move move) {
         this.move = move;
@@ -41,8 +44,24 @@ public class Node {
         return Optional.ofNullable(comment);
     }
 
+    public Optional<String> getObjects() {
+        return Optional.ofNullable(objects);
+    }
+
+    public Optional<String> getAdditionalTags() {
+        return Optional.ofNullable(additionalTags);
+    }
+
     public void setComment(final String comment) {
         this.comment = comment;
+    }
+
+    public void setObjects(final String objects) {
+        this.objects = objects;
+    }
+
+    public void setAdditionalTags(final String additionalTags) {
+        this.additionalTags = additionalTags;
     }
 
     public List<Node> getChildren() {

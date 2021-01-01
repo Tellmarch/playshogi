@@ -98,14 +98,12 @@ class UsfGameParser {
 
         // A line starting with ~ is an object
         if (line.charAt(0) == '~') {
-            // USFObject object = new USFObject(l.substring(1));
-            // gameTree.getCurrent().addObject(object);
+            readObject(line);
         }
 
         // A line starting with "X" is a custom tag
         if (line.charAt(0) == 'X') {
-            // String tag = l.substring(1);
-            // gameTree.getCurrent().addTag(l);
+            readCustomTags(line);
         }
     }
 
@@ -122,6 +120,24 @@ class UsfGameParser {
             gameNavigation.getCurrentNode().setComment(comment.get() + "\n" + line.substring(1));
         } else {
             gameNavigation.getCurrentNode().setComment(line.substring(1));
+        }
+    }
+
+    private void readObject(final String line) {
+        Optional<String> objects = gameNavigation.getCurrentNode().getObjects();
+        if (objects.isPresent()) {
+            gameNavigation.getCurrentNode().setObjects(objects.get() + "\n" + line.substring(1));
+        } else {
+            gameNavigation.getCurrentNode().setObjects(line.substring(1));
+        }
+    }
+
+    private void readCustomTags(final String line) {
+        Optional<String> tags = gameNavigation.getCurrentNode().getAdditionalTags();
+        if (tags.isPresent()) {
+            gameNavigation.getCurrentNode().setAdditionalTags(tags.get() + "\n" + line);
+        } else {
+            gameNavigation.getCurrentNode().setAdditionalTags(line);
         }
     }
 

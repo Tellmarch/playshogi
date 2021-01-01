@@ -65,6 +65,7 @@ public class UsfFormatTest {
         String usfGame = new String(Files.readAllBytes(Paths.get(path)));
         GameRecord gameRecord = UsfFormat.INSTANCE.read(usfGame).get(0);
         Assert.assertNotNull(gameRecord.getGameTree());
-        System.out.println(UsfFormat.INSTANCE.write(gameRecord));
+        String result = UsfFormat.INSTANCE.write(gameRecord.getGameTree());
+        Assert.assertEquals(usfGame, result);
     }
 }

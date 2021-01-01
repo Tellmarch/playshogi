@@ -209,6 +209,23 @@ public enum UsfFormat implements GameRecordFormat {
                 builder.append('\n');
             }
         }
+        Optional<String> objects = node.getObjects();
+        if (objects.isPresent()) {
+            String[] lines = objects.get().split("\n");
+            for (String line : lines) {
+                builder.append('~');
+                builder.append(line);
+                builder.append('\n');
+            }
+        }
+        Optional<String> additionalTags = node.getAdditionalTags();
+        if (additionalTags.isPresent()) {
+            String[] lines = additionalTags.get().split("\n");
+            for (String line : lines) {
+                builder.append(line);
+                builder.append('\n');
+            }
+        }
     }
 
     private static char getResultChar(final GameResult gameResult) {

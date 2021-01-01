@@ -57,26 +57,26 @@ X:PLAYSHOGI:QUIZ-WRONGMSG:Essaie encore ! Il faut bouger la tour, mais où?
 X:PLAYSHOGI:CORRECT
 .
 #Ceci conclut cette leçon sur le "double wing attack". N'hésite pas à essayer de le jouer contre d'autres joueurs, par exemple sur le serveur 81dojo.com !
-.10
+.13
 .2d2h
 #Non. Il ne s'agit pas d'un mauvais coup, mais...
 X:PLAYSHOGI:INCORRECT
 .8e8f
 #<HTML>...rien n'empêche gote d'échanger son pion au prochain coup.
 #<a href="special:goLastBranch">Retour</a></HTML>
-.7
+.10
 .8e8f
 #Non! Continuer à jouer symmétrique n'est pas possible ici.
 X:PLAYSHOGI:INCORRECT
 .2d2C
 #<HTML>Sente peut promouvoir son pion en premier, et a l'initiative pour capturer les pièces en suivant. Il a l'avantage.
 #<a href="special:goLastBranch">Retour</a></HTML>
-.4
+.7
 .7i7h
 #<HTML>Pas tout à fait. L'idée est la bonne, protéger la case en 87, mais la structure des pièces ne serait pas idéale, le fou se retrouvant sans protection.
 #<a href="special:goBack">Retour</a></HTML>
 X:PLAYSHOGI:INCORRECT
-.4
+.7
 .2e2d
 #<HTML>Non ! Si l'on attaque sans prendre de précautions, cela risque de mal tourner...
 #<a href="special:goForward">Pourquoi?</a> <a href="special:goBack">Retour</a></HTML>
@@ -98,14 +98,12 @@ X:PLAYSHOGI:CORRECT
 .8g8H
 #<HTML>Mais Gote prend le fou en premier, et a désormais l'initiative. La partie est loin d'être perdue, mais il sera difficile pour Sente de reprendre l'avantage.
 #<a href="special:goStartVariation">Retour</a></HTML>
-.9
+.12
 .8b8f
 #<HTML>Non ! Ce coup semble être le coup normal, mais il y avait ici un "Tesuji", un coup astucieux.
 #<a href="special:goBack">Retour</a></HTML>
 X:PLAYSHOGI:INCORRECT
-.0
-.
-.
+.2
 .7g7f
 #<HTML>Non ! Ce coup est le premier coup le plus joué au Shogi, mais il ne correspond pas à l'ouverture du "Double wing attack".
 #<a href="special:goBack">Retour</a></HTML>

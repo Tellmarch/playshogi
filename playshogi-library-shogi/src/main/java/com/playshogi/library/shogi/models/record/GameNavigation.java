@@ -84,9 +84,9 @@ public class GameNavigation {
      * Go the the n-th node following the last branch at every move. Useful for
      * USF processing
      */
-    public void goToNodeUSF(final int targetMoveNumber) {
+    public void goToNodeUSF(final int nodeNumber) {
         moveToStart();
-        while (position.getMoveCount() < targetMoveNumber) {
+        for (int j = 0; j < nodeNumber; j++) {
             moveForwardInLastVariation();
         }
     }
