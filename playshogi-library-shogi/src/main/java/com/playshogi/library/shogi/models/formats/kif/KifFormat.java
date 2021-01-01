@@ -1,6 +1,5 @@
 package com.playshogi.library.shogi.models.formats.kif;
 
-import com.playshogi.library.shogi.models.GameRecordUtils;
 import com.playshogi.library.shogi.models.Player;
 import com.playshogi.library.shogi.models.formats.kif.KifUtils.PieceParsingResult;
 import com.playshogi.library.shogi.models.formats.sfen.GameRecordFormat;
@@ -12,7 +11,6 @@ import com.playshogi.library.shogi.models.position.MutableKomadaiState;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.library.shogi.models.position.Square;
 import com.playshogi.library.shogi.models.record.*;
-import com.playshogi.library.shogi.models.shogivariant.ShogiInitialPositionFactory;
 import com.playshogi.library.shogi.rules.ShogiRulesEngine;
 
 import java.util.Arrays;
@@ -208,12 +206,11 @@ public enum KifFormat implements GameRecordFormat {
 
         GameTree gameTree;
         if (startingPosition == null) {
-            startingPosition = ShogiInitialPositionFactory.createInitialPosition();
             gameTree = new GameTree();
         } else {
             gameTree = new GameTree(startingPosition);
         }
-        GameNavigation gameNavigation = new GameNavigation(new ShogiRulesEngine(), gameTree, startingPosition);
+        GameNavigation gameNavigation = new GameNavigation(new ShogiRulesEngine(), gameTree);
 
         GameResult gameResult = GameResult.UNKNOWN;
 
@@ -303,6 +300,6 @@ public enum KifFormat implements GameRecordFormat {
         }
 
         GameRecord record = gameRecords.get(0);
-        return GameRecordUtils.getInitialPosition(record).clonePosition();
+        return record.getInitialPosition().clonePosition();
     }
 }

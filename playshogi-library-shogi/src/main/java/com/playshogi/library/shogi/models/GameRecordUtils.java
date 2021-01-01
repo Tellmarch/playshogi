@@ -1,14 +1,9 @@
 package com.playshogi.library.shogi.models;
 
-import com.playshogi.library.shogi.models.moves.EditMove;
 import com.playshogi.library.shogi.models.moves.Move;
-import com.playshogi.library.shogi.models.position.ReadOnlyShogiPosition;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.library.shogi.models.record.GameNavigation;
 import com.playshogi.library.shogi.models.record.GameRecord;
-import com.playshogi.library.shogi.models.record.GameTree;
-import com.playshogi.library.shogi.models.record.Node;
-import com.playshogi.library.shogi.models.shogivariant.ShogiInitialPositionFactory;
 import com.playshogi.library.shogi.rules.ShogiRulesEngine;
 
 import java.util.ArrayList;
@@ -18,9 +13,7 @@ import java.util.List;
 public class GameRecordUtils {
 
     public static void print(final GameRecord gameRecord) {
-        GameNavigation gameNavigation = new GameNavigation(new ShogiRulesEngine(),
-                gameRecord.getGameTree(),
-                ShogiInitialPositionFactory.createInitialPosition());
+        GameNavigation gameNavigation = new GameNavigation(new ShogiRulesEngine(), gameRecord.getGameTree());
 
         System.out.println(gameNavigation.getPosition().toString());
         while (gameNavigation.canMoveForward()) {
@@ -30,9 +23,7 @@ public class GameRecordUtils {
     }
 
     public static List<Move> getMainVariationMoves(final GameRecord gameRecord) {
-        GameNavigation gameNavigation = new GameNavigation(new ShogiRulesEngine(),
-                gameRecord.getGameTree(),
-                ShogiInitialPositionFactory.createInitialPosition());
+        GameNavigation gameNavigation = new GameNavigation(new ShogiRulesEngine(), gameRecord.getGameTree());
         ArrayList<Move> moves = new ArrayList<>();
         while (gameNavigation.canMoveForward()) {
             moves.add(gameNavigation.getMainVariationMove());
@@ -41,27 +32,11 @@ public class GameRecordUtils {
         return moves;
     }
 
-    public static ReadOnlyShogiPosition getInitialPosition(final GameRecord gameRecord) {
-        return getInitialPosition(gameRecord.getGameTree());
-    }
-
-    public static ReadOnlyShogiPosition getInitialPosition(final GameTree gameTree) {
-        Node rootNode = gameTree.getRootNode();
-        if (rootNode.getMove() instanceof EditMove) {
-            EditMove editMove = (EditMove) rootNode.getMove();
-            return editMove.getPosition();
-        } else {
-            return ShogiInitialPositionFactory.createInitialPosition();
-        }
-    }
-
     public static Iterable<ShogiPosition> getMainVariation(final GameRecord gameRecord) {
 
         return () -> new Iterator<ShogiPosition>() {
 
-            GameNavigation gameNavigation = new GameNavigation(new ShogiRulesEngine(),
-                    gameRecord.getGameTree(),
-                    ShogiInitialPositionFactory.createInitialPosition());
+            GameNavigation gameNavigation = new GameNavigation(new ShogiRulesEngine(), gameRecord.getGameTree());
 
             boolean first = true;
 

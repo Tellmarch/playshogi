@@ -8,7 +8,6 @@ import com.playshogi.library.shogi.models.moves.ShogiMove;
 import com.playshogi.library.shogi.models.record.GameNavigation;
 import com.playshogi.library.shogi.models.record.GameRecord;
 import com.playshogi.library.shogi.models.record.GameResult;
-import com.playshogi.library.shogi.models.shogivariant.ShogiInitialPositionFactory;
 import com.playshogi.library.shogi.rules.ShogiRulesEngine;
 
 import java.sql.*;
@@ -296,9 +295,7 @@ public class GameSetRepository {
 
         GameRecord gameRecord = kifu.getKifu();
 
-        GameNavigation gameNavigation = new GameNavigation(new ShogiRulesEngine(),
-                gameRecord.getGameTree(),
-                ShogiInitialPositionFactory.createInitialPosition());
+        GameNavigation gameNavigation = new GameNavigation(new ShogiRulesEngine(), gameRecord.getGameTree());
 
         boolean senteWin = gameRecord.getGameResult() == GameResult.BLACK_WIN;
         boolean goteWin = gameRecord.getGameResult() == GameResult.WHITE_WIN;
@@ -360,9 +357,7 @@ public class GameSetRepository {
         boolean senteWin = gameRecord.getGameResult() == GameResult.BLACK_WIN;
         boolean goteWin = gameRecord.getGameResult() == GameResult.WHITE_WIN;
 
-        GameNavigation gameNavigation = new GameNavigation(new ShogiRulesEngine(),
-                gameRecord.getGameTree(),
-                ShogiInitialPositionFactory.createInitialPosition());
+        GameNavigation gameNavigation = new GameNavigation(new ShogiRulesEngine(), gameRecord.getGameTree());
 
         int lastPositionId = positionRepository.getOrSavePosition(gameNavigation.getPosition());
 

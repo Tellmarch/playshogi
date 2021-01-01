@@ -9,7 +9,6 @@ import com.playshogi.library.shogi.models.moves.ShogiMove;
 import com.playshogi.library.shogi.models.moves.SpecialMove;
 import com.playshogi.library.shogi.models.moves.SpecialMoveType;
 import com.playshogi.library.shogi.models.record.*;
-import com.playshogi.library.shogi.models.shogivariant.ShogiInitialPositionFactory;
 import com.playshogi.library.shogi.rules.ShogiRulesEngine;
 
 import java.util.ArrayList;
@@ -50,8 +49,7 @@ public enum PsnFormat implements GameRecordFormat {
     private GameRecord readGameMoves(final LineReader lineReader, final GameInformation gameInformation) {
 
         GameTree gameTree = new GameTree();
-        GameNavigation gameNavigation = new GameNavigation(new ShogiRulesEngine(),
-                gameTree, ShogiInitialPositionFactory.createInitialPosition());
+        GameNavigation gameNavigation = new GameNavigation(new ShogiRulesEngine(), gameTree);
 
         while (lineReader.hasNextLine()) {
             String line = lineReader.nextLine();

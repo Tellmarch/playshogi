@@ -10,7 +10,6 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
-import com.playshogi.library.shogi.models.GameRecordUtils;
 import com.playshogi.library.shogi.models.PieceType;
 import com.playshogi.library.shogi.models.Player;
 import com.playshogi.library.shogi.models.moves.DropMove;
@@ -47,8 +46,7 @@ public class GameNavigator extends Composite implements ClickHandler {
     private final String activityId;
 
     public GameNavigator(final String activityId) {
-        this(activityId, new NavigatorConfiguration(), new GameNavigation(new ShogiRulesEngine(), new GameTree(),
-                ShogiInitialPositionFactory.createInitialPosition()));
+        this(activityId, new NavigatorConfiguration(), new GameNavigation(new ShogiRulesEngine(), new GameTree()));
     }
 
     public GameNavigator(final String activityId, final GameNavigation gameNavigation) {
@@ -106,7 +104,7 @@ public class GameNavigator extends Composite implements ClickHandler {
     public void onGameTreeChanged(final GameTreeChangedEvent gameTreeChangedEvent) {
         GWT.log(activityId + " GameNavigator: Handling game tree changed event - move " + gameTreeChangedEvent.getGoToMove());
         GameTree gameTree = gameTreeChangedEvent.getGameTree();
-        ReadOnlyShogiPosition startingPosition = GameRecordUtils.getInitialPosition(gameTree);
+        ReadOnlyShogiPosition startingPosition = gameTree.getInitialPosition();
         gameNavigation.setGameTree(gameTree, startingPosition, gameTreeChangedEvent.getGoToMove());
 
         firePositionChanged(false);

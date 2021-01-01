@@ -76,7 +76,7 @@ public enum UsfFormat implements GameRecordFormat {
             }
         }
 
-        GameNavigation gameNavigation = new GameNavigation(new ShogiRulesEngine(), gameTree, startingPosition);
+        GameNavigation gameNavigation = new GameNavigation(new ShogiRulesEngine(), gameTree);
 
         // What follows is the move sequence
         String moves = l.substring(l.indexOf(':') + 1);

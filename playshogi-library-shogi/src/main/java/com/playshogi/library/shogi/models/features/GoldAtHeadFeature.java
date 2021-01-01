@@ -1,6 +1,5 @@
 package com.playshogi.library.shogi.models.features;
 
-import com.playshogi.library.shogi.ShogiUtils;
 import com.playshogi.library.shogi.models.Piece;
 import com.playshogi.library.shogi.models.PieceType;
 import com.playshogi.library.shogi.models.moves.DropMove;
@@ -9,6 +8,7 @@ import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.library.shogi.models.position.Square;
 import com.playshogi.library.shogi.models.record.GameNavigation;
 import com.playshogi.library.shogi.models.record.GameRecord;
+import com.playshogi.library.shogi.rules.ShogiRulesEngine;
 
 import java.util.Optional;
 
@@ -17,7 +17,7 @@ public enum GoldAtHeadFeature implements Feature {
 
     @Override
     public boolean hasFeature(GameRecord gameRecord) {
-        GameNavigation gameNavigation = ShogiUtils.getNavigation(gameRecord);
+        GameNavigation gameNavigation = new GameNavigation(new ShogiRulesEngine(), gameRecord.getGameTree());
 
         gameNavigation.moveToEndOfVariation();
         Move lastMove = gameNavigation.getCurrentMove();

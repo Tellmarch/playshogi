@@ -6,7 +6,6 @@ import com.playshogi.library.shogi.models.formats.usi.UsiMoveConverter;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.library.shogi.models.record.GameNavigation;
 import com.playshogi.library.shogi.models.record.GameTree;
-import com.playshogi.library.shogi.models.shogivariant.ShogiInitialPositionFactory;
 import com.playshogi.library.shogi.rules.ShogiRulesEngine;
 
 import java.io.*;
@@ -88,8 +87,7 @@ public class USIConnector {
             throw new IllegalStateException("Engine is not connected");
         }
 
-        GameNavigation gameNavigation = new GameNavigation(new ShogiRulesEngine(),
-                gameTree, ShogiInitialPositionFactory.createInitialPosition());
+        GameNavigation gameNavigation = new GameNavigation(new ShogiRulesEngine(), gameTree);
 
         ShogiPosition position = gameNavigation.getPosition();
 

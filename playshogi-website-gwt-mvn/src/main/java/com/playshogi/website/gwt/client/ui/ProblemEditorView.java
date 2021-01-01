@@ -12,7 +12,6 @@ import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.library.shogi.models.record.GameNavigation;
 import com.playshogi.library.shogi.models.record.GameTree;
-import com.playshogi.library.shogi.models.shogivariant.ShogiInitialPositionFactory;
 import com.playshogi.library.shogi.rules.ShogiRulesEngine;
 import com.playshogi.website.gwt.client.events.gametree.PositionChangedEvent;
 import com.playshogi.website.gwt.client.events.kifu.EditModeSelectedEvent;
@@ -49,8 +48,7 @@ public class ProblemEditorView extends Composite {
         shogiBoard = new ShogiBoard(PROBLEM_EDITOR);
         shogiBoard.getBoardConfiguration().setPositionEditingMode(true);
 
-        gameNavigation = new GameNavigation(new ShogiRulesEngine(),
-                new GameTree(), ShogiInitialPositionFactory.createInitialPosition());
+        gameNavigation = new GameNavigation(new ShogiRulesEngine(), new GameTree());
         gameNavigator = new GameNavigator(PROBLEM_EDITOR, gameNavigation);
 
         kifuEditorPanel = new KifuEditorPanel(gameNavigator);

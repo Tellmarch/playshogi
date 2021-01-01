@@ -1,5 +1,7 @@
 package com.playshogi.library.shogi.models.record;
 
+import com.playshogi.library.shogi.models.position.ReadOnlyShogiPosition;
+
 public class GameRecord {
     private final GameInformation gameInformation;
     private final GameTree gameTree;
@@ -21,6 +23,10 @@ public class GameRecord {
 
     public GameResult getGameResult() {
         return gameResult;
+    }
+
+    public ReadOnlyShogiPosition getInitialPosition() {
+        return gameTree.getInitialPosition();
     }
 
     @Override

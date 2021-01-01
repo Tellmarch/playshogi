@@ -1,6 +1,5 @@
 package com.playshogi.library.shogi.models.record;
 
-import com.playshogi.library.shogi.models.moves.EditMove;
 import com.playshogi.library.shogi.models.moves.Move;
 import com.playshogi.library.shogi.models.position.ReadOnlyShogiPosition;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
@@ -13,17 +12,11 @@ public class GameNavigation {
     private ShogiPosition position;
     private final ShogiRulesEngine gameRulesEngine;
 
-    public GameNavigation(final ShogiRulesEngine gameRulesEngine, final GameTree gameTree,
-                          final ShogiPosition startPosition) {
+    public GameNavigation(final ShogiRulesEngine gameRulesEngine, final GameTree gameTree) {
         this.gameRulesEngine = gameRulesEngine;
         this.gameTree = gameTree;
         this.currentNode = gameTree.getRootNode();
-        if (currentNode.getMove() instanceof EditMove) {
-            EditMove editMove = (EditMove) currentNode.getMove();
-            this.position = editMove.getPosition().clonePosition();
-        } else {
-            this.position = startPosition.clonePosition();
-        }
+        this.position = gameTree.getInitialPosition().clonePosition();
     }
 
     public ShogiPosition getPosition() {
