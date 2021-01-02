@@ -6,7 +6,7 @@ public class EditMove implements Move {
     private final ReadOnlyShogiPosition position;
 
     public EditMove(final ReadOnlyShogiPosition position) {
-        this.position = position;
+        this.position = position.clonePosition();
     }
 
     public ReadOnlyShogiPosition getPosition() {

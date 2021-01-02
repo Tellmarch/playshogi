@@ -103,8 +103,7 @@ public class GameNavigator extends Composite implements ClickHandler {
     @EventHandler
     public void onGameTreeChanged(final GameTreeChangedEvent gameTreeChangedEvent) {
         GWT.log(activityId + " GameNavigator: Handling game tree changed event - move " + gameTreeChangedEvent.getGoToMove());
-        GameTree gameTree = gameTreeChangedEvent.getGameTree();
-        gameNavigation.setGameTree(gameTree, gameTreeChangedEvent.getGoToMove());
+        gameNavigation.setGameTree(gameTreeChangedEvent.getGameTree(), gameTreeChangedEvent.getGoToMove());
 
         firePositionChanged(false);
     }

@@ -13,7 +13,9 @@ import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.library.shogi.models.moves.EditMove;
 import com.playshogi.library.shogi.models.record.GameNavigation;
 import com.playshogi.library.shogi.models.record.GameTree;
+import com.playshogi.library.shogi.models.record.Node;
 import com.playshogi.library.shogi.rules.ShogiRulesEngine;
+import com.playshogi.website.gwt.client.events.gametree.GameTreeChangedEvent;
 import com.playshogi.website.gwt.client.events.gametree.PositionChangedEvent;
 import com.playshogi.website.gwt.client.events.kifu.EditModeSelectedEvent;
 import com.playshogi.website.gwt.client.events.kifu.SwitchPlayerToPlayEvent;
@@ -99,7 +101,18 @@ public class ProblemEditorView extends Composite {
         shogiBoard.getBoardConfiguration().setPositionEditingMode(event.isEditMode());
         // Exiting board editing mode
         if (!event.isEditMode()) {
-            gameNavigator.addMove(new EditMove(shogiBoard.getPosition()), true);
+            Node currentNode = gameNavigation.getCurrentNode();
+
+            if (currentNode.getMove() == null && !currentNode.hasChildren()) {
+                // Root node, and no child move yet - we change the starting position
+                eventBus.fireEvent(new GameTreeChangedEvent(new GameTree(shogiBoard.getPosition()), 0));
+            } else if (currentNode.getMove() instanceof EditMove && !currentNode.hasChildren()) {
+                // Edit move, and no child move yet - we modify the edit move
+                currentNode.setMove(new EditMove(shogiBoard.getPosition()));
+            } else {
+                // In all other cases, we insert a new Edit move
+                gameNavigator.addMove(new EditMove(shogiBoard.getPosition()), true);
+            }
         }
         // To reset selection/handlers
         shogiBoard.displayPosition();
