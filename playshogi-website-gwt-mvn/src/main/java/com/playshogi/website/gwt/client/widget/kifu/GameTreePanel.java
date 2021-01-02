@@ -16,6 +16,7 @@ import com.playshogi.website.gwt.client.events.gametree.GameTreeChangedEvent;
 import com.playshogi.website.gwt.client.events.gametree.NewVariationPlayedEvent;
 import com.playshogi.website.gwt.client.events.gametree.PositionChangedEvent;
 
+import java.util.Iterator;
 import java.util.List;
 
 public class GameTreePanel extends Composite {
@@ -73,6 +74,14 @@ public class GameTreePanel extends Composite {
         tree.clear();
         Node node = gameNavigation.getGameTree().getRootNode();
         populateMainVariationAndBranches(tree, node, 0);
+        openTree();
+    }
+
+    private void openTree() {
+        Iterator<TreeItem> iterator = tree.treeItemIterator();
+        while (iterator.hasNext()) {
+            iterator.next().setState(true);
+        }
     }
 
     /**
