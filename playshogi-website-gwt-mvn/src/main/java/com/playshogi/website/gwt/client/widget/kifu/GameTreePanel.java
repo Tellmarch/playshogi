@@ -35,6 +35,8 @@ public class GameTreePanel extends Composite {
     private final boolean readOnly;
     private final Tree tree;
     private final PopupPanel contextMenu;
+    private MenuItem promoteVariationMenu;
+    private MenuItem deleteVariationMenu;
     private EventBus eventBus;
 
     public GameTreePanel(final String activityId, final GameNavigation gameNavigation, final boolean readOnly) {
@@ -71,7 +73,7 @@ public class GameTreePanel extends Composite {
 
         MenuBar menuBar = new MenuBar(true);
 
-        menuBar.addItem(new MenuItem("Delete Variation", () -> {
+        deleteVariationMenu = new MenuItem("Delete Variation", () -> {
             GWT.log("Delete variation");
             Node node = (Node) tree.getSelectedItem().getUserObject();
             boolean confirm = Window.confirm("Delete variation starting with " +
@@ -81,11 +83,16 @@ public class GameTreePanel extends Composite {
                 eventBus.fireEvent(new GameTreeChangedEvent(gameNavigation.getGameTree()));
             }
             contextMenu.hide();
-        }));
-        menuBar.addItem(new MenuItem("Promote variation", () -> {
+        });
+        menuBar.addItem(deleteVariationMenu);
+        promoteVariationMenu = new MenuItem("Promote variation", () -> {
             GWT.log("Promote variation");
+            Node node = (Node) tree.getSelectedItem().getUserObject();
+            node.promoteVariation();
+            eventBus.fireEvent(new GameTreeChangedEvent(gameNavigation.getGameTree()));
             contextMenu.hide();
-        }));
+        });
+        menuBar.addItem(promoteVariationMenu);
 
         contextMenu.add(menuBar);
         contextMenu.hide();
@@ -232,6 +239,8 @@ public class GameTreePanel extends Composite {
             event.preventDefault();
             event.stopPropagation();
             tree.setSelectedItem(this);
+            Node node = (Node) getUserObject();
+            promoteVariationMenu.setVisible(node.getParentIndex() > 0);
             contextMenu.setPopupPosition(event.getNativeEvent().getClientX(), event.getNativeEvent().getClientY());
             contextMenu.show();
         }

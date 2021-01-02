@@ -132,6 +132,20 @@ public class Node {
         }
     }
 
+    /**
+     * Promote a side variation to become the main line instead
+     */
+    public void promoteVariation() {
+        if (parent != null && parentIndex != 0) {
+            List<Node> siblings = parent.getChildren();
+            Node previous = siblings.get(0);
+            siblings.set(0, this);
+            siblings.set(parentIndex, previous);
+            previous.setParentIndex(parentIndex);
+            this.setParentIndex(0);
+        }
+    }
+
     @Override
     public String toString() {
         return "Node{" +
