@@ -71,7 +71,7 @@ public class ProblemEditorView extends Composite {
         HorizontalPanel horizontalPanel = new HorizontalPanel();
 
         horizontalPanel.add(verticalPanel);
-        gameTreePanel = new GameTreePanel(PROBLEM_EDITOR, gameNavigation);
+        gameTreePanel = new GameTreePanel(PROBLEM_EDITOR, gameNavigation, false);
         horizontalPanel.add(gameTreePanel);
 
         initWidget(horizontalPanel);

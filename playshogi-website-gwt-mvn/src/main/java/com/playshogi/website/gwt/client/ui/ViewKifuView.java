@@ -63,7 +63,7 @@ public class ViewKifuView extends Composite {
         textArea.setSize("782px", "150px");
         textArea.setStyleName("lesson-content");
 
-        gameTreePanel = new GameTreePanel(VIEWKIFU, gameNavigator.getGameNavigation());
+        gameTreePanel = new GameTreePanel(VIEWKIFU, gameNavigator.getGameNavigation(), true);
 
         HorizontalPanel horizontalPanel = new HorizontalPanel();
         horizontalPanel.add(shogiBoard);

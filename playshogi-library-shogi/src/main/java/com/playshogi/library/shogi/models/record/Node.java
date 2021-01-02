@@ -122,6 +122,16 @@ public class Node {
         return null;
     }
 
+    public void removeFromParent() {
+        if (parent != null) {
+            List<Node> siblings = parent.getChildren();
+            siblings.remove(this);
+            for (int i = parentIndex; i < siblings.size(); i++) {
+                siblings.get(i).setParentIndex(i);
+            }
+        }
+    }
+
     @Override
     public String toString() {
         return "Node{" +
@@ -135,4 +145,5 @@ public class Node {
                 ", additionalTags='" + additionalTags + '\'' +
                 '}';
     }
+
 }

@@ -1,6 +1,9 @@
 package com.playshogi.website.gwt.client.widget.kifu;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ContextMenuEvent;
+import com.google.gwt.event.dom.client.ContextMenuHandler;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
@@ -29,12 +32,22 @@ public class GameTreePanel extends Composite {
 
     private final String activityId;
     private final GameNavigation gameNavigation;
+    private final boolean readOnly;
     private final Tree tree;
+    private final PopupPanel contextMenu;
     private EventBus eventBus;
 
-    public GameTreePanel(final String activityId, final GameNavigation gameNavigation) {
+    public GameTreePanel(final String activityId, final GameNavigation gameNavigation, final boolean readOnly) {
         this.activityId = activityId;
         this.gameNavigation = gameNavigation;
+        this.readOnly = readOnly;
+
+        if (readOnly) {
+            contextMenu = null;
+        } else {
+            contextMenu = createContextMenu();
+        }
+
         FlowPanel panel = new FlowPanel();
 
         tree = new Tree();
@@ -49,6 +62,34 @@ public class GameTreePanel extends Composite {
         panel.add(tree);
 
         initWidget(panel);
+    }
+
+    private PopupPanel createContextMenu() {
+        final PopupPanel contextMenu;
+        contextMenu = new PopupPanel(true);
+
+
+        MenuBar menuBar = new MenuBar(true);
+
+        menuBar.addItem(new MenuItem("Delete Variation", () -> {
+            GWT.log("Delete variation");
+            Node node = (Node) tree.getSelectedItem().getUserObject();
+            boolean confirm = Window.confirm("Delete variation starting with " +
+                    tree.getSelectedItem().getText() + "? This can not be undone.");
+            if (confirm) {
+                node.removeFromParent();
+                eventBus.fireEvent(new GameTreeChangedEvent(gameNavigation.getGameTree()));
+            }
+            contextMenu.hide();
+        }));
+        menuBar.addItem(new MenuItem("Promote variation", () -> {
+            GWT.log("Promote variation");
+            contextMenu.hide();
+        }));
+
+        contextMenu.add(menuBar);
+        contextMenu.hide();
+        return contextMenu;
     }
 
     public void activate(final EventBus eventBus) {
@@ -111,16 +152,24 @@ public class GameTreePanel extends Composite {
         int variationMoveCount = moveCount;
 
         // First add the move of the current node
-        TreeItem item = new TreeItem();
+        TreeItem item = createTreeItem();
         setMoveNode(item, currentNode, variationMoveCount);
         parent.addItem(item);
 
         // Then add all children, along the main line and variations
         while (currentNode.hasChildren()) {
-            item = new TreeItem();
+            item = createTreeItem();
             populateMainMoveAndBranches(item, currentNode, ++variationMoveCount);
             parent.addItem(item);
             currentNode = currentNode.getChildren().get(0);
+        }
+    }
+
+    private TreeItem createTreeItem() {
+        if (readOnly) {
+            return new TreeItem();
+        } else {
+            return new MoveTreeItem();
         }
     }
 
@@ -144,7 +193,7 @@ public class GameTreePanel extends Composite {
         } else if (children.size() > 2) {
             for (int i = 1; i < children.size(); i++) {
                 Node variationNode = children.get(i);
-                TreeItem variationItem = new TreeItem();
+                TreeItem variationItem = createTreeItem();
                 populateMainVariationAndBranches(variationItem, variationNode, moveCount);
                 item.addItem(variationItem);
             }
@@ -165,4 +214,38 @@ public class GameTreePanel extends Composite {
         }
     }
 
+    /**
+     * Custom TreeItem class to select and show edition menu on right click
+     */
+    private class MoveTreeItem extends TreeItem implements ContextMenuHandler {
+        private final Label label;
+
+        MoveTreeItem() {
+            super();
+            label = new Label();
+            label.addBitlessDomHandler(this, ContextMenuEvent.getType());
+            setWidget(label);
+        }
+
+        @Override
+        public void onContextMenu(final ContextMenuEvent event) {
+            GWT.log("EVENT");
+            event.preventDefault();
+            event.stopPropagation();
+            tree.setSelectedItem(this);
+            contextMenu.setPopupPosition(event.getNativeEvent().getClientX(), event.getNativeEvent().getClientY());
+            contextMenu.show();
+        }
+
+        @Override
+        public void setText(final String text) {
+            label.setText(text);
+        }
+
+        @Override
+        public void setSelected(final boolean selected) {
+            super.setSelected(selected);
+            label.setStyleName("gwt-TreeItem-selected", selected);
+        }
+    }
 }
