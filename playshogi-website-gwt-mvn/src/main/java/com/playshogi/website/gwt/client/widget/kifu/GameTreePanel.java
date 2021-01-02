@@ -202,15 +202,15 @@ public class GameTreePanel extends Composite {
 
     private void setMoveNode(final TreeItem item, final Node node, final int moveCount) {
         Move move = node.getMove();
-        if (move != null) {
-            item.setUserObject(node);
-            if (move instanceof EditMove) {
-                item.setText("START (" + SfenConverter.toSFEN(((EditMove) move).getPosition()) + ")");
-            } else if (move instanceof ShogiMove) {
-                item.setText(moveCount + ". " + KifMoveConverter.toKifStringShort((ShogiMove) move));
-            } else {
-                item.setText(moveCount + ". " + move);
-            }
+        item.setUserObject(node);
+        if (move == null) {
+            item.setText("START");
+        } else if (move instanceof EditMove) {
+            item.setText("POSITION (" + SfenConverter.toSFEN(((EditMove) move).getPosition()) + ")");
+        } else if (move instanceof ShogiMove) {
+            item.setText(moveCount + ". " + KifMoveConverter.toKifStringShort((ShogiMove) move));
+        } else {
+            item.setText(moveCount + ". " + move);
         }
     }
 
@@ -229,7 +229,6 @@ public class GameTreePanel extends Composite {
 
         @Override
         public void onContextMenu(final ContextMenuEvent event) {
-            GWT.log("EVENT");
             event.preventDefault();
             event.stopPropagation();
             tree.setSelectedItem(this);

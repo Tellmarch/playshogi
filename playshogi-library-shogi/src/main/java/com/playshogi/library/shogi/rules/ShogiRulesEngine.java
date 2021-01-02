@@ -44,15 +44,16 @@ public class ShogiRulesEngine {
         this.shogiVariant = shogiVariant;
     }
 
-    public void playMoveInPosition(final ShogiPosition position, final Move move) {
+    public void playMoveInPosition(final ShogiPosition position, final ShogiMove move) {
         playMoveInPosition(position, move, !isSilentMove(move));
     }
 
-    private boolean isSilentMove(final Move move) {
+    private boolean isSilentMove(final ShogiMove move) {
         return move instanceof SpecialMove && ((SpecialMove) move).getSpecialMoveType() == SpecialMoveType.SILENT;
     }
 
-    public void playMoveInPosition(final ShogiPosition position, final Move move, final boolean incrementMoveCount) {
+    public void playMoveInPosition(final ShogiPosition position, final ShogiMove move,
+                                   final boolean incrementMoveCount) {
         if (move instanceof CaptureMove) {
             playCaptureMove(position, (CaptureMove) move);
         } else if (move instanceof DropMove) {
@@ -98,9 +99,7 @@ public class ShogiRulesEngine {
         position.getMutableShogiBoardState().setPieceAt(move.getFromSquare(), null);
     }
 
-    public void undoMoveInPosition(final ShogiPosition position, final Move move) {
-        Objects.requireNonNull(move);
-        Objects.requireNonNull(position);
+    public void undoMoveInPosition(final ShogiPosition position, final ShogiMove move) {
         if (move instanceof CaptureMove) {
             undoCaptureMove(position, (CaptureMove) move);
         } else if (move instanceof DropMove) {
@@ -205,7 +204,7 @@ public class ShogiRulesEngine {
         }
     }
 
-    public boolean isMoveLegalInPosition(final ShogiPosition position, final Move move) {
+    public boolean isMoveLegalInPosition(final ShogiPosition position, final ShogiMove move) {
         if (!isMoveLegalInPositionWithoutCheckingKingAttack(position, move)) {
             return false;
         }
@@ -216,7 +215,7 @@ public class ShogiRulesEngine {
         return !kingInCheck;
     }
 
-    private boolean isMoveLegalInPositionWithoutCheckingKingAttack(final ShogiPosition position, final Move move) {
+    private boolean isMoveLegalInPositionWithoutCheckingKingAttack(final ShogiPosition position, final ShogiMove move) {
         if (move instanceof CaptureMove) {
             return isCaptureMoveLegalInPosition(position, (CaptureMove) move);
         } else if (move instanceof DropMove) {

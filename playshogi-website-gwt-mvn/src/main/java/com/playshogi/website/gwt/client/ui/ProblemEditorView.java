@@ -10,6 +10,7 @@ import com.google.inject.Singleton;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
+import com.playshogi.library.shogi.models.moves.EditMove;
 import com.playshogi.library.shogi.models.record.GameNavigation;
 import com.playshogi.library.shogi.models.record.GameTree;
 import com.playshogi.library.shogi.rules.ShogiRulesEngine;
@@ -98,8 +99,7 @@ public class ProblemEditorView extends Composite {
         shogiBoard.getBoardConfiguration().setPositionEditingMode(event.isEditMode());
         // Exiting board editing mode
         if (!event.isEditMode()) {
-//            gameNavigator.addMove(new EditMove(shogiBoard.getPosition()), true);
-            gameNavigator.reset(shogiBoard.getPosition());
+            gameNavigator.addMove(new EditMove(shogiBoard.getPosition()), true);
         }
         // To reset selection/handlers
         shogiBoard.displayPosition();

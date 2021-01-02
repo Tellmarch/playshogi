@@ -4,7 +4,6 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Timer;
 import com.google.web.bindery.event.shared.EventBus;
 import com.playshogi.library.shogi.models.Piece;
-import com.playshogi.library.shogi.models.moves.Move;
 import com.playshogi.library.shogi.models.moves.NormalMove;
 import com.playshogi.library.shogi.models.moves.ShogiMove;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
@@ -78,7 +77,7 @@ public class RookExercise implements Tutorial {
         } else if (move.getToSquare().getRow() == 9) {
             eventBus.fireEvent(new ChangeTutorialTextEvent(tutorialMessages.rookPracticeFailed2()));
         } else {
-            final Move finalMove = move;
+            final ShogiMove finalMove = move;
             Timer timer = new Timer() {
                 @Override
                 public void run() {

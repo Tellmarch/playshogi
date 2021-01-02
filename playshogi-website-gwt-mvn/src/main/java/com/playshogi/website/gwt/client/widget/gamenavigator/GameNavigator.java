@@ -178,6 +178,7 @@ public class GameNavigator extends Composite implements ClickHandler {
     public void addMove(final Move move, final boolean fromUser) {
         gameNavigation.addMove(move);
         firePositionChanged(fromUser);
+        eventBus.fireEvent(new NewVariationPlayedEvent(false));
     }
 
 }

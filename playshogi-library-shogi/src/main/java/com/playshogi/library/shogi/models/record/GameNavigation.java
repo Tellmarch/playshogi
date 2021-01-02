@@ -1,6 +1,8 @@
 package com.playshogi.library.shogi.models.record;
 
+import com.playshogi.library.shogi.models.moves.EditMove;
 import com.playshogi.library.shogi.models.moves.Move;
+import com.playshogi.library.shogi.models.moves.ShogiMove;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.library.shogi.rules.ShogiRulesEngine;
 
@@ -50,7 +52,12 @@ public class GameNavigation {
 
     public void moveBack() {
         if (canMoveBack()) {
-            gameRulesEngine.undoMoveInPosition(position, currentNode.getMove());
+            Move move = currentNode.getMove();
+            if (move instanceof EditMove) {
+                moveToNode(currentNode.getParent());
+            } else if (move instanceof ShogiMove) {
+                gameRulesEngine.undoMoveInPosition(position, (ShogiMove) move);
+            }
             currentNode = currentNode.getParent();
         }
     }
@@ -66,7 +73,15 @@ public class GameNavigation {
     public void moveForward() {
         if (canMoveForward()) {
             currentNode = currentNode.getChildren().get(0);
-            gameRulesEngine.playMoveInPosition(position, currentNode.getMove());
+            playMove(currentNode.getMove());
+        }
+    }
+
+    private void playMove(final Move move) {
+        if (move instanceof EditMove) {
+            position = ((EditMove) move).getPosition().clonePosition();
+        } else if (move instanceof ShogiMove) {
+            gameRulesEngine.playMoveInPosition(position, (ShogiMove) move);
         }
     }
 
@@ -76,7 +91,7 @@ public class GameNavigation {
     public void moveForwardInLastVariation() {
         if (canMoveForward()) {
             currentNode = currentNode.getChildren().get(currentNode.getChildren().size() - 1);
-            gameRulesEngine.playMoveInPosition(position, currentNode.getMove());
+            playMove(currentNode.getMove());
         }
     }
 
@@ -92,9 +107,8 @@ public class GameNavigation {
     }
 
     public void moveToStart() {
-        while (canMoveBack()) {
-            moveBack();
-        }
+        position = gameTree.getInitialPosition().clonePosition();
+        currentNode = gameTree.getRootNode();
     }
 
     public void moveToEndOfVariation() {
@@ -109,7 +123,7 @@ public class GameNavigation {
         } else {
             moveToNode(node.getParent());
             currentNode = node;
-            gameRulesEngine.playMoveInPosition(position, node.getMove());
+            playMove(node.getMove());
         }
     }
 
@@ -126,7 +140,7 @@ public class GameNavigation {
         } else {
             currentNode = childNode;
         }
-        gameRulesEngine.playMoveInPosition(position, move);
+        playMove(move);
     }
 
     public GameTree getGameTree() {
