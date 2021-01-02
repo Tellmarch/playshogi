@@ -16,7 +16,7 @@ public class GameTree {
         this(new Node(new EditMove(startingPosition)));
     }
 
-    private GameTree(final Node rootNode) {
+    public GameTree(final Node rootNode) {
         this.rootNode = rootNode;
     }
 
