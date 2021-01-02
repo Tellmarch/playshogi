@@ -131,11 +131,10 @@ public class GameNavigator extends Composite implements ClickHandler {
             eventBus.fireEvent(new NewVariationPlayedEvent(positionCheckmate));
         } else if (gameNavigation.isEndOfVariation()) {
             eventBus.fireEvent(new EndOfVariationReachedEvent(mainMove));
-            // } else if (isSenteToPlay() &&
-            // !boardConfiguration.isPlaySenteMoves()) {
-            // gameNavigation.moveForward();
+            fireNodeChanged();
         } else if (gameNavigation.getPosition().getPlayerToMove() == Player.WHITE && navigatorConfiguration.isProblemMode()) {
             gameNavigation.moveForward();
+            fireNodeChanged();
         }
 
         firePositionChanged(true);
@@ -156,6 +155,11 @@ public class GameNavigator extends Composite implements ClickHandler {
             gameNavigation.moveToEndOfVariation();
         }
         firePositionChanged(true);
+        fireNodeChanged();
+    }
+
+    private void fireNodeChanged() {
+        eventBus.fireEvent(new NodeChangedEvent());
     }
 
     private void firePositionChanged(final boolean triggeredByUser) {

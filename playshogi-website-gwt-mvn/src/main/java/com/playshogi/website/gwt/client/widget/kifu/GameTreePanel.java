@@ -14,6 +14,7 @@ import com.playshogi.library.shogi.models.record.GameNavigation;
 import com.playshogi.library.shogi.models.record.Node;
 import com.playshogi.website.gwt.client.events.gametree.GameTreeChangedEvent;
 import com.playshogi.website.gwt.client.events.gametree.NewVariationPlayedEvent;
+import com.playshogi.website.gwt.client.events.gametree.NodeChangedEvent;
 import com.playshogi.website.gwt.client.events.gametree.PositionChangedEvent;
 
 import java.util.Iterator;
@@ -60,7 +61,6 @@ public class GameTreePanel extends Composite {
     public void onGameTreeChanged(final GameTreeChangedEvent gameTreeChangedEvent) {
         GWT.log(activityId + " GameTreePanel: Handling game tree changed event - move " + gameTreeChangedEvent.getGoToMove());
         populateTree();
-
     }
 
     @EventHandler
@@ -69,12 +69,29 @@ public class GameTreePanel extends Composite {
         populateTree();
     }
 
+    @EventHandler
+    public void onNodeChangedEvent(final NodeChangedEvent event) {
+        GWT.log(activityId + " GameTreePanel: Handling NodeChangedEvent");
+        updateSelection();
+    }
+
+    private void updateSelection() {
+        Iterator<TreeItem> iterator = tree.treeItemIterator();
+        while (iterator.hasNext()) {
+            TreeItem item = iterator.next();
+            if (item.getUserObject() == gameNavigation.getCurrentNode()) {
+                tree.setSelectedItem(item);
+            }
+        }
+    }
+
 
     private void populateTree() {
         tree.clear();
         Node node = gameNavigation.getGameTree().getRootNode();
         populateMainVariationAndBranches(tree, node, 0);
         openTree();
+        updateSelection();
     }
 
     private void openTree() {
@@ -132,7 +149,6 @@ public class GameTreePanel extends Composite {
                 item.addItem(variationItem);
             }
         }
-
     }
 
     private void setMoveNode(final TreeItem item, final Node node, final int moveCount) {

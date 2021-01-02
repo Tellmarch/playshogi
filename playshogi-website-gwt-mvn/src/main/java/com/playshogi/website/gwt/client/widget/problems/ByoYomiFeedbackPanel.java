@@ -9,7 +9,6 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
-import com.playshogi.website.gwt.client.events.gametree.UserNavigatedBackEvent;
 import com.playshogi.website.gwt.client.events.puzzles.ByoYomiSurvivalFinishedEvent;
 import com.playshogi.website.gwt.client.events.puzzles.UserFinishedProblemEvent;
 import com.playshogi.website.gwt.client.widget.timer.ByoYomiTimerPanel;
@@ -65,12 +64,6 @@ public class ByoYomiFeedbackPanel extends Composite {
         } else {
             messagePanel.setHTML(wrongHtml);
         }
-    }
-
-    @EventHandler
-    public void onUserNavigatedBack(final UserNavigatedBackEvent event) {
-        GWT.log("Problem feedback: handle user navigated back event");
-        messagePanel.setHTML(chooseHtml);
     }
 
     @EventHandler

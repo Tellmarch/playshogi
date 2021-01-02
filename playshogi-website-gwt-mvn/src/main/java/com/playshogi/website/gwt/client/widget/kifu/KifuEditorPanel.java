@@ -9,10 +9,6 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
-import com.google.web.bindery.event.shared.binder.EventHandler;
-import com.playshogi.website.gwt.client.events.gametree.EndOfVariationReachedEvent;
-import com.playshogi.website.gwt.client.events.gametree.NewVariationPlayedEvent;
-import com.playshogi.website.gwt.client.events.gametree.UserNavigatedBackEvent;
 import com.playshogi.website.gwt.client.events.kifu.GameRecordExportRequestedEvent;
 import com.playshogi.website.gwt.client.events.kifu.GameRecordPreviewRequestedEvent;
 import com.playshogi.website.gwt.client.events.kifu.GameRecordSaveRequestedEvent;
@@ -75,21 +71,6 @@ public class KifuEditorPanel extends Composite implements ClickHandler {
             GWT.log("Kifu editor: request preview kifu");
             eventBus.fireEvent(new GameRecordPreviewRequestedEvent());
         }
-    }
-
-    @EventHandler
-    public void onNewVariation(final NewVariationPlayedEvent event) {
-        GWT.log("Kifu editor: handle new variation played event");
-    }
-
-    @EventHandler
-    public void onEndOfVariation(final EndOfVariationReachedEvent event) {
-        GWT.log("Kifu editor: handle end of variation reached event");
-    }
-
-    @EventHandler
-    public void onUserNavigatedBack(final UserNavigatedBackEvent event) {
-        GWT.log("Kifu editor: handle user navigated back event");
     }
 
     public void activate(final EventBus eventBus) {
