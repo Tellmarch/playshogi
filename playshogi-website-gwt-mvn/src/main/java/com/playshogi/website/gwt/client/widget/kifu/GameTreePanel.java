@@ -14,6 +14,7 @@ import com.playshogi.library.shogi.models.record.GameNavigation;
 import com.playshogi.library.shogi.models.record.Node;
 import com.playshogi.website.gwt.client.events.gametree.GameTreeChangedEvent;
 import com.playshogi.website.gwt.client.events.gametree.NewVariationPlayedEvent;
+import com.playshogi.website.gwt.client.events.gametree.PositionChangedEvent;
 
 import java.util.List;
 
@@ -35,6 +36,14 @@ public class GameTreePanel extends Composite {
         FlowPanel panel = new FlowPanel();
 
         tree = new Tree();
+        tree.addSelectionHandler(selectionEvent -> {
+            TreeItem item = selectionEvent.getSelectedItem();
+            if (item.getUserObject() instanceof Node) {
+                Node node = (Node) item.getUserObject();
+                gameNavigation.moveToNode(node);
+                eventBus.fireEvent(new PositionChangedEvent(gameNavigation.getPosition(), true));
+            }
+        });
         panel.add(tree);
 
         initWidget(panel);
@@ -77,7 +86,7 @@ public class GameTreePanel extends Composite {
 
         // First add the move of the current node
         TreeItem item = new TreeItem();
-        setMove(item, currentNode.getMove(), variationMoveCount);
+        setMoveNode(item, currentNode, variationMoveCount);
         parent.addItem(item);
 
         // Then add all children, along the main line and variations
@@ -101,8 +110,7 @@ public class GameTreePanel extends Composite {
         if (!node.hasChildren()) return;
 
         List<Node> children = node.getChildren();
-        Move move = children.get(0).getMove();
-        setMove(item, move, moveCount);
+        setMoveNode(item, children.get(0), moveCount);
 
         if (children.size() == 2) {
             Node variationNode = children.get(1);
@@ -118,8 +126,10 @@ public class GameTreePanel extends Composite {
 
     }
 
-    private void setMove(final TreeItem item, final Move move, final int moveCount) {
+    private void setMoveNode(final TreeItem item, final Node node, final int moveCount) {
+        Move move = node.getMove();
         if (move != null) {
+            item.setUserObject(node);
             if (move instanceof EditMove) {
                 item.setText("START (" + SfenConverter.toSFEN(((EditMove) move).getPosition()) + ")");
             } else if (move instanceof ShogiMove) {

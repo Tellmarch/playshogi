@@ -103,6 +103,16 @@ public class GameNavigation {
         }
     }
 
+    public void moveToNode(final Node node) {
+        if (node.getParent() == null) {
+            moveToStart();
+        } else {
+            moveToNode(node.getParent());
+            currentNode = node;
+            gameRulesEngine.playMoveInPosition(position, node.getMove());
+        }
+    }
+
     public boolean hasMoveInCurrentPosition(final Move move) {
         return currentNode.getChildWithMove(move) != null;
     }
@@ -111,7 +121,6 @@ public class GameNavigation {
         Node childNode = currentNode.getChildWithMove(move);
         if (childNode == null) {
             Node newNode = new Node(move);
-            newNode.setParent(currentNode);
             currentNode.addChild(newNode);
             currentNode = newNode;
         } else {

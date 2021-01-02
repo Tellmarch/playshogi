@@ -10,6 +10,8 @@ import java.util.Optional;
 public class Node {
 
     private Node parent = null;
+    private int parentIndex = 0;
+
     private final List<Node> children = new ArrayList<>();
 
     private Move move;
@@ -30,6 +32,14 @@ public class Node {
 
     public void setParent(final Node parent) {
         this.parent = parent;
+    }
+
+    public int getParentIndex() {
+        return parentIndex;
+    }
+
+    public void setParentIndex(final int parentIndex) {
+        this.parentIndex = parentIndex;
     }
 
     public Move getMove() {
@@ -89,6 +99,8 @@ public class Node {
     }
 
     public void addChild(final Node node) {
+        node.setParent(this);
+        node.setParentIndex(children.size());
         children.add(node);
     }
 
@@ -113,10 +125,14 @@ public class Node {
     @Override
     public String toString() {
         return "Node{" +
-                "children.size=" + children.size() +
-                ", move=" + move +
-                ", comment=" + comment +
-                ", annotation=" + annotation.getShortString() +
+                "move=" + move +
+                ", parentIndex=" + parentIndex +
+                ", children.size=" + children.size() +
+                ", comment='" + comment + '\'' +
+                ", annotation=" + annotation +
+                ", evaluation=" + evaluation +
+                ", objects='" + objects + '\'' +
+                ", additionalTags='" + additionalTags + '\'' +
                 '}';
     }
 }

@@ -98,6 +98,7 @@ public class ProblemEditorView extends Composite {
         shogiBoard.getBoardConfiguration().setPositionEditingMode(event.isEditMode());
         // Exiting board editing mode
         if (!event.isEditMode()) {
+//            gameNavigator.addMove(new EditMove(shogiBoard.getPosition()), true);
             gameNavigator.reset(shogiBoard.getPosition());
         }
         // To reset selection/handlers

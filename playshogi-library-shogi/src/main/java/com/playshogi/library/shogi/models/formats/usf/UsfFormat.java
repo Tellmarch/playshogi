@@ -191,9 +191,8 @@ public enum UsfFormat implements GameRecordFormat {
             return null;
         }
         List<Node> siblings = node.getParent().getChildren();
-        int index = siblings.indexOf(node);
-        if (index < siblings.size() - 1) {
-            return siblings.get(index + 1);
+        if (node.getParentIndex() < siblings.size() - 1) {
+            return siblings.get(node.getParentIndex() + 1);
         } else {
             return null;
         }

@@ -13,6 +13,7 @@ import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.library.shogi.models.PieceType;
 import com.playshogi.library.shogi.models.Player;
 import com.playshogi.library.shogi.models.moves.DropMove;
+import com.playshogi.library.shogi.models.moves.Move;
 import com.playshogi.library.shogi.models.moves.ShogiMove;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.library.shogi.models.record.GameNavigation;
@@ -170,7 +171,7 @@ public class GameNavigator extends Composite implements ClickHandler {
         return gameNavigation;
     }
 
-    public void addMove(final ShogiMove move, final boolean fromUser) {
+    public void addMove(final Move move, final boolean fromUser) {
         gameNavigation.addMove(move);
         firePositionChanged(fromUser);
     }
