@@ -69,6 +69,7 @@ public class ProblemEditorView extends Composite {
         textArea = new TextArea();
         textArea.setSize("782px", "150px");
         textArea.setStyleName("lesson-content");
+        textArea.addKeyUpHandler(keyUpEvent -> gameNavigation.getCurrentNode().setComment(textArea.getText()));
         verticalPanel.add(textArea);
 
         HorizontalPanel horizontalPanel = new HorizontalPanel();
