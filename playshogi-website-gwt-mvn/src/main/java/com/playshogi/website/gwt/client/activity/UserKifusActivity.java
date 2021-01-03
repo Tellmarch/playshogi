@@ -8,6 +8,7 @@ import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.website.gwt.client.SessionInformation;
 import com.playshogi.website.gwt.client.events.collections.ListKifusEvent;
+import com.playshogi.website.gwt.client.events.kifu.RequestKifuDeletionEvent;
 import com.playshogi.website.gwt.client.events.user.UserLoggedInEvent;
 import com.playshogi.website.gwt.client.place.UserKifusPlace;
 import com.playshogi.website.gwt.client.ui.UserKifusView;
@@ -71,6 +72,22 @@ public class UserKifusActivity extends MyAbstractActivity {
     @EventHandler
     public void onUserLoggedIn(final UserLoggedInEvent event) {
         refresh();
+    }
+
+    @EventHandler
+    public void onRequestKifuDeletionEvent(final RequestKifuDeletionEvent event) {
+        kifuService.deleteKifu(sessionInformation.getSessionId(), event.getKifuId(), new AsyncCallback<Void>() {
+            @Override
+            public void onFailure(final Throwable throwable) {
+                GWT.log("UserKifusActivity: error deleting kifu");
+            }
+
+            @Override
+            public void onSuccess(final Void unused) {
+                GWT.log("UserKifusActivity: successfully deleted kifu");
+                refresh();
+            }
+        });
     }
 
 }

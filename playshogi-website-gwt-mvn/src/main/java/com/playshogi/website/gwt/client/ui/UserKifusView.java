@@ -20,6 +20,7 @@ import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.website.gwt.client.SessionInformation;
 import com.playshogi.website.gwt.client.events.collections.ListKifusEvent;
+import com.playshogi.website.gwt.client.events.kifu.RequestKifuDeletionEvent;
 import com.playshogi.website.gwt.client.place.KifuEditorPlace;
 import com.playshogi.website.gwt.client.place.ProblemPlace;
 import com.playshogi.website.gwt.client.place.ViewKifuPlace;
@@ -155,7 +156,7 @@ public class UserKifusView extends Composite {
                 "This is not revertible.");
         if (confirm) {
             GWT.log("Deleting kifu: " + details);
-            // TODO
+            eventBus.fireEvent(new RequestKifuDeletionEvent(details.getId()));
         } else {
             GWT.log("Deletion cancelled: " + details);
         }

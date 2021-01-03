@@ -40,4 +40,5 @@ public interface KifuServiceAsync {
 
     void getUserKifus(String sessionId, String userName, AsyncCallback<KifuDetails[]> callback);
 
+    void deleteKifu(String sessionId, String kifuId, AsyncCallback<Void> callback);
 }

@@ -31,7 +31,7 @@ public class KifuRepository {
             "ps_game.id = ps_gamesetgame.game_id WHERE position_id = ? AND gameset_id = ? LIMIT 5";
 
     private static final String SELECT_KIFU = "SELECT * FROM ps_kifu WHERE id = ?";
-    private static final String DELETE_KIFU = "DELETE FROM ps_kifu WHERE id = ?";
+    private static final String DELETE_KIFU = "DELETE FROM ps_kifu WHERE id = ? AND author_id = ?";
 
     private static final String SELECT_USER_KIFUS = "SELECT id, name, author_id, create_time, update_time, type_id " +
             "FROM ps_kifu WHERE author_id = ? ORDER BY update_time DESC LIMIT 1000;";
@@ -121,15 +121,16 @@ public class KifuRepository {
         }
     }
 
-    public void deleteKifuById(final int kifuId) {
+    public void deleteKifuById(final int kifuId, final int userId) {
         Connection connection = dbConnection.getConnection();
         try (PreparedStatement preparedStatement = connection.prepareStatement(DELETE_KIFU)) {
             preparedStatement.setInt(1, kifuId);
+            preparedStatement.setInt(2, userId);
             int rs = preparedStatement.executeUpdate();
             if (rs == 1) {
                 LOGGER.log(Level.INFO, "Deleted kifu: " + kifuId);
             } else {
-                LOGGER.log(Level.INFO, "Did not find kifu: " + kifuId);
+                LOGGER.log(Level.INFO, "Did not find kifu: " + kifuId + " for user " + userId);
             }
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error looking up the kifu in db", e);

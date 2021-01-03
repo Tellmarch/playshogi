@@ -474,4 +474,16 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
                     "collection");
         }
     }
+
+    @Override
+    public void deleteKifu(final String sessionId, final String kifuId) {
+        LOGGER.log(Level.INFO, "deleteKifu: " + kifuId);
+
+        LoginResult loginResult = authenticator.checkSession(sessionId);
+        if (loginResult == null || !loginResult.isLoggedIn()) {
+            throw new IllegalStateException("Only logged in users can delete a kifu");
+        }
+
+        kifuRepository.deleteKifuById(Integer.parseInt(kifuId), loginResult.getUserId());
+    }
 }
