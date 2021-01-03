@@ -2,10 +2,7 @@ package com.playshogi.website.gwt.server;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.playshogi.library.database.*;
-import com.playshogi.library.database.models.PersistentGame;
-import com.playshogi.library.database.models.PersistentGameSet;
-import com.playshogi.library.database.models.PersistentGameSetMove;
-import com.playshogi.library.database.models.PersistentGameSetPos;
+import com.playshogi.library.database.models.*;
 import com.playshogi.library.database.models.PersistentKifu.KifuType;
 import com.playshogi.library.shogi.engine.*;
 import com.playshogi.library.shogi.models.formats.sfen.SfenConverter;
@@ -92,8 +89,6 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
     public String getKifuUsf(final String sessionId, final String kifuId) {
         LOGGER.log(Level.INFO, "querying kifu:\n" + kifuId);
 
-        // TODO validate session
-
         GameRecord gameRecord = kifuRepository.getKifuById(Integer.parseInt(kifuId)).getKifu();
         if (gameRecord == null) {
             LOGGER.log(Level.INFO, "invalid kifu id:\n" + kifuId);
@@ -103,6 +98,30 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
             LOGGER.log(Level.INFO, "found kifu:\n" + usf);
             return usf;
         }
+    }
+
+    @Override
+    public KifuDetails[] getUserKifus(final String sessionId, final int userId) {
+        LOGGER.log(Level.INFO, "querying kifus for user: " + userId);
+
+        LoginResult loginResult = authenticator.checkSession(sessionId);
+        if (loginResult == null || !loginResult.isLoggedIn() || loginResult.getUserId() != userId) {
+            throw new IllegalStateException("User does not have permissions for this operation");
+        }
+
+        List<PersistentKifu> userKifus = kifuRepository.getUserKifus(userId);
+
+        return userKifus.stream().map(this::getKifuDetails).toArray(KifuDetails[]::new);
+    }
+
+    private KifuDetails getKifuDetails(final PersistentKifu kifu) {
+        KifuDetails details = new KifuDetails();
+        details.setId(String.valueOf(kifu.getId()));
+        details.setCreationDate(kifu.getCreationDate());
+        details.setUpdateDate(kifu.getUpdateDate());
+        details.setName(kifu.getName());
+        details.setType(kifu.getType().name());
+        return details;
     }
 
     @Override

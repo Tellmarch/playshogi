@@ -37,4 +37,6 @@ public interface KifuServiceAsync {
 
     void removeGameFromCollection(String sessionId, String gameId, String gameSetId, AsyncCallback<Void> callback);
 
+    void getUserKifus(String sessionId, int userId, AsyncCallback<KifuDetails[]> callback);
+
 }

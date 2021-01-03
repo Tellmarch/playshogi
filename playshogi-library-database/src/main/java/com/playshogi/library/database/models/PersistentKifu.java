@@ -7,7 +7,7 @@ import java.util.Date;
 public class PersistentKifu {
 
     public enum KifuType {
-        GAME(1, "Game"), PROBLEM(2, "Problem");
+        GAME(1, "Game"), PROBLEM(2, "Problem"), LESSON(3, "Lesson");
 
         private final int dbInt;
         private final String description;
@@ -31,6 +31,8 @@ public class PersistentKifu {
                     return GAME;
                 case 2:
                     return PROBLEM;
+                case 3:
+                    return LESSON;
                 default:
                     throw new IllegalArgumentException("Unknown kifu type: " + dbInt);
             }
@@ -86,4 +88,16 @@ public class PersistentKifu {
         return authorId;
     }
 
+    @Override
+    public String toString() {
+        return "PersistentKifu{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", kifu=" + kifu +
+                ", creationDate=" + creationDate +
+                ", updateDate=" + updateDate +
+                ", type=" + type +
+                ", authorId=" + authorId +
+                '}';
+    }
 }

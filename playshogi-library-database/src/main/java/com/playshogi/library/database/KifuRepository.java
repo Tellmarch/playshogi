@@ -33,6 +33,9 @@ public class KifuRepository {
     private static final String SELECT_KIFU = "SELECT * FROM ps_kifu WHERE id = ?";
     private static final String DELETE_KIFU = "DELETE FROM ps_kifu WHERE id = ?";
 
+    private static final String SELECT_USER_KIFUS = "SELECT id, name, author_id, create_time, update_time, type_id " +
+            "FROM ps_kifu WHERE author_id = ? LIMIT 1000;";
+
     private final DbConnection dbConnection;
 
     public KifuRepository(final DbConnection dbConnection) {
@@ -90,6 +93,30 @@ public class KifuRepository {
             }
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error looking up the kifu in db", e);
+            return null;
+        }
+    }
+
+    public List<PersistentKifu> getUserKifus(final int userId) {
+        Connection connection = dbConnection.getConnection();
+        try (PreparedStatement preparedStatement = connection.prepareStatement(SELECT_USER_KIFUS)) {
+            preparedStatement.setInt(1, userId);
+            ResultSet rs = preparedStatement.executeQuery();
+            ArrayList<PersistentKifu> kifus = new ArrayList<>();
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                String name = rs.getString("name");
+                int type = rs.getInt("type_id");
+                KifuType kifuType = KifuType.fromDbInt(type);
+                Date creationDate = rs.getDate("create_time");
+                Date updateDate = rs.getDate("update_time");
+
+                kifus.add(new PersistentKifu(id, name, null, creationDate, updateDate, kifuType, userId));
+            }
+            LOGGER.log(Level.INFO, "Found " + kifus.size() + " kifus for user : " + userId);
+            return kifus;
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error looking up the kifus of user " + userId + " in db", e);
             return null;
         }
     }
