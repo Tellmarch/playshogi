@@ -1,6 +1,7 @@
 package com.playshogi.website.gwt.client.ui;
 
 import com.google.gwt.core.shared.GWT;
+import com.google.gwt.place.shared.PlaceController;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -44,14 +45,15 @@ public class KifuEditorView extends Composite {
     private final GameNavigation gameNavigation;
     private final TextArea textArea;
     private final KifuEditorLeftBarPanel kifuEditorLeftBarPanel;
-    private final SaveKifuPanel saveKifuPanel = new SaveKifuPanel();
+    private final SaveKifuPanel saveKifuPanel;
 
     private EventBus eventBus;
     private KifuDetails.KifuType type;
 
     @Inject
-    public KifuEditorView() {
+    public KifuEditorView(final PlaceController placeController) {
         GWT.log("Creating problem editor view");
+        saveKifuPanel = new SaveKifuPanel(placeController);
         shogiBoard = new ShogiBoard(PROBLEM_EDITOR);
         shogiBoard.getBoardConfiguration().setPositionEditingMode(false);
 

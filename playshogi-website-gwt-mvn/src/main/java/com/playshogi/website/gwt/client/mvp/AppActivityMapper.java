@@ -82,6 +82,8 @@ public class AppActivityMapper implements ActivityMapper {
             return new PlayActivity((PlayPlace) place, playView, sessionInformation);
         } else if (place instanceof ProblemsPlace) {
             return new ProblemsActivity((ProblemsPlace) place, problemsView, sessionInformation);
+        } else if (place instanceof ProblemPlace) {
+            return new ProblemsActivity((ProblemPlace) place, problemsView, sessionInformation);
         } else if (place instanceof KifuEditorPlace) {
             return new KifuEditorActivity((KifuEditorPlace) place, kifuEditorView, sessionInformation,
                     placeController);

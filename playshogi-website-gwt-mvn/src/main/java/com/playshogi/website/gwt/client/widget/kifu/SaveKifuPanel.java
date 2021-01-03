@@ -2,6 +2,7 @@ package com.playshogi.website.gwt.client.widget.kifu;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.place.shared.PlaceController;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import com.google.web.bindery.event.shared.EventBus;
@@ -12,14 +13,18 @@ import com.playshogi.library.shogi.models.record.GameInformation;
 import com.playshogi.library.shogi.models.record.GameRecord;
 import com.playshogi.website.gwt.client.events.kifu.SaveKifuEvent;
 import com.playshogi.website.gwt.client.events.kifu.SaveKifuResultEvent;
+import com.playshogi.website.gwt.client.place.UserKifusPlace;
 import com.playshogi.website.gwt.shared.models.KifuDetails;
 
 public class SaveKifuPanel extends Composite {
+
 
     interface MyEventBinder extends EventBinder<SaveKifuPanel> {
     }
 
     private final MyEventBinder eventBinder = GWT.create(MyEventBinder.class);
+
+    private final PlaceController placeController;
 
     private final TextBox name;
     private final TextArea usf;
@@ -29,7 +34,9 @@ public class SaveKifuPanel extends Composite {
     private EventBus eventBus;
     private GameRecord gameRecord;
 
-    public SaveKifuPanel() {
+    public SaveKifuPanel(final PlaceController placeController) {
+        this.placeController = placeController;
+
         FlowPanel panel = new FlowPanel();
 
         Grid grid = new Grid(3, 2);
@@ -142,9 +149,11 @@ public class SaveKifuPanel extends Composite {
         GWT.log("SaveKifuPanel: Handling SaveKifuResultEvent: " + event.isSuccess() + " - " + event.getKifuId());
         if (event.isSuccess()) {
             Window.alert("Kifu saved!");
+            if (saveDialogBox != null) saveDialogBox.hide();
+            placeController.goTo(new UserKifusPlace());
         } else {
             Window.alert("Error saving the kifu");
+            if (saveDialogBox != null) saveDialogBox.hide();
         }
-        if (saveDialogBox != null) saveDialogBox.hide();
     }
 }

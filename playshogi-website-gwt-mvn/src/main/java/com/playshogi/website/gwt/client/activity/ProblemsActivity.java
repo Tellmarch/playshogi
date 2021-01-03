@@ -15,6 +15,7 @@ import com.playshogi.website.gwt.client.controller.ProblemController;
 import com.playshogi.website.gwt.client.events.gametree.GameTreeChangedEvent;
 import com.playshogi.website.gwt.client.events.puzzles.UserFinishedProblemEvent;
 import com.playshogi.website.gwt.client.events.puzzles.UserSkippedProblemEvent;
+import com.playshogi.website.gwt.client.place.ProblemPlace;
 import com.playshogi.website.gwt.client.place.ProblemsPlace;
 import com.playshogi.website.gwt.client.ui.ProblemsView;
 import com.playshogi.website.gwt.shared.models.GameCollectionDetails;
@@ -36,11 +37,13 @@ public class ProblemsActivity extends MyAbstractActivity {
     private final ProblemController problemController = new ProblemController();
     private EventBus eventBus;
 
+    // Either collectionId or kifuId is present
     private final String collectionId;
+    private final String kifuId;
 
+    private int problemIndex;
     private GameCollectionDetails details;
     private GameDetails[] games;
-    private int problemIndex;
 
 
     public ProblemsActivity(final ProblemsPlace place, final ProblemsView problemsView,
@@ -48,6 +51,16 @@ public class ProblemsActivity extends MyAbstractActivity {
         this.problemsView = problemsView;
         this.collectionId = place.getCollectionId();
         this.problemIndex = place.getProblemIndex();
+        this.kifuId = null;
+        this.sessionInformation = sessionInformation;
+    }
+
+    public ProblemsActivity(final ProblemPlace place, final ProblemsView problemsView,
+                            final SessionInformation sessionInformation) {
+        this.problemsView = problemsView;
+        this.collectionId = null;
+        this.problemIndex = 0;
+        this.kifuId = place.getKifuId();
         this.sessionInformation = sessionInformation;
     }
 
@@ -77,6 +90,8 @@ public class ProblemsActivity extends MyAbstractActivity {
                             loadProblem();
                         }
                     });
+        } else if (kifuId != null) {
+            loadProblem();
         }
     }
 
@@ -98,15 +113,22 @@ public class ProblemsActivity extends MyAbstractActivity {
     }
 
     private void loadProblem() {
-        if (problemIndex >= games.length) {
-            Window.alert("You reached the last problem in the collection!");
-            return;
+        String id;
+        if (kifuId != null) {
+            id = kifuId;
+        } else {
+            if (problemIndex >= games.length) {
+                Window.alert("You reached the last problem in the collection!");
+                return;
+            }
+            id = games[problemIndex].getKifuId();
         }
-        kifuService.getKifuUsf(sessionInformation.getSessionId(), games[problemIndex].getKifuId(),
+
+        kifuService.getKifuUsf(sessionInformation.getSessionId(), id,
                 new AsyncCallback<String>() {
                     @Override
                     public void onFailure(final Throwable throwable) {
-                        GWT.log("Remote called failed for problem request: " + games[problemIndex].getKifuId());
+                        GWT.log("Remote called failed for problem request: " + id);
                     }
 
                     @Override
@@ -114,7 +136,9 @@ public class ProblemsActivity extends MyAbstractActivity {
                         GWT.log("Received problem USF: " + usf);
                         GameRecord gameRecord = UsfFormat.INSTANCE.readSingle(usf);
                         eventBus.fireEvent(new GameTreeChangedEvent(gameRecord.getGameTree()));
-                        History.newItem("Problems:" + new ProblemsPlace.Tokenizer().getToken(getPlace()), false);
+                        if (collectionId != null) {
+                            History.newItem("Problems:" + new ProblemsPlace.Tokenizer().getToken(getPlace()), false);
+                        }
                     }
                 });
     }

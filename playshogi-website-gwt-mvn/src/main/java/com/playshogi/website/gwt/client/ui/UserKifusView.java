@@ -21,6 +21,7 @@ import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.website.gwt.client.SessionInformation;
 import com.playshogi.website.gwt.client.events.collections.ListKifusEvent;
 import com.playshogi.website.gwt.client.place.KifuEditorPlace;
+import com.playshogi.website.gwt.client.place.ProblemPlace;
 import com.playshogi.website.gwt.client.place.ViewKifuPlace;
 import com.playshogi.website.gwt.client.widget.TablePanel;
 import com.playshogi.website.gwt.shared.models.KifuDetails;
@@ -124,7 +125,11 @@ public class UserKifusView extends Composite {
 
     private void viewKifu(final KifuDetails details) {
         GWT.log("Going to view kifu" + details.getId());
-        placeController.goTo(new ViewKifuPlace(details.getId(), 0));
+        if (details.getType() == KifuDetails.KifuType.PROBLEM) {
+            placeController.goTo(new ProblemPlace(details.getId()));
+        } else {
+            placeController.goTo(new ViewKifuPlace(details.getId(), 0));
+        }
     }
 
     private void editKifu(final KifuDetails details) {
@@ -133,7 +138,7 @@ public class UserKifusView extends Composite {
     }
 
     public void activate(final EventBus eventBus) {
-        GWT.log("Activating game collections view");
+        GWT.log("Activating UserKifusView");
         this.eventBus = eventBus;
         eventBinder.bindEventHandlers(this, eventBus);
     }
