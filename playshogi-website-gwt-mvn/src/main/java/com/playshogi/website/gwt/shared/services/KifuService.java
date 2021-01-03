@@ -35,6 +35,6 @@ public interface KifuService extends RemoteService {
 
     void removeGameFromCollection(String sessionId, String gameId, String gameSetId);
 
-    KifuDetails[] getUserKifus(String sessionId, int userId);
+    KifuDetails[] getUserKifus(String sessionId, String userName);
 
 }

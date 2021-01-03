@@ -101,15 +101,15 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
     }
 
     @Override
-    public KifuDetails[] getUserKifus(final String sessionId, final int userId) {
-        LOGGER.log(Level.INFO, "querying kifus for user: " + userId);
+    public KifuDetails[] getUserKifus(final String sessionId, final String userName) {
+        LOGGER.log(Level.INFO, "querying kifus for user: " + userName);
 
         LoginResult loginResult = authenticator.checkSession(sessionId);
-        if (loginResult == null || !loginResult.isLoggedIn() || loginResult.getUserId() != userId) {
+        if (loginResult == null || !loginResult.isLoggedIn() || !userName.equals(loginResult.getUserName())) {
             throw new IllegalStateException("User does not have permissions for this operation");
         }
 
-        List<PersistentKifu> userKifus = kifuRepository.getUserKifus(userId);
+        List<PersistentKifu> userKifus = kifuRepository.getUserKifus(loginResult.getUserId());
 
         return userKifus.stream().map(this::getKifuDetails).toArray(KifuDetails[]::new);
     }

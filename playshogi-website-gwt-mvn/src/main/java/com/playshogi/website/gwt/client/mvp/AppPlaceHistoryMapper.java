@@ -11,6 +11,7 @@ import com.playshogi.website.gwt.client.place.*;
         ByoYomiPlace.Tokenizer.class, LoginPlace.Tokenizer.class, NewKifuPlace.Tokenizer.class,
         OpeningsPlace.Tokenizer.class, ViewKifuPlace.Tokenizer.class, LinksPlace.Tokenizer.class,
         TutorialPlace.Tokenizer.class, GameCollectionsPlace.Tokenizer.class, PlayPlace.Tokenizer.class,
-        ProblemsPlace.Tokenizer.class, ProblemEditorPlace.Tokenizer.class, PreviewKifuPlace.Tokenizer.class})
+        ProblemsPlace.Tokenizer.class, ProblemEditorPlace.Tokenizer.class, PreviewKifuPlace.Tokenizer.class,
+        UserKifusPlace.Tokenizer.class})
 public interface AppPlaceHistoryMapper extends PlaceHistoryMapper {
 }
