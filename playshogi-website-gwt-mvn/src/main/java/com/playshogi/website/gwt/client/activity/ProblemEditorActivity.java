@@ -76,18 +76,19 @@ public class ProblemEditorActivity extends MyAbstractActivity {
         gameRecord = getGameRecord();
         String usfString = UsfFormat.INSTANCE.write(gameRecord);
         GWT.log(usfString);
-        kifuService.saveKifu(sessionInformation.getSessionId(), usfString, new AsyncCallback<String>() {
+        sessionInformation.ifLoggedIn(() ->
+                kifuService.saveKifu(sessionInformation.getSessionId(), usfString, new AsyncCallback<String>() {
 
-            @Override
-            public void onSuccess(final String result) {
-                GWT.log("Kifu saved successfully: " + result);
-            }
+                    @Override
+                    public void onSuccess(final String result) {
+                        GWT.log("Kifu saved successfully: " + result);
+                    }
 
-            @Override
-            public void onFailure(final Throwable caught) {
-                GWT.log("Error while saving Kifu: ", caught);
-            }
-        });
+                    @Override
+                    public void onFailure(final Throwable caught) {
+                        GWT.log("Error while saving Kifu: ", caught);
+                    }
+                }));
     }
 
     @EventHandler

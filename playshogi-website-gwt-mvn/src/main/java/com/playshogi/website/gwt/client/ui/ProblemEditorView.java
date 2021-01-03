@@ -22,6 +22,7 @@ import com.playshogi.website.gwt.client.events.kifu.SwitchPlayerToPlayEvent;
 import com.playshogi.website.gwt.client.widget.board.ShogiBoard;
 import com.playshogi.website.gwt.client.widget.gamenavigator.GameNavigator;
 import com.playshogi.website.gwt.client.widget.kifu.GameTreePanel;
+import com.playshogi.website.gwt.client.widget.kifu.KifuEditorLeftBarPanel;
 import com.playshogi.website.gwt.client.widget.kifu.KifuEditorPanel;
 import com.playshogi.website.gwt.client.widget.kifu.PositionEditingPanel;
 
@@ -44,6 +45,7 @@ public class ProblemEditorView extends Composite {
     private final GameTreePanel gameTreePanel;
     private final GameNavigation gameNavigation;
     private final TextArea textArea;
+    private final KifuEditorLeftBarPanel kifuEditorLeftBarPanel;
 
     private EventBus eventBus;
 
@@ -51,16 +53,17 @@ public class ProblemEditorView extends Composite {
     public ProblemEditorView() {
         GWT.log("Creating problem editor view");
         shogiBoard = new ShogiBoard(PROBLEM_EDITOR);
-        shogiBoard.getBoardConfiguration().setPositionEditingMode(true);
+        shogiBoard.getBoardConfiguration().setPositionEditingMode(false);
 
         gameNavigation = new GameNavigation(new ShogiRulesEngine(), new GameTree());
         gameNavigator = new GameNavigator(PROBLEM_EDITOR, gameNavigation);
 
+        kifuEditorLeftBarPanel = new KifuEditorLeftBarPanel();
         kifuEditorPanel = new KifuEditorPanel(gameNavigator);
         positionEditingPanel = new PositionEditingPanel();
 
         shogiBoard.setUpperRightPanel(kifuEditorPanel);
-        shogiBoard.setLowerLeftPanel(positionEditingPanel);
+        shogiBoard.setLowerLeftPanel(kifuEditorLeftBarPanel);
 
 
         VerticalPanel verticalPanel = new VerticalPanel();
@@ -90,6 +93,7 @@ public class ProblemEditorView extends Composite {
         kifuEditorPanel.activate(eventBus);
         positionEditingPanel.activate(eventBus);
         gameTreePanel.activate(eventBus);
+        kifuEditorLeftBarPanel.activate(eventBus);
     }
 
     public GameNavigation getGameNavigation() {
