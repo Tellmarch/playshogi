@@ -2,7 +2,6 @@ package com.playshogi.website.gwt.client.widget.kifu;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import com.google.web.bindery.event.shared.EventBus;
@@ -32,7 +31,7 @@ public class CollectionPropertiesPanel extends Composite {
     private GameCollectionDetails details;
 
     public CollectionPropertiesPanel() {
-        FlowPanel verticalPanel = new FlowPanel();
+        FlowPanel panel = new FlowPanel();
 
         Grid grid = new Grid(4, 2);
         grid.setHTML(0, 0, "Title:");
@@ -50,11 +49,11 @@ public class CollectionPropertiesPanel extends Composite {
         grid.setWidget(2, 1, visibility);
         grid.setWidget(3, 1, type);
 
-        verticalPanel.add(grid);
+        panel.add(grid);
 
-        verticalPanel.add(new HTML(SafeHtmlUtils.fromSafeConstant("<br>")));
+        panel.add(new HTML("<br/>"));
 
-        initWidget(verticalPanel);
+        initWidget(panel);
     }
 
     private TextBox createTextBox(String defaultText) {

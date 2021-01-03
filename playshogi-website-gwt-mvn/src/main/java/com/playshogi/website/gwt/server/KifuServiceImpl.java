@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -48,7 +47,8 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
     }
 
     @Override
-    public String saveKifu(final String sessionId, final String kifuUsf) {
+    public String saveKifu(final String sessionId, final String kifuUsf, final String name,
+                           final KifuDetails.KifuType type) {
         LOGGER.log(Level.INFO, "saving kifu:\n" + kifuUsf);
 
         LoginResult loginResult = authenticator.checkSession(sessionId);
@@ -57,8 +57,9 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
         }
 
         GameRecord gameRecord = UsfFormat.INSTANCE.readSingle(kifuUsf);
-        String name = UUID.randomUUID().toString();
-        int kifuId = kifuRepository.saveKifu(gameRecord, name, loginResult.getUserId(), KifuType.GAME);
+        String truncatedName = name.length() <= 45 ? name : name.substring(0, 45);
+        int kifuId = kifuRepository.saveKifu(gameRecord, truncatedName, loginResult.getUserId(),
+                KifuType.valueOf(type.name()));
         return String.valueOf(kifuId);
     }
 
@@ -73,7 +74,7 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
 
         GameRecord gameRecord = UsfFormat.INSTANCE.readSingle(kifuUsf);
         String defaultName = getDefaultName(gameRecord);
-        String name = defaultName.length() <= 40 ? defaultName : defaultName.substring(0, 40);
+        String name = defaultName.length() <= 45 ? defaultName : defaultName.substring(0, 45);
         if (!gameSetRepository.addGameToGameSet(gameRecord, Integer.parseInt(collectionId), 1, name,
                 loginResult.getUserId())) {
             throw new IllegalArgumentException("Could not save the kifu in database");

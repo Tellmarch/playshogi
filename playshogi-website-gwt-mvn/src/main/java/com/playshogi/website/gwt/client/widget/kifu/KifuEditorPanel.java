@@ -12,6 +12,7 @@ import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.playshogi.website.gwt.client.events.kifu.GameRecordExportRequestedEvent;
 import com.playshogi.website.gwt.client.events.kifu.GameRecordPreviewRequestedEvent;
 import com.playshogi.website.gwt.client.events.kifu.GameRecordSaveRequestedEvent;
+import com.playshogi.website.gwt.client.place.KifuEditorPlace;
 import com.playshogi.website.gwt.client.widget.gamenavigator.GameNavigator;
 
 public class KifuEditorPanel extends Composite implements ClickHandler {
@@ -73,11 +74,12 @@ public class KifuEditorPanel extends Composite implements ClickHandler {
         }
     }
 
-    public void activate(final EventBus eventBus) {
+    public void activate(final EventBus eventBus, final KifuEditorPlace place) {
         GWT.log("Activating kifu editor panel");
         this.eventBus = eventBus;
         eventBinder.bindEventHandlers(this, eventBus);
         importKifuPanel.activate(eventBus);
+        importButton.setEnabled(place.getKifuId() == null);
     }
 
 }

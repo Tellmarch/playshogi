@@ -7,7 +7,8 @@ public interface KifuServiceAsync {
 
     void getKifuUsf(String sessionId, String kifuId, AsyncCallback<String> callback);
 
-    void saveKifu(String sessionId, String kifuUsf, AsyncCallback<String> callback);
+    void saveKifu(String sessionId, String kifuUsf, String name, KifuDetails.KifuType type,
+                  AsyncCallback<String> callback);
 
     void saveGameAndAddToCollection(String sessionId, String kifuUsf, String collectionId,
                                     AsyncCallback<Void> callback);

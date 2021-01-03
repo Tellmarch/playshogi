@@ -8,23 +8,22 @@ import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.library.shogi.models.moves.EditMove;
-import com.playshogi.library.shogi.models.record.GameNavigation;
-import com.playshogi.library.shogi.models.record.GameRecord;
-import com.playshogi.library.shogi.models.record.GameTree;
-import com.playshogi.library.shogi.models.record.Node;
+import com.playshogi.library.shogi.models.record.*;
 import com.playshogi.library.shogi.rules.ShogiRulesEngine;
 import com.playshogi.website.gwt.client.events.gametree.GameTreeChangedEvent;
 import com.playshogi.website.gwt.client.events.gametree.PositionChangedEvent;
 import com.playshogi.website.gwt.client.events.kifu.EditModeSelectedEvent;
 import com.playshogi.website.gwt.client.events.kifu.GameInformationChangedEvent;
+import com.playshogi.website.gwt.client.events.kifu.GameRecordSaveRequestedEvent;
 import com.playshogi.website.gwt.client.events.kifu.SwitchPlayerToPlayEvent;
+import com.playshogi.website.gwt.client.place.KifuEditorPlace;
 import com.playshogi.website.gwt.client.widget.board.ShogiBoard;
 import com.playshogi.website.gwt.client.widget.gamenavigator.GameNavigator;
 import com.playshogi.website.gwt.client.widget.kifu.GameTreePanel;
 import com.playshogi.website.gwt.client.widget.kifu.KifuEditorLeftBarPanel;
 import com.playshogi.website.gwt.client.widget.kifu.KifuEditorPanel;
-import com.playshogi.website.gwt.client.widget.kifu.PositionEditingPanel;
-import com.playshogi.website.gwt.shared.models.KifuDetails.KifuType;
+import com.playshogi.website.gwt.client.widget.kifu.SaveKifuPanel;
+import com.playshogi.website.gwt.shared.models.KifuDetails;
 
 import java.util.Optional;
 
@@ -41,13 +40,14 @@ public class KifuEditorView extends Composite {
     private final ShogiBoard shogiBoard;
     private final GameNavigator gameNavigator;
     private final KifuEditorPanel kifuEditorPanel;
-    private final PositionEditingPanel positionEditingPanel;
     private final GameTreePanel gameTreePanel;
     private final GameNavigation gameNavigation;
     private final TextArea textArea;
     private final KifuEditorLeftBarPanel kifuEditorLeftBarPanel;
+    private final SaveKifuPanel saveKifuPanel = new SaveKifuPanel();
 
     private EventBus eventBus;
+    private KifuDetails.KifuType type;
 
     @Inject
     public KifuEditorView() {
@@ -60,7 +60,6 @@ public class KifuEditorView extends Composite {
 
         kifuEditorLeftBarPanel = new KifuEditorLeftBarPanel();
         kifuEditorPanel = new KifuEditorPanel(gameNavigator);
-        positionEditingPanel = new PositionEditingPanel();
 
         shogiBoard.setUpperRightPanel(kifuEditorPanel);
         shogiBoard.setLowerLeftPanel(kifuEditorLeftBarPanel);
@@ -90,20 +89,32 @@ public class KifuEditorView extends Composite {
         initWidget(horizontalPanel);
     }
 
-    public void activate(final EventBus eventBus, final KifuType kifuType) {
+    public void activate(final EventBus eventBus, final KifuEditorPlace place) {
         GWT.log("Activating problem editor view");
         this.eventBus = eventBus;
         eventBinder.bindEventHandlers(this, eventBus);
         shogiBoard.activate(eventBus);
         gameNavigator.activate(eventBus);
-        kifuEditorPanel.activate(eventBus);
-        positionEditingPanel.activate(eventBus);
+        kifuEditorPanel.activate(eventBus, place);
         gameTreePanel.activate(eventBus);
         kifuEditorLeftBarPanel.activate(eventBus);
+        saveKifuPanel.activate(eventBus);
+        type = place.getType();
     }
 
     public GameNavigation getGameNavigation() {
         return gameNavigation;
+    }
+
+    public GameInformation getGameInformation() {
+        return kifuEditorLeftBarPanel.getGameInformation();
+    }
+
+    public GameRecord getGameRecord() {
+        GameTree gameTree = gameNavigation.getGameTree();
+        GameInformation gameInformation = getGameInformation();
+        //TODO GameResult
+        return new GameRecord(gameInformation, gameTree, GameResult.UNKNOWN);
     }
 
     public void loadGameRecord(final GameRecord gameRecord) {
@@ -153,5 +164,10 @@ public class KifuEditorView extends Composite {
         }
     }
 
+    @EventHandler
+    public void onGameRecordSaveRequested(final GameRecordSaveRequestedEvent event) {
+        GWT.log("problem editor Activity Handling GameRecordSaveRequestedEvent");
+        saveKifuPanel.showInSaveDialog(getGameRecord(), type);
+    }
 
 }

@@ -6,6 +6,7 @@ import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.*;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
+import com.playshogi.library.shogi.models.record.GameInformation;
 
 public class KifuEditorLeftBarPanel extends Composite {
 
@@ -51,5 +52,9 @@ public class KifuEditorLeftBarPanel extends Composite {
         eventBinder.bindEventHandlers(this, eventBus);
         informationPanel.activate(eventBus);
         editingPanel.activate(eventBus);
+    }
+
+    public GameInformation getGameInformation() {
+        return informationPanel.getGameInformation();
     }
 }

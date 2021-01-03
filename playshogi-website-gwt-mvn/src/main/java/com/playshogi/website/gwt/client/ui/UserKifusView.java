@@ -10,6 +10,7 @@ import com.google.gwt.user.cellview.client.TextColumn;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.view.client.ListDataProvider;
 import com.google.inject.Inject;
@@ -44,6 +45,8 @@ public class UserKifusView extends Composite {
         this.placeController = placeController;
         GWT.log("Creating UserKifusView");
         FlowPanel flowPanel = new FlowPanel();
+
+        flowPanel.add(new HTML("<br/>"));
 
         kifusTable = createKifusTable();
         TablePanel kifusPanel = new TablePanel("My Kifus", kifusTable);

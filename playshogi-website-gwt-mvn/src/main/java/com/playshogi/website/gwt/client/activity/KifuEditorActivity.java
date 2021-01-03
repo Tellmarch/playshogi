@@ -9,10 +9,7 @@ import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.library.shogi.models.formats.usf.UsfFormat;
-import com.playshogi.library.shogi.models.record.GameInformation;
 import com.playshogi.library.shogi.models.record.GameRecord;
-import com.playshogi.library.shogi.models.record.GameResult;
-import com.playshogi.library.shogi.models.record.GameTree;
 import com.playshogi.website.gwt.client.SessionInformation;
 import com.playshogi.website.gwt.client.events.gametree.GameTreeChangedEvent;
 import com.playshogi.website.gwt.client.events.kifu.*;
@@ -32,16 +29,16 @@ public class KifuEditorActivity extends MyAbstractActivity {
     private final KifuServiceAsync kifuService = GWT.create(KifuService.class);
 
     private final KifuEditorPlace place;
-    private final KifuEditorView kifuEditorView;
+    private final KifuEditorView view;
     private final SessionInformation sessionInformation;
     private final PlaceController placeController;
 
     private EventBus eventBus;
 
-    public KifuEditorActivity(final KifuEditorPlace place, final KifuEditorView kifuEditorView,
+    public KifuEditorActivity(final KifuEditorPlace place, final KifuEditorView view,
                               final SessionInformation sessionInformation, final PlaceController placeController) {
         this.place = place;
-        this.kifuEditorView = kifuEditorView;
+        this.view = view;
         this.sessionInformation = sessionInformation;
         this.placeController = placeController;
     }
@@ -51,8 +48,8 @@ public class KifuEditorActivity extends MyAbstractActivity {
         GWT.log("Starting problem editor activity");
         this.eventBus = eventBus;
         eventBinder.bindEventHandlers(this, eventBus);
-        kifuEditorView.activate(eventBus, place.getType());
-        containerWidget.setWidget(kifuEditorView.asWidget());
+        view.activate(eventBus, place);
+        containerWidget.setWidget(view.asWidget());
         if (place.getKifuId() != null) {
             kifuService.getKifuUsf(sessionInformation.getSessionId(), place.getKifuId(), new AsyncCallback<String>() {
                 @Override
@@ -63,7 +60,7 @@ public class KifuEditorActivity extends MyAbstractActivity {
                 @Override
                 public void onSuccess(final String usf) {
                     GWT.log("Received Kifu USF");
-                    kifuEditorView.loadGameRecord(UsfFormat.INSTANCE.readSingle(usf));
+                    view.loadGameRecord(UsfFormat.INSTANCE.readSingle(usf));
                 }
             });
         }
@@ -84,21 +81,23 @@ public class KifuEditorActivity extends MyAbstractActivity {
     }
 
     @EventHandler
-    public void onGameRecordSaveRequested(final GameRecordSaveRequestedEvent event) {
-        GWT.log("problem editor Activity Handling GameRecordSaveRequestedEvent");
-        String usfString = UsfFormat.INSTANCE.write(getGameRecord());
-        GWT.log(usfString);
+    public void onSaveKifu(final SaveKifuEvent event) {
+        GWT.log("problem editor Activity Handling SaveKifuEvent");
+        GWT.log(event.toString());
         sessionInformation.ifLoggedIn(() ->
-                kifuService.saveKifu(sessionInformation.getSessionId(), usfString, new AsyncCallback<String>() {
+                kifuService.saveKifu(sessionInformation.getSessionId(), event.getKifuUsf(), event.getName(),
+                        event.getKifuType(), new AsyncCallback<String>() {
 
-                    @Override
-                    public void onSuccess(final String result) {
-                        GWT.log("Kifu saved successfully: " + result);
-                    }
+                            @Override
+                            public void onSuccess(final String result) {
+                                GWT.log("Kifu saved successfully: " + result);
+                                eventBus.fireEvent(new SaveKifuResultEvent(true, result));
+                            }
 
-                    @Override
-                    public void onFailure(final Throwable caught) {
-                        GWT.log("Error while saving Kifu: ", caught);
+                            @Override
+                            public void onFailure(final Throwable caught) {
+                                GWT.log("Error while saving Kifu: ", caught);
+                                eventBus.fireEvent(new SaveKifuResultEvent(false, null));
                     }
                 }));
     }
@@ -119,8 +118,7 @@ public class KifuEditorActivity extends MyAbstractActivity {
     }
 
     private GameRecord getGameRecord() {
-        GameTree gameTree = kifuEditorView.getGameNavigation().getGameTree();
-        return new GameRecord(new GameInformation(), gameTree, GameResult.UNKNOWN);
+        return view.getGameRecord();
     }
 
 }

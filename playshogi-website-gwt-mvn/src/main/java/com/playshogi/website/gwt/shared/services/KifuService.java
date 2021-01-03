@@ -7,7 +7,7 @@ import com.playshogi.website.gwt.shared.models.*;
 @RemoteServiceRelativePath("kifus")
 public interface KifuService extends RemoteService {
 
-    String saveKifu(String sessionId, String kifuUsf);
+    String saveKifu(String sessionId, String kifuUsf, String name, KifuDetails.KifuType type);
 
     void saveGameAndAddToCollection(String sessionId, String kifuUsf, String collectionId);
 

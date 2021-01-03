@@ -1,8 +1,10 @@
 package com.playshogi.website.gwt.client.widget.kifu;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.safehtml.shared.SafeHtmlUtils;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Grid;
+import com.google.gwt.user.client.ui.TextBox;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
@@ -16,10 +18,6 @@ public class KifuInformationPanel extends Composite {
     private final MyEventBinder eventBinder = GWT.create(MyEventBinder.class);
 
     private EventBus eventBus;
-
-    private final Button saveButton;
-
-    private GameInformation gameInformation;
 
     private final TextBox senteTextBox;
     private final TextBox goteTextBox;
@@ -47,13 +45,6 @@ public class KifuInformationPanel extends Composite {
 
         verticalPanel.add(grid);
 
-        verticalPanel.add(new HTML(SafeHtmlUtils.fromSafeConstant("<br>")));
-
-        saveButton = new Button("Save");
-//        saveButton.addClickHandler(this);
-
-//        verticalPanel.add(saveButton);
-
         initWidget(verticalPanel);
     }
 
@@ -72,11 +63,10 @@ public class KifuInformationPanel extends Composite {
     @EventHandler
     public void onGameInformationChangedEvent(final GameInformationChangedEvent event) {
         GWT.log("Kifu editor: handle GameInformationChangedEvent");
-        gameInformation = event.getGameInformation();
-        refreshInformation();
+        refreshInformation(event.getGameInformation());
     }
 
-    private void refreshInformation() {
+    private void refreshInformation(final GameInformation gameInformation) {
         GWT.log("Displaying game information: " + gameInformation);
         if (gameInformation != null) {
             senteTextBox.setText(gameInformation.getSente());
@@ -86,4 +76,12 @@ public class KifuInformationPanel extends Composite {
         }
     }
 
+    public GameInformation getGameInformation() {
+        GameInformation info = new GameInformation();
+        info.setSente(senteTextBox.getText());
+        info.setGote(goteTextBox.getText());
+        info.setDate(dateTextBox.getText());
+        info.setVenue(venueTextBox.getText());
+        return info;
+    }
 }
