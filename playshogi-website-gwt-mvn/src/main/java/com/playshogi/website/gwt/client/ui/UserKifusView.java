@@ -80,6 +80,13 @@ public class UserKifusView extends Composite {
             }
         }, "Type");
 
+        collectionsTable.addColumn(new TextColumn<KifuDetails>() {
+            @Override
+            public String getValue(final KifuDetails object) {
+                return String.valueOf(object.getUpdateDate());
+            }
+        }, "Last Modified");
+
         ActionCell<KifuDetails> viewActionCell = new ActionCell<>("View", this::viewKifu);
 
         collectionsTable.addColumn(new Column<KifuDetails, KifuDetails>(viewActionCell) {
@@ -88,6 +95,15 @@ public class UserKifusView extends Composite {
                 return gameDetails;
             }
         }, "View");
+
+        ActionCell<KifuDetails> editActionCell = new ActionCell<>("Edit", this::editKifu);
+
+        collectionsTable.addColumn(new Column<KifuDetails, KifuDetails>(editActionCell) {
+            @Override
+            public KifuDetails getValue(final KifuDetails gameDetails) {
+                return gameDetails;
+            }
+        }, "Edit");
 
         ActionCell<KifuDetails> deleteActionCell = new ActionCell<>("Delete",
                 this::confirmKifuDeletion);
@@ -103,8 +119,14 @@ public class UserKifusView extends Composite {
     }
 
     private void viewKifu(final KifuDetails details) {
-        GWT.log("Going to kifu" + details.getId());
+        GWT.log("Going to view kifu" + details.getId());
         placeController.goTo(new ViewKifuPlace(details.getId(), 0));
+    }
+
+    private void editKifu(final KifuDetails details) {
+        GWT.log("Going to edit kifu" + details.getId());
+        // TODO
+//        placeController.goTo(new ViewKifuPlace(details.getId(), 0));
     }
 
     public void activate(final EventBus eventBus) {

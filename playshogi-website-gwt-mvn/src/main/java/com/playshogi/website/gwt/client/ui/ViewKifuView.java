@@ -62,6 +62,7 @@ public class ViewKifuView extends Composite {
         textArea = new TextArea();
         textArea.setSize("782px", "150px");
         textArea.setStyleName("lesson-content");
+        textArea.setEnabled(false);
 
         gameTreePanel = new GameTreePanel(VIEWKIFU, gameNavigator.getGameNavigation(), true);
 
@@ -76,7 +77,12 @@ public class ViewKifuView extends Composite {
 
         HorizontalPanel withTreePanel = new HorizontalPanel();
         withTreePanel.add(verticalPanel);
-        withTreePanel.add(gameTreePanel);
+
+        ScrollPanel treeScrollPanel = new ScrollPanel();
+        treeScrollPanel.add(gameTreePanel);
+        treeScrollPanel.setSize("200%", "750px");
+
+        withTreePanel.add(treeScrollPanel);
 
         ScrollPanel scrollPanel = new ScrollPanel();
         scrollPanel.add(withTreePanel);
