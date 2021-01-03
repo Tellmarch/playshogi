@@ -1,10 +1,7 @@
 package com.playshogi.website.gwt.client.ui;
 
 import com.google.gwt.core.shared.GWT;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.TextArea;
-import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.web.bindery.event.shared.EventBus;
@@ -12,12 +9,14 @@ import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.library.shogi.models.moves.EditMove;
 import com.playshogi.library.shogi.models.record.GameNavigation;
+import com.playshogi.library.shogi.models.record.GameRecord;
 import com.playshogi.library.shogi.models.record.GameTree;
 import com.playshogi.library.shogi.models.record.Node;
 import com.playshogi.library.shogi.rules.ShogiRulesEngine;
 import com.playshogi.website.gwt.client.events.gametree.GameTreeChangedEvent;
 import com.playshogi.website.gwt.client.events.gametree.PositionChangedEvent;
 import com.playshogi.website.gwt.client.events.kifu.EditModeSelectedEvent;
+import com.playshogi.website.gwt.client.events.kifu.GameInformationChangedEvent;
 import com.playshogi.website.gwt.client.events.kifu.SwitchPlayerToPlayEvent;
 import com.playshogi.website.gwt.client.widget.board.ShogiBoard;
 import com.playshogi.website.gwt.client.widget.gamenavigator.GameNavigator;
@@ -25,15 +24,16 @@ import com.playshogi.website.gwt.client.widget.kifu.GameTreePanel;
 import com.playshogi.website.gwt.client.widget.kifu.KifuEditorLeftBarPanel;
 import com.playshogi.website.gwt.client.widget.kifu.KifuEditorPanel;
 import com.playshogi.website.gwt.client.widget.kifu.PositionEditingPanel;
+import com.playshogi.website.gwt.shared.models.KifuDetails.KifuType;
 
 import java.util.Optional;
 
 @Singleton
-public class ProblemEditorView extends Composite {
+public class KifuEditorView extends Composite {
 
     private static final String PROBLEM_EDITOR = "pbeditor";
 
-    interface MyEventBinder extends EventBinder<ProblemEditorView> {
+    interface MyEventBinder extends EventBinder<KifuEditorView> {
     }
 
     private final MyEventBinder eventBinder = GWT.create(MyEventBinder.class);
@@ -50,7 +50,7 @@ public class ProblemEditorView extends Composite {
     private EventBus eventBus;
 
     @Inject
-    public ProblemEditorView() {
+    public KifuEditorView() {
         GWT.log("Creating problem editor view");
         shogiBoard = new ShogiBoard(PROBLEM_EDITOR);
         shogiBoard.getBoardConfiguration().setPositionEditingMode(false);
@@ -78,13 +78,19 @@ public class ProblemEditorView extends Composite {
         HorizontalPanel horizontalPanel = new HorizontalPanel();
 
         horizontalPanel.add(verticalPanel);
+
         gameTreePanel = new GameTreePanel(PROBLEM_EDITOR, gameNavigation, false);
-        horizontalPanel.add(gameTreePanel);
+
+        ScrollPanel treeScrollPanel = new ScrollPanel();
+        treeScrollPanel.add(gameTreePanel);
+        treeScrollPanel.setSize("200%", "750px");
+
+        horizontalPanel.add(treeScrollPanel);
 
         initWidget(horizontalPanel);
     }
 
-    public void activate(final EventBus eventBus) {
+    public void activate(final EventBus eventBus, final KifuType kifuType) {
         GWT.log("Activating problem editor view");
         this.eventBus = eventBus;
         eventBinder.bindEventHandlers(this, eventBus);
@@ -98,6 +104,11 @@ public class ProblemEditorView extends Composite {
 
     public GameNavigation getGameNavigation() {
         return gameNavigation;
+    }
+
+    public void loadGameRecord(final GameRecord gameRecord) {
+        eventBus.fireEvent(new GameTreeChangedEvent(gameRecord.getGameTree()));
+        eventBus.fireEvent(new GameInformationChangedEvent(gameRecord.getGameInformation()));
     }
 
     @EventHandler

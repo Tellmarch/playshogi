@@ -120,7 +120,7 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
         details.setCreationDate(kifu.getCreationDate());
         details.setUpdateDate(kifu.getUpdateDate());
         details.setName(kifu.getName());
-        details.setType(kifu.getType().name());
+        details.setType(KifuDetails.KifuType.valueOf(kifu.getType().name()));
         return details;
     }
 

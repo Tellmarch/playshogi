@@ -15,6 +15,7 @@ import com.playshogi.website.gwt.client.SessionInformation;
 import com.playshogi.website.gwt.client.events.user.UserLoggedInEvent;
 import com.playshogi.website.gwt.client.events.user.UserLoggedOutEvent;
 import com.playshogi.website.gwt.client.place.*;
+import com.playshogi.website.gwt.shared.models.KifuDetails;
 
 public class NavigationMenu extends Composite {
 
@@ -69,8 +70,10 @@ public class NavigationMenu extends Composite {
         collectionsMenu.addItem("Openings Explorer", (Command) () -> placeController.goTo(new OpeningsPlace()));
         collectionsMenu.addItem("Game Collections", (Command) () -> placeController.goTo(new GameCollectionsPlace()));
         collectionsMenu.addItem("My Kifus", (Command) () -> placeController.goTo(new UserKifusPlace()));
-        collectionsMenu.addItem("New/Import kifu", (Command) () -> placeController.goTo(new NewKifuPlace()));
-        collectionsMenu.addItem("New/Import problem", (Command) () -> placeController.goTo(new ProblemEditorPlace()));
+        collectionsMenu.addItem("New/Import kifu", (Command) () -> placeController.goTo(new KifuEditorPlace(null,
+                KifuDetails.KifuType.GAME)));
+        collectionsMenu.addItem("New/Import problem", (Command) () -> placeController.goTo(new KifuEditorPlace(null,
+                KifuDetails.KifuType.PROBLEM)));
 
 
         MenuBar aboutMenu = new MenuBar(true);

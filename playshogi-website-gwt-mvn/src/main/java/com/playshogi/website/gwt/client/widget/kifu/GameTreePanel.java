@@ -262,6 +262,7 @@ public class GameTreePanel extends Composite {
             event.stopPropagation();
             tree.setSelectedItem(this);
             Node node = (Node) getUserObject();
+            deleteVariationMenu.setVisible(node.getParent() != null);
             promoteVariationMenu.setVisible(node.getParentIndex() > 0);
             rebaseMenu.setVisible(node.getMove() instanceof EditMove);
             contextMenu.setPopupPosition(event.getNativeEvent().getClientX(), event.getNativeEvent().getClientY());

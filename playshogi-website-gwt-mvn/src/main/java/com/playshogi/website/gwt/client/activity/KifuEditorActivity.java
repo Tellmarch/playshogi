@@ -16,33 +16,32 @@ import com.playshogi.library.shogi.models.record.GameTree;
 import com.playshogi.website.gwt.client.SessionInformation;
 import com.playshogi.website.gwt.client.events.gametree.GameTreeChangedEvent;
 import com.playshogi.website.gwt.client.events.kifu.*;
+import com.playshogi.website.gwt.client.place.KifuEditorPlace;
 import com.playshogi.website.gwt.client.place.PreviewKifuPlace;
-import com.playshogi.website.gwt.client.place.ProblemEditorPlace;
-import com.playshogi.website.gwt.client.ui.ProblemEditorView;
+import com.playshogi.website.gwt.client.ui.KifuEditorView;
 import com.playshogi.website.gwt.shared.services.KifuService;
 import com.playshogi.website.gwt.shared.services.KifuServiceAsync;
 
-public class ProblemEditorActivity extends MyAbstractActivity {
+public class KifuEditorActivity extends MyAbstractActivity {
 
-    interface MyEventBinder extends EventBinder<ProblemEditorActivity> {
+    interface MyEventBinder extends EventBinder<KifuEditorActivity> {
     }
 
     private final MyEventBinder eventBinder = GWT.create(MyEventBinder.class);
 
     private final KifuServiceAsync kifuService = GWT.create(KifuService.class);
 
-    private final ProblemEditorView problemEditorView;
-
-    private GameRecord gameRecord;
-
-    private EventBus eventBus;
-
+    private final KifuEditorPlace place;
+    private final KifuEditorView kifuEditorView;
     private final SessionInformation sessionInformation;
     private final PlaceController placeController;
 
-    public ProblemEditorActivity(final ProblemEditorPlace place, final ProblemEditorView problemEditorView,
-                                 final SessionInformation sessionInformation, final PlaceController placeController) {
-        this.problemEditorView = problemEditorView;
+    private EventBus eventBus;
+
+    public KifuEditorActivity(final KifuEditorPlace place, final KifuEditorView kifuEditorView,
+                              final SessionInformation sessionInformation, final PlaceController placeController) {
+        this.place = place;
+        this.kifuEditorView = kifuEditorView;
         this.sessionInformation = sessionInformation;
         this.placeController = placeController;
     }
@@ -52,8 +51,22 @@ public class ProblemEditorActivity extends MyAbstractActivity {
         GWT.log("Starting problem editor activity");
         this.eventBus = eventBus;
         eventBinder.bindEventHandlers(this, eventBus);
-        problemEditorView.activate(eventBus);
-        containerWidget.setWidget(problemEditorView.asWidget());
+        kifuEditorView.activate(eventBus, place.getType());
+        containerWidget.setWidget(kifuEditorView.asWidget());
+        if (place.getKifuId() != null) {
+            kifuService.getKifuUsf(sessionInformation.getSessionId(), place.getKifuId(), new AsyncCallback<String>() {
+                @Override
+                public void onFailure(final Throwable throwable) {
+                    GWT.log("Error requesting the kifu: " + place.getKifuId());
+                }
+
+                @Override
+                public void onSuccess(final String usf) {
+                    GWT.log("Received Kifu USF");
+                    kifuEditorView.loadGameRecord(UsfFormat.INSTANCE.readSingle(usf));
+                }
+            });
+        }
     }
 
     @Override
@@ -65,7 +78,7 @@ public class ProblemEditorActivity extends MyAbstractActivity {
     @EventHandler
     public void onImportGameRecord(final ImportGameRecordEvent gameRecordChangedEvent) {
         GWT.log("problem editor Activity Handling ImportGameRecordEvent");
-        gameRecord = gameRecordChangedEvent.getGameRecord();
+        GameRecord gameRecord = gameRecordChangedEvent.getGameRecord();
         eventBus.fireEvent(new GameTreeChangedEvent(gameRecord.getGameTree()));
         eventBus.fireEvent(new GameInformationChangedEvent(gameRecord.getGameInformation()));
     }
@@ -73,8 +86,7 @@ public class ProblemEditorActivity extends MyAbstractActivity {
     @EventHandler
     public void onGameRecordSaveRequested(final GameRecordSaveRequestedEvent event) {
         GWT.log("problem editor Activity Handling GameRecordSaveRequestedEvent");
-        gameRecord = getGameRecord();
-        String usfString = UsfFormat.INSTANCE.write(gameRecord);
+        String usfString = UsfFormat.INSTANCE.write(getGameRecord());
         GWT.log(usfString);
         sessionInformation.ifLoggedIn(() ->
                 kifuService.saveKifu(sessionInformation.getSessionId(), usfString, new AsyncCallback<String>() {
@@ -94,8 +106,7 @@ public class ProblemEditorActivity extends MyAbstractActivity {
     @EventHandler
     public void onGameRecordExportRequested(final GameRecordExportRequestedEvent event) {
         GWT.log("problem editor Activity Handling GameRecordExportRequestedEvent");
-        gameRecord = getGameRecord();
-        String usfString = UsfFormat.INSTANCE.write(gameRecord);
+        String usfString = UsfFormat.INSTANCE.write(getGameRecord());
         GWT.log(usfString);
         Window.alert(usfString);
     }
@@ -103,13 +114,12 @@ public class ProblemEditorActivity extends MyAbstractActivity {
     @EventHandler
     public void onGameRecordPreviewRequested(final GameRecordPreviewRequestedEvent event) {
         GWT.log("problem editor Activity Handling GameRecordPreviewRequestedEvent");
-        gameRecord = getGameRecord();
-        String usfString = UsfFormat.INSTANCE.write(gameRecord);
+        String usfString = UsfFormat.INSTANCE.write(getGameRecord());
         placeController.goTo(new PreviewKifuPlace(usfString, 0));
     }
 
     private GameRecord getGameRecord() {
-        GameTree gameTree = problemEditorView.getGameNavigation().getGameTree();
+        GameTree gameTree = kifuEditorView.getGameNavigation().getGameTree();
         return new GameRecord(new GameInformation(), gameTree, GameResult.UNKNOWN);
     }
 

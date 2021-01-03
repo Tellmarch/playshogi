@@ -27,8 +27,6 @@ public class AppActivityMapper implements ActivityMapper {
     @Inject
     LoginView loginView;
     @Inject
-    NewKifuView newKifuView;
-    @Inject
     ViewKifuView viewKifuView;
     @Inject
     GameCollectionsView gameCollectionsView;
@@ -43,7 +41,7 @@ public class AppActivityMapper implements ActivityMapper {
     @Inject
     ProblemsView problemsView;
     @Inject
-    ProblemEditorView problemEditorView;
+    KifuEditorView kifuEditorView;
     @Inject
     UserKifusView userKifusView;
     @Inject
@@ -74,8 +72,6 @@ public class AppActivityMapper implements ActivityMapper {
             return new ProblemStatisticsActivity(problemStatisticsView, sessionInformation);
         } else if (place instanceof LoginPlace) {
             return new LoginActivity((LoginPlace) place, loginView, sessionInformation);
-        } else if (place instanceof NewKifuPlace) {
-            return new NewKifuActivity((NewKifuPlace) place, newKifuView, sessionInformation);
         } else if (place instanceof ViewKifuPlace) {
             return new ViewKifuActivity((ViewKifuPlace) place, viewKifuView, sessionInformation);
         } else if (place instanceof PreviewKifuPlace) {
@@ -86,8 +82,8 @@ public class AppActivityMapper implements ActivityMapper {
             return new PlayActivity((PlayPlace) place, playView, sessionInformation);
         } else if (place instanceof ProblemsPlace) {
             return new ProblemsActivity((ProblemsPlace) place, problemsView, sessionInformation);
-        } else if (place instanceof ProblemEditorPlace) {
-            return new ProblemEditorActivity((ProblemEditorPlace) place, problemEditorView, sessionInformation,
+        } else if (place instanceof KifuEditorPlace) {
+            return new KifuEditorActivity((KifuEditorPlace) place, kifuEditorView, sessionInformation,
                     placeController);
         } else if (place instanceof UserKifusPlace) {
             return new UserKifusActivity((UserKifusPlace) place, userKifusView, sessionInformation);

@@ -4,11 +4,17 @@ import java.io.Serializable;
 import java.util.Date;
 
 public class KifuDetails implements Serializable {
+    public enum KifuType {
+        GAME,
+        PROBLEM,
+        LESSON
+    }
+
     private String id;
     private String name;
     private Date creationDate;
     private Date updateDate;
-    private String type;
+    private KifuType type;
 
     public KifuDetails() {
     }
@@ -45,11 +51,11 @@ public class KifuDetails implements Serializable {
         this.updateDate = updateDate;
     }
 
-    public String getType() {
+    public KifuType getType() {
         return type;
     }
 
-    public void setType(final String type) {
+    public void setType(final KifuType type) {
         this.type = type;
     }
 
