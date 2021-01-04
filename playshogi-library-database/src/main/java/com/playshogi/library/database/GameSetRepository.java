@@ -340,13 +340,22 @@ public class GameSetRepository {
         }
     }
 
-    public boolean addGameToGameSet(final GameRecord gameRecord, final int gameSetId, final int venueId,
-                                    final String gameName, final int authorId) {
+    public boolean saveKifuAndGameToGameSet(final GameRecord gameRecord, final int gameSetId, final int venueId,
+                                            final String gameName, final int authorId) {
         int kifuId = kifuRepository.saveKifu(gameRecord, gameName, authorId, KifuType.GAME);
 
         if (kifuId == -1) {
             return false;
         }
+
+        return saveGameFromKifuAndAddToGameSet(gameSetId, kifuId, venueId);
+    }
+
+    public boolean saveGameFromKifuAndAddToGameSet(final int gameSetId, final int kifuId, final int venueId) {
+
+        PersistentKifu kifu = kifuRepository.getKifuById(kifuId);
+        GameRecord gameRecord = kifu.getKifu();
+        String gameName = kifu.getName();
 
         int gameId = gameRepository.saveGame(kifuId, null, null, gameRecord.getGameInformation().getSente(),
                 gameRecord.getGameInformation().getGote(),

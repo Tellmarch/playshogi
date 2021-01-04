@@ -64,6 +64,21 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
     }
 
     @Override
+    public void addExistingKifuToCollection(final String sessionId, final String kifuId, final String collectionId) {
+        LOGGER.log(Level.INFO, "add kifu in collection: " + kifuId + " -> " + collectionId);
+
+        LoginResult loginResult = authenticator.checkSession(sessionId);
+        if (loginResult == null || !loginResult.isLoggedIn()) {
+            throw new IllegalStateException("Only logged in users can add a kifu to a collection");
+        }
+
+        if (!gameSetRepository.saveGameFromKifuAndAddToGameSet(Integer.parseInt(collectionId),
+                Integer.parseInt(kifuId), 1)) {
+            throw new IllegalArgumentException("Could not add the kifu to collection");
+        }
+    }
+
+    @Override
     public void saveGameAndAddToCollection(final String sessionId, final String kifuUsf, final String collectionId) {
         LOGGER.log(Level.INFO, "saving kifu in collection:\n" + kifuUsf);
 
@@ -75,7 +90,7 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
         GameRecord gameRecord = UsfFormat.INSTANCE.readSingle(kifuUsf);
         String defaultName = getDefaultName(gameRecord);
         String name = defaultName.length() <= 45 ? defaultName : defaultName.substring(0, 45);
-        if (!gameSetRepository.addGameToGameSet(gameRecord, Integer.parseInt(collectionId), 1, name,
+        if (!gameSetRepository.saveKifuAndGameToGameSet(gameRecord, Integer.parseInt(collectionId), 1, name,
                 loginResult.getUserId())) {
             throw new IllegalArgumentException("Could not save the kifu in database");
         }
@@ -411,7 +426,7 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
 
         int i = 1;
         for (GameRecord game : collection.getGames()) {
-            gameSetRepository.addGameToGameSet(game, id, 1, "Game #" + (i++), loginResult.getUserId());
+            gameSetRepository.saveKifuAndGameToGameSet(game, id, 1, "Game #" + (i++), loginResult.getUserId());
         }
 
         return String.valueOf(id);

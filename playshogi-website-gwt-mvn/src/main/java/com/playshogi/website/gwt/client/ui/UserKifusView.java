@@ -2,16 +2,14 @@ package com.playshogi.website.gwt.client.ui;
 
 import com.google.gwt.cell.client.ActionCell;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.place.shared.PlaceController;
 import com.google.gwt.user.cellview.client.CellTable;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.HasKeyboardSelectionPolicy;
 import com.google.gwt.user.cellview.client.TextColumn;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.ScrollPanel;
+import com.google.gwt.user.client.ui.*;
 import com.google.gwt.view.client.ListDataProvider;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -19,18 +17,22 @@ import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.website.gwt.client.SessionInformation;
+import com.playshogi.website.gwt.client.events.collections.ListGameCollectionsEvent;
 import com.playshogi.website.gwt.client.events.collections.ListKifusEvent;
+import com.playshogi.website.gwt.client.events.collections.RequestAddKifuToCollectionEvent;
 import com.playshogi.website.gwt.client.events.kifu.RequestKifuDeletionEvent;
 import com.playshogi.website.gwt.client.place.KifuEditorPlace;
 import com.playshogi.website.gwt.client.place.ProblemPlace;
 import com.playshogi.website.gwt.client.place.ViewKifuPlace;
 import com.playshogi.website.gwt.client.widget.TablePanel;
+import com.playshogi.website.gwt.shared.models.GameCollectionDetails;
 import com.playshogi.website.gwt.shared.models.KifuDetails;
 
 import java.util.Arrays;
 
 @Singleton
 public class UserKifusView extends Composite {
+
 
     interface MyEventBinder extends EventBinder<UserKifusView> {
     }
@@ -40,6 +42,7 @@ public class UserKifusView extends Composite {
     private final PlaceController placeController;
     private final CellTable<KifuDetails> kifusTable;
 
+    private GameCollectionDetails[] myCollections;
     private EventBus eventBus;
 
     @Inject
@@ -121,6 +124,16 @@ public class UserKifusView extends Composite {
             }
         }, "Delete");
 
+        ActionCell<KifuDetails> collectionActionCell = new ActionCell<>("Add to Collection",
+                this::addKifuToCollection);
+
+        collectionsTable.addColumn(new Column<KifuDetails, KifuDetails>(collectionActionCell) {
+            @Override
+            public KifuDetails getValue(final KifuDetails gameDetails) {
+                return gameDetails;
+            }
+        }, "Add to Collection");
+
         return collectionsTable;
     }
 
@@ -144,14 +157,7 @@ public class UserKifusView extends Composite {
         eventBinder.bindEventHandlers(this, eventBus);
     }
 
-    @EventHandler
-    public void onListKifusEvent(final ListKifusEvent event) {
-        GWT.log("UserKifusView: handle ListKifusEvent");
-        ListDataProvider<KifuDetails> dataProvider = new ListDataProvider<>(Arrays.asList(event.getKifus()));
-        dataProvider.addDataDisplay(kifusTable);
-    }
-
-    public void confirmKifuDeletion(final KifuDetails details) {
+    private void confirmKifuDeletion(final KifuDetails details) {
         boolean confirm = Window.confirm("Are you sure you want to delete the kifu " + details.toString() + "?\n" +
                 "This is not revertible.");
         if (confirm) {
@@ -161,4 +167,70 @@ public class UserKifusView extends Composite {
             GWT.log("Deletion cancelled: " + details);
         }
     }
+
+    private void addKifuToCollection(final KifuDetails details) {
+        GWT.log("Add Kifu To Collection: " + details.getId());
+        DialogBox dialog = createAddToCollectionDialogBox(details);
+        dialog.center();
+        dialog.show();
+    }
+
+    private DialogBox createAddToCollectionDialogBox(final KifuDetails details) {
+        final DialogBox dialogBox = new DialogBox();
+        dialogBox.setText("Add Kifu to collection");
+        dialogBox.setGlassEnabled(true);
+
+        VerticalPanel dialogContents = new VerticalPanel();
+        dialogContents.setSpacing(4);
+        dialogBox.setWidget(dialogContents);
+
+
+        ListBox listBox = createCollectionsDropdown();
+        dialogContents.add(listBox);
+        dialogContents.setCellHorizontalAlignment(this, HasHorizontalAlignment.ALIGN_CENTER);
+
+        FlowPanel buttonsPanel = new FlowPanel();
+        Button closeButton = new Button("Cancel", (ClickHandler) event -> dialogBox.hide());
+        Button saveButton = new Button("Add", (ClickHandler) event -> {
+            addKifuToCollection(details, listBox.getSelectedValue());
+            dialogBox.hide();
+        });
+        buttonsPanel.add(closeButton);
+        buttonsPanel.add(saveButton);
+        dialogContents.add(buttonsPanel);
+
+        dialogContents.setCellHorizontalAlignment(buttonsPanel, HasHorizontalAlignment.ALIGN_RIGHT);
+
+        return dialogBox;
+    }
+
+    private void addKifuToCollection(final KifuDetails details, final String selectedValue) {
+        GWT.log("Add Kifu " + details.getId() + " to Collection: " + selectedValue);
+        eventBus.fireEvent(new RequestAddKifuToCollectionEvent(details.getId(), selectedValue));
+    }
+
+    private ListBox createCollectionsDropdown() {
+        ListBox list = new ListBox();
+        for (GameCollectionDetails collection : myCollections) {
+            list.addItem(collection.getName(), collection.getId());
+        }
+
+        list.setVisibleItemCount(1);
+        return list;
+    }
+
+    @EventHandler
+    public void onListKifusEvent(final ListKifusEvent event) {
+        GWT.log("UserKifusView: handle ListKifusEvent");
+        ListDataProvider<KifuDetails> dataProvider = new ListDataProvider<>(Arrays.asList(event.getKifus()));
+        dataProvider.addDataDisplay(kifusTable);
+    }
+
+    @EventHandler
+    public void onListGameCollectionsEvent(final ListGameCollectionsEvent event) {
+        GWT.log("GameCollectionsView: handle GameCollectionsEvent:\n" + event);
+
+        myCollections = event.getMyCollections();
+    }
+
 }

@@ -39,4 +39,6 @@ public interface KifuService extends RemoteService {
 
     void deleteKifu(String sessionId, String kifuId);
 
+    void addExistingKifuToCollection(String sessionId, String kifuId, String collectionId);
+
 }
