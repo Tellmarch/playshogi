@@ -2,6 +2,9 @@ package com.playshogi.website.gwt.client.widget.board;
 
 import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.canvas.dom.client.Context2d;
+import com.google.gwt.core.client.GWT;
+import com.playshogi.library.shogi.models.decorations.Arrow;
+import com.playshogi.library.shogi.models.decorations.Color;
 import com.playshogi.library.shogi.models.moves.DropMove;
 import com.playshogi.library.shogi.models.moves.NormalMove;
 import com.playshogi.library.shogi.models.moves.ShogiMove;
@@ -39,6 +42,10 @@ public class BoardDecorationController {
         context2d.stroke();
     }
 
+    public void drawArrow(final Arrow arrow) {
+        drawArrow(arrow.getFrom(), arrow.getTo(), arrow.getColor());
+    }
+
     public void drawArrow(final Square fromSquare, final Square toSquare, final Color color) {
         drawArrow(staticCanvas,
                 layout.getX(fromSquare) + SQUARE_WIDTH / 2,
@@ -59,6 +66,7 @@ public class BoardDecorationController {
 
     private void drawArrow(final Canvas canvas, final int fromX, final int fromY, final int toX, final int toY,
                            final Color color) {
+        GWT.log("Drawing arrow");
         if (canvas == null) return;
         Context2d ctx = canvas.getContext2d();
         ctx.setStrokeStyle(color.toString());
@@ -114,7 +122,9 @@ public class BoardDecorationController {
     }
 
     void clear() {
+        GWT.log("Decoration controller - clear");
         clear(staticCanvas);
         clear(highlightCanvas);
     }
+
 }

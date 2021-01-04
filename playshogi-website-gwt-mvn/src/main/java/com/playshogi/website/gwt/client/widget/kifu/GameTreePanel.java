@@ -60,7 +60,8 @@ public class GameTreePanel extends Composite {
             if (item.getUserObject() instanceof Node) {
                 Node node = (Node) item.getUserObject();
                 gameNavigation.moveToNode(node);
-                eventBus.fireEvent(new PositionChangedEvent(gameNavigation.getPosition(), true));
+                eventBus.fireEvent(new PositionChangedEvent(gameNavigation.getPosition(),
+                        gameNavigation.getBoardDecorations(), true));
             }
         });
         panel.add(tree);
@@ -150,7 +151,7 @@ public class GameTreePanel extends Composite {
         while (iterator.hasNext()) {
             TreeItem item = iterator.next();
             if (item.getUserObject() == gameNavigation.getCurrentNode()) {
-                tree.setSelectedItem(item);
+                tree.setSelectedItem(item, false);
             }
         }
     }

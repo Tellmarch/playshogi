@@ -151,7 +151,7 @@ public class KifuEditorView extends Composite {
     public void onSwitchPlayerToPlay(final SwitchPlayerToPlayEvent event) {
         GWT.log("Problem editor: handle SwitchPlayerToPlayEvent");
         shogiBoard.getPosition().setPlayerToMove(shogiBoard.getPosition().getPlayerToMove().opposite());
-        eventBus.fireEvent(new PositionChangedEvent(shogiBoard.getPosition(), true));
+        eventBus.fireEvent(new PositionChangedEvent(shogiBoard.getPosition()));
     }
 
     @EventHandler

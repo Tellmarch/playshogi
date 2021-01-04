@@ -1,6 +1,7 @@
 package com.playshogi.website.gwt.client.widget.board;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.DomEvent;
@@ -11,6 +12,8 @@ import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.library.shogi.models.Piece;
 import com.playshogi.library.shogi.models.PieceType;
 import com.playshogi.library.shogi.models.Player;
+import com.playshogi.library.shogi.models.decorations.Arrow;
+import com.playshogi.library.shogi.models.decorations.BoardDecorations;
 import com.playshogi.library.shogi.models.moves.CaptureMove;
 import com.playshogi.library.shogi.models.moves.DropMove;
 import com.playshogi.library.shogi.models.moves.NormalMove;
@@ -460,10 +463,21 @@ public class ShogiBoard extends Composite implements ClickHandler {
     @EventHandler
     public void onPositionChanged(final PositionChangedEvent event) {
         setPosition(event.getPosition());
+        if (event.getDecorations().isPresent()) {
+            Scheduler.get().scheduleDeferred(() -> drawDecorations(event.getDecorations().get()));
+        }
+    }
+
+    private void drawDecorations(final BoardDecorations decorations) {
+        GWT.log("Drawing decorations: " + decorations);
+        for (Arrow arrow : decorations.getArrows()) {
+            decorationController.drawArrow(arrow);
+        }
     }
 
     @EventHandler
     public void onHighlightMove(final HighlightMoveEvent event) {
+        GWT.log("Handling HighlightMoveEvent: " + event.getMove());
         selectionController.highlightMove(event.getMove());
         decorationController.highlightMove(event.getMove());
     }

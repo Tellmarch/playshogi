@@ -132,7 +132,6 @@ public class ImportPositionPanel extends Composite implements ClickHandler {
 
     private void importPositionFromText() {
         GWT.log("Importing position...");
-        String gameText = textArea.getText();
         ShogiPosition position = null;
         if (sfenButton.getValue()) {
             GWT.log("Will parse as SFEN position");

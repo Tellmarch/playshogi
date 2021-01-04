@@ -1,4 +1,4 @@
-package com.playshogi.website.gwt.client.widget.board;
+package com.playshogi.library.shogi.models.decorations;
 
 public class Color {
 
