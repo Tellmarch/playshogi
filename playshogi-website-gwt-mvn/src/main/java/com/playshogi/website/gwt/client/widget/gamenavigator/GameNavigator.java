@@ -22,6 +22,7 @@ import com.playshogi.library.shogi.models.shogivariant.Handicap;
 import com.playshogi.library.shogi.models.shogivariant.ShogiInitialPositionFactory;
 import com.playshogi.library.shogi.rules.ShogiRulesEngine;
 import com.playshogi.website.gwt.client.events.gametree.*;
+import com.playshogi.website.gwt.client.events.kifu.ClearDecorationsEvent;
 
 import java.util.Objects;
 
@@ -100,6 +101,48 @@ public class GameNavigator extends Composite implements ClickHandler {
         firePositionChanged(false);
     }
 
+    private void fireNodeChanged() {
+        eventBus.fireEvent(new NodeChangedEvent());
+    }
+
+    private void firePositionChanged(final boolean triggeredByUser) {
+        GWT.log(activityId + " GameNavigator: firing position changed");
+        eventBus.fireEvent(new PositionChangedEvent(gameNavigation.getPosition(),
+                gameNavigation.getBoardDecorations(), triggeredByUser));
+    }
+
+    public NavigatorConfiguration getNavigatorConfiguration() {
+        return navigatorConfiguration;
+    }
+
+    public GameNavigation getGameNavigation() {
+        return gameNavigation;
+    }
+
+    public void addMove(final Move move, final boolean fromUser) {
+        gameNavigation.addMove(move);
+        firePositionChanged(fromUser);
+        eventBus.fireEvent(new NewVariationPlayedEvent(false));
+    }
+
+    @Override
+    public void onClick(final ClickEvent event) {
+        Object source = event.getSource();
+        if (source == firstButton) {
+            gameNavigation.moveToStart();
+            eventBus.fireEvent(new UserNavigatedBackEvent());
+        } else if (source == nextButton) {
+            gameNavigation.moveForward();
+        } else if (source == previousButton) {
+            gameNavigation.moveBack();
+            eventBus.fireEvent(new UserNavigatedBackEvent());
+        } else if (source == lastButton) {
+            gameNavigation.moveToEndOfVariation();
+        }
+        firePositionChanged(true);
+        fireNodeChanged();
+    }
+
     @EventHandler
     public void onGameTreeChanged(final GameTreeChangedEvent gameTreeChangedEvent) {
         GWT.log(activityId + " GameNavigator: Handling game tree changed event - move " + gameTreeChangedEvent.getGoToMove());
@@ -139,46 +182,12 @@ public class GameNavigator extends Composite implements ClickHandler {
         firePositionChanged(true);
     }
 
-    @Override
-    public void onClick(final ClickEvent event) {
-        Object source = event.getSource();
-        if (source == firstButton) {
-            gameNavigation.moveToStart();
-            eventBus.fireEvent(new UserNavigatedBackEvent());
-        } else if (source == nextButton) {
-            gameNavigation.moveForward();
-        } else if (source == previousButton) {
-            gameNavigation.moveBack();
-            eventBus.fireEvent(new UserNavigatedBackEvent());
-        } else if (source == lastButton) {
-            gameNavigation.moveToEndOfVariation();
-        }
+    @EventHandler
+    public void onClearDecorations(final ClearDecorationsEvent event) {
+        GWT.log(activityId + " GameNavigator: Handling ClearDecorationsEvent");
+        gameNavigation.getCurrentNode().setObjects(null);
+
         firePositionChanged(true);
-        fireNodeChanged();
-    }
-
-    private void fireNodeChanged() {
-        eventBus.fireEvent(new NodeChangedEvent());
-    }
-
-    private void firePositionChanged(final boolean triggeredByUser) {
-        GWT.log(activityId + " GameNavigator: firing position changed");
-        eventBus.fireEvent(new PositionChangedEvent(gameNavigation.getPosition(),
-                gameNavigation.getBoardDecorations(), triggeredByUser));
-    }
-
-    public NavigatorConfiguration getNavigatorConfiguration() {
-        return navigatorConfiguration;
-    }
-
-    public GameNavigation getGameNavigation() {
-        return gameNavigation;
-    }
-
-    public void addMove(final Move move, final boolean fromUser) {
-        gameNavigation.addMove(move);
-        firePositionChanged(fromUser);
-        eventBus.fireEvent(new NewVariationPlayedEvent(false));
     }
 
 }

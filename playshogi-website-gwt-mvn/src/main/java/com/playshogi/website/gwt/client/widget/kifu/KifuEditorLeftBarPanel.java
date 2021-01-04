@@ -17,18 +17,21 @@ public class KifuEditorLeftBarPanel extends Composite {
 
     private final KifuInformationPanel informationPanel;
     private final PositionEditingPanel editingPanel;
+    private final DecorationPanel decorationPanel;
 
     private EventBus eventBus;
 
     public KifuEditorLeftBarPanel() {
         informationPanel = new KifuInformationPanel();
         editingPanel = new PositionEditingPanel();
+        decorationPanel = new DecorationPanel();
 
         StackLayoutPanel stackPanel = new StackLayoutPanel(Style.Unit.EM);
         stackPanel.setPixelSize(200, 400);
 
         stackPanel.add(informationPanel.asWidget(), "Kifu Information", 2);
         stackPanel.add(editingPanel.asWidget(), "Edit position", 2);
+        stackPanel.add(decorationPanel.asWidget(), "Decorations", 2);
 
         initWidget(stackPanel);
     }
@@ -52,6 +55,7 @@ public class KifuEditorLeftBarPanel extends Composite {
         eventBinder.bindEventHandlers(this, eventBus);
         informationPanel.activate(eventBus);
         editingPanel.activate(eventBus);
+        decorationPanel.activate(eventBus);
     }
 
     public GameInformation getGameInformation() {
