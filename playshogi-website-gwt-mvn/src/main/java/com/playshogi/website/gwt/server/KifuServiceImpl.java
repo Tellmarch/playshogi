@@ -484,6 +484,8 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
             throw new IllegalStateException("Only logged in users can delete a kifu");
         }
 
-        kifuRepository.deleteKifuById(Integer.parseInt(kifuId), loginResult.getUserId());
+        if (!kifuRepository.deleteKifuById(Integer.parseInt(kifuId), loginResult.getUserId())) {
+            throw new IllegalArgumentException("Could not delete the Kifu");
+        }
     }
 }

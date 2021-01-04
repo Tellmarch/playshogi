@@ -121,7 +121,7 @@ public class KifuRepository {
         }
     }
 
-    public void deleteKifuById(final int kifuId, final int userId) {
+    public boolean deleteKifuById(final int kifuId, final int userId) {
         Connection connection = dbConnection.getConnection();
         try (PreparedStatement preparedStatement = connection.prepareStatement(DELETE_KIFU)) {
             preparedStatement.setInt(1, kifuId);
@@ -129,11 +129,14 @@ public class KifuRepository {
             int rs = preparedStatement.executeUpdate();
             if (rs == 1) {
                 LOGGER.log(Level.INFO, "Deleted kifu: " + kifuId);
+                return true;
             } else {
                 LOGGER.log(Level.INFO, "Did not find kifu: " + kifuId + " for user " + userId);
+                return false;
             }
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error looking up the kifu in db", e);
+            return false;
         }
     }
 

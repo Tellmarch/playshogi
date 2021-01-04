@@ -1,6 +1,7 @@
 package com.playshogi.website.gwt.client.activity;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
 import com.google.web.bindery.event.shared.EventBus;
@@ -44,7 +45,9 @@ public class UserKifusActivity extends MyAbstractActivity {
         eventBinder.bindEventHandlers(this, eventBus);
         view.activate(eventBus);
 
-        fetchData();
+        if (sessionInformation.isLoggedIn()) {
+            fetchData();
+        }
 
         containerWidget.setWidget(view.asWidget());
     }
@@ -80,6 +83,7 @@ public class UserKifusActivity extends MyAbstractActivity {
             @Override
             public void onFailure(final Throwable throwable) {
                 GWT.log("UserKifusActivity: error deleting kifu");
+                Window.alert("Could not delete the Kifu - It should be removed from any collection first");
             }
 
             @Override
