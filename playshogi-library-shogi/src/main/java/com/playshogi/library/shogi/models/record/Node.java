@@ -1,5 +1,6 @@
 package com.playshogi.library.shogi.models.record;
 
+import com.playshogi.library.shogi.models.decorations.Arrow;
 import com.playshogi.library.shogi.models.moves.Move;
 
 import java.util.ArrayList;
@@ -146,6 +147,14 @@ public class Node {
         }
     }
 
+    public void addArrow(final Arrow arrow) {
+        if (objects == null) {
+            objects = arrow.toUsfString();
+        } else {
+            objects += "\n" + arrow.toUsfString();
+        }
+    }
+
     @Override
     public String toString() {
         return "Node{" +
@@ -159,5 +168,4 @@ public class Node {
                 ", additionalTags='" + additionalTags + '\'' +
                 '}';
     }
-
 }

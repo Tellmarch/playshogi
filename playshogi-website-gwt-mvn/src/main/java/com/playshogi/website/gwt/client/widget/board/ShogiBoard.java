@@ -4,7 +4,6 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.DomEvent;
 import com.google.gwt.user.client.ui.*;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
@@ -14,6 +13,7 @@ import com.playshogi.library.shogi.models.PieceType;
 import com.playshogi.library.shogi.models.Player;
 import com.playshogi.library.shogi.models.decorations.Arrow;
 import com.playshogi.library.shogi.models.decorations.BoardDecorations;
+import com.playshogi.library.shogi.models.decorations.Color;
 import com.playshogi.library.shogi.models.moves.CaptureMove;
 import com.playshogi.library.shogi.models.moves.DropMove;
 import com.playshogi.library.shogi.models.moves.NormalMove;
@@ -25,6 +25,7 @@ import com.playshogi.library.shogi.rules.ShogiRulesEngine;
 import com.playshogi.website.gwt.client.events.gametree.HighlightMoveEvent;
 import com.playshogi.website.gwt.client.events.gametree.MovePlayedEvent;
 import com.playshogi.website.gwt.client.events.gametree.PositionChangedEvent;
+import com.playshogi.website.gwt.client.events.kifu.ArrowDrawnEvent;
 import com.playshogi.website.gwt.client.events.user.PieceStyleSelectedEvent;
 import com.playshogi.website.gwt.client.widget.board.KomadaiPositioning.Point;
 
@@ -67,6 +68,9 @@ public class ShogiBoard extends Composite implements ClickHandler {
     private EventBus eventBus;
     private ShogiPosition position;
     private PieceGraphics.Style style = PieceGraphics.Style.RYOKO;
+
+    private Square mouseDownUpStartSquare = null;
+    private PieceWrapper mouseDownUpStartPieceWrapper = null;
 
     public ShogiBoard(final String activityId) {
         this(activityId, new BoardConfiguration());
@@ -131,9 +135,21 @@ public class ShogiBoard extends Composite implements ClickHandler {
     }
 
     private void setupSquareClickHandler(final Image image, final int row, final int col) {
-        image.addMouseDownHandler(DomEvent::preventDefault);
+        image.addMouseDownHandler(mouseDownEvent -> {
+            mouseDownEvent.preventDefault();
+            mouseDownUpStartSquare = getSquare(row, col);
+            mouseDownUpStartPieceWrapper = null;
+        });
+
+        image.addMouseUpHandler(event -> {
+            Square to = getSquare(row, col);
+            drawArrowToSquare(to);
+            mouseDownUpStartSquare = null;
+            mouseDownUpStartPieceWrapper = null;
+        });
 
         image.addClickHandler(event -> {
+            GWT.log("CLICK - " + row + " " + col);
             if (selectionController.hasPieceSelected()) {
                 PieceWrapper selectedPieceWrapper = selectionController.getSelectedPieceWrapper();
                 Piece piece = selectedPieceWrapper.getPiece();
@@ -167,6 +183,19 @@ public class ShogiBoard extends Composite implements ClickHandler {
                 selectionController.unselect();
             }
         });
+    }
+
+    private void drawArrowToSquare(final Square to) {
+        Arrow arrow = null;
+        if (mouseDownUpStartSquare != null && !to.equals(mouseDownUpStartSquare)) {
+            arrow = new Arrow(mouseDownUpStartSquare, to, Color.RED);
+        } else if (mouseDownUpStartPieceWrapper != null) {
+            arrow = new Arrow(mouseDownUpStartPieceWrapper.getPiece(), to, Color.RED);
+        }
+        if (arrow != null) {
+            decorationController.drawArrow(arrow);
+            eventBus.fireEvent(new ArrowDrawnEvent(arrow));
+        }
     }
 
     public void activate(final EventBus eventBus) {
@@ -282,7 +311,27 @@ public class ShogiBoard extends Composite implements ClickHandler {
     }
 
     private void setupPieceEventHandlers(final PieceWrapper pieceWrapper) {
-        pieceWrapper.getImage().addMouseDownHandler(DomEvent::preventDefault);
+        pieceWrapper.getImage().addMouseDownHandler(mouseDownEvent -> {
+            mouseDownEvent.preventDefault();
+            if (pieceWrapper.isInKomadai()) {
+                mouseDownUpStartSquare = null;
+                mouseDownUpStartPieceWrapper = pieceWrapper;
+            } else {
+                mouseDownUpStartSquare = getSquare(pieceWrapper.getRow(), pieceWrapper.getColumn());
+                mouseDownUpStartPieceWrapper = null;
+            }
+        });
+
+        pieceWrapper.getImage().addMouseUpHandler(event -> {
+            if (pieceWrapper.isInKomadai()) {
+                //TODO
+            } else {
+                Square to = pieceWrapper.getSquare();
+                drawArrowToSquare(to);
+            }
+            mouseDownUpStartSquare = null;
+            mouseDownUpStartPieceWrapper = null;
+        });
 
         pieceWrapper.getImage().addClickHandler(event -> {
             if (!canPlayMove() && !boardConfiguration.isPositionEditingMode()) {

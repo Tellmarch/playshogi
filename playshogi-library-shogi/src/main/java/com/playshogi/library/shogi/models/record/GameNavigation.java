@@ -3,13 +3,10 @@ package com.playshogi.library.shogi.models.record;
 import com.playshogi.library.shogi.models.decorations.Arrow;
 import com.playshogi.library.shogi.models.decorations.BoardDecorations;
 import com.playshogi.library.shogi.models.decorations.Circle;
-import com.playshogi.library.shogi.models.decorations.Color;
-import com.playshogi.library.shogi.models.formats.usf.UsfUtil;
 import com.playshogi.library.shogi.models.moves.EditMove;
 import com.playshogi.library.shogi.models.moves.Move;
 import com.playshogi.library.shogi.models.moves.ShogiMove;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
-import com.playshogi.library.shogi.models.position.Square;
 import com.playshogi.library.shogi.rules.ShogiRulesEngine;
 
 import java.util.ArrayList;
@@ -171,26 +168,12 @@ public class GameNavigation {
             ArrayList<Circle> circles = new ArrayList<>();
             for (String object : objects.get().split("\n")) {
                 if (object.startsWith("ARROW,")) {
-                    arrows.add(parseArrowObject(object));
+                    arrows.add(Arrow.parseArrowObject(object));
                 }
             }
             return new BoardDecorations(arrows, circles);
         } else {
             return null;
         }
-    }
-
-    public static Arrow parseArrowObject(final String object) {
-        String coordinates = object.substring(6, 10);
-        Square from = Square.of(UsfUtil.char2ColumnNumber(coordinates.charAt(0)),
-                UsfUtil.char2RowNumber(coordinates.charAt(1)));
-        Square to = Square.of(UsfUtil.char2ColumnNumber(coordinates.charAt(2)),
-                UsfUtil.char2RowNumber(coordinates.charAt(3)));
-
-        String[] color1 = object.substring(object.indexOf("(") + 1, object.indexOf(")")).split(",");
-
-        Color c = new Color(Integer.parseInt(color1[0]), Integer.parseInt(color1[1]),
-                Integer.parseInt(color1[2]), Integer.parseInt(color1[3]));
-        return new Arrow(from, to, c);
     }
 }

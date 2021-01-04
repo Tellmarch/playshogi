@@ -22,6 +22,7 @@ import com.playshogi.library.shogi.models.shogivariant.Handicap;
 import com.playshogi.library.shogi.models.shogivariant.ShogiInitialPositionFactory;
 import com.playshogi.library.shogi.rules.ShogiRulesEngine;
 import com.playshogi.website.gwt.client.events.gametree.*;
+import com.playshogi.website.gwt.client.events.kifu.ArrowDrawnEvent;
 import com.playshogi.website.gwt.client.events.kifu.ClearDecorationsEvent;
 
 import java.util.Objects;
@@ -188,6 +189,12 @@ public class GameNavigator extends Composite implements ClickHandler {
         gameNavigation.getCurrentNode().setObjects(null);
 
         firePositionChanged(true);
+    }
+
+    @EventHandler
+    public void onArrowDrawnEvent(final ArrowDrawnEvent event) {
+        GWT.log(activityId + " GameNavigator: Handling ArrowDrawnEvent");
+        gameNavigation.getCurrentNode().addArrow(event.getArrow());
     }
 
 }

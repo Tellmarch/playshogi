@@ -3,6 +3,8 @@ package com.playshogi.website.gwt.client.widget.board;
 import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.core.client.GWT;
+import com.playshogi.library.shogi.models.PieceType;
+import com.playshogi.library.shogi.models.Player;
 import com.playshogi.library.shogi.models.decorations.Arrow;
 import com.playshogi.library.shogi.models.decorations.Color;
 import com.playshogi.library.shogi.models.moves.DropMove;
@@ -43,7 +45,13 @@ public class BoardDecorationController {
     }
 
     public void drawArrow(final Arrow arrow) {
-        drawArrow(arrow.getFrom(), arrow.getTo(), arrow.getColor());
+        if (arrow.getFrom() != null && arrow.getTo() != null) {
+            drawArrow(arrow.getFrom(), arrow.getTo(), arrow.getColor());
+        } else if (arrow.getFromKomadaiPiece() != null && arrow.getTo() != null) {
+            drawDropArrow(arrow.getFromKomadaiPiece().getPieceType(), arrow.getFromKomadaiPiece().getOwner(),
+                    arrow.getTo(), arrow.getColor());
+        }
+        //TODO other two cases
     }
 
     public void drawArrow(final Square fromSquare, final Square toSquare, final Color color) {
@@ -101,19 +109,30 @@ public class BoardDecorationController {
         } else if (move instanceof DropMove) {
             DropMove dropMove = (DropMove) move;
 
-            KomadaiPositioning.Point[] points =
-                    KomadaiPositioning.getPiecesPositions(dropMove.getPieceType().ordinal(), 1, move.isBlackMoving(),
-                            layout.getKomadaiWidth());
-
-            int komadaiX = move.isBlackMoving() ? layout.getSenteKomadaiX() : layout.getGoteKomadaiX();
-            int komadaiY = move.isBlackMoving() ? layout.getSenteKomadaiY() : layout.getGoteKomadaiY();
-
-            drawArrow(highlightCanvas, komadaiX + points[0].x + SQUARE_WIDTH / 2,
-                    komadaiY + points[0].y + SQUARE_HEIGHT / 2,
-                    layout.getX(dropMove.getToSquare()) + SQUARE_WIDTH / 2,
-                    layout.getY(dropMove.getToSquare()) + SQUARE_HEIGHT / 2,
+            drawDropArrow(highlightCanvas, dropMove.getPieceType(), dropMove.getPlayer(), dropMove.getToSquare(),
                     Color.RED);
         }
+    }
+
+    public void drawDropArrow(final PieceType pieceType, final Player player, final Square toSquare,
+                              final Color color) {
+        drawDropArrow(staticCanvas, pieceType, player, toSquare, color);
+    }
+
+    private void drawDropArrow(final Canvas canvas, final PieceType pieceType, final Player player,
+                               final Square toSquare, final Color color) {
+        KomadaiPositioning.Point[] points =
+                KomadaiPositioning.getPiecesPositions(pieceType.ordinal(), 1, player == Player.BLACK,
+                        layout.getKomadaiWidth());
+
+        int komadaiX = player == Player.BLACK ? layout.getSenteKomadaiX() : layout.getGoteKomadaiX();
+        int komadaiY = player == Player.BLACK ? layout.getSenteKomadaiY() : layout.getGoteKomadaiY();
+
+        drawArrow(canvas, komadaiX + points[0].x + SQUARE_WIDTH / 2,
+                komadaiY + points[0].y + SQUARE_HEIGHT / 2,
+                layout.getX(toSquare) + SQUARE_WIDTH / 2,
+                layout.getY(toSquare) + SQUARE_HEIGHT / 2,
+                color);
     }
 
     private void clear(final Canvas canvas) {

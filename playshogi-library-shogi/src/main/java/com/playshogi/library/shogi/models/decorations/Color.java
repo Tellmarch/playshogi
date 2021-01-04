@@ -45,4 +45,8 @@ public class Color {
         }
         return s;
     }
+
+    public String toUsfString() {
+        return "(" + r + "," + g + "," + b + "," + a + ")";
+    }
 }

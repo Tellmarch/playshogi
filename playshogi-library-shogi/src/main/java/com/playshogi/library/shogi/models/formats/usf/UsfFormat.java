@@ -109,7 +109,7 @@ public enum UsfFormat implements GameRecordFormat {
         builder.append("^");
         builder.append(getResultChar(gameRecord.getGameResult()));
         Node n = gameTree.getRootNode();
-        if (n.getComment().isPresent()) {
+        if (n.getComment().isPresent() || n.getObjects().isPresent()) {
             needNodesSection = true;
         }
         if (n.getMove() instanceof EditMove) {
@@ -127,7 +127,7 @@ public enum UsfFormat implements GameRecordFormat {
             }
             n = children.get(0);
             builder.append(UsfMoveConverter.toUsfString((ShogiMove) n.getMove()));
-            if (n.getComment().isPresent()) {
+            if (n.getComment().isPresent() || n.getObjects().isPresent()) {
                 needNodesSection = true;
             }
         }
