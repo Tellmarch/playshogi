@@ -7,6 +7,7 @@ import com.playshogi.library.shogi.models.record.GameRecord;
 import com.playshogi.library.shogi.models.record.GameTree;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -23,6 +24,10 @@ public enum CsaFormat implements GameRecordFormat {
     @Override
     public List<GameRecord> read(final LineReader lineReader) {
         ArrayList<GameRecord> games = new ArrayList<>(1);
+
+        if (!lineReader.hasNextLine()) {
+            return Collections.emptyList();
+        }
 
         GameRecord gameRecord = new CsaGameParser(lineReader).readGameRecord();
         games.add(gameRecord);

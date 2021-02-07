@@ -25,7 +25,6 @@ public class ScannerLineReader implements LineReader {
     public String nextLine() {
         String current = nextLine;
         nextLine = readNextLine();
-        System.out.println("Reading line " + current);
         return current;
     }
 

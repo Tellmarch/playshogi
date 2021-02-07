@@ -108,6 +108,12 @@ public enum UsfFormat implements GameRecordFormat {
         }
     }
 
+    public static String writePreviewString(final GameRecord gameRecord) {
+        StringBuilder builder = new StringBuilder();
+        writePreviewString(gameRecord, builder);
+        return builder.toString();
+    }
+
     private static boolean writePreviewString(final GameRecord gameRecord, final StringBuilder builder) {
         boolean needNodesSection = false;
         GameTree gameTree = gameRecord.getGameTree();
