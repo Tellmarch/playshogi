@@ -404,7 +404,7 @@ public class KifFormatTest {
                 "BN:AAA(1779)\n" +
                 "WN:BBB(1795)\n" +
                 "GD:Aug 31, 2020 6:39:53 PM\n" +
-                "GQ:UNKNOWN\n", UsfFormat.INSTANCE.write(kif24));
+                "GN:Rating Game Room(short-timelimited)\n", UsfFormat.INSTANCE.write(kif24));
     }
 
     @Test
@@ -434,8 +434,7 @@ public class KifFormatTest {
                 "^*ln1g3nl/1ks1g2r1/1pppp2pp/p4sp2/7P1/P1PP1SP1P/1PS1P4/1KG4R1/LN3G1NL w BPbp:\n" +
                 "BN:AAA\n" +
                 "WN:BBB\n" +
-                "GD:1000-1-1\n" +
-                "GQ:UNKNOWN\n", UsfFormat.INSTANCE.write(kif));
+                "GD:1000-1-1\n", UsfFormat.INSTANCE.write(kif));
     }
 
     @Test
@@ -449,7 +448,7 @@ public class KifFormatTest {
                 "BN:AAA 初段\n" +
                 "WN:BBB 初段\n" +
                 "GD:2020/09/28 22:00:12\n" +
-                "GQ:UNKNOWN\n", UsfFormat.INSTANCE.write(kif));
+                "GN:将棋ウォーズ(10分切れ負け)\n", UsfFormat.INSTANCE.write(kif));
     }
 
     @Test

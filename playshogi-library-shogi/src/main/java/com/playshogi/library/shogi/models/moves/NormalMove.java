@@ -5,6 +5,9 @@ import com.playshogi.library.shogi.models.position.Square;
 
 import java.util.Optional;
 
+/**
+ * A move which is not a drop move: moving a piece from one square to another square, with capture or not.
+ */
 public class NormalMove extends ShogiMove implements ToSquareMove {
 
     protected final Piece piece;

@@ -98,7 +98,7 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
 
     private String getDefaultName(final GameRecord gameRecord) {
         GameInformation info = gameRecord.getGameInformation();
-        return info.getVenue() + " - " + info.getSente() + " - " + info.getGote() + " - " + info.getDate();
+        return info.getLocation() + " - " + info.getBlack() + " - " + info.getWhite() + " - " + info.getDate();
     }
 
     @Override

@@ -81,12 +81,12 @@ public enum UsfFormat implements GameRecordFormat {
     private static void writeGameTags(final GameRecord gameRecord, final StringBuilder builder) {
         GameInformation gameInformation = gameRecord.getGameInformation();
         if (gameInformation != null) {
-            String sente = gameInformation.getSente();
+            String sente = gameInformation.getBlack();
             if (sente != null && !sente.isEmpty()) {
                 builder.append("BN:").append(sente).append('\n');
             }
 
-            String gote = gameInformation.getGote();
+            String gote = gameInformation.getWhite();
             if (gote != null && !gote.isEmpty()) {
                 builder.append("WN:").append(gote).append('\n');
             }
@@ -96,9 +96,14 @@ public enum UsfFormat implements GameRecordFormat {
                 builder.append("GD:").append(date).append('\n');
             }
 
-            String venue = gameInformation.getVenue();
-            if (venue != null && !venue.isEmpty()) {
-                builder.append("GQ:").append(venue).append('\n');
+            String event = gameInformation.getEvent();
+            if (event != null && !event.isEmpty()) {
+                builder.append("GN:").append(event).append('\n');
+            }
+
+            String location = gameInformation.getLocation();
+            if (location != null && !location.isEmpty()) {
+                builder.append("GQ:").append(location).append('\n');
             }
         }
     }

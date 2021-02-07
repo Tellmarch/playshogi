@@ -27,13 +27,13 @@ public enum KifFormat implements GameRecordFormat {
     @Override
     public List<GameRecord> read(final LineReader lineReader) {
         String date = "1000-1-1";
-        String tournament = "UNKNOWN";
-        String opening = "UNKNOWN";
-        String place = "UNKNOWN";
-        String time = "UNKNOWN";
-        String handicap = "UNKNOWN";
-        String gote = "UNKNOWN";
-        String sente = "UNKNOWN";
+        String tournament = null;
+        String opening = null;
+        String place = null;
+        String time = null;
+        String handicap = null;
+        String gote = null;
+        String sente = null;
 
         ShogiPosition startingPosition = null;
 
@@ -254,9 +254,11 @@ public enum KifFormat implements GameRecordFormat {
 
         gameNavigation.moveToStart();
         GameInformation gameInformation = new GameInformation();
-        gameInformation.setSente(sente);
-        gameInformation.setGote(gote);
-        gameInformation.setVenue(place);
+        gameInformation.setBlack(sente);
+        gameInformation.setWhite(gote);
+        gameInformation.setLocation(place);
+        gameInformation.setEvent(tournament);
+        gameInformation.setOpening(opening);
         gameInformation.setDate(date);
         return Arrays.asList(new GameRecord(gameInformation, gameTree, gameResult));
     }

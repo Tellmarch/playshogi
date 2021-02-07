@@ -140,7 +140,7 @@ public class SaveKifuPanel extends Composite {
 
     private String getDefaultName(final GameRecord gameRecord) {
         GameInformation info = gameRecord.getGameInformation();
-        String name = info.getVenue() + " - " + info.getSente() + " - " + info.getGote() + " - " + info.getDate();
+        String name = info.getLocation() + " - " + info.getBlack() + " - " + info.getWhite() + " - " + info.getDate();
         return name.length() <= 45 ? name : name.substring(0, 45);
     }
 

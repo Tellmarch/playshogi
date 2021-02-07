@@ -1,5 +1,6 @@
 package com.playshogi.library.shogi.models.record;
 
+import com.playshogi.library.shogi.models.Player;
 import com.playshogi.library.shogi.models.decorations.Arrow;
 import com.playshogi.library.shogi.models.decorations.BoardDecorations;
 import com.playshogi.library.shogi.models.decorations.Circle;
@@ -32,6 +33,10 @@ public class GameNavigation {
 
     public Node getCurrentNode() {
         return currentNode;
+    }
+
+    public Player getPlayerToMove() {
+        return getPosition().getPlayerToMove();
     }
 
     public Move getCurrentMove() {

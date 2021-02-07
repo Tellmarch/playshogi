@@ -65,16 +65,19 @@ class UsfGameParser {
 
         if (line.startsWith("BN:")) {
             String blackName = line.substring(3);
-            gameInformation.setSente(blackName);
+            gameInformation.setBlack(blackName);
         } else if (line.startsWith("WN:")) {
             String whiteName = line.substring(3);
-            gameInformation.setGote(whiteName);
+            gameInformation.setWhite(whiteName);
         } else if (line.startsWith("GD:")) {
             String gameDate = line.substring(3);
             gameInformation.setDate(gameDate);
+        } else if (line.startsWith("GN:")) {
+            String gameEvent = line.substring(3);
+            gameInformation.setEvent(gameEvent);
         } else if (line.startsWith("GQ:")) {
-            String gameVenue = line.substring(3);
-            gameInformation.setVenue(gameVenue);
+            String gameSource = line.substring(3);
+            gameInformation.setLocation(gameSource);
         } else {
             System.out.println("Ignoring game tag: " + line);
         }

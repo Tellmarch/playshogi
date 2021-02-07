@@ -357,8 +357,8 @@ public class GameSetRepository {
         GameRecord gameRecord = kifu.getKifu();
         String gameName = kifu.getName();
 
-        int gameId = gameRepository.saveGame(kifuId, null, null, gameRecord.getGameInformation().getSente(),
-                gameRecord.getGameInformation().getGote(),
+        int gameId = gameRepository.saveGame(kifuId, null, null, gameRecord.getGameInformation().getBlack(),
+                gameRecord.getGameInformation().getWhite(),
                 parseDate(gameRecord.getGameInformation().getDate()), venueId, gameName);
 
         addGameSetGameRecord(gameSetId, gameId);

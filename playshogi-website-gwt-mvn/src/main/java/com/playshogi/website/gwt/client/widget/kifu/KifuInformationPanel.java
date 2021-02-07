@@ -22,7 +22,7 @@ public class KifuInformationPanel extends Composite {
     private final TextBox senteTextBox;
     private final TextBox goteTextBox;
     private final TextBox dateTextBox;
-    private final TextBox venueTextBox;
+    private final TextBox eventTextBox;
 
     public KifuInformationPanel() {
         FlowPanel verticalPanel = new FlowPanel();
@@ -31,17 +31,17 @@ public class KifuInformationPanel extends Composite {
         grid.setHTML(0, 0, "Sente:");
         grid.setHTML(1, 0, "Gote:");
         grid.setHTML(2, 0, "Date:");
-        grid.setHTML(3, 0, "Venue:");
+        grid.setHTML(3, 0, "Event:");
 
         senteTextBox = createTextBox();
         goteTextBox = createTextBox();
         dateTextBox = createTextBox();
-        venueTextBox = createTextBox();
+        eventTextBox = createTextBox();
 
         grid.setWidget(0, 1, senteTextBox);
         grid.setWidget(1, 1, goteTextBox);
         grid.setWidget(2, 1, dateTextBox);
-        grid.setWidget(3, 1, venueTextBox);
+        grid.setWidget(3, 1, eventTextBox);
 
         verticalPanel.add(grid);
 
@@ -69,19 +69,19 @@ public class KifuInformationPanel extends Composite {
     private void refreshInformation(final GameInformation gameInformation) {
         GWT.log("Displaying game information: " + gameInformation);
         if (gameInformation != null) {
-            senteTextBox.setText(gameInformation.getSente());
-            goteTextBox.setText(gameInformation.getGote());
+            senteTextBox.setText(gameInformation.getBlack());
+            goteTextBox.setText(gameInformation.getWhite());
             dateTextBox.setText(gameInformation.getDate());
-            venueTextBox.setText(gameInformation.getVenue());
+            eventTextBox.setText(gameInformation.getEvent());
         }
     }
 
     public GameInformation getGameInformation() {
         GameInformation info = new GameInformation();
-        info.setSente(senteTextBox.getText());
-        info.setGote(goteTextBox.getText());
+        info.setBlack(senteTextBox.getText());
+        info.setWhite(goteTextBox.getText());
         info.setDate(dateTextBox.getText());
-        info.setVenue(venueTextBox.getText());
+        info.setEvent(eventTextBox.getText());
         return info;
     }
 }

@@ -124,13 +124,13 @@ public enum PsnFormat implements GameRecordFormat {
                 String value = split[1].substring(1, split[1].length() - 2);
 
                 if ("Black".equalsIgnoreCase(key) || "Sente".equalsIgnoreCase(key)) {
-                    gameInformation.setSente(value);
+                    gameInformation.setBlack(value);
                 } else if ("White".equalsIgnoreCase(key) || "Gote".equalsIgnoreCase(key)) {
-                    gameInformation.setGote(value);
+                    gameInformation.setWhite(value);
                 } else if ("Date".equalsIgnoreCase(key)) {
                     gameInformation.setDate(value);
                 } else if ("Event".equalsIgnoreCase(key)) {
-                    gameInformation.setVenue(value);
+                    gameInformation.setEvent(value);
                 }
             }
         }

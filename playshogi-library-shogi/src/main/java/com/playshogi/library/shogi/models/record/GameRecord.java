@@ -31,7 +31,9 @@ public class GameRecord {
 
     @Override
     public String toString() {
-        return "GameRecord [gameInformation=" + gameInformation + "]";
+        return "GameRecord{" +
+                "gameInformation=" + gameInformation +
+                ", gameResult=" + gameResult +
+                '}';
     }
-
 }
