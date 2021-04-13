@@ -17,9 +17,7 @@ import com.playshogi.website.gwt.client.events.gametree.MoveSelectedEvent;
 import com.playshogi.website.gwt.client.events.gametree.PositionChangedEvent;
 import com.playshogi.website.gwt.client.events.kifu.KifuEvaluationEvent;
 import com.playshogi.website.gwt.client.events.kifu.RequestKifuEvaluationEvent;
-import com.playshogi.website.gwt.shared.models.AnalysisRequestStatus;
-import com.playshogi.website.gwt.shared.models.PositionEvaluationDetails;
-import com.playshogi.website.gwt.shared.models.PrincipalVariationDetails;
+import com.playshogi.website.gwt.shared.models.*;
 
 public class KifuEvaluationChartPanel extends Composite {
 
@@ -32,6 +30,7 @@ public class KifuEvaluationChartPanel extends Composite {
     private VerticalPanel panel;
     private LineChart chart;
     private final HTML statusHTML;
+    private final HTML insightsHTML;
     private String kifuId;
     private PositionEvaluationDetails[] positionEvaluationDetails;
 
@@ -50,6 +49,9 @@ public class KifuEvaluationChartPanel extends Composite {
         flowPanel.add(statusHTML);
 
         panel.add(flowPanel);
+
+        insightsHTML = new HTML("");
+        insightsHTML.setStyleName("insights-html");
 
         initialize();
         initWidget(panel);
@@ -71,6 +73,7 @@ public class KifuEvaluationChartPanel extends Composite {
                 }
             });
             panel.add(chart);
+            panel.add(insightsHTML);
         });
     }
 
@@ -86,10 +89,12 @@ public class KifuEvaluationChartPanel extends Composite {
             case IN_PROGRESS:
                 statusHTML.setHTML("Analyzing... " + event.getPositionEvaluationDetails().length);
                 drawEvaluation(event);
+                summarizeInsights(event.getResult().getGameInsightsDetails());
                 break;
             case COMPLETED:
                 statusHTML.setHTML("Analysis complete!");
                 drawEvaluation(event);
+                summarizeInsights(event.getResult().getGameInsightsDetails());
                 break;
             case QUEUED:
                 statusHTML.setHTML("Queued in position " + event.getQueuePosition());
@@ -108,6 +113,38 @@ public class KifuEvaluationChartPanel extends Composite {
                 statusHTML.setHTML("Analysis: unexpected error.");
                 break;
         }
+    }
+
+    private void summarizeInsights(GameInsightsDetails details) {
+
+        insightsHTML.setHTML("<br/>Black average centipawn loss: " + details.getBlackAvgCentipawnLoss() + "<br/>" +
+                getMistakesSummary(details.getBlackMistakes()) +
+                "<br/>White average centipawn loss: " + details.getWhiteAvgCentipawnLoss() + "<br/>" +
+                getMistakesSummary(details.getWhiteMistakes()));
+    }
+
+    private String getMistakesSummary(final MistakeDetails[] details) {
+        int imprecisions = 0;
+        int mistakes = 0;
+        int blunders = 0;
+
+        for (MistakeDetails mistake : details) {
+            switch (mistake.getType()) {
+                case IMPRECISION:
+                    imprecisions++;
+                    break;
+                case MISTAKE:
+                    mistakes++;
+                    break;
+                case BLUNDER:
+                    blunders++;
+                    break;
+            }
+        }
+
+        return imprecisions + " imprecisions<br/>" +
+                mistakes + " mistakes<br/>" +
+                blunders + " blunders<br/>";
     }
 
     private void drawEvaluation(KifuEvaluationEvent event) {
