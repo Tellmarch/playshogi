@@ -1,13 +1,11 @@
 package com.playshogi.library.shogi.engine;
 
 import com.playshogi.library.shogi.models.formats.usf.UsfFormat;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-@Ignore
 public class USIConnectorTest {
 
     @Test

@@ -20,6 +20,10 @@ public class GameNavigation {
     private ShogiPosition position;
     private final ShogiRulesEngine gameRulesEngine;
 
+    public GameNavigation(final GameTree gameTree) {
+        this(new ShogiRulesEngine(), gameTree);
+    }
+
     public GameNavigation(final ShogiRulesEngine gameRulesEngine, final GameTree gameTree) {
         this.gameRulesEngine = gameRulesEngine;
         this.gameTree = gameTree;
@@ -77,6 +81,10 @@ public class GameNavigation {
         } else {
             return null;
         }
+    }
+
+    public Move getPreviousMove() {
+        return currentNode.getMove();
     }
 
     public void moveForward() {

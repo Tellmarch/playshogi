@@ -10,6 +10,7 @@ import com.playshogi.library.shogi.rules.ShogiRulesEngine;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
 import java.util.logging.Level;
@@ -21,7 +22,7 @@ public class USIConnector {
 
     private final EngineConfiguration engineConfiguration;
 
-    private Scanner input;
+    private UsiLineReader input;
     private PrintWriter output;
     private boolean connected = false;
     private Process process;
@@ -31,6 +32,7 @@ public class USIConnector {
     }
 
     public boolean connect() {
+        LOGGER.log(Level.INFO, "Connecting to the engine: " + engineConfiguration);
         if (connected) {
             disconnect();
         }
@@ -40,19 +42,19 @@ public class USIConnector {
             processBuilder.directory(engineConfiguration.getPath());
             process = processBuilder.start();
 
-            input = new Scanner(new InputStreamReader(process.getInputStream()));
+            input = new UsiLineReader(new Scanner(new InputStreamReader(process.getInputStream())));
             output = new PrintWriter(new OutputStreamWriter(process.getOutputStream()));
 
-            sendCommand(output, "usi");
-            readUntil(input, "usiok");
+            sendCommand("usi");
+            readUntil("usiok");
 
             for (String option : engineConfiguration.getOptions()) {
-                sendCommand(output, option);
+                sendCommand(option);
             }
 
-            sendCommand(output, "isready");
-            readUntil(input, "readyok");
-            sendCommand(output, "usinewgame");
+            sendCommand("isready");
+            readUntil("readyok");
+            sendCommand("usinewgame");
             connected = true;
         } catch (IOException ex) {
             LOGGER.log(Level.SEVERE, "Error connecting to the engine", ex);
@@ -66,7 +68,7 @@ public class USIConnector {
             return;
         }
         try {
-            sendCommand(output, "quit");
+            sendCommand("quit");
         } catch (Exception ignored) {
         }
         if (process != null && process.isAlive()) {
@@ -100,6 +102,12 @@ public class USIConnector {
         }
     }
 
+    public List<PositionEvaluation> analyzeKifu(final GameTree gameTree, final int timeMs) {
+        ArrayList<PositionEvaluation> evaluations = new ArrayList<>();
+        analyzeKifu(gameTree, timeMs, evaluations::add);
+        return evaluations;
+    }
+
     public PositionEvaluation analyseTsume(final String sfen) {
         if (!connected) {
             throw new IllegalStateException("Engine is not connected");
@@ -107,15 +115,13 @@ public class USIConnector {
 
         LOGGER.log(Level.INFO, "Looking for mate: " + sfen);
 
-        sendCommand(output, "position sfen " + sfen + " 0");
-        sendCommand(output, "go mate 2000");
+        sendCommand("position sfen " + sfen + " 0");
+        sendCommand("go mate 2000");
 
-        return readTsumeResult(input, sfen);
+        return readTsumeResult(sfen);
     }
 
-    private PositionEvaluation readTsumeResult(final Scanner input, final String sfen) {
-        List<PrincipalVariation> principalVariationHistory = new ArrayList<>();
-
+    private PositionEvaluation readTsumeResult(final String sfen) {
         String nextLine;
         do {
             nextLine = input.nextLine();
@@ -125,7 +131,7 @@ public class USIConnector {
         String[] split = nextLine.split(" ");
 
         if (split[1].equals("nomate") || split[1].equals("timeout")) {
-            return new PositionEvaluation(sfen, new PrincipalVariation[]{}, null, null);
+            return new PositionEvaluation(sfen, Collections.emptyList(), null, null);
         } else {
             Player player = SfenConverter.extractPlayer(sfen);
             StringBuilder variation = new StringBuilder();
@@ -134,12 +140,12 @@ public class USIConnector {
                 player = player.opposite();
             }
             int numMoves = split.length - 1;
-            PrincipalVariation principalVariation = new PrincipalVariation();
-            principalVariation.setForcedMate(true);
-            principalVariation.setNumMovesBeforeMate(numMoves);
-            principalVariation.setPrincipalVariation(variation.toString());
+            Variation principalVariation = new Variation();
+            principalVariation.setScore(PositionScore.mateIn(numMoves));
+            principalVariation.setUsf(variation.toString());
             String bestMove = UsiMoveConverter.fromPsnToUsfSTring(split[1], sfen);
-            return new PositionEvaluation(sfen, new PrincipalVariation[]{principalVariation}, bestMove, null);
+            return new PositionEvaluation(sfen, Collections.singletonList(new MultiVariations(principalVariation)),
+                    bestMove, null);
         }
     }
 
@@ -151,106 +157,20 @@ public class USIConnector {
 
         LOGGER.log(Level.INFO, "Evaluation position: " + sfen);
 
-        sendCommand(output, "position sfen " + sfen + " 0");
-        sendCommand(output, "go btime 0 wtime 0 byoyomi " + timeMs);
+        sendCommand("position sfen " + sfen + " 0");
+        sendCommand("go btime 0 wtime 0 byoyomi " + timeMs);
 
-        return readEvaluation(input, sfen);
+        return UsiEvaluationReader.readEvaluation(input, sfen, engineConfiguration.getMultiPV());
     }
 
-    private PositionEvaluation readEvaluation(final Scanner input, final String sfen) {
-        List<PrincipalVariation> principalVariationHistory = new ArrayList<>();
 
-        String nextLine;
-        do {
-            nextLine = input.nextLine();
-            System.out.println("<< " + nextLine);
-
-            if (nextLine.startsWith("bestmove")) {
-                break;
-            }
-
-            principalVariationHistory.add(parsePrincipalVariation(nextLine, sfen));
-        } while (true);
-
-        String[] split = nextLine.split(" ");
-        if (!"bestmove".equals(split[0])) {
-            LOGGER.log(Level.SEVERE, "Unexpected bestmove line: " + nextLine);
-        }
-        String bestMove = UsiMoveConverter.fromPsnToUsfSTring(split[1], sfen);
-        String ponderMove = "";
-        if (split.length == 4) {
-            ponderMove = UsiMoveConverter.fromPsnToUsfSTring(split[3], sfen);
-        }
-
-        return new PositionEvaluation(sfen, principalVariationHistory.toArray(new PrincipalVariation[0]), bestMove,
-                ponderMove);
-    }
-
-    private PrincipalVariation parsePrincipalVariation(final String line, final String sfen) {
-        PrincipalVariation principalVariation = new PrincipalVariation();
-        String[] split = line.split(" ");
-        for (int i = 0; i < split.length; i++) {
-            switch (split[i]) {
-                case "info":
-                case "lowerbound":
-                case "upperbound":
-                    continue;
-                case "depth":
-                    principalVariation.setDepth(Integer.parseInt(split[++i]));
-                    continue;
-                case "seldepth":
-                    principalVariation.setSeldepth(Integer.parseInt(split[++i]));
-                    continue;
-                case "score":
-                    String type = split[++i];
-                    if ("cp".equals(type)) {
-                        principalVariation.setForcedMate(false);
-                        principalVariation.setEvaluationCP(Integer.parseInt(split[++i]));
-                    } else if ("mate".equals(type)) {
-                        principalVariation.setForcedMate(true);
-                        principalVariation.setNumMovesBeforeMate(Integer.parseInt(split[++i]));
-                    } else {
-                        throw new IllegalArgumentException("Could not parse line: " + line);
-                    }
-                    continue;
-                case "time":
-                    principalVariation.setTimeMs(Integer.parseInt(split[++i]));
-                    continue;
-                case "nodes":
-                    principalVariation.setNodes(Long.parseLong(split[++i]));
-                    continue;
-                case "nps":
-                case "hashfull":
-                case "multipv":
-                case "currmove":
-                case "currmovenumber":
-                case "cpuload":
-                case "string":
-                    ++i;
-                    continue;
-                case "pv":
-                    Player player = SfenConverter.extractPlayer(sfen);
-                    StringBuilder variation = new StringBuilder();
-                    for (int j = i + 1; j < split.length; j++) {
-                        variation.append(UsiMoveConverter.fromPsnToUsfSTring(split[j], player)).append(" ");
-                        player = player.opposite();
-                    }
-                    principalVariation.setPrincipalVariation(variation.toString());
-                    return principalVariation;
-                default:
-                    throw new IllegalArgumentException("Could not parse line: " + line + " at token " + split[i]);
-            }
-        }
-        return principalVariation;
-    }
-
-    private void sendCommand(PrintWriter output, String command) {
+    private void sendCommand(String command) {
         System.out.println(">> " + command);
         output.println(command);
         output.flush();
     }
 
-    private void readUntil(Scanner input, String string) {
+    private void readUntil(String string) {
         String nextLine;
         do {
             nextLine = input.nextLine();

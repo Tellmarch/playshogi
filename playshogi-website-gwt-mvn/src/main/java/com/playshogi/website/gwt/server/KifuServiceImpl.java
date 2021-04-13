@@ -16,7 +16,6 @@ import com.playshogi.website.gwt.shared.services.KifuService;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.logging.Level;
@@ -315,20 +314,20 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
         details.setSfen(evaluation.getSfen());
         details.setBestMove(evaluation.getBestMove());
         details.setPonderMove(evaluation.getPonderMove());
-        details.setPrincipalVariationHistory(Arrays.stream(evaluation.getPrincipalVariationHistory()).map(
+        details.setPrincipalVariationHistory(evaluation.getPrincipalVariationsHistory().stream().map(
                 this::convertPrincipalVariation).toArray(PrincipalVariationDetails[]::new));
         return details;
     }
 
-    private PrincipalVariationDetails convertPrincipalVariation(final PrincipalVariation principalVariation) {
+    private PrincipalVariationDetails convertPrincipalVariation(final Variation principalVariation) {
         PrincipalVariationDetails details = new PrincipalVariationDetails();
         details.setDepth(principalVariation.getDepth());
-        details.setEvaluationCP(principalVariation.getEvaluationCP());
-        details.setForcedMate(principalVariation.isForcedMate());
+        details.setEvaluationCP(principalVariation.getScore().getEvaluationCP());
+        details.setForcedMate(principalVariation.getScore().isForcedMate());
         details.setNodes(principalVariation.getNodes());
-        details.setNumMovesBeforeMate(principalVariation.getNumMovesBeforeMate());
+        details.setNumMovesBeforeMate(principalVariation.getScore().getNumMovesBeforeMate());
         details.setSeldepth(principalVariation.getSeldepth());
-        details.setPrincipalVariation(principalVariation.getPrincipalVariation());
+        details.setPrincipalVariation(principalVariation.getUsf());
         return details;
     }
 
