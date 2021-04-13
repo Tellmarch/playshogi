@@ -1,6 +1,7 @@
 package com.playshogi.website.gwt.client.widget.engine;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
@@ -27,13 +28,16 @@ public class KifuEvaluationChartPanel extends Composite {
     private final MyEventBinder eventBinder = GWT.create(MyEventBinder.class);
 
     private EventBus eventBus;
-    private VerticalPanel panel;
+    private final VerticalPanel panel;
     private LineChart chart;
     private final HTML statusHTML;
     private final HTML insightsHTML;
+    private final HTML mistakesHTML;
     private String kifuId;
     private PositionEvaluationDetails[] positionEvaluationDetails;
-
+    private GameInsightsDetails gameInsightsDetails;
+    private int mistakeIndex = -1;
+    private boolean blackMistakes = true;
 
     public KifuEvaluationChartPanel() {
         panel = new VerticalPanel();
@@ -52,6 +56,9 @@ public class KifuEvaluationChartPanel extends Composite {
 
         insightsHTML = new HTML("");
         insightsHTML.setStyleName("insights-html");
+
+        mistakesHTML = new HTML("");
+        mistakesHTML.setStyleName("mistakes-html");
 
         initialize();
         initWidget(panel);
@@ -74,7 +81,40 @@ public class KifuEvaluationChartPanel extends Composite {
             });
             panel.add(chart);
             panel.add(insightsHTML);
+            panel.add(new Button("Review mistakes", (ClickHandler) clickEvent -> reviewMistakes()));
+            panel.add(mistakesHTML);
         });
+    }
+
+    private void reviewMistakes() {
+        MistakeDetails mistake;
+        if (blackMistakes) {
+            mistakeIndex++;
+            if (mistakeIndex > gameInsightsDetails.getBlackMistakes().length - 1) {
+                mistakeIndex = 0;
+                blackMistakes = false;
+                mistake = gameInsightsDetails.getWhiteMistakes()[0];
+            } else {
+                mistake = gameInsightsDetails.getBlackMistakes()[mistakeIndex];
+            }
+        } else {
+            mistakeIndex++;
+            if (mistakeIndex > gameInsightsDetails.getWhiteMistakes().length - 1) {
+                mistakeIndex = 0;
+                blackMistakes = true;
+                mistake = gameInsightsDetails.getBlackMistakes()[0];
+            } else {
+                mistake = gameInsightsDetails.getWhiteMistakes()[mistakeIndex];
+            }
+        }
+        GWT.log("Going to study mistake: " + mistake);
+        eventBus.fireEvent(new MoveSelectedEvent(mistake.getMoveCount() - 1));
+        mistakesHTML.setHTML("<br/>" + mistake.getType() + " - At move " + mistake.getMoveCount() + ". " + (blackMistakes ? "Black" : "White") +
+                " played " + mistake.getMovePlayed() + ", " +
+                "losing " + (mistake.getScoreAfterMove().getEvaluationCP() + mistake.getScoreBeforeMove().getEvaluationCP())
+                + " centipawns.<br/> Instead, it would have been better to play " + mistake.getComputerMove() + ".<br" +
+                "/>");
+
     }
 
     @EventHandler
@@ -116,11 +156,11 @@ public class KifuEvaluationChartPanel extends Composite {
     }
 
     private void summarizeInsights(GameInsightsDetails details) {
-
+        this.gameInsightsDetails = details;
         insightsHTML.setHTML("<br/>Black average centipawn loss: " + details.getBlackAvgCentipawnLoss() + "<br/>" +
                 getMistakesSummary(details.getBlackMistakes()) +
                 "<br/>White average centipawn loss: " + details.getWhiteAvgCentipawnLoss() + "<br/>" +
-                getMistakesSummary(details.getWhiteMistakes()));
+                getMistakesSummary(details.getWhiteMistakes()) + "<br/>");
     }
 
     private String getMistakesSummary(final MistakeDetails[] details) {
@@ -159,9 +199,9 @@ public class KifuEvaluationChartPanel extends Composite {
                 dataTable.setValue(i, 0, i);
                 PrincipalVariationDetails latest = history[history.length - 1];
                 int graphValue = i % 2 == 0 ? latest.getEvaluationCP() : -latest.getEvaluationCP();
-                graphValue = Math.min(1000, Math.max(-1000, graphValue));
+                graphValue = Math.min(2000, Math.max(-2000, graphValue));
                 if (latest.isForcedMate()) {
-                    graphValue = (latest.getNumMovesBeforeMate() < 0) == (i % 2 == 0) ? -1000 : 1000;
+                    graphValue = (latest.getNumMovesBeforeMate() < 0) == (i % 2 == 0) ? -2000 : 2000;
                 }
                 dataTable.setValue(i, 1, graphValue);
             }
