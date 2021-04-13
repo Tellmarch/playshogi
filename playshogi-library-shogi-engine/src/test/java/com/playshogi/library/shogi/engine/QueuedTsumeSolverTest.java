@@ -1,11 +1,13 @@
 package com.playshogi.library.shogi.engine;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.ArrayList;
 
 import static org.junit.Assert.assertEquals;
 
+@Ignore
 public class QueuedTsumeSolverTest {
 
     @Test

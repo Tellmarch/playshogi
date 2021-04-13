@@ -44,10 +44,9 @@ public class UsiEvaluationReaderTest {
                 "6394 pv 7g7f 8c8d 8h7g 3c3d 7i8h 4a3b 2g2f 2b7g+ 8h7g 3a2b 3g3f 2b3c 3i4h 7c7d 2f2e 7a6b 4h3g 6b7c " +
                 "3g4f 8d8e 1g1f 1c1d 6g6f 7c6d 6i7h 7d7e 7f7e 6d7e P*7d";
         Variation variation = UsiEvaluationReader.parsePrincipalVariation(info, sfen);
-        assertEquals(variation.toString(), "Variation{forcedMate=false, numMovesBeforeMate=0, evaluationCP=66, " +
-                "depth=26, seldepth=32, nodes=32090761, usf='7g7f 8c8d 8h7g 3c3d 7i8h 4a3b 2g2f 2b7G " +
-                "8h7g 3a2b 3g3f 2b3c 3i4h 7c7d 2f2e 7a6b 4h3g 6b7c 3g4f 8d8e 1g1f 1c1d 6g6f 7c6d 6i7h 7d7e 7f7e 6d7e " +
-                "P*7d ', timeMs=6394}");
+        assertEquals("Variation{score=66, depth=26, seldepth=32, nodes=32090761, usf='7g7f 8c8d 8h7g 3c3d 7i8h 4a3b " +
+                "2g2f 2b7G 8h7g 3a2b 3g3f 2b3c 3i4h 7c7d 2f2e 7a6b 4h3g 6b7c 3g4f 8d8e 1g1f 1c1d 6g6f 7c6d 6i7h 7d7e " +
+                "7f7e 6d7e P*7d ', timeMs=6394}", variation.toString());
 
     }
 }

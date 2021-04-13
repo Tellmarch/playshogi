@@ -198,8 +198,8 @@ public class ViewKifuActivity extends MyAbstractActivity {
                     moveCount)), false);
         }
 
-        if (analysisResult != null && analysisResult.getDetails().length > moveCount) {
-            PositionEvaluationDetails detail = analysisResult.getDetails()[moveCount];
+        if (analysisResult != null && analysisResult.getEvaluationDetails().length > moveCount) {
+            PositionEvaluationDetails detail = analysisResult.getEvaluationDetails()[moveCount];
             Scheduler.get().scheduleDeferred(() -> eventBus.fireEvent(new PositionEvaluationEvent(detail)));
         }
     }

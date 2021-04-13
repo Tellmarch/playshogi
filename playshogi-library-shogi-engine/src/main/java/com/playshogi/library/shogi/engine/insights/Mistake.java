@@ -1,6 +1,6 @@
 package com.playshogi.library.shogi.engine.insights;
 
-import com.playshogi.library.shogi.engine.PositionScore;
+import com.playshogi.library.shogi.models.position.PositionScore;
 
 public class Mistake {
     public enum Type {

@@ -5,8 +5,11 @@ import com.playshogi.library.database.*;
 import com.playshogi.library.database.models.*;
 import com.playshogi.library.database.models.PersistentKifu.KifuType;
 import com.playshogi.library.shogi.engine.*;
+import com.playshogi.library.shogi.engine.insights.GameInsights;
+import com.playshogi.library.shogi.engine.insights.Mistake;
 import com.playshogi.library.shogi.models.formats.sfen.SfenConverter;
 import com.playshogi.library.shogi.models.formats.usf.UsfFormat;
+import com.playshogi.library.shogi.models.position.PositionScore;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.library.shogi.models.record.GameCollection;
 import com.playshogi.library.shogi.models.record.GameInformation;
@@ -319,6 +322,40 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
         return details;
     }
 
+    private GameInsightsDetails convertGameInsights(final GameInsights insights) {
+        if (insights == null) {
+            return null;
+        }
+        GameInsightsDetails details = new GameInsightsDetails();
+        details.setBlackAvgCentipawnLoss(insights.getBlackAccuracy().getAverageCentipawnsLost());
+        details.setWhiteAvgCentipawnLoss(insights.getWhiteAccuracy().getAverageCentipawnsLost());
+        details.setBlackMistakes(insights.getBlackAccuracy().getMistakes().stream()
+                .map(this::convertMistake).toArray(MistakeDetails[]::new));
+        details.setWhiteMistakes(insights.getWhiteAccuracy().getMistakes().stream()
+                .map(this::convertMistake).toArray(MistakeDetails[]::new));
+        return details;
+    }
+
+    private MistakeDetails convertMistake(final Mistake mistake) {
+        MistakeDetails details = new MistakeDetails();
+        details.setComputerMove(mistake.getComputerMove());
+        details.setMoveCount(mistake.getMoveCount());
+        details.setMovePlayed(mistake.getMovePlayed());
+        details.setPositionSfen(mistake.getPositionSfen());
+        details.setScoreAfterMove(convertScore(mistake.getScoreAfterMove()));
+        details.setScoreBeforeMove(convertScore(mistake.getScoreBeforeMove()));
+        details.setType(MistakeDetails.Type.valueOf(mistake.getType().name()));
+        return details;
+    }
+
+    private PositionScoreDetails convertScore(final PositionScore score) {
+        PositionScoreDetails details = new PositionScoreDetails();
+        details.setEvaluationCP(score.getEvaluationCP());
+        details.setForcedMate(score.isForcedMate());
+        details.setNumMovesBeforeMate(score.getNumMovesBeforeMate());
+        return details;
+    }
+
     private PrincipalVariationDetails convertPrincipalVariation(final Variation principalVariation) {
         PrincipalVariationDetails details = new PrincipalVariationDetails();
         details.setDepth(principalVariation.getDepth());
@@ -392,8 +429,9 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
         List<PositionEvaluation> evaluation = queuedKifuAnalyzer.getEvaluation(kifuUsf);
 
         AnalysisRequestResult result = new AnalysisRequestResult();
-        result.setDetails(evaluation.stream().map(this::convertPositionEvaluation).toArray(PositionEvaluationDetails[]::new));
+        result.setEvaluationDetails(evaluation.stream().map(this::convertPositionEvaluation).toArray(PositionEvaluationDetails[]::new));
         result.setStatus(status == QueuedKifuAnalyzer.Status.IN_PROGRESS ? IN_PROGRESS : COMPLETED);
+        result.setGameInsightsDetails(convertGameInsights(queuedKifuAnalyzer.getInsights(kifuUsf)));
         return result;
     }
 

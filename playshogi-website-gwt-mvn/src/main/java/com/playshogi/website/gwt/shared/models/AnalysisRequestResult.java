@@ -5,7 +5,8 @@ import java.util.Arrays;
 
 public class AnalysisRequestResult implements Serializable {
     private AnalysisRequestStatus status = AnalysisRequestStatus.UNAVAILABLE;
-    private PositionEvaluationDetails[] details = null;
+    private PositionEvaluationDetails[] evaluationDetails = null;
+    private GameInsightsDetails gameInsightsDetails = null;
     private int queuePosition = 0;
 
     public AnalysisRequestResult() {
@@ -23,12 +24,12 @@ public class AnalysisRequestResult implements Serializable {
         this.status = status;
     }
 
-    public PositionEvaluationDetails[] getDetails() {
-        return details;
+    public PositionEvaluationDetails[] getEvaluationDetails() {
+        return evaluationDetails;
     }
 
-    public void setDetails(final PositionEvaluationDetails[] details) {
-        this.details = details;
+    public void setEvaluationDetails(final PositionEvaluationDetails[] evaluationDetails) {
+        this.evaluationDetails = evaluationDetails;
     }
 
     public int getQueuePosition() {
@@ -39,11 +40,20 @@ public class AnalysisRequestResult implements Serializable {
         this.queuePosition = queuePosition;
     }
 
+    public GameInsightsDetails getGameInsightsDetails() {
+        return gameInsightsDetails;
+    }
+
+    public void setGameInsightsDetails(final GameInsightsDetails gameInsightsDetails) {
+        this.gameInsightsDetails = gameInsightsDetails;
+    }
+
     @Override
     public String toString() {
         return "AnalysisRequestResult{" +
                 "status=" + status +
-                ", details=" + Arrays.toString(details) +
+                ", evaluationDetails=" + Arrays.toString(evaluationDetails) +
+                ", gameInsightsDetails=" + gameInsightsDetails +
                 ", queuePosition=" + queuePosition +
                 '}';
     }

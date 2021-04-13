@@ -1,4 +1,4 @@
-package com.playshogi.library.shogi.engine;
+package com.playshogi.library.shogi.models.position;
 
 public class PositionScore {
 

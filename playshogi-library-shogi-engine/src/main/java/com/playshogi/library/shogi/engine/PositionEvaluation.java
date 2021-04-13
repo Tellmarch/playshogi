@@ -1,5 +1,7 @@
 package com.playshogi.library.shogi.engine;
 
+import com.playshogi.library.shogi.models.position.PositionScore;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -49,6 +51,9 @@ public class PositionEvaluation {
     }
 
     public PositionScore getScore() {
+        if (variationsHistory.isEmpty()) {
+            return null;
+        }
         return getMainVariation().getScore();
     }
 

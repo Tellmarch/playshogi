@@ -1,5 +1,7 @@
 package com.playshogi.library.shogi.engine;
 
+import com.playshogi.library.shogi.models.position.PositionScore;
+
 public class Variation {
 
     private PositionScore score;

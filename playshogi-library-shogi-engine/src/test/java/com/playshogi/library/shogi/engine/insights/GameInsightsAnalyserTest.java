@@ -2,8 +2,10 @@ package com.playshogi.library.shogi.engine.insights;
 
 import com.playshogi.library.shogi.models.formats.usf.UsfFormat;
 import com.playshogi.library.shogi.models.record.GameRecord;
+import org.junit.Ignore;
 import org.junit.Test;
 
+@Ignore
 public class GameInsightsAnalyserTest {
 
     @Test

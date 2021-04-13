@@ -1,5 +1,7 @@
 package com.playshogi.library.shogi.engine;
 
+import com.playshogi.library.shogi.engine.insights.GameInsights;
+import com.playshogi.library.shogi.engine.insights.GameInsightsAnalyser;
 import com.playshogi.library.shogi.models.formats.usf.UsfFormat;
 import com.playshogi.library.shogi.models.record.GameRecord;
 
@@ -35,6 +37,7 @@ public class QueuedKifuAnalyzer {
     private volatile boolean shutdown = false;
 
     private final Map<String, List<PositionEvaluation>> kifuEvaluations = new ConcurrentHashMap<>();
+    private final Map<String, GameInsights> insights = new ConcurrentHashMap<>();
     private final Map<String, Status> kifuStatus = new ConcurrentHashMap<>();
 
     public QueuedKifuAnalyzer(final EngineConfiguration engineConfiguration) {
@@ -75,6 +78,10 @@ public class QueuedKifuAnalyzer {
         return kifuEvaluations.get(kifuUsf);
     }
 
+    public GameInsights getInsights(final String kifuUsf) {
+        return insights.get(kifuUsf);
+    }
+
     public int getQueuedPosition(final String kifuUsf) {
         return Arrays.asList(queue.toArray(new String[0])).indexOf(kifuUsf);
     }
@@ -94,7 +101,11 @@ public class QueuedKifuAnalyzer {
 
         try {
             usiConnector.analyzeKifu(gameRecord.getGameTree(), TIME_MS,
-                    evaluation -> kifuEvaluations.get(kifuUsf).add(evaluation));
+                    evaluation -> {
+                        kifuEvaluations.get(kifuUsf).add(evaluation);
+                        insights.put(kifuUsf, GameInsightsAnalyser.extractInsights(gameRecord,
+                                kifuEvaluations.get(kifuUsf)));
+                    });
         } catch (Exception ex) {
             LOGGER.log(Level.SEVERE, "Error getting computer game analysis", ex);
             usiConnector.disconnect();

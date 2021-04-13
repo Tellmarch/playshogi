@@ -19,7 +19,7 @@ public class KifuEvaluationEvent extends GenericEvent {
     }
 
     public PositionEvaluationDetails[] getPositionEvaluationDetails() {
-        return result.getDetails();
+        return result.getEvaluationDetails();
     }
 
     public AnalysisRequestStatus getStatus() {

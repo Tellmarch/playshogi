@@ -2,9 +2,9 @@ package com.playshogi.library.shogi.engine.insights;
 
 import com.playshogi.library.shogi.engine.EngineConfiguration;
 import com.playshogi.library.shogi.engine.PositionEvaluation;
-import com.playshogi.library.shogi.engine.PositionScore;
 import com.playshogi.library.shogi.engine.USIConnector;
 import com.playshogi.library.shogi.models.Player;
+import com.playshogi.library.shogi.models.position.PositionScore;
 import com.playshogi.library.shogi.models.record.GameNavigation;
 import com.playshogi.library.shogi.models.record.GameRecord;
 
@@ -32,7 +32,8 @@ public class GameInsightsAnalyser {
         return extractInsights(gameRecord, evaluations);
     }
 
-    private GameInsights extractInsights(final GameRecord gameRecord, final List<PositionEvaluation> evaluations) {
+    public static GameInsights extractInsights(final GameRecord gameRecord,
+                                               final List<PositionEvaluation> evaluations) {
         List<Mistake> blackMistakes = new ArrayList<>();
         List<Mistake> whiteMistakes = new ArrayList<>();
         int blackSum = 0;
@@ -77,8 +78,8 @@ public class GameInsightsAnalyser {
             previousEvaluation = evaluation;
         }
 
-        return new GameInsights(new PlayerAccuracy(blackSum / numBlackMoves, blackMistakes),
-                new PlayerAccuracy(whiteSum / numWhiteMoves, whiteMistakes));
+        return new GameInsights(new PlayerAccuracy(numBlackMoves == 0 ? 0 : blackSum / numBlackMoves, blackMistakes),
+                new PlayerAccuracy(numWhiteMoves == 0 ? 0 : whiteSum / numWhiteMoves, whiteMistakes));
     }
 
     private static int cpLoss(final PositionScore newScore, final PositionScore previousScore) {
