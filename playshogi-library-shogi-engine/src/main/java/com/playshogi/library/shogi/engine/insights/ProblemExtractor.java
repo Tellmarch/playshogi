@@ -86,4 +86,14 @@ public class ProblemExtractor {
                 "^*" + problem.getSfen() + ":" +
                 problem.getVariation().replaceAll(" ", "");
     }
+
+    public static String problemsToUSF(final List<ExtractedProblem> problems) {
+        StringBuilder result = new StringBuilder("USF:1.0\n");
+        for (ExtractedProblem problem : problems) {
+            result.append("^*").append(problem.getSfen()).append(":").append(problem.getVariation().replaceAll(" ",
+                    "")).append("\n");
+        }
+
+        return result.toString();
+    }
 }

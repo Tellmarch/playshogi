@@ -9,6 +9,7 @@ import org.junit.Test;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -45,9 +46,7 @@ public class ProblemExtractorTest {
             extractedProblems.addAll(problems);
         }
 
-        for (ExtractedProblem extractedProblem : extractedProblems) {
-            System.out.println(extractedProblem);
-        }
+        System.out.println(ProblemExtractor.problemsToUSF(extractedProblems));
 
 
     }
@@ -61,5 +60,18 @@ public class ProblemExtractorTest {
         assertEquals("USF:1.0\n" +
                 "^*lnSg4l/k2+B5/pp1+B3pp/2pp3g1/7s1/2PP4P/PPS1P4/3G1pP2/LN1KG2+rL w " +
                 "2N2Prs2p:6a6b7a6Bb*4g6i7h2i5iG*6is*6g7h6gg*5f6g7h4g6I6h6ig*6g7h8h5i6i", usf);
+    }
+
+    @Test
+    public void problemsToUSF() {
+        ExtractedProblem problem = new ExtractedProblem(ExtractedProblem.ProblemType.ESCAPE_MATE, "lnSg4l/k2" +
+                "+B5/pp1+B3pp/2pp3g1/7s1/2PP4P/PPS1P4/3G1pP2/LN1KG2+rL w 2N2Prs2p", "6a6b 7a6B b*4g 6i7h 2i5i G*6i " +
+                "s*6g 7h6g g*5f 6g7h 4g6I 6h6i g*6g 7h8h 5i6i ");
+        String usf = ProblemExtractor.problemsToUSF(Arrays.asList(problem, problem));
+        assertEquals("USF:1.0\n" +
+                "^*lnSg4l/k2+B5/pp1+B3pp/2pp3g1/7s1/2PP4P/PPS1P4/3G1pP2/LN1KG2+rL w " +
+                "2N2Prs2p:6a6b7a6Bb*4g6i7h2i5iG*6is*6g7h6gg*5f6g7h4g6I6h6ig*6g7h8h5i6i\n" +
+                "^*lnSg4l/k2+B5/pp1+B3pp/2pp3g1/7s1/2PP4P/PPS1P4/3G1pP2/LN1KG2+rL w " +
+                "2N2Prs2p:6a6b7a6Bb*4g6i7h2i5iG*6is*6g7h6gg*5f6g7h4g6I6h6ig*6g7h8h5i6i\n", usf);
     }
 }
