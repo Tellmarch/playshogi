@@ -3,6 +3,7 @@ package com.playshogi.library.shogi.engine.insights;
 import com.playshogi.library.shogi.files.GameRecordFileReader;
 import com.playshogi.library.shogi.models.formats.psn.PsnFormat;
 import com.playshogi.library.shogi.models.formats.usf.UsfFormat;
+import com.playshogi.library.shogi.models.record.GameInformation;
 import com.playshogi.library.shogi.models.record.GameRecord;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -20,14 +21,16 @@ public class ProblemExtractorTest {
 
     @Test
     public void extractProblems() {
-        String usf = "    USF:1.0\n" +
-                "^*:7g7f3c3d6g6f8c8d7i7h7a6b7h7g5c5d5g5f6a5b1g1f1c1d6i6h8d8e6h5g3a4b2h6h4b5c5i4h5a4b4h3h4b3b3h2h7c7d3i" +
-                "3h9c9d9g9f4a4b4g4f6b7c6f6e6c6d6e6d7c6d5g6f8b6bP*6e6d7c7f7e7d7e6f7ep*7d7e8ep*6d6e6d5c6dP" +
-                "*7e6d6e7e7d7c6" +
-                "d5f5e2b5e7g6f6e6f8h6f5e6f6h6fb*5e6f6ip*6g6i6gs*7f6g6i7f8eB*8d6b8bS*7ep*6cP" +
-                "*6e6d7e8d7e8e7d7e8f5e9I6e6d" +
-                "l*6e6i7ip*7e6d6C5b6c8f7g9i7g8i7g6e6H7i8ib*6g8i9i8b8GP*6d6c5cS*6c8g8h6c7D8h9i6d6C6g4I6c5c4i3i2h1h" +
-                "s*1gRSGN\n";
+        String usf = "USF:1.0\n" +
+                "^*:7g7f3c3d2g2f2b8H7i8h4a3b4i5h3a4bB" +
+                "*4e7a6b4e3d4c4d6g6f4b4c3d7h6c6d8h7g6b6c2f2e3b3c3i3h4c3d4g4f8b4b3h4g4d4e4f4e3d4e2e2dp*4f4g3h3c2dP" +
+                "*4h2a3c6i6h5a6b3h2g6b7b1g1f4e3d5i6ib*4g4h4g4f4G5h5ip*3hB*3a4b4f2g3f4g3g2i3g4f3f2h3hs*4gP" +
+                "*3i4g3H3i3h3f2f3a5C2f2I7h5f7c7dP*2e3c2e3g2e3d2eN*5en*5a5e6C5a6c5f4en*7aS*5d7b8b5d6C7a6c4e6Cp*4hS" +
+                "*7a8b9b5c6b6a6b6c6b2i5i6i5ir*4i5i5hb*3fP*4gg*5i5h6g3f4e5g5fRSGN\n" +
+                "BN:AAA aaa\n" +
+                "WN:BBB bbb\n" +
+                "GD:21/07/2013\n" +
+                "GQ:ESC/WOSC 2013\n";
         GameRecord gameRecord = UsfFormat.INSTANCE.readSingle(usf);
         List<ExtractedProblem> problems = new ProblemExtractor().extractProblems(gameRecord);
         System.out.println(problems);
@@ -55,25 +58,49 @@ public class ProblemExtractorTest {
 
     @Test
     public void problemToUSF() {
-        ExtractedProblem problem = new ExtractedProblem(ExtractedProblem.ProblemType.ESCAPE_MATE, "lnSg4l/k2" +
-                "+B5/pp1+B3pp/2pp3g1/7s1/2PP4P/PPS1P4/3G1pP2/LN1KG2+rL w 2N2Prs2p", "6a6b 7a6B b*4g 6i7h 2i5i G*6i " +
-                "s*6g 7h6g g*5f 6g7h 4g6I 6h6i g*6g 7h8h 5i6i ");
+        GameInformation gameInformation = new GameInformation();
+        gameInformation.setBlack("AAA aaa");
+        gameInformation.setWhite("BBB bbb");
+
+        ExtractedProblem problem = new ExtractedProblem(ExtractedProblem.ProblemType.WINNING_OR_LOSING, "lnS5l/k2+B5" +
+                "/pp5pp/2pp3g1/7s1/2PP4P/PPS1P4/3G1pP2/LN2K3L w RG2N2Prbgs2p", "r*2i 5i4h p*4g 4h4g 2i4I R*4h b*3f " +
+                "4g5f s*4g 5f6g 3f4e G*5f 4g5F 5g5f 4i4h 7f7e r*5i 6g7f 4e5d N*6e ", "6i5i", gameInformation);
         String usf = ProblemExtractor.problemToUSF(problem);
-        assertEquals("USF:1.0\n" +
-                "^*lnSg4l/k2+B5/pp1+B3pp/2pp3g1/7s1/2PP4P/PPS1P4/3G1pP2/LN1KG2+rL w " +
-                "2N2Prs2p:6a6b7a6Bb*4g6i7h2i5iG*6is*6g7h6gg*5f6g7h4g6I6h6ig*6g7h8h5i6i", usf);
+        assertEquals("^*lnS5l/k2+B5/pp5pp/2pp3g1/7s1/2PP4P/PPS1P4/3G1pP2/LN2K3L w " +
+                "RG2N2Prbgs2p:r*2i5i4hp*4g4h4g2i4IR*4hb*3f4g5fs*4g5f6g3f4eG*5f4g5F5g5f4i4h7f7er*5i6g7f4e5dN*6e\n" +
+                "BN:AAA aaa\n" +
+                "WN:BBB bbb\n" +
+                ".0\n" +
+                "X:PLAYSHOGI:PROBLEMTYPE:WINNING_OR_LOSING\n" +
+                "X:PLAYSHOGI:PREVIOUSMOVE:6i5i\n", usf);
     }
 
     @Test
     public void problemsToUSF() {
-        ExtractedProblem problem = new ExtractedProblem(ExtractedProblem.ProblemType.ESCAPE_MATE, "lnSg4l/k2" +
-                "+B5/pp1+B3pp/2pp3g1/7s1/2PP4P/PPS1P4/3G1pP2/LN1KG2+rL w 2N2Prs2p", "6a6b 7a6B b*4g 6i7h 2i5i G*6i " +
-                "s*6g 7h6g g*5f 6g7h 4g6I 6h6i g*6g 7h8h 5i6i ");
+        GameInformation gameInformation = new GameInformation();
+        gameInformation.setBlack("AAA aaa");
+        gameInformation.setWhite("BBB bbb");
+
+        ExtractedProblem problem = new ExtractedProblem(ExtractedProblem.ProblemType.WINNING_OR_LOSING, "lnS5l/k2+B5" +
+                "/pp5pp/2pp3g1/7s1/2PP4P/PPS1P4/3G1pP2/LN2K3L w RG2N2Prbgs2p", "r*2i 5i4h p*4g 4h4g 2i4I R*4h b*3f " +
+                "4g5f s*4g 5f6g 3f4e G*5f 4g5F 5g5f 4i4h 7f7e r*5i 6g7f 4e5d N*6e ", "6i5i", gameInformation);
         String usf = ProblemExtractor.problemsToUSF(Arrays.asList(problem, problem));
         assertEquals("USF:1.0\n" +
-                "^*lnSg4l/k2+B5/pp1+B3pp/2pp3g1/7s1/2PP4P/PPS1P4/3G1pP2/LN1KG2+rL w " +
-                "2N2Prs2p:6a6b7a6Bb*4g6i7h2i5iG*6is*6g7h6gg*5f6g7h4g6I6h6ig*6g7h8h5i6i\n" +
-                "^*lnSg4l/k2+B5/pp1+B3pp/2pp3g1/7s1/2PP4P/PPS1P4/3G1pP2/LN1KG2+rL w " +
-                "2N2Prs2p:6a6b7a6Bb*4g6i7h2i5iG*6is*6g7h6gg*5f6g7h4g6I6h6ig*6g7h8h5i6i\n", usf);
+                "^*lnS5l/k2+B5/pp5pp/2pp3g1/7s1/2PP4P/PPS1P4/3G1pP2/LN2K3L w " +
+                "RG2N2Prbgs2p:r*2i5i4hp*4g4h4g2i4IR*4hb*3f4g5fs*4g5f6g3f4eG*5f4g5F5g5f4i4h7f7er*5i6g7f4e5dN*6e\n" +
+                "BN:AAA aaa\n" +
+                "WN:BBB bbb\n" +
+                ".0\n" +
+                "X:PLAYSHOGI:PROBLEMTYPE:WINNING_OR_LOSING\n" +
+                "X:PLAYSHOGI:PREVIOUSMOVE:6i5i\n" +
+                "\n" +
+                "^*lnS5l/k2+B5/pp5pp/2pp3g1/7s1/2PP4P/PPS1P4/3G1pP2/LN2K3L w " +
+                "RG2N2Prbgs2p:r*2i5i4hp*4g4h4g2i4IR*4hb*3f4g5fs*4g5f6g3f4eG*5f4g5F5g5f4i4h7f7er*5i6g7f4e5dN*6e\n" +
+                "BN:AAA aaa\n" +
+                "WN:BBB bbb\n" +
+                ".0\n" +
+                "X:PLAYSHOGI:PROBLEMTYPE:WINNING_OR_LOSING\n" +
+                "X:PLAYSHOGI:PREVIOUSMOVE:6i5i\n" +
+                "\n", usf);
     }
 }

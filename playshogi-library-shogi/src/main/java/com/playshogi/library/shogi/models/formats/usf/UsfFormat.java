@@ -70,7 +70,7 @@ public enum UsfFormat implements GameRecordFormat {
         StringBuilder builder = new StringBuilder("USF:1.0\n");
 
         boolean needNodes = writePreviewString(gameRecord, builder);
-        writeGameTags(gameRecord, builder);
+        writeGameTags(gameRecord.getGameInformation(), builder);
         if (needNodes) {
             writeNodes(gameRecord, builder);
         }
@@ -78,8 +78,7 @@ public enum UsfFormat implements GameRecordFormat {
         return builder.toString();
     }
 
-    private static void writeGameTags(final GameRecord gameRecord, final StringBuilder builder) {
-        GameInformation gameInformation = gameRecord.getGameInformation();
+    public static void writeGameTags(final GameInformation gameInformation, final StringBuilder builder) {
         if (gameInformation != null) {
             String sente = gameInformation.getBlack();
             if (sente != null && !sente.isEmpty()) {
