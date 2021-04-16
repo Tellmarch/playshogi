@@ -27,9 +27,18 @@ public class USIConnector {
     private PrintWriter output;
     private boolean connected = false;
     private Process process;
+    private boolean logOutput = true;
 
     public USIConnector(final EngineConfiguration engineConfiguration) {
         this.engineConfiguration = engineConfiguration;
+    }
+
+    public boolean isLogOutput() {
+        return logOutput;
+    }
+
+    public void setLogOutput(final boolean logOutput) {
+        this.logOutput = logOutput;
     }
 
     public boolean connect() {
@@ -126,7 +135,7 @@ public class USIConnector {
         String nextLine;
         do {
             nextLine = input.nextLine();
-            System.out.println("<< " + nextLine);
+            logOutput("<< " + nextLine);
         } while (!nextLine.startsWith("checkmate"));
 
         String[] split = nextLine.split(" ");
@@ -161,12 +170,12 @@ public class USIConnector {
         sendCommand("position sfen " + sfen + " 0");
         sendCommand("go btime 0 wtime 0 byoyomi " + timeMs);
 
-        return UsiEvaluationReader.readEvaluation(input, sfen, engineConfiguration.getMultiPV());
+        return UsiEvaluationReader.readEvaluation(input, sfen, engineConfiguration.getMultiPV(), logOutput);
     }
 
 
     private void sendCommand(String command) {
-        System.out.println(">> " + command);
+        logOutput(">> " + command);
         output.println(command);
         output.flush();
     }
@@ -175,7 +184,7 @@ public class USIConnector {
         String nextLine;
         do {
             nextLine = input.nextLine();
-            System.out.println("<< " + nextLine);
+            logOutput("<< " + nextLine);
         } while (!string.equals(nextLine));
     }
 
@@ -190,5 +199,11 @@ public class USIConnector {
 
     public boolean isConnected() {
         return connected;
+    }
+
+    private void logOutput(final String s) {
+        if (logOutput) {
+            System.out.println(s);
+        }
     }
 }

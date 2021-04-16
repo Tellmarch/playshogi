@@ -26,7 +26,7 @@ public class UsiEvaluationReaderTest {
                 "8d8e 2f2e 4a3b 8h7g 3c3d 7i6h 3a4b 2e2d 2c2d 2h2d 4b3c 2d2g P*2c 3g3f 7a6b 6i7h 7c7d 1g1f 6b7c 6g6f " +
                 "5a4a 6h6g 7c6d 3i4h 5c5d 4g4f\n" +
                 "bestmove 6i7h ponder 8c8d\n";
-        PositionEvaluation evaluation = UsiEvaluationReader.readEvaluation(new StringLineReader(eval), sfen, 3);
+        PositionEvaluation evaluation = UsiEvaluationReader.readEvaluation(new StringLineReader(eval), sfen, 3, true);
         assertEquals("6i7h 8c8d 7g7f 4a3b 2g2f 8d8e 8h7g 3c3d 7i6h 2b7G 6h7g 3a4b 2f2e 4b3c 3g3f 7c7d 3i3h 7a6b 4g4f " +
                 "8a7c 2i3g 7c6e 7g6f 8e8f 8g8f 8b8f ", evaluation.getMainVariation().getUsf());
         assertEquals(3, evaluation.getVariationsHistory().size());

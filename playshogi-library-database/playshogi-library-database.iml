@@ -2,7 +2,7 @@
 <module org.jetbrains.idea.maven.project.MavenProjectsManager.isMavenModule="true" type="JAVA_MODULE" version="4">
   <component name="EclipseModuleManager">
     <libelement value="file://$USER_HOME$/java/mysql-connector-java-5.1.42/mysql-connector-java-5.1.42-bin.jar" />
-    <varelement var="file://$USER_HOME$/git/playshogi/mysql" kind="linksrc:" value="mysql" />
+    <varelement var="file://$USER_HOME$/git/playshogi/mysql" value="linksrc:mysql" />
     <src_description expected_position="0">
       <src_folder value="file://$MODULE_DIR$/src" expected_position="0" />
       <src_folder value="file://$USER_HOME$/git/playshogi/mysql" expected_position="1" />

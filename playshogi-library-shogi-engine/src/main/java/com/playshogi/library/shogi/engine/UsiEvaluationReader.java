@@ -15,11 +15,14 @@ public class UsiEvaluationReader {
 
     private static final Logger LOGGER = Logger.getLogger(UsiEvaluationReader.class.getName());
 
-    public static PositionEvaluation readEvaluation(final LineReader input, final String sfen, final int multiPV) {
+    public static PositionEvaluation readEvaluation(final LineReader input, final String sfen, final int multiPV,
+                                                    final boolean logOutput) {
         List<MultiVariations> variationsHistory = new ArrayList<>();
 
         String nextLine = input.nextLine();
-        System.out.println("<< " + nextLine);
+        if (logOutput) {
+            System.out.println("<< " + nextLine);
+        }
         boolean extraLine = false;
 
         while (!nextLine.startsWith("bestmove")) {
@@ -35,7 +38,9 @@ public class UsiEvaluationReader {
             if (nextLine.contains("multipv 1")) {
                 for (int pv = 2; pv <= multiPV; pv++) {
                     nextLine = input.nextLine();
-                    System.out.println("<< " + nextLine);
+                    if (logOutput) {
+                        System.out.println("<< " + nextLine);
+                    }
                     if (!nextLine.contains("multipv " + pv)) {
                         extraLine = true;
                         break;
@@ -48,7 +53,9 @@ public class UsiEvaluationReader {
 
             if (!extraLine) {
                 nextLine = input.nextLine();
-                System.out.println("<< " + nextLine);
+                if (logOutput) {
+                    System.out.println("<< " + nextLine);
+                }
             } else {
                 extraLine = false;
             }

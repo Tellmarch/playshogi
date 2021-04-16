@@ -27,6 +27,14 @@ public class PositionScore {
         return forcedMate;
     }
 
+    public boolean isForcedMateForPlayer() {
+        return forcedMate && numMovesBeforeMate >= 0;
+    }
+
+    public boolean isForcedMateForOpponent() {
+        return forcedMate && numMovesBeforeMate < 0;
+    }
+
     public int getNumMovesBeforeMate() {
         return numMovesBeforeMate;
     }
