@@ -35,6 +35,11 @@ public class KifuUploadServlet extends HttpServlet {
             IOException {
         response.setContentType("text/html;charset=UTF-8");
 
+        String returnUsf = request.getParameter("returnUsf");
+        String collectionId = request.getParameter("collectionId");
+
+        LOGGER.info("doPost {return = " + returnUsf + " - collectionId = " + collectionId + " }");
+
         final Part filePart = request.getPart("file");
         InputStream inputStream = filePart.getInputStream();
 
@@ -45,10 +50,10 @@ public class KifuUploadServlet extends HttpServlet {
                     throw new IllegalArgumentException("Request did not include a file");
                 }
 
-                if (fileName.endsWith(".zip")) {
-                    importCollection(inputStream, writer);
+                if ("true".equals(returnUsf)) {
+                    readBackKifu(inputStream, writer, fileName);
                 } else {
-                    readKifu(inputStream, writer, fileName);
+                    importCollection(inputStream, writer, fileName);
                 }
 
             } catch (Exception ex) {
@@ -60,8 +65,8 @@ public class KifuUploadServlet extends HttpServlet {
         }
     }
 
-    private void readKifu(InputStream inputStream, PrintWriter writer, String fileName) {
-        List<GameRecord> records = readGameRecord(new Scanner(inputStream), fileName);
+    private void readBackKifu(InputStream inputStream, PrintWriter writer, String fileName) throws IOException {
+        List<GameRecord> records = readGameRecords(inputStream, fileName);
         for (GameRecord record : records) {
             String usf = UsfFormat.INSTANCE.write(record);
             writer.println("SUCCESS:" + usf);
@@ -69,25 +74,44 @@ public class KifuUploadServlet extends HttpServlet {
         }
     }
 
-    private void importCollection(final InputStream inputStream, final PrintWriter writer) throws IOException {
+    private void importCollection(final InputStream inputStream, final PrintWriter writer, final String fileName) throws IOException {
+        List<GameRecord> records = readGameRecords(inputStream, fileName);
+
+        String collectionId = CollectionUploads.INSTANCE.addCollection(new GameCollection("New Collection", records));
+
+        writer.println("COLLECTION:" + collectionId);
+    }
+
+    private List<GameRecord> readGameRecords(final InputStream inputStream, final String fileName) throws IOException {
+        LOGGER.log(Level.INFO, "Reading kifus from: " + fileName);
+        if (fileName.endsWith(".kif")) {
+            return KifFormat.INSTANCE.read(new ScannerLineReader(new Scanner(inputStream)));
+        } else if (fileName.endsWith(".psn") || fileName.endsWith(".txt")) {
+            return PsnFormat.INSTANCE.read(new ScannerLineReader(new Scanner(inputStream)));
+        } else if (fileName.endsWith(".usf")) {
+            return UsfFormat.INSTANCE.read(new ScannerLineReader(new Scanner(inputStream)));
+        } else if (fileName.endsWith(".zip")) {
+            return readGameRecordsFromZip(inputStream);
+        } else {
+            throw new IllegalArgumentException("Unrecognized file format: " + fileName);
+        }
+    }
+
+    private List<GameRecord> readGameRecordsFromZip(final InputStream inputStream) throws IOException {
         ZipInputStream zipInputStream = new ZipInputStream(inputStream);
         ZipEntry entry;
 
         List<GameRecord> records = new ArrayList<>();
 
         while ((entry = zipInputStream.getNextEntry()) != null) {
-            System.out.println(entry.toString());
-            List<GameRecord> gameRecords = readGameRecord(new Scanner(zipInputStream), entry.getName());
+            List<GameRecord> gameRecords = readGameRecords(zipInputStream, entry.getName());
             for (GameRecord gameRecord : gameRecords) {
                 LOGGER.log(Level.INFO,
-                        "Successfully imported kifu: " + entry.getName() + " " + UsfFormat.INSTANCE.write(gameRecord));
+                        "Successfully read kifu: " + entry.getName() + " " + UsfFormat.INSTANCE.write(gameRecord));
                 records.add(gameRecord);
             }
         }
-
-        String collectionId = CollectionUploads.INSTANCE.addCollection(new GameCollection("New Collection", records));
-
-        writer.println("COLLECTION:" + collectionId);
+        return records;
     }
 
     private String getFileName(final Part part) {
@@ -97,19 +121,6 @@ public class KifuUploadServlet extends HttpServlet {
             }
         }
         return null;
-    }
-
-    private List<GameRecord> readGameRecord(final Scanner scanner, final String fileName) {
-        LOGGER.log(Level.INFO, "Importing kifu: " + fileName);
-        if (fileName.endsWith(".kif")) {
-            return KifFormat.INSTANCE.read(new ScannerLineReader(scanner));
-        } else if (fileName.endsWith(".psn") || fileName.endsWith(".txt")) {
-            return PsnFormat.INSTANCE.read(new ScannerLineReader(scanner));
-        } else if (fileName.endsWith(".usf")) {
-            return UsfFormat.INSTANCE.read(new ScannerLineReader(scanner));
-        } else {
-            throw new IllegalArgumentException("Unrecognized file format: " + fileName);
-        }
     }
 
 }

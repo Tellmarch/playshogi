@@ -64,6 +64,7 @@ public class ImportKifuPanel extends Composite implements ClickHandler {
         FileUpload upload = new FileUpload();
         upload.setName("file");
         panel.add(upload);
+        panel.add(new Hidden("returnUsf", "true"));
 
         panel.add(new Button("Upload", (ClickHandler) event -> form.submit()));
 

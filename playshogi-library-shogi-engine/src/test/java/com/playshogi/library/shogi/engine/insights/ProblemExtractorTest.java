@@ -4,6 +4,7 @@ import com.playshogi.library.shogi.files.GameRecordFileReader;
 import com.playshogi.library.shogi.models.formats.psn.PsnFormat;
 import com.playshogi.library.shogi.models.formats.usf.UsfFormat;
 import com.playshogi.library.shogi.models.record.GameRecord;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
@@ -14,6 +15,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
+@Ignore
 public class ProblemExtractorTest {
 
     @Test
@@ -36,7 +38,7 @@ public class ProblemExtractorTest {
         String path = "/home/jean/shogi/collections/games/";
         ArrayList<ExtractedProblem> extractedProblems = new ArrayList<>();
 
-        for (int i = 38; i <= 38; i++) {
+        for (int i = 1; i <= 43; i++) {
             File f = new File(path + (i < 10 ? "0" + i : i) + ".txt");
             System.out.println(f);
             List<GameRecord> records = GameRecordFileReader.read(PsnFormat.INSTANCE, f);

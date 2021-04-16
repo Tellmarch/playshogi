@@ -40,6 +40,8 @@ public class ImportCollectionPanel extends Composite {
         FileUpload upload = new FileUpload();
         upload.setName("file");
         panel.add(upload);
+        panel.add(new Hidden("collectionId", "new"));
+        panel.add(new Hidden("returnUsf", "false"));
 
         panel.add(new Button("Upload", (ClickHandler) event -> form.submit()));
 
