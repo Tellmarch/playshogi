@@ -1,6 +1,7 @@
 package com.playshogi.library.shogi.engine.insights;
 
 import com.playshogi.library.shogi.files.GameRecordFileReader;
+import com.playshogi.library.shogi.models.formats.kif.KifFormat;
 import com.playshogi.library.shogi.models.formats.psn.PsnFormat;
 import com.playshogi.library.shogi.models.formats.usf.UsfFormat;
 import com.playshogi.library.shogi.models.record.GameInformation;
@@ -8,11 +9,11 @@ import com.playshogi.library.shogi.models.record.GameRecord;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 import static org.junit.Assert.assertEquals;
 
@@ -54,6 +55,67 @@ public class ProblemExtractorTest {
         System.out.println(ProblemExtractor.problemsToUSF(extractedProblems));
 
 
+    }
+
+    @Test
+    public void extractProblemsFromProSet() {
+
+        String INPUT_PATH = "/home/jean/shogi/kifus/";
+        String OUTPUT_PATH = "/home/jean/shogi/extracted/";
+
+
+        int ok = 0;
+        int total = 0;
+        int error = 0;
+
+        Set<String> errors = new HashSet<>();
+
+        ArrayList<ExtractedProblem> extractedProblems = new ArrayList<>();
+
+        for (int i = 1; i <= 100; i++) {
+//            for (int i = 1; i <= 77458; i++) {
+            String fileName = "kif" + i + ".kif";
+            File file = new File(INPUT_PATH, fileName);
+            if (file.exists() && file.length() > 10) {
+                total++;
+                System.out.println("Processing file " + file + " of length " + file.length());
+                try {
+                    List<GameRecord> gameRecord = GameRecordFileReader.read(KifFormat.INSTANCE, file, "windows-932");
+                    if (gameRecord != null && gameRecord.size() == 1) {
+                        System.out.println(gameRecord.get(0));
+                        List<ExtractedProblem> problems = new ProblemExtractor().extractProblems(gameRecord.get(0));
+                        if (problems.size() > 0) {
+                            System.out.println(problems);
+                            extractedProblems.addAll(problems);
+                            File out = new File(OUTPUT_PATH, "extracted_" + i + ".usf");
+                            BufferedWriter writer = new BufferedWriter(new FileWriter(out));
+                            writer.write(ProblemExtractor.problemsToUSF(extractedProblems));
+                            writer.flush();
+                            writer.close();
+                        }
+
+                    }
+                    ok++;
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                    error++;
+                    errors.add(fileName);
+                    break;
+                }
+            } else {
+                System.out.println("Not found: " + file);
+            }
+        }
+
+        System.out.println("Extract result");
+        System.out.println("=============");
+        System.out.println("File processed: " + total);
+        System.out.println("Import successfully: " + ok);
+        System.out.println("Errors during import: " + error);
+        System.out.println("=============");
+        System.out.println("List of errors: " + errors);
+
+        System.out.println(ProblemExtractor.problemsToUSF(extractedProblems));
     }
 
     @Test

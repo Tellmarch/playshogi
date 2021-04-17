@@ -1,6 +1,7 @@
 package com.playshogi.website.gwt.client.ui;
 
 import com.google.gwt.core.shared.GWT;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.regexp.shared.RegExp;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
@@ -51,7 +52,6 @@ public class ViewKifuView extends Composite {
         shogiBoard.setUpperRightPanel(kifuNavigationPanel);
         shogiBoard.setLowerLeftPanel(kifuInformationPanel);
 
-        positionEvaluationDetailsPanel = new PositionEvaluationDetailsPanel(shogiBoard);
         kifuEvaluationChartPanel = new KifuEvaluationChartPanel();
 
         textArea = new TextArea();
@@ -59,30 +59,42 @@ public class ViewKifuView extends Composite {
         textArea.setStyleName("lesson-content");
         textArea.setEnabled(false);
 
+
         gameTreePanel = new GameTreePanel(VIEWKIFU, gameNavigator.getGameNavigation(), true);
-
-        HorizontalPanel horizontalPanel = new HorizontalPanel();
-        horizontalPanel.add(shogiBoard);
-        horizontalPanel.add(kifuEvaluationChartPanel);
-
-        VerticalPanel verticalPanel = new VerticalPanel();
-        verticalPanel.add(horizontalPanel);
-        verticalPanel.add(textArea);
-        verticalPanel.add(positionEvaluationDetailsPanel);
-
-        HorizontalPanel withTreePanel = new HorizontalPanel();
-        withTreePanel.add(verticalPanel);
 
         ScrollPanel treeScrollPanel = new ScrollPanel();
         treeScrollPanel.add(gameTreePanel);
-        treeScrollPanel.setSize("200%", "750px");
+        treeScrollPanel.setSize("620px", "600px");
 
-        withTreePanel.add(treeScrollPanel);
+        TabLayoutPanel rightPanel = new TabLayoutPanel(1.5, Style.Unit.EM);
+
+        rightPanel.add(treeScrollPanel, "Moves");
+        rightPanel.add(kifuEvaluationChartPanel, "Computer");
+
+        rightPanel.setSize("650px", "640px");
+        rightPanel.getElement().getStyle().setMarginTop(3, Style.Unit.PX);
+
+        VerticalPanel boardAndTextPanel = new VerticalPanel();
+        boardAndTextPanel.add(shogiBoard);
+        boardAndTextPanel.add(textArea);
+
+        HorizontalPanel horizontalPanel = new HorizontalPanel();
+        horizontalPanel.add(boardAndTextPanel);
+        horizontalPanel.add(rightPanel);
+
+        positionEvaluationDetailsPanel = new PositionEvaluationDetailsPanel(shogiBoard);
+        positionEvaluationDetailsPanel.setSize("1450px", "300px");
+
+        VerticalPanel verticalPanel = new VerticalPanel();
+        verticalPanel.add(horizontalPanel);
+        verticalPanel.add(positionEvaluationDetailsPanel);
+
 
         ScrollPanel scrollPanel = new ScrollPanel();
-        scrollPanel.add(withTreePanel);
+        scrollPanel.add(verticalPanel);
         scrollPanel.setSize("100%", "100%");
 
+//        initWidget(horizontalPanel);
         initWidget(scrollPanel);
     }
 

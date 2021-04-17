@@ -50,7 +50,7 @@ class BoardLayout {
         width = tatami.getWidth();
         height = tatami.getHeight();
 
-        absolutePanel.setSize(width + "px", height + "px");
+        absolutePanel.setSize(getWidth(), getHeight());
 
         absolutePanel.add(tatami, 0, 0);
         absolutePanel.add(ban, boardLeft, boardTop);
@@ -70,9 +70,17 @@ class BoardLayout {
         lowerLeftPanelY = TATAMI_TOP_MARGIN + goteKomadaiImage.getHeight() + TATAMI_INSIDE_MARGIN;
     }
 
+    private String getHeight() {
+        return height + "px";
+    }
+
+    private String getWidth() {
+        return width + "px";
+    }
+
     void addCanvas(final Canvas canvas) {
         if (canvas != null) {
-            canvas.setSize(width + "px", height + "px");
+            canvas.setSize(getWidth(), getHeight());
             canvas.setCoordinateSpaceWidth(width);
             canvas.setCoordinateSpaceHeight(height);
             absolutePanel.add(canvas, 0, 0);
