@@ -10,6 +10,7 @@ import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.website.gwt.client.events.gametree.PositionChangedEvent;
+import com.playshogi.website.gwt.client.widget.board.BoardSettingsPanel;
 import com.playshogi.website.gwt.client.widget.board.ShogiBoard;
 import com.playshogi.website.gwt.client.widget.engine.KifuEvaluationChartPanel;
 import com.playshogi.website.gwt.client.widget.engine.PositionEvaluationDetailsPanel;
@@ -33,7 +34,6 @@ public class ViewKifuView extends Composite {
 
     private final ShogiBoard shogiBoard;
     private final GameNavigator gameNavigator;
-    private final KifuNavigationPanel kifuNavigationPanel;
     private final KifuInformationPanel kifuInformationPanel;
     private final GameTreePanel gameTreePanel;
     private final PositionEvaluationDetailsPanel positionEvaluationDetailsPanel;
@@ -46,33 +46,19 @@ public class ViewKifuView extends Composite {
         shogiBoard = new ShogiBoard(VIEWKIFU);
         gameNavigator = new GameNavigator(VIEWKIFU);
 
-        kifuNavigationPanel = new KifuNavigationPanel(gameNavigator);
         kifuInformationPanel = new KifuInformationPanel();
 
-        shogiBoard.setUpperRightPanel(kifuNavigationPanel);
+        shogiBoard.setUpperRightPanel(new KifuNavigationPanel(gameNavigator));
         shogiBoard.setLowerLeftPanel(kifuInformationPanel);
 
         kifuEvaluationChartPanel = new KifuEvaluationChartPanel();
 
-        textArea = new TextArea();
-        textArea.setSize("782px", "150px");
-        textArea.setStyleName("lesson-content");
-        textArea.setEnabled(false);
-
+        textArea = createCommentsArea();
 
         gameTreePanel = new GameTreePanel(VIEWKIFU, gameNavigator.getGameNavigation(), true);
 
-        ScrollPanel treeScrollPanel = new ScrollPanel();
-        treeScrollPanel.add(gameTreePanel);
-        treeScrollPanel.setSize("620px", "600px");
-
-        TabLayoutPanel rightPanel = new TabLayoutPanel(1.5, Style.Unit.EM);
-
-        rightPanel.add(treeScrollPanel, "Moves");
-        rightPanel.add(kifuEvaluationChartPanel, "Computer");
-
-        rightPanel.setSize("650px", "640px");
-        rightPanel.getElement().getStyle().setMarginTop(3, Style.Unit.PX);
+        positionEvaluationDetailsPanel = new PositionEvaluationDetailsPanel(shogiBoard);
+        positionEvaluationDetailsPanel.setSize("1450px", "300px");
 
         VerticalPanel boardAndTextPanel = new VerticalPanel();
         boardAndTextPanel.add(shogiBoard);
@@ -80,22 +66,42 @@ public class ViewKifuView extends Composite {
 
         HorizontalPanel horizontalPanel = new HorizontalPanel();
         horizontalPanel.add(boardAndTextPanel);
-        horizontalPanel.add(rightPanel);
-
-        positionEvaluationDetailsPanel = new PositionEvaluationDetailsPanel(shogiBoard);
-        positionEvaluationDetailsPanel.setSize("1450px", "300px");
+        horizontalPanel.add(createRightTabsPanel());
 
         VerticalPanel verticalPanel = new VerticalPanel();
         verticalPanel.add(horizontalPanel);
         verticalPanel.add(positionEvaluationDetailsPanel);
 
-
         ScrollPanel scrollPanel = new ScrollPanel();
         scrollPanel.add(verticalPanel);
         scrollPanel.setSize("100%", "100%");
 
-//        initWidget(horizontalPanel);
         initWidget(scrollPanel);
+    }
+
+    private TextArea createCommentsArea() {
+        final TextArea textArea;
+        textArea = new TextArea();
+        textArea.setSize("782px", "150px");
+        textArea.setStyleName("lesson-content");
+        textArea.setEnabled(false);
+        return textArea;
+    }
+
+    private TabLayoutPanel createRightTabsPanel() {
+        ScrollPanel treeScrollPanel = new ScrollPanel();
+        treeScrollPanel.add(gameTreePanel);
+        treeScrollPanel.setSize("620px", "600px");
+
+        TabLayoutPanel tabsPanel = new TabLayoutPanel(1.5, Style.Unit.EM);
+
+        tabsPanel.add(treeScrollPanel, "Moves");
+        tabsPanel.add(kifuEvaluationChartPanel, "Computer");
+        tabsPanel.add(new BoardSettingsPanel(), "Board");
+
+        tabsPanel.setSize("650px", "640px");
+        tabsPanel.getElement().getStyle().setMarginTop(3, Style.Unit.PX);
+        return tabsPanel;
     }
 
     public void activate(final EventBus eventBus, final String kifuId) {
