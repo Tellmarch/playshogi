@@ -90,4 +90,19 @@ public class UsfFormatTest {
         GameRecord gameRecord = gameRecords.get(0);
         Assert.assertNotNull(gameRecord.getGameTree());
     }
+
+    @Test
+    public void preserveCustomTags() {
+        String usfGame = "USF:1.0\n" +
+                "^*l5g1l/3sk2+R1/pp1gp1g1p/2p1rp3/3N2P2/1BSP1P3/PP2P1N1P/2+b1K2S1/+p4G2L w S2N2Pl2p:3a2b3g2e\n" +
+                "BN:AAA aaa\n" +
+                "WN:BBB bbb\n" +
+                "GD:19/07/2013\n" +
+                "GN:ESC/WOSC 2013\n" +
+                ".0\n" +
+                "X:PLAYSHOGI:PROBLEMTYPE:WINNING_OR_LOSING\n" +
+                "X:PLAYSHOGI:PREVIOUSMOVE:2a2b\n";
+        GameRecord gameRecord = UsfFormat.INSTANCE.readSingle(usfGame);
+        Assert.assertEquals(usfGame, UsfFormat.INSTANCE.write(gameRecord));
+    }
 }

@@ -75,7 +75,15 @@ public enum UsfFormat implements GameRecordFormat {
             writeNodes(gameRecord, builder);
         }
 
-        return builder.toString();
+        return cleanUpUsf(builder.toString());
+    }
+
+    private static String cleanUpUsf(final String usf) {
+        String result = usf;
+        while (result.endsWith(".\n")) {
+            result = result.substring(0, result.length() - 2);
+        }
+        return result;
     }
 
     public static void writeGameTags(final GameInformation gameInformation, final StringBuilder builder) {
@@ -119,7 +127,7 @@ public enum UsfFormat implements GameRecordFormat {
         builder.append("^");
         builder.append(getResultChar(gameRecord.getGameResult()));
         Node n = gameTree.getRootNode();
-        if (n.getComment().isPresent() || n.getObjects().isPresent()) {
+        if (n.getComment().isPresent() || n.getObjects().isPresent() || n.getAdditionalTags().isPresent()) {
             needNodesSection = true;
         }
         if (n.getMove() instanceof EditMove) {
@@ -137,7 +145,7 @@ public enum UsfFormat implements GameRecordFormat {
             }
             n = children.get(0);
             builder.append(UsfMoveConverter.toUsfString((ShogiMove) n.getMove()));
-            if (n.getComment().isPresent() || n.getObjects().isPresent()) {
+            if (n.getComment().isPresent() || n.getObjects().isPresent() || n.getAdditionalTags().isPresent()) {
                 needNodesSection = true;
             }
         }

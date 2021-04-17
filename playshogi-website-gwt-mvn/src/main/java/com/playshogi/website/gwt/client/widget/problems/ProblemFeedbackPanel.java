@@ -15,12 +15,15 @@ import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.library.shogi.models.formats.sfen.SfenConverter;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
+import com.playshogi.website.gwt.client.events.gametree.GameTreeChangedEvent;
 import com.playshogi.website.gwt.client.events.gametree.PositionChangedEvent;
 import com.playshogi.website.gwt.client.events.gametree.UserNavigatedBackEvent;
 import com.playshogi.website.gwt.client.events.kifu.RequestPositionEvaluationEvent;
 import com.playshogi.website.gwt.client.events.puzzles.UserFinishedProblemEvent;
 import com.playshogi.website.gwt.client.events.puzzles.UserSkippedProblemEvent;
 import com.playshogi.website.gwt.client.widget.gamenavigator.GameNavigator;
+
+import java.util.Optional;
 
 public class ProblemFeedbackPanel extends Composite implements ClickHandler {
 
@@ -31,7 +34,7 @@ public class ProblemFeedbackPanel extends Composite implements ClickHandler {
     private final MyEventBinder eventBinder = GWT.create(MyEventBinder.class);
 
     private final SafeHtml chooseHtml = SafeHtmlUtils
-            .fromSafeConstant("Play the correct move!<br>");
+            .fromSafeConstant("Play the correct move!<br/>");
     private final SafeHtml wrongHtml = SafeHtmlUtils.fromSafeConstant("<p style=\"font-size:20px;" +
             "color:red\">Wrong!</p>");
     private final SafeHtml correctHtml = SafeHtmlUtils.fromSafeConstant("<p style=\"font-size:20px;" +
@@ -112,6 +115,26 @@ public class ProblemFeedbackPanel extends Composite implements ClickHandler {
     public void onPositionChanged(final PositionChangedEvent event) {
         GWT.log("Problem feedback: position changed");
         currentPosition = event.getPosition();
+    }
+
+    @EventHandler
+    public void onGameTreeChanged(final GameTreeChangedEvent gameTreeChangedEvent) {
+        GWT.log("Problem feedback: Handling game tree changed event - move " + gameTreeChangedEvent.getGoToMove());
+        Optional<String> tags = gameTreeChangedEvent.getGameTree().getRootNode().getAdditionalTags();
+        if (tags.isPresent()) {
+            if (tags.get().contains("X:PLAYSHOGI:PROBLEMTYPE:WINNING_OR_LOSING")) {
+                messagePanel.setHTML("Only one move is winning - play the correct move!");
+            } else if (tags.get().contains("X:PLAYSHOGI:PROBLEMTYPE:MATE_OR_LOSING")) {
+                messagePanel.setHTML("You have a forced checkmate - play the correct move!");
+            } else if (tags.get().contains("X:PLAYSHOGI:PROBLEMTYPE:MATE_OR_BE_MATED")) {
+                messagePanel.setHTML("One move leads to a win by checkmate, others will get you mated - play the " +
+                        "correct move!");
+            } else if (tags.get().contains("X:PLAYSHOGI:PROBLEMTYPE:WINNING_OR_BE_MATED")) {
+                messagePanel.setHTML("One move leads to a win, others will get you mated - play the correct move!");
+            } else if (tags.get().contains("X:PLAYSHOGI:PROBLEMTYPE:ESCAPE_MATE")) {
+                messagePanel.setHTML("Escape the mate - play the correct move!");
+            }
+        }
     }
 
     public void activate(final EventBus eventBus) {

@@ -13,6 +13,7 @@ import com.playshogi.library.shogi.models.record.GameRecord;
 import com.playshogi.website.gwt.client.SessionInformation;
 import com.playshogi.website.gwt.client.controller.ProblemController;
 import com.playshogi.website.gwt.client.events.gametree.GameTreeChangedEvent;
+import com.playshogi.website.gwt.client.events.kifu.GameInformationChangedEvent;
 import com.playshogi.website.gwt.client.events.puzzles.UserFinishedProblemEvent;
 import com.playshogi.website.gwt.client.events.puzzles.UserSkippedProblemEvent;
 import com.playshogi.website.gwt.client.place.ProblemPlace;
@@ -136,6 +137,7 @@ public class ProblemsActivity extends MyAbstractActivity {
                         GWT.log("Received problem USF: " + usf);
                         GameRecord gameRecord = UsfFormat.INSTANCE.readSingle(usf);
                         eventBus.fireEvent(new GameTreeChangedEvent(gameRecord.getGameTree()));
+                        eventBus.fireEvent(new GameInformationChangedEvent(gameRecord.getGameInformation()));
                         if (collectionId != null) {
                             History.newItem("Problems:" + new ProblemsPlace.Tokenizer().getToken(getPlace()), false);
                         }

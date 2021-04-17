@@ -8,6 +8,7 @@ import com.google.web.bindery.event.shared.EventBus;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.website.gwt.client.widget.board.ShogiBoard;
 import com.playshogi.website.gwt.client.widget.gamenavigator.GameNavigator;
+import com.playshogi.website.gwt.client.widget.kifu.KifuInformationPanel;
 import com.playshogi.website.gwt.client.widget.problems.ProblemFeedbackPanel;
 
 @Singleton
@@ -18,6 +19,7 @@ public class ProblemsView extends Composite {
     private final ShogiBoard shogiBoard;
     private final GameNavigator gameNavigator;
     private final ProblemFeedbackPanel problemFeedbackPanel;
+    private final KifuInformationPanel kifuInformationPanel;
 
     @Inject
     public ProblemsView() {
@@ -25,6 +27,9 @@ public class ProblemsView extends Composite {
         shogiBoard = new ShogiBoard(PROBLEMS);
         gameNavigator = new GameNavigator(PROBLEMS);
         problemFeedbackPanel = new ProblemFeedbackPanel(gameNavigator, false);
+        kifuInformationPanel = new KifuInformationPanel();
+
+        shogiBoard.setLowerLeftPanel(kifuInformationPanel);
         shogiBoard.setUpperRightPanel(problemFeedbackPanel);
         shogiBoard.getBoardConfiguration().setPlayWhiteMoves(false);
         gameNavigator.getNavigatorConfiguration().setProblemMode(true);
@@ -41,6 +46,7 @@ public class ProblemsView extends Composite {
         shogiBoard.activate(eventBus);
         gameNavigator.activate(eventBus);
         problemFeedbackPanel.activate(eventBus);
+        kifuInformationPanel.activate(eventBus);
     }
 
 }
