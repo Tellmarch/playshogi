@@ -12,7 +12,6 @@
         <module name="playshogi-website-client" />
         <module name="playshogi-library-shogi-engine" />
         <module name="playshogi-website-server" />
-        <module name="PlayShogiWebsite" />
         <module name="playshogi-library-shogi" />
       </profile>
     </annotationProcessing>

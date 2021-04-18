@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/playshogi-website-gwt-mvn/PlayShogiWebsite.iml" filepath="$PROJECT_DIR$/playshogi-website-gwt-mvn/PlayShogiWebsite.iml" />
       <module fileurl="file://$PROJECT_DIR$/playshogi-library-database/playshogi-library-database.iml" filepath="$PROJECT_DIR$/playshogi-library-database/playshogi-library-database.iml" />
       <module fileurl="file://$PROJECT_DIR$/playshogi-library-shogi/playshogi-library-shogi.iml" filepath="$PROJECT_DIR$/playshogi-library-shogi/playshogi-library-shogi.iml" />
       <module fileurl="file://$PROJECT_DIR$/playshogi-library-shogi-engine/playshogi-library-shogi-engine.iml" filepath="$PROJECT_DIR$/playshogi-library-shogi-engine/playshogi-library-shogi-engine.iml" />

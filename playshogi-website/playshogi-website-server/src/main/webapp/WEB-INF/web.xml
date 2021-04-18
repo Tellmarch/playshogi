@@ -13,7 +13,7 @@
 
     <servlet-mapping>
         <servlet-name>login</servlet-name>
-        <url-pattern>/playshogiwebsite/login</url-pattern>
+        <url-pattern>/PlayShogiWebsite/login</url-pattern>
     </servlet-mapping>
 
     <servlet>
@@ -23,7 +23,7 @@
 
     <servlet-mapping>
         <servlet-name>positionSharing</servlet-name>
-        <url-pattern>/playshogiwebsite/positionSharing</url-pattern>
+        <url-pattern>/PlayShogiWebsite/positionSharing</url-pattern>
     </servlet-mapping>
 
     <servlet>
@@ -33,7 +33,7 @@
 
     <servlet-mapping>
         <servlet-name>problems</servlet-name>
-        <url-pattern>/playshogiwebsite/problems</url-pattern>
+        <url-pattern>/PlayShogiWebsite/problems</url-pattern>
     </servlet-mapping>
 
     <servlet>
@@ -43,7 +43,7 @@
 
     <servlet-mapping>
         <servlet-name>kifus</servlet-name>
-        <url-pattern>/playshogiwebsite/kifus</url-pattern>
+        <url-pattern>/PlayShogiWebsite/kifus</url-pattern>
     </servlet-mapping>
 
     <servlet>
@@ -53,7 +53,7 @@
 
     <servlet-mapping>
         <servlet-name>computer</servlet-name>
-        <url-pattern>/playshogiwebsite/computer</url-pattern>
+        <url-pattern>/PlayShogiWebsite/computer</url-pattern>
     </servlet-mapping>
 
     <servlet>
@@ -63,7 +63,7 @@
 
     <servlet-mapping>
         <servlet-name>uploadKifu</servlet-name>
-        <url-pattern>/playshogiwebsite/uploadKifu</url-pattern>
+        <url-pattern>/PlayShogiWebsite/uploadKifu</url-pattern>
     </servlet-mapping>
 
     <!-- Default page to serve -->
@@ -82,7 +82,7 @@
 
     <filter-mapping>
         <filter-name>ExpiresFilter</filter-name>
-        <url-pattern>/playshogiwebsite/playshogiwebsite.nocache.js</url-pattern>
+        <url-pattern>/PlayShogiWebsite/PlayShogiWebsite.nocache.js</url-pattern>
         <dispatcher>REQUEST</dispatcher>
     </filter-mapping>
 </web-app>
