@@ -42,5 +42,5 @@ jobs:
       run: mvn -B install --file playshogi-library-shogi-engine/pom.xml
 
     - name: Build playshogi-website
-      run: mvn -B package --file playshogi-website/pom.xml
+      run: mvn -B install --file playshogi-website/pom.xml
 
