@@ -1,6 +1,7 @@
 package com.playshogi.website.gwt.client.widget.problems;
 
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
+import com.google.gwt.user.client.ui.*;
 import com.playshogi.website.gwt.client.place.ByoYomiPlace;
 
 public class CustomizeSurvivalPanel extends Composite {

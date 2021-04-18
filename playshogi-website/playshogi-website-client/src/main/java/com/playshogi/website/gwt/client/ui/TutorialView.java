@@ -1,6 +1,7 @@
 package com.playshogi.website.gwt.client.ui;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.web.bindery.event.shared.EventBus;
