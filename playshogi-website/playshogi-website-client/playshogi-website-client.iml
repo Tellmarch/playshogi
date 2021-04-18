@@ -76,5 +76,32 @@
     <orderEntry type="library" name="Maven: com.google.gwt.eventbinder:eventbinder:1.1.0" level="project" />
     <orderEntry type="module" module-name="playshogi-library-shogi" />
     <orderEntry type="library" name="Maven: com.googlecode.gwt-charts:gwt-charts:0.9.10" level="project" />
+    <orderEntry type="library" name="Maven: org.dominokit:domino-ui:1.0.0-RC1" level="project" />
+    <orderEntry type="library" name="Maven: org.dominokit:domino-ui-shared:1.0.0-RC1" level="project" />
+    <orderEntry type="library" name="Maven: org.gwtproject.core:gwt-core:1.0.0-RC1" level="project" />
+    <orderEntry type="library" name="Maven: org.gwtproject.editor:gwt-editor:1.0.0-RC1" level="project" />
+    <orderEntry type="library" name="Maven: org.gwtproject.event:gwt-event:1.0.0-RC1" level="project" />
+    <orderEntry type="library" name="Maven: org.gwtproject.timer:gwt-timer:1.0.0-RC1" level="project" />
+    <orderEntry type="library" name="Maven: org.jboss.elemento:elemento-core:1.0.3" level="project" />
+    <orderEntry type="library" name="Maven: com.google.elemental2:elemental2-webstorage:1.1.0" level="project" />
+    <orderEntry type="library" name="Maven: org.gwtproject.safehtml:gwt-safehtml:1.0.0-RC1" level="project" />
+    <orderEntry type="library" name="Maven: org.junit.jupiter:junit-jupiter:5.7.0" level="project" />
+    <orderEntry type="library" name="Maven: org.junit.jupiter:junit-jupiter-api:5.7.0" level="project" />
+    <orderEntry type="library" name="Maven: org.apiguardian:apiguardian-api:1.1.0" level="project" />
+    <orderEntry type="library" name="Maven: org.opentest4j:opentest4j:1.2.0" level="project" />
+    <orderEntry type="library" name="Maven: org.junit.platform:junit-platform-commons:1.7.0" level="project" />
+    <orderEntry type="library" name="Maven: org.junit.jupiter:junit-jupiter-params:5.7.0" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.junit.jupiter:junit-jupiter-engine:5.7.0" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.junit.platform:junit-platform-engine:1.7.0" level="project" />
+    <orderEntry type="library" name="Maven: org.dominokit.i18n:gwt-datetimeformat:1.0" level="project" />
+    <orderEntry type="library" name="Maven: org.dominokit.i18n:gwt-cldr:1.0" level="project" />
+    <orderEntry type="library" name="Maven: org.dominokit.i18n:gwt-i18n:1.0" level="project" />
+    <orderEntry type="library" name="Maven: org.dominokit.i18n:gwt-numberformat:1.0" level="project" />
+    <orderEntry type="library" name="Maven: com.google.elemental2:elemental2-svg:1.1.0" level="project" />
+    <orderEntry type="library" name="Maven: com.google.jsinterop:base:1.0.0" level="project" />
+    <orderEntry type="library" name="Maven: com.google.elemental2:elemental2-core:1.1.0" level="project" />
+    <orderEntry type="library" name="Maven: com.google.elemental2:elemental2-promise:1.1.0" level="project" />
+    <orderEntry type="library" name="Maven: com.google.elemental2:elemental2-dom:1.1.0" level="project" />
+    <orderEntry type="library" name="Maven: org.dominokit:domino-ui:sources:1.0.0-RC1" level="project" />
   </component>
 </module>

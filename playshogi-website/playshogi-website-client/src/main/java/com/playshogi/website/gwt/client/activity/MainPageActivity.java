@@ -2,14 +2,14 @@ package com.playshogi.website.gwt.client.activity;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
+import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.event.shared.EventBus;
-import com.playshogi.website.gwt.client.ui.MainPageView;
 
 public class MainPageActivity extends MyAbstractActivity {
 
-    private final MainPageView mainPageView;
+    private final Widget mainPageView;
 
-    public MainPageActivity(final MainPageView mainPageView) {
+    public MainPageActivity(final Widget mainPageView) {
         this.mainPageView = mainPageView;
     }
 
