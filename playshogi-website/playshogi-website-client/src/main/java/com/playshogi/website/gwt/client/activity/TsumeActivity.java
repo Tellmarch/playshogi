@@ -25,6 +25,7 @@ import com.playshogi.website.gwt.client.events.gametree.GameTreeChangedEvent;
 import com.playshogi.website.gwt.client.events.gametree.HighlightMoveEvent;
 import com.playshogi.website.gwt.client.events.kifu.RequestPositionEvaluationEvent;
 import com.playshogi.website.gwt.client.events.puzzles.ProblemNumMovesSelectedEvent;
+import com.playshogi.website.gwt.client.events.puzzles.ProblemsOrderSelectedEvent;
 import com.playshogi.website.gwt.client.events.puzzles.UserFinishedProblemEvent;
 import com.playshogi.website.gwt.client.events.puzzles.UserSkippedProblemEvent;
 import com.playshogi.website.gwt.client.place.TsumePlace;
@@ -53,6 +54,7 @@ public class TsumeActivity extends MyAbstractActivity {
 
     private String tsumeId;
     private int numMoves = 0;
+    private boolean random = true;
     private Duration duration = new Duration();
 
     public TsumeActivity(final TsumePlace place, final TsumeView tsumeView,
@@ -85,7 +87,11 @@ public class TsumeActivity extends MyAbstractActivity {
 
     @EventHandler
     void onUserSkippedProblem(final UserSkippedProblemEvent event) {
-        loadTsume(null);
+        if (random) {
+            loadTsume(null);
+        } else {
+            loadTsume(String.valueOf(Integer.parseInt(tsumeId) + 1));
+        }
     }
 
     @EventHandler
@@ -101,6 +107,12 @@ public class TsumeActivity extends MyAbstractActivity {
     void onProblemNumMovesSelectedEvent(final ProblemNumMovesSelectedEvent event) {
         GWT.log("Setting number of moves: " + event.getNumMoves());
         numMoves = event.getNumMoves();
+    }
+
+    @EventHandler
+    void onProblemsOrderSelectedEvent(final ProblemsOrderSelectedEvent event) {
+        GWT.log("Setting random order: " + event.getRandom());
+        random = event.getRandom();
     }
 
     private void loadTsume(final String tsumeId) {
