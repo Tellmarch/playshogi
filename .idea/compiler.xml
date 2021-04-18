@@ -6,11 +6,14 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="playshogi-website-shared" />
+        <module name="playshogi-library-database" />
         <module name="playshogi-library-shogi-files" />
+        <module name="playshogi-website-client" />
         <module name="playshogi-library-shogi-engine" />
+        <module name="playshogi-website-server" />
         <module name="PlayShogiWebsite" />
         <module name="playshogi-library-shogi" />
-        <module name="playshogi-library-database" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
@@ -19,6 +22,10 @@
       <module name="playshogi-library-shogi" target="1.8" />
       <module name="playshogi-library-shogi-engine" target="1.8" />
       <module name="playshogi-library-shogi-files" target="1.8" />
+      <module name="playshogi-website" target="8" />
+      <module name="playshogi-website-client" target="8" />
+      <module name="playshogi-website-server" target="8" />
+      <module name="playshogi-website-shared" target="8" />
       <module name="PlayShogiWebsite" target="1.8" />
     </bytecodeTargetLevel>
   </component>

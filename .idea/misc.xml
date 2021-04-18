@@ -8,10 +8,14 @@
         <option value="$PROJECT_DIR$/playshogi-library-shogi-files/pom.xml" />
         <option value="$PROJECT_DIR$/playshogi-library-shogi/pom.xml" />
         <option value="$PROJECT_DIR$/playshogi-library-shogi-engine/pom.xml" />
+        <option value="$PROJECT_DIR$/playshogi-website-server/pom.xml" />
+        <option value="$PROJECT_DIR$/playshogi-website-shared/pom.xml" />
+        <option value="$PROJECT_DIR$/playshogi-website-client/pom.xml" />
+        <option value="$PROJECT_DIR$/playshogi-website/pom.xml" />
       </list>
     </option>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" default="false" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" project-jdk-name="1.8" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/out" />
   </component>
 </project>
