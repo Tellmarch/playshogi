@@ -13,7 +13,7 @@ import com.playshogi.website.gwt.client.ui.*;
 public class AppActivityMapper implements ActivityMapper {
 
     @Inject
-    MainPageViewBeta mainPageView;
+    MainPageViewBeta2 mainPageView;
     @Inject
     LinksView linksView;
     @Inject
