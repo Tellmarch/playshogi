@@ -1,7 +1,7 @@
 package com.playshogi.website.gwt.client.ui;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.place.shared.PlaceController;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.ImageResource;
@@ -10,7 +10,8 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.web.bindery.event.shared.EventBus;
 import com.playshogi.website.gwt.client.place.*;
-import jsinterop.base.Js;
+import com.playshogi.website.gwt.client.util.ElementWidget;
+import org.dominokit.domino.ui.button.Button;
 
 @Singleton
 public class MainPageViewBeta extends Composite {
@@ -63,7 +64,7 @@ public class MainPageViewBeta extends Composite {
 
         for (int i = 0; i < 2; i++) {
             for (int j = 0; j < 2; j++) {
-                grid.getCellFormatter().setWidth(i, j, "400px");
+                grid.getCellFormatter().setWidth(i, j, "450px");
                 grid.getCellFormatter().setHeight(i, j, "200px");
                 grid.getCellFormatter().setHorizontalAlignment(i, j, HasHorizontalAlignment.ALIGN_CENTER);
             }
@@ -82,17 +83,16 @@ public class MainPageViewBeta extends Composite {
         Grid grid = new Grid(1, 2);
         grid.setWidget(0, 0, new Image(resources.learnBackground()));
 
-        org.dominokit.domino.ui.button.Button button = org.dominokit.domino.ui.button.Button.createPrimary("Tutorial");
-        button.addClickListener(evt -> placeController.goTo(new TutorialPlace()));
+        ElementWidget button =
+                new ElementWidget(Button.createPrimary("Tutorial")
+                        .addClickListener(evt -> placeController.goTo(new TutorialPlace())).element());
+        button.getElement().getStyle().setMarginLeft(1, Style.Unit.EM);
 
-        HTML html = new HTML();
-        html.getElement().appendChild(Js.cast(button.element()));
-
-        grid.setWidget(0, 1, html);
+        grid.setWidget(0, 1, button);
 
         panel.add(grid);
         decoratorPanel.setWidget(panel);
-        panel.setWidth("400px");
+        panel.setWidth("450px");
         panel.setHeight("200px");
 
         return decoratorPanel;
@@ -105,14 +105,12 @@ public class MainPageViewBeta extends Composite {
         panel.add(new HTML("Improve your shogi skills by solving puzzles."));
         panel.add(new HTML("<br>"));
         panel.add(new Image(resources.puzzleBlue()));
-        panel.add(new Button("TsumeShogi Problems",
-                (ClickHandler) clickEvent -> placeController.goTo(new TsumePlace())));
+        panel.add(new ElementWidget(Button.createPrimary("TsumeShogi Problems").addClickListener(evt -> placeController.goTo(new TsumePlace())).element()));
         panel.add(new Image(resources.alarmClockRed()));
-        panel.add(new Button("ByoYomi Survival",
-                (ClickHandler) clickEvent -> placeController.goTo(new ByoYomiLandingPlace())));
+        panel.add(new ElementWidget(Button.createPrimary("ByoYomi Survival").addClickListener(evt -> placeController.goTo(new ByoYomiLandingPlace())).element()));
 
         decoratorPanel.setWidget(panel);
-        panel.setWidth("400px");
+        panel.setWidth("450px");
         panel.setHeight("200px");
         return decoratorPanel;
     }
@@ -125,11 +123,16 @@ public class MainPageViewBeta extends Composite {
         panel.add(new HTML("<br>"));
         Grid grid = new Grid(1, 2);
         grid.setWidget(0, 0, new Image(resources.practiceBackground()));
-        grid.setWidget(0, 1, new Button("Play",
-                (ClickHandler) clickEvent -> placeController.goTo(new PlayPlace())));
+
+        ElementWidget button =
+                new ElementWidget(Button.createPrimary("Play")
+                        .addClickListener(evt -> placeController.goTo(new PlayPlace())).element());
+        button.getElement().getStyle().setMarginLeft(1, Style.Unit.EM);
+
+        grid.setWidget(0, 1, button);
         panel.add(grid);
         decoratorPanel.setWidget(panel);
-        panel.setWidth("400px");
+        panel.setWidth("450px");
         panel.setHeight("200px");
         return decoratorPanel;
     }
@@ -142,11 +145,16 @@ public class MainPageViewBeta extends Composite {
         panel.add(new HTML("<br>"));
         Grid grid = new Grid(1, 2);
         grid.setWidget(0, 0, new Image(resources.collectionsBackground()));
-        grid.setWidget(0, 1, new Button("Collections",
-                (ClickHandler) clickEvent -> placeController.goTo(new GameCollectionsPlace())));
+
+        ElementWidget button =
+                new ElementWidget(Button.createPrimary("Collections")
+                        .addClickListener(evt -> placeController.goTo(new GameCollectionsPlace())).element());
+        button.getElement().getStyle().setMarginLeft(1, Style.Unit.EM);
+
+        grid.setWidget(0, 1, button);
         panel.add(grid);
         decoratorPanel.setWidget(panel);
-        panel.setWidth("400px");
+        panel.setWidth("450px");
         panel.setHeight("200px");
         return decoratorPanel;
     }
