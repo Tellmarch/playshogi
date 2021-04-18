@@ -1,0 +1,7 @@
+To run the website in development mode:
+
+- in one terminal, start the client code server with:
+mvn gwt:codeserver -pl playshogi-website-client -am
+
+- in another, start the java server with:
+mvn jetty:run -pl playshogi-website-server -am -Denv=dev
