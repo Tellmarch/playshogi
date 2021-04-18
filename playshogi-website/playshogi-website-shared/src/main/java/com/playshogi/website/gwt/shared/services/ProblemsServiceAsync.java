@@ -2,10 +2,13 @@ package com.playshogi.website.gwt.shared.services;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.playshogi.website.gwt.shared.models.ProblemDetails;
+import com.playshogi.website.gwt.shared.models.ProblemOptions;
 import com.playshogi.website.gwt.shared.models.ProblemStatisticsDetails;
 import com.playshogi.website.gwt.shared.models.SurvivalHighScore;
 
 public interface ProblemsServiceAsync {
+
+    void getProblem(ProblemOptions options, AsyncCallback<ProblemDetails> callback);
 
     void getProblem(String problemId, AsyncCallback<ProblemDetails> callback);
 

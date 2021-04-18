@@ -24,15 +24,13 @@ import com.playshogi.website.gwt.client.controller.ProblemController;
 import com.playshogi.website.gwt.client.events.gametree.GameTreeChangedEvent;
 import com.playshogi.website.gwt.client.events.gametree.HighlightMoveEvent;
 import com.playshogi.website.gwt.client.events.kifu.RequestPositionEvaluationEvent;
-import com.playshogi.website.gwt.client.events.puzzles.ProblemNumMovesSelectedEvent;
-import com.playshogi.website.gwt.client.events.puzzles.ProblemsOrderSelectedEvent;
-import com.playshogi.website.gwt.client.events.puzzles.UserFinishedProblemEvent;
-import com.playshogi.website.gwt.client.events.puzzles.UserSkippedProblemEvent;
+import com.playshogi.website.gwt.client.events.puzzles.*;
 import com.playshogi.website.gwt.client.place.TsumePlace;
 import com.playshogi.website.gwt.client.ui.TsumeView;
 import com.playshogi.website.gwt.client.util.FireAndForgetCallback;
 import com.playshogi.website.gwt.shared.models.PositionEvaluationDetails;
 import com.playshogi.website.gwt.shared.models.ProblemDetails;
+import com.playshogi.website.gwt.shared.models.ProblemOptions;
 import com.playshogi.website.gwt.shared.services.KifuService;
 import com.playshogi.website.gwt.shared.services.KifuServiceAsync;
 import com.playshogi.website.gwt.shared.services.ProblemsService;
@@ -53,8 +51,8 @@ public class TsumeActivity extends MyAbstractActivity {
     private EventBus eventBus;
 
     private String tsumeId;
-    private int numMoves = 0;
-    private boolean random = true;
+    private final ProblemOptions options = new ProblemOptions();
+
     private Duration duration = new Duration();
 
     public TsumeActivity(final TsumePlace place, final TsumeView tsumeView,
@@ -87,11 +85,8 @@ public class TsumeActivity extends MyAbstractActivity {
 
     @EventHandler
     void onUserSkippedProblem(final UserSkippedProblemEvent event) {
-        if (random) {
-            loadTsume(null);
-        } else {
-            loadTsume(String.valueOf(Integer.parseInt(tsumeId) + 1));
-        }
+        options.setPreviousProblemId(tsumeId);
+        loadTsume(null);
     }
 
     @EventHandler
@@ -106,38 +101,30 @@ public class TsumeActivity extends MyAbstractActivity {
     @EventHandler
     void onProblemNumMovesSelectedEvent(final ProblemNumMovesSelectedEvent event) {
         GWT.log("Setting number of moves: " + event.getNumMoves());
-        numMoves = event.getNumMoves();
+        options.setNumMoves(event.getNumMoves());
     }
 
     @EventHandler
     void onProblemsOrderSelectedEvent(final ProblemsOrderSelectedEvent event) {
         GWT.log("Setting random order: " + event.getRandom());
-        random = event.getRandom();
+        options.setRandom(event.getRandom());
+    }
+
+    @EventHandler
+    void onProblemTypesSelectedEvent(final ProblemTypesSelectedEvent event) {
+        GWT.log("Setting problem types: " + event);
+        options.setIncludeTsume(event.isIncludeTsume());
+        options.setIncludeTwoKings(event.isIncludeTwoKings());
+        options.setIncludeHisshi(event.isIncludeHisshi());
+        options.setIncludeRealGame(event.isIncludeRealGame());
     }
 
     private void loadTsume(final String tsumeId) {
         if (tsumeId == null || tsumeId.equalsIgnoreCase("null")) {
-            if (numMoves == 0) {
-                requestRandomTsume();
-            } else {
-                requestRandomTsume(numMoves);
-            }
+            problemsService.getProblem(options, getProblemRequestCallback(null));
         } else {
-            requestTsume(tsumeId);
+            problemsService.getProblem(tsumeId, getProblemRequestCallback(tsumeId));
         }
-    }
-
-    private void requestRandomTsume() {
-        problemsService.getRandomProblem(getProblemRequestCallback(null));
-    }
-
-    private void requestRandomTsume(int numMoves) {
-        problemsService.getRandomProblem(numMoves, getProblemRequestCallback(null));
-    }
-
-
-    private void requestTsume(final String tsumeId) {
-        problemsService.getProblem(tsumeId, getProblemRequestCallback(tsumeId));
     }
 
     private void initTimer() {

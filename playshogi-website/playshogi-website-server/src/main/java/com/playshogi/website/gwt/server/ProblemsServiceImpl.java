@@ -9,10 +9,7 @@ import com.playshogi.library.database.models.PersistentKifu;
 import com.playshogi.library.database.models.PersistentProblem;
 import com.playshogi.library.database.models.PersistentUserProblemStats;
 import com.playshogi.library.shogi.models.formats.usf.UsfFormat;
-import com.playshogi.website.gwt.shared.models.LoginResult;
-import com.playshogi.website.gwt.shared.models.ProblemDetails;
-import com.playshogi.website.gwt.shared.models.ProblemStatisticsDetails;
-import com.playshogi.website.gwt.shared.models.SurvivalHighScore;
+import com.playshogi.website.gwt.shared.models.*;
 import com.playshogi.website.gwt.shared.services.ProblemsService;
 
 import java.util.*;
@@ -57,6 +54,25 @@ public class ProblemsServiceImpl extends RemoteServiceServlet implements Problem
         return queryProblemDetails(persistentProblem);
     }
 
+    @Override
+    public ProblemDetails getProblem(final ProblemOptions options) {
+        LOGGER.log(Level.INFO, "getting problem with options: " + options);
+
+        if (options.isRandom()) {
+            if (options.getNumMoves() != 0) {
+                return getRandomProblem(options.getNumMoves());
+            } else {
+                return getRandomProblem();
+            }
+        } else {
+            String previousId = options.getPreviousProblemId();
+            if (previousId == null) {
+                return getProblem("1");
+            } else {
+                return getProblem(String.valueOf(Integer.parseInt(previousId) + 1));
+            }
+        }
+    }
 
     @Override
     public ProblemDetails getRandomProblem() {
