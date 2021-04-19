@@ -18,7 +18,7 @@ public class ImportCollectionPanel extends Composite {
         FlowPanel verticalPanel = new FlowPanel();
 
         verticalPanel.add(new HTML(SafeHtmlUtils.fromSafeConstant("With this dialog you can import a collection of " +
-                "games. </br> Supported format: Zip file containing .usf, .kif or .psn files. <p/>")));
+                "kifus. </br> Supported format: Zip file containing .usf, .kif or .psn files. <p/>")));
 
         FormPanel form = createUploadForm();
         verticalPanel.add(form);
@@ -66,7 +66,7 @@ public class ImportCollectionPanel extends Composite {
 
     private DialogBox createImportDialogBox() {
         final DialogBox dialogBox = new DialogBox();
-        dialogBox.setText("Import Game Collection");
+        dialogBox.setText("Import Collection of Kifus");
         dialogBox.setGlassEnabled(true);
 
         VerticalPanel dialogContents = new VerticalPanel();

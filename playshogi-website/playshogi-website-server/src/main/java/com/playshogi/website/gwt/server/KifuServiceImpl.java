@@ -11,9 +11,9 @@ import com.playshogi.library.shogi.models.formats.sfen.SfenConverter;
 import com.playshogi.library.shogi.models.formats.usf.UsfFormat;
 import com.playshogi.library.shogi.models.position.PositionScore;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
-import com.playshogi.library.shogi.models.record.GameCollection;
 import com.playshogi.library.shogi.models.record.GameInformation;
 import com.playshogi.library.shogi.models.record.GameRecord;
+import com.playshogi.library.shogi.models.record.KifuCollection;
 import com.playshogi.website.gwt.shared.models.*;
 import com.playshogi.website.gwt.shared.services.KifuService;
 
@@ -444,10 +444,10 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
             throw new IllegalStateException("Only logged in users can save a game collection");
         }
 
-        GameCollection collection = CollectionUploads.INSTANCE.getCollection(draftId);
+        KifuCollection collection = CollectionUploads.INSTANCE.getCollection(draftId);
 
         if (collection == null) {
-            for (Entry<String, GameCollection> c : CollectionUploads.INSTANCE.getCollections().entrySet()) {
+            for (Entry<String, KifuCollection> c : CollectionUploads.INSTANCE.getCollections().entrySet()) {
                 LOGGER.log(Level.INFO, "Existing draft collection: " + c.getKey() + " " + c.getValue().getName());
             }
             throw new IllegalStateException("Invalid draft connection ID");
@@ -462,7 +462,7 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
         }
 
         int i = 1;
-        for (GameRecord game : collection.getGames()) {
+        for (GameRecord game : collection.getKifus()) {
             gameSetRepository.saveKifuAndGameToGameSet(game, id, 1, "Game #" + (i++), loginResult.getUserId());
         }
 

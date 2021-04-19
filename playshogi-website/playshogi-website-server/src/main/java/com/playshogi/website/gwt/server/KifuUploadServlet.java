@@ -5,8 +5,8 @@ import com.playshogi.library.shogi.files.ScannerLineReader;
 import com.playshogi.library.shogi.models.formats.kif.KifFormat;
 import com.playshogi.library.shogi.models.formats.psn.PsnFormat;
 import com.playshogi.library.shogi.models.formats.usf.UsfFormat;
-import com.playshogi.library.shogi.models.record.GameCollection;
 import com.playshogi.library.shogi.models.record.GameRecord;
+import com.playshogi.library.shogi.models.record.KifuCollection;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -77,7 +77,7 @@ public class KifuUploadServlet extends HttpServlet {
     private void importCollection(final InputStream inputStream, final PrintWriter writer, final String fileName) throws IOException {
         List<GameRecord> records = readGameRecords(inputStream, fileName);
 
-        String collectionId = CollectionUploads.INSTANCE.addCollection(new GameCollection("New Collection", records));
+        String collectionId = CollectionUploads.INSTANCE.addCollection(new KifuCollection("New Collection", records));
 
         writer.println("COLLECTION:" + collectionId);
     }
@@ -104,11 +104,13 @@ public class KifuUploadServlet extends HttpServlet {
         List<GameRecord> records = new ArrayList<>();
 
         while ((entry = zipInputStream.getNextEntry()) != null) {
-            List<GameRecord> gameRecords = readGameRecords(zipInputStream, entry.getName());
-            for (GameRecord gameRecord : gameRecords) {
-                LOGGER.log(Level.INFO,
-                        "Successfully read kifu: " + entry.getName() + " " + UsfFormat.INSTANCE.write(gameRecord));
-                records.add(gameRecord);
+            if (!entry.isDirectory()) {
+                List<GameRecord> gameRecords = readGameRecords(zipInputStream, entry.getName());
+                for (GameRecord gameRecord : gameRecords) {
+                    LOGGER.log(Level.INFO,
+                            "Successfully read kifu: " + entry.getName() + " " + UsfFormat.INSTANCE.write(gameRecord));
+                    records.add(gameRecord);
+                }
             }
         }
         return records;
