@@ -9,15 +9,17 @@ public class AuthenticationResult {
     private final Status status;
     private final Integer userId;
     private final String username;
+    private final boolean admin;
 
     AuthenticationResult(Status status) {
-        this(status, null, null);
+        this(status, null, null, false);
     }
 
-    AuthenticationResult(Status status, Integer userId, String userName) {
+    AuthenticationResult(final Status status, final Integer userId, final String userName, final boolean admin) {
         this.status = status;
         this.userId = userId;
         this.username = userName;
+        this.admin = admin;
     }
 
     public Status getStatus() {
@@ -32,12 +34,17 @@ public class AuthenticationResult {
         return username;
     }
 
+    public boolean isAdmin() {
+        return admin;
+    }
+
     @Override
     public String toString() {
         return "AuthenticationResult{" +
                 "status=" + status +
                 ", userId=" + userId +
                 ", username='" + username + '\'' +
+                ", admin=" + admin +
                 '}';
     }
 }

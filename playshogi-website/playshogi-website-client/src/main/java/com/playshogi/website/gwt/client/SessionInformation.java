@@ -19,6 +19,7 @@ public class SessionInformation implements AsyncCallback<LoginResult> {
     private final LoginServiceAsync loginService = GWT.create(LoginService.class);
 
     private boolean loggedIn = false;
+    private boolean admin = false;
     private String username = null;
     private String sessionId = null;
     private String errorMessage;
@@ -36,6 +37,10 @@ public class SessionInformation implements AsyncCallback<LoginResult> {
 
     public boolean isLoggedIn() {
         return loggedIn;
+    }
+
+    public boolean isAdmin() {
+        return admin;
     }
 
     public String getUsername() {
@@ -56,8 +61,12 @@ public class SessionInformation implements AsyncCallback<LoginResult> {
 
     @Override
     public String toString() {
-        return "SessionInformation [loggedIn=" + loggedIn + ", username=" + username + ", sessionId=" + sessionId
-                + ", errorMessage=" + errorMessage + "]";
+        return "SessionInformation{" +
+                ", loggedIn=" + loggedIn +
+                ", admin=" + admin +
+                ", username='" + username + '\'' +
+                ", errorMessage='" + errorMessage + '\'' +
+                '}';
     }
 
     public void logout() {
@@ -77,6 +86,7 @@ public class SessionInformation implements AsyncCallback<LoginResult> {
         GWT.log("Got session validation result: " + result);
         if (result != null) {
             loggedIn = result.isLoggedIn();
+            admin = result.isAdmin();
             sessionId = result.getSessionId();
             username = result.getUserName();
             errorMessage = result.getErrorMessage();

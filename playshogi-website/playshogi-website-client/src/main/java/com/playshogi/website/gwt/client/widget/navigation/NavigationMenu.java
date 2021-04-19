@@ -101,6 +101,9 @@ public class NavigationMenu extends Composite {
         accountMenu.clearItems();
         accountMenu.addItem("Logout", (Command) () -> placeController.goTo(new LoginPlace("logout")));
         accountMenu.addItem("Statistics", (Command) () -> placeController.goTo(new ProblemStatisticsPlace()));
+        if (sessionInformation.isAdmin()) {
+            accountMenu.addItem("Manage Problems", (Command) () -> placeController.goTo(new ManageProblemsPlace()));
+        }
     }
 
     @EventHandler

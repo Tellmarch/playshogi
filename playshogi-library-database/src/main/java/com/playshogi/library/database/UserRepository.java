@@ -43,8 +43,9 @@ public class UserRepository {
             ResultSet rs = preparedStatement.executeQuery();
             if (rs.next()) {
                 int userId = rs.getInt("id");
+                boolean admin = rs.getBoolean("administrator");
                 LOGGER.log(Level.INFO, "Found user: " + username + " with id: " + userId);
-                return new AuthenticationResult(AuthenticationResult.Status.LOGIN_OK, userId, username);
+                return new AuthenticationResult(AuthenticationResult.Status.LOGIN_OK, userId, username, admin);
             } else {
                 LOGGER.log(Level.INFO, "Did not find user: " + username);
                 return new AuthenticationResult(AuthenticationResult.Status.INVALID);
@@ -71,7 +72,7 @@ public class UserRepository {
                 String hash = PasswordHashing.hash(password);
                 int userId = insertUser(username, hash);
                 LOGGER.log(Level.INFO, "Registered new user: " + username);
-                return new AuthenticationResult(AuthenticationResult.Status.LOGIN_OK, userId, username);
+                return new AuthenticationResult(AuthenticationResult.Status.LOGIN_OK, userId, username, false);
             }
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error registering new user in db", e);

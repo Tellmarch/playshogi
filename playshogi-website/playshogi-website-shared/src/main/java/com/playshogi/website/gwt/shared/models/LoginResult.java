@@ -2,7 +2,6 @@ package com.playshogi.website.gwt.shared.models;
 
 import java.io.Serializable;
 
-@SuppressWarnings("serial")
 public class LoginResult implements Serializable {
 
     private boolean loggedIn = false;
@@ -10,17 +9,9 @@ public class LoginResult implements Serializable {
     private String userName = null;
     private int userId = 0;
     private String errorMessage = null;
+    private boolean admin = false;
 
     public LoginResult() {
-    }
-
-    public LoginResult(final boolean loggedIn, final String sessionId, final String userName, final int userId,
-                       final String errorMessage) {
-        this.loggedIn = loggedIn;
-        this.sessionId = sessionId;
-        this.userName = userName;
-        this.userId = userId;
-        this.errorMessage = errorMessage;
     }
 
     public boolean isLoggedIn() {
@@ -63,6 +54,14 @@ public class LoginResult implements Serializable {
         this.userId = userId;
     }
 
+    public boolean isAdmin() {
+        return admin;
+    }
+
+    public void setAdmin(final boolean admin) {
+        this.admin = admin;
+    }
+
     @Override
     public String toString() {
         return "LoginResult{" +
@@ -71,6 +70,7 @@ public class LoginResult implements Serializable {
                 ", userName='" + userName + '\'' +
                 ", userId=" + userId +
                 ", errorMessage='" + errorMessage + '\'' +
+                ", admin=" + admin +
                 '}';
     }
 }

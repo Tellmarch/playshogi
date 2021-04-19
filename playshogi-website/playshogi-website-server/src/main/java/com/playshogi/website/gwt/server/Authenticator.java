@@ -36,6 +36,7 @@ public enum Authenticator {
             loginResult.setUserId(authenticationResult.getUserId());
             String sessionId = UUID.randomUUID().toString();
             loginResult.setSessionId(sessionId);
+            loginResult.setAdmin(authenticationResult.isAdmin());
             activeSessions.put(sessionId, loginResult);
         } else if (status == INVALID) {
             loginResult.setErrorMessage("Invalid username or password");
