@@ -130,7 +130,8 @@ public class ProblemOptionsPanelBeta extends Composite {
             numMovesGroup.appendChild(Chip.create(n + " moves"));
         }
 
-        numMovesGroup.appendChild(Chip.create("All moves")).setColorScheme(ColorScheme.TEAL).selectAt(0);
+        numMovesGroup.appendChild(Chip.create("All moves"));
+        numMovesGroup.setColorScheme(ColorScheme.TEAL).selectAt(0);
         numMovesGroup.addSelectionHandler(value -> handleNumMovesSelection());
         selectableChipsCard.appendChild(Row.create().addColumn(Column.span12().appendChild(numMovesGroup)));
     }

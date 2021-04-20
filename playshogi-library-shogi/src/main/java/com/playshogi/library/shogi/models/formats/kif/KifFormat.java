@@ -14,6 +14,7 @@ import com.playshogi.library.shogi.models.record.*;
 import com.playshogi.library.shogi.rules.ShogiRulesEngine;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public enum KifFormat implements GameRecordFormat {
@@ -106,11 +107,11 @@ public enum KifFormat implements GameRecordFormat {
                     break;
                 case "手合割":
                     handicap = value;
-                    if (!value.startsWith("平手")) {
+                    if (!(value.startsWith("平手") || value.startsWith("その他"))) {
                         // TODO
                         // System.out.println("Handicap game, we ignore for
                         // now");
-                        return null;
+                        return Collections.emptyList();
                     }
                     break;
                 case "後手":

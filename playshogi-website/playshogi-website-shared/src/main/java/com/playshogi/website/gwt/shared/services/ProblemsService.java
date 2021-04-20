@@ -26,4 +26,6 @@ public interface ProblemsService extends RemoteService {
 
     ProblemStatisticsDetails[] getProblemStatisticsDetails(String sessionId);
 
+    String saveProblemsCollection(String sessionId, String draftId);
+
 }

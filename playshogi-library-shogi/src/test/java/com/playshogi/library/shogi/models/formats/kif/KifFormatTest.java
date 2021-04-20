@@ -6,8 +6,9 @@ import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.library.shogi.models.record.GameRecord;
 import org.junit.Test;
 
+import java.util.List;
+
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 
 public class KifFormatTest {
 
@@ -423,8 +424,15 @@ public class KifFormatTest {
 
     @Test
     public void readFromPyo() {
-        assertNull(KifFormat.INSTANCE.read(KIF_PYO));
-        // Right now handicap games are not read correctly
+        List<GameRecord> kif = KifFormat.INSTANCE.read(KIF_PYO);
+        assertEquals("USF:1.0\n" +
+                "^w:8c8d2g2f8d8e2f2e8e8f8g8f8b8f7g7f8f8d6i7h5a6ap*8g6a5b3i3h8d8a3h2gP*8e2g3f8a8d3f3e8d6d2e2d2c2d3e2dP" +
+                "*2f2h2f2b3a2d3C8e8f2f2A8f8G7h8g6d6G2a3a6g8g3a4b5b6a4i5hP*2hp*8bG" +
+                "*5b4b4a5b5a4a3b6a7a3c4c2h2I8h3C5a4b3b4b2i2hg*7bRSGN\n" +
+                "BN:プレイヤー\n" +
+                "WN:Lv16 ピヨ郎(R810)\n" +
+                "GD:2020/09/27 18:07:32\n" +
+                "GN:ぴよ将棋w ハ枚落ち（トンボ）\n", UsfFormat.INSTANCE.write(kif.get(0)));
     }
 
     @Test

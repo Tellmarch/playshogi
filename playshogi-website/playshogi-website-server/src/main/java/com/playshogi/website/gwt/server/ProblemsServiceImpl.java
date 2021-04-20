@@ -9,6 +9,7 @@ import com.playshogi.library.database.models.PersistentKifu;
 import com.playshogi.library.database.models.PersistentProblem;
 import com.playshogi.library.database.models.PersistentUserProblemStats;
 import com.playshogi.library.shogi.models.formats.usf.UsfFormat;
+import com.playshogi.library.shogi.models.record.KifuCollection;
 import com.playshogi.website.gwt.shared.models.*;
 import com.playshogi.website.gwt.shared.services.ProblemsService;
 
@@ -58,20 +59,22 @@ public class ProblemsServiceImpl extends RemoteServiceServlet implements Problem
     public ProblemDetails getProblem(final ProblemOptions options) {
         LOGGER.log(Level.INFO, "getting problem with options: " + options);
 
-        if (options.isRandom()) {
-            if (options.getNumMoves() != 0) {
-                return getRandomProblem(options.getNumMoves());
-            } else {
-                return getRandomProblem();
-            }
-        } else {
-            String previousId = options.getPreviousProblemId();
-            if (previousId == null) {
-                return getProblem("1");
-            } else {
-                return getProblem(String.valueOf(Integer.parseInt(previousId) + 1));
-            }
-        }
+        return ProblemsCache.INSTANCE.getProblem(options);
+
+//        if (options.isRandom()) {
+//            if (options.getNumMoves() != 0) {
+//                return getRandomProblem(options.getNumMoves());
+//            } else {
+//                return getRandomProblem();
+//            }
+//        } else {
+//            String previousId = options.getPreviousProblemId();
+//            if (previousId == null) {
+//                return getProblem("1");
+//            } else {
+//                return getProblem(String.valueOf(Integer.parseInt(previousId) + 1));
+//            }
+//        }
     }
 
     @Override
@@ -197,6 +200,29 @@ public class ProblemsServiceImpl extends RemoteServiceServlet implements Problem
 
         return survivalHighScores.toArray(new SurvivalHighScore[0]);
     }
+
+    @Override
+    public String saveProblemsCollection(final String sessionId, final String draftId) {
+        LOGGER.log(Level.INFO, "saveProblemsCollection: " + draftId);
+
+        LoginResult loginResult = authenticator.checkSession(sessionId);
+        if (loginResult == null || !loginResult.isLoggedIn() || !loginResult.isAdmin()) {
+            throw new IllegalStateException("Only administrators can save a problems collection");
+        }
+
+        KifuCollection collection = CollectionUploads.INSTANCE.getCollection(draftId);
+
+        if (collection == null) {
+            throw new IllegalStateException("Invalid draft connection ID");
+        }
+
+        String id = UUID.randomUUID().toString();
+
+        ProblemsCache.INSTANCE.saveProblemsCollection(collection);
+
+        return id;
+    }
+
 
     private static Map<String, Integer> sortByValueDesc(final Map<String, Integer> scores) {
         return scores.entrySet()

@@ -1,6 +1,7 @@
 package com.playshogi.library.shogi.models.record;
 
 import com.playshogi.library.shogi.models.moves.EditMove;
+import com.playshogi.library.shogi.models.moves.SpecialMove;
 import com.playshogi.library.shogi.models.position.ReadOnlyShogiPosition;
 import com.playshogi.library.shogi.models.shogivariant.ShogiInitialPositionFactory;
 
@@ -31,5 +32,17 @@ public class GameTree {
         } else {
             return ShogiInitialPositionFactory.READ_ONLY_INITIAL_POSITION;
         }
+    }
+
+    public int getMainVariationLength() {
+        int res = 0;
+        Node n = rootNode;
+        while (n.hasChildren()) {
+            n = n.getFirstChild();
+            if (!(n.getMove() instanceof SpecialMove)) {
+                res++;
+            }
+        }
+        return res;
     }
 }
