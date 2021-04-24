@@ -62,19 +62,7 @@
                     <artifactId>jetty-maven-plugin</artifactId>
                     <configuration>
                         <scanIntervalSeconds>1</scanIntervalSeconds>
-                        <webApp>
-                            <extraClasspath>${basedir}/../testart4-shared/target/classes/</extraClasspath>
-                        </webApp>
                         <contextXml>${basedir}/src/main/jettyconf/context.xml</contextXml>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.tomcat.maven</groupId>
-                    <artifactId>tomcat7-maven-plugin</artifactId>
-                    <configuration>
-                        <addWarDependenciesInClassloader>false</addWarDependenciesInClassloader>
-                        <path>/</path>
-                        <uriEncoding>UTF-8</uriEncoding>
                     </configuration>
                 </plugin>
             </plugins>
@@ -113,6 +101,7 @@
                             <artifactId>jetty-maven-plugin</artifactId>
                             <configuration>
                                 <webApp>
+                                    <descriptor>${basedir}/src/main/jettyconf/web.xml</descriptor>
                                     <resourceBases>
                                         <resourceBase>${basedir}/src/main/webapp</resourceBase>
                                         <resourceBase>${basedir}/../target/gwt/launcherDir/</resourceBase>

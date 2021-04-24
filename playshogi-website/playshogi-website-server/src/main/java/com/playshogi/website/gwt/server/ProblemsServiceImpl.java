@@ -223,6 +223,29 @@ public class ProblemsServiceImpl extends RemoteServiceServlet implements Problem
         return id;
     }
 
+    @Override
+    public ProblemCollectionDetails[] getProblemCollections(final String sessionId) {
+        LOGGER.log(Level.INFO, "getProblemCollections");
+
+        LoginResult loginResult = authenticator.checkSession(sessionId);
+        if (loginResult == null || !loginResult.isLoggedIn() || !loginResult.isAdmin()) {
+            throw new IllegalStateException("Only administrators can see problems collections");
+        }
+
+        return ProblemsCache.INSTANCE.getProblemsCollectionDetails();
+    }
+
+    @Override
+    public ProblemCollectionDetailsAndProblems getProblemCollection(final String sessionId, final String collectionId) {
+        LOGGER.log(Level.INFO, "getProblemCollections");
+
+        LoginResult loginResult = authenticator.checkSession(sessionId);
+        if (loginResult == null || !loginResult.isLoggedIn() || !loginResult.isAdmin()) {
+            throw new IllegalStateException("Only administrators can see problems collections");
+        }
+
+        return ProblemsCache.INSTANCE.getProblemCollectionDetailsAndProblems(collectionId);
+    }
 
     private static Map<String, Integer> sortByValueDesc(final Map<String, Integer> scores) {
         return scores.entrySet()

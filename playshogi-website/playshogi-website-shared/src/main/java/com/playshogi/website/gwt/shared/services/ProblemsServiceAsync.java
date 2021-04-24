@@ -1,10 +1,7 @@
 package com.playshogi.website.gwt.shared.services;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.playshogi.website.gwt.shared.models.ProblemDetails;
-import com.playshogi.website.gwt.shared.models.ProblemOptions;
-import com.playshogi.website.gwt.shared.models.ProblemStatisticsDetails;
-import com.playshogi.website.gwt.shared.models.SurvivalHighScore;
+import com.playshogi.website.gwt.shared.models.*;
 
 public interface ProblemsServiceAsync {
 
@@ -26,5 +23,10 @@ public interface ProblemsServiceAsync {
     void getHighScores(AsyncCallback<SurvivalHighScore[]> callback);
 
     void saveProblemsCollection(String sessionId, String draftId, AsyncCallback<String> callback);
+
+    void getProblemCollections(String sessionId, AsyncCallback<ProblemCollectionDetails[]> callback);
+
+    void getProblemCollection(String sessionId, String collectionId,
+                              AsyncCallback<ProblemCollectionDetailsAndProblems> callback);
 
 }

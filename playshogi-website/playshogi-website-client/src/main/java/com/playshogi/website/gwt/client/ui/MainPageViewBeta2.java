@@ -50,38 +50,38 @@ public class MainPageViewBeta2 extends Composite {
     }
 
     private Column getCollectionsCard() {
-        return getCard("/images/background/game_collection.png", "Collections", "Browse or Create collections of " +
+        return getCard("images/background/game_collection.png", "Collections", "Browse or Create collections of " +
                 "Shogi games.", "Collections", new GameCollectionsPlace());
     }
 
     private Column getPracticeCard() {
-        return getCard("/images/background/starting_position.png", "Practice", "Practice your playing skills against " +
+        return getCard("images/background/starting_position.png", "Practice", "Practice your playing skills against " +
                 "a computer.", "Play", new PlayPlace());
     }
 
     private Column getPuzzlesCard() {
-        return getCard("/images/background/tsume.png", "Puzzles", "Improve your shogi skills by solving puzzles.",
+        return getCard("images/background/tsume.png", "Puzzles", "Improve your shogi skills by solving puzzles.",
                 "TsumeShogi Problems", new TsumePlace());
     }
 
     private Column getByoYomiCard() {
-        return getCard("/images/background/tsume.png", "Byo-yomi survival", "Try to solve problems as fast as " +
+        return getCard("images/background/tsume.png", "Byo-yomi survival", "Try to solve problems as fast as " +
                 "possible!", "ByoYomi Survival", new ByoYomiPlace());
     }
 
     private Column getRealProblemsCard() {
-        return getCard("/images/background/tsume.png", "Problems from Real Games", "Can you play like Habu? Find out " +
+        return getCard("images/background/tsume.png", "Problems from Real Games", "Can you play like Habu? Find out " +
                         "with this set of problems extracted from famous professional games!", "Real Games Problems",
                 new ByoYomiPlace());
     }
 
     private Column getLearnCard() {
-        return getCard("/images/background/silver_movement.png", "Learn", "Learn how to play Shogi with an " +
+        return getCard("images/background/silver_movement.png", "Learn", "Learn how to play Shogi with an " +
                 "interactive tutorial!", "Tutorial", new TutorialPlace());
     }
 
     private Column getOpeningsCard() {
-        return getCard("/images/background/starting_position.png", "Openings", "Browse openings from a database of " +
+        return getCard("images/background/starting_position.png", "Openings", "Browse openings from a database of " +
                 "50K professional games!", "Openings", new OpeningsPlace());
     }
 

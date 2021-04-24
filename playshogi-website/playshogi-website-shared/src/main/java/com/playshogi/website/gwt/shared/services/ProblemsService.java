@@ -2,10 +2,7 @@ package com.playshogi.website.gwt.shared.services;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
-import com.playshogi.website.gwt.shared.models.ProblemDetails;
-import com.playshogi.website.gwt.shared.models.ProblemOptions;
-import com.playshogi.website.gwt.shared.models.ProblemStatisticsDetails;
-import com.playshogi.website.gwt.shared.models.SurvivalHighScore;
+import com.playshogi.website.gwt.shared.models.*;
 
 @RemoteServiceRelativePath("problems")
 public interface ProblemsService extends RemoteService {
@@ -27,5 +24,9 @@ public interface ProblemsService extends RemoteService {
     ProblemStatisticsDetails[] getProblemStatisticsDetails(String sessionId);
 
     String saveProblemsCollection(String sessionId, String draftId);
+
+    ProblemCollectionDetails[] getProblemCollections(String sessionId);
+
+    ProblemCollectionDetailsAndProblems getProblemCollection(String sessionId, String collectionId);
 
 }
