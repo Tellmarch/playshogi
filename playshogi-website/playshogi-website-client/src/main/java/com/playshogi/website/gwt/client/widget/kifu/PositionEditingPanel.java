@@ -123,7 +123,7 @@ public class PositionEditingPanel extends Composite {
     }
 
     @EventHandler
-    public void onEPositionChangedEvent(final PositionChangedEvent event) {
+    public void onPositionChangedEvent(final PositionChangedEvent event) {
         GWT.log("PositionEditingPanel: handle PositionChangedEvent");
         if (event.getPosition().getPlayerToMove() == Player.BLACK) {
             toPlayButton.setText("Black to play");

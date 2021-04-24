@@ -13,6 +13,7 @@ public class BoardConfiguration {
     private boolean showSenteKomadai = true;
     private boolean allowPromotion = true;
     private boolean fillGoteKomadaiWithMissingPieces = false;
+    private boolean allowDrawArrows = true;
 
     public BoardConfiguration() {
     }
@@ -113,6 +114,18 @@ public class BoardConfiguration {
         this.fillGoteKomadaiWithMissingPieces = fillGoteKomadaiWithMissingPieces;
     }
 
+    public boolean isAllowIllegalMoves() {
+        return allowIllegalMoves;
+    }
+
+    public boolean isAllowDrawArrows() {
+        return allowDrawArrows;
+    }
+
+    public void setAllowDrawArrows(final boolean allowDrawArrows) {
+        this.allowDrawArrows = allowDrawArrows;
+    }
+
     @Override
     public String toString() {
         return "BoardConfiguration{" +
@@ -128,6 +141,7 @@ public class BoardConfiguration {
                 ", showSenteKomadai=" + showSenteKomadai +
                 ", allowPromotion=" + allowPromotion +
                 ", fillGoteKomadaiWithMissingPieces=" + fillGoteKomadaiWithMissingPieces +
+                ", allowDrawArrows=" + allowDrawArrows +
                 '}';
     }
 }

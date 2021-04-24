@@ -6,6 +6,10 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
 import com.google.web.bindery.event.shared.EventBus;
+import com.google.web.bindery.event.shared.binder.EventBinder;
+import com.google.web.bindery.event.shared.binder.EventHandler;
+import com.playshogi.website.gwt.client.events.user.NotationStyleSelectedEvent;
+import com.playshogi.website.gwt.client.events.user.PieceStyleSelectedEvent;
 import com.playshogi.website.gwt.client.events.user.UserLoggedInEvent;
 import com.playshogi.website.gwt.client.events.user.UserLoggedOutEvent;
 import com.playshogi.website.gwt.shared.models.LoginResult;
@@ -16,6 +20,11 @@ import java.util.Date;
 
 public class SessionInformation implements AsyncCallback<LoginResult> {
 
+    interface MyEventBinder extends EventBinder<SessionInformation> {
+    }
+
+    private final MyEventBinder eventBinder = com.google.gwt.core.client.GWT.create(MyEventBinder.class);
+
     private final LoginServiceAsync loginService = GWT.create(LoginService.class);
 
     private boolean loggedIn = false;
@@ -23,12 +32,14 @@ public class SessionInformation implements AsyncCallback<LoginResult> {
     private String username = null;
     private String sessionId = null;
     private String errorMessage;
+    private final UserPreferences userPreferences = new UserPreferences();
 
     private final EventBus eventBus;
 
     @Inject
     public SessionInformation(final EventBus eventBus) {
         this.eventBus = eventBus;
+        eventBinder.bindEventHandlers(this, eventBus);
         String sid = Cookies.getCookie("sid");
         if (sid != null) {
             loginService.checkSession(sid, this);
@@ -59,14 +70,8 @@ public class SessionInformation implements AsyncCallback<LoginResult> {
         return errorMessage;
     }
 
-    @Override
-    public String toString() {
-        return "SessionInformation{" +
-                ", loggedIn=" + loggedIn +
-                ", admin=" + admin +
-                ", username='" + username + '\'' +
-                ", errorMessage='" + errorMessage + '\'' +
-                '}';
+    public UserPreferences getUserPreferences() {
+        return userPreferences;
     }
 
     public void logout() {
@@ -122,5 +127,26 @@ public class SessionInformation implements AsyncCallback<LoginResult> {
         } else {
             Window.alert("This functionality is only available to logged in users - please log-in or register.");
         }
+    }
+
+    @EventHandler
+    public void onPieceStyleSelected(final PieceStyleSelectedEvent event) {
+        userPreferences.setPieceStyle(event.getStyle());
+    }
+
+    @EventHandler
+    public void onNotationStyleSelected(final NotationStyleSelectedEvent event) {
+        userPreferences.setNotationStyle(event.getStyle());
+    }
+
+    @Override
+    public String toString() {
+        return "SessionInformation{" +
+                "loggedIn=" + loggedIn +
+                ", admin=" + admin +
+                ", username='" + username + '\'' +
+                ", errorMessage='" + errorMessage + '\'' +
+                ", userPreferences=" + userPreferences +
+                '}';
     }
 }

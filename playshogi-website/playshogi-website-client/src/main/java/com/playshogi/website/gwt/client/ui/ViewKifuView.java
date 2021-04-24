@@ -9,6 +9,7 @@ import com.google.inject.Singleton;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
+import com.playshogi.website.gwt.client.SessionInformation;
 import com.playshogi.website.gwt.client.events.gametree.PositionChangedEvent;
 import com.playshogi.website.gwt.client.widget.board.BoardSettingsPanel;
 import com.playshogi.website.gwt.client.widget.board.ShogiBoard;
@@ -32,6 +33,7 @@ public class ViewKifuView extends Composite {
 
     private final MyEventBinder eventBinder = GWT.create(MyEventBinder.class);
 
+    private final SessionInformation sessionInformation;
     private final ShogiBoard shogiBoard;
     private final GameNavigator gameNavigator;
     private final KifuInformationPanel kifuInformationPanel;
@@ -39,11 +41,13 @@ public class ViewKifuView extends Composite {
     private final PositionEvaluationDetailsPanel positionEvaluationDetailsPanel;
     private final KifuEvaluationChartPanel kifuEvaluationChartPanel;
     private final TextArea textArea;
+    private final BoardSettingsPanel boardSettingsPanel;
 
     @Inject
-    public ViewKifuView() {
+    public ViewKifuView(final SessionInformation sessionInformation) {
         GWT.log("Creating ViewKifuView");
-        shogiBoard = new ShogiBoard(VIEWKIFU);
+        this.sessionInformation = sessionInformation;
+        shogiBoard = new ShogiBoard(VIEWKIFU, sessionInformation.getUserPreferences());
         gameNavigator = new GameNavigator(VIEWKIFU);
 
         kifuInformationPanel = new KifuInformationPanel();
@@ -56,6 +60,7 @@ public class ViewKifuView extends Composite {
         textArea = createCommentsArea();
 
         gameTreePanel = new GameTreePanel(VIEWKIFU, gameNavigator.getGameNavigation(), true);
+        boardSettingsPanel = new BoardSettingsPanel(this.sessionInformation.getUserPreferences());
 
         positionEvaluationDetailsPanel = new PositionEvaluationDetailsPanel(shogiBoard);
         positionEvaluationDetailsPanel.setSize("1450px", "300px");
@@ -97,7 +102,7 @@ public class ViewKifuView extends Composite {
 
         tabsPanel.add(treeScrollPanel, "Moves");
         tabsPanel.add(kifuEvaluationChartPanel, "Computer");
-        tabsPanel.add(new BoardSettingsPanel(), "Board");
+        tabsPanel.add(boardSettingsPanel, "Board");
 
         tabsPanel.setSize("650px", "640px");
         tabsPanel.getElement().getStyle().setMarginTop(3, Style.Unit.PX);
@@ -113,6 +118,7 @@ public class ViewKifuView extends Composite {
         positionEvaluationDetailsPanel.activate(eventBus);
         kifuEvaluationChartPanel.activate(eventBus, kifuId);
         gameTreePanel.activate(eventBus);
+        boardSettingsPanel.activate(eventBus);
     }
 
     public GameNavigator getGameNavigator() {

@@ -5,6 +5,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.web.bindery.event.shared.EventBus;
+import com.playshogi.website.gwt.client.SessionInformation;
 import com.playshogi.website.gwt.client.widget.board.ShogiBoard;
 import com.playshogi.website.gwt.client.widget.gamenavigator.GameNavigator;
 
@@ -16,9 +17,9 @@ public class FreeBoardView extends Composite {
     private final GameNavigator gameNavigator;
 
     @Inject
-    public FreeBoardView() {
+    public FreeBoardView(final SessionInformation sessionInformation) {
         GWT.log("Creating free board view");
-        shogiBoard = new ShogiBoard(FREEBOARD);
+        shogiBoard = new ShogiBoard(FREEBOARD, sessionInformation.getUserPreferences());
         gameNavigator = new GameNavigator(FREEBOARD);
         shogiBoard.setUpperRightPanel(null);
 

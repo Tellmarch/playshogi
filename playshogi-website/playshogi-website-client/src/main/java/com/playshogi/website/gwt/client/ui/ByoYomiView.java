@@ -5,6 +5,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.web.bindery.event.shared.EventBus;
+import com.playshogi.website.gwt.client.SessionInformation;
 import com.playshogi.website.gwt.client.mvp.AppPlaceHistoryMapper;
 import com.playshogi.website.gwt.client.place.ByoYomiPlace;
 import com.playshogi.website.gwt.client.widget.board.ShogiBoard;
@@ -25,9 +26,9 @@ public class ByoYomiView extends Composite {
     private final ByoYomiProgressPanel byoYomiProgressPanel;
 
     @Inject
-    public ByoYomiView(final AppPlaceHistoryMapper historyMapper) {
+    public ByoYomiView(final AppPlaceHistoryMapper historyMapper, final SessionInformation sessionInformation) {
         GWT.log("Creating byo yomi view");
-        shogiBoard = new ShogiBoard(TSUME);
+        shogiBoard = new ShogiBoard(TSUME, sessionInformation.getUserPreferences());
         gameNavigator = new GameNavigator(TSUME);
         byoYomiFeedbackPanel = new ByoYomiFeedbackPanel();
         byoYomiProgressPanel = new ByoYomiProgressPanel(historyMapper);

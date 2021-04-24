@@ -45,7 +45,7 @@ public class TutorialView extends Composite {
 
         AbsolutePanel absolutePanel = getRightPanel();
 
-        shogiBoard = new ShogiBoard(TUTORIAL);
+        shogiBoard = new ShogiBoard(TUTORIAL, sessionInformation.getUserPreferences());
         this.tutorials = new Tutorials(this);
         shogiBoard.setLowerLeftPanel(getOutline());
         shogiBoard.setUpperRightPanel(absolutePanel);

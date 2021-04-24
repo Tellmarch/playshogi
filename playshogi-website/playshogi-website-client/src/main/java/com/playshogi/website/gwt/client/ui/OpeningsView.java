@@ -7,6 +7,7 @@ import com.google.inject.Singleton;
 import com.google.web.bindery.event.shared.EventBus;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.library.shogi.models.record.GameTree;
+import com.playshogi.website.gwt.client.SessionInformation;
 import com.playshogi.website.gwt.client.mvp.AppPlaceHistoryMapper;
 import com.playshogi.website.gwt.client.widget.board.ShogiBoard;
 import com.playshogi.website.gwt.client.widget.gamenavigator.GameNavigator;
@@ -23,9 +24,9 @@ public class OpeningsView extends Composite {
     private final PositionKifusPanel positionKifusPanel;
 
     @Inject
-    public OpeningsView(final AppPlaceHistoryMapper historyMapper) {
+    public OpeningsView(final AppPlaceHistoryMapper historyMapper, final SessionInformation sessionInformation) {
         GWT.log("Creating openings view");
-        shogiBoard = new ShogiBoard(OPENINGS);
+        shogiBoard = new ShogiBoard(OPENINGS, sessionInformation.getUserPreferences());
         gameNavigator = new GameNavigator(OPENINGS);
 
         positionStatisticsPanel = new PositionStatisticsPanel(historyMapper);

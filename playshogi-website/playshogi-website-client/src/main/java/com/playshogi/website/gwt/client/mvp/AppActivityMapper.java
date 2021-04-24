@@ -13,6 +13,8 @@ import com.playshogi.website.gwt.client.ui.*;
 public class AppActivityMapper implements ActivityMapper {
 
     @Inject
+    SessionInformation sessionInformation;
+    @Inject
     MainPageViewBeta2 mainPageView;
     @Inject
     LinksView linksView;
@@ -46,8 +48,6 @@ public class AppActivityMapper implements ActivityMapper {
     UserKifusView userKifusView;
     @Inject
     ManageProblemsView manageProblemsView;
-    @Inject
-    SessionInformation sessionInformation;
     @Inject
     PlaceController placeController;
 

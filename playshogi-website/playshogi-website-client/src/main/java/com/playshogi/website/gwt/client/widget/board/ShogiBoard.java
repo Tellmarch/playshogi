@@ -22,6 +22,7 @@ import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.library.shogi.models.position.Square;
 import com.playshogi.library.shogi.models.shogivariant.ShogiInitialPositionFactory;
 import com.playshogi.library.shogi.rules.ShogiRulesEngine;
+import com.playshogi.website.gwt.client.UserPreferences;
 import com.playshogi.website.gwt.client.events.gametree.HighlightMoveEvent;
 import com.playshogi.website.gwt.client.events.gametree.MovePlayedEvent;
 import com.playshogi.website.gwt.client.events.gametree.PositionChangedEvent;
@@ -37,6 +38,8 @@ import static com.playshogi.website.gwt.client.widget.board.PieceWrapper.BLACK_K
 import static com.playshogi.website.gwt.client.widget.board.PieceWrapper.WHITE_KOMADAI_ROW;
 
 public class ShogiBoard extends Composite implements ClickHandler {
+
+    private final UserPreferences userPreferences;
 
     interface MyEventBinder extends EventBinder<ShogiBoard> {
     }
@@ -67,23 +70,25 @@ public class ShogiBoard extends Composite implements ClickHandler {
 
     private EventBus eventBus;
     private ShogiPosition position;
-    private PieceGraphics.Style style = PieceGraphics.Style.RYOKO;
 
     private Square mouseDownUpStartSquare = null;
     private PieceWrapper mouseDownUpStartPieceWrapper = null;
 
-    public ShogiBoard(final String activityId) {
-        this(activityId, new BoardConfiguration());
+    public ShogiBoard(final String activityId, final UserPreferences userPreferences) {
+        this(activityId, userPreferences, new BoardConfiguration());
     }
 
-    public ShogiBoard(final String activityId, final BoardConfiguration boardConfiguration) {
-        this(activityId, boardConfiguration, ShogiInitialPositionFactory.createInitialPosition());
+    public ShogiBoard(final String activityId, final UserPreferences userPreferences,
+                      final BoardConfiguration boardConfiguration) {
+        this(activityId, userPreferences, boardConfiguration, ShogiInitialPositionFactory.createInitialPosition());
     }
 
-    public ShogiBoard(final String activityId, final BoardConfiguration boardConfiguration,
+    public ShogiBoard(final String activityId, final UserPreferences userPreferences,
+                      final BoardConfiguration boardConfiguration,
                       final ShogiPosition position) {
         GWT.log(activityId + ": Creating shogi board");
 
+        this.userPreferences = userPreferences;
         this.activityId = activityId;
         this.boardConfiguration = boardConfiguration;
         this.position = position;
@@ -186,6 +191,9 @@ public class ShogiBoard extends Composite implements ClickHandler {
     }
 
     private void drawArrowToSquare(final Square to) {
+        if (!boardConfiguration.isAllowDrawArrows()) {
+            return;
+        }
         Arrow arrow = null;
         if (mouseDownUpStartSquare != null && !to.equals(mouseDownUpStartSquare)) {
             arrow = new Arrow(mouseDownUpStartSquare, to, Color.RED);
@@ -234,7 +242,7 @@ public class ShogiBoard extends Composite implements ClickHandler {
             for (int col = 0, columns = position.getColumns(); col < columns; ++col) {
                 Piece piece = getPiece(row, col);
                 if (piece != null) {
-                    final Image image = new Image(PieceGraphics.getPieceImage(piece, style));
+                    final Image image = new Image(PieceGraphics.getPieceImage(piece, getPieceStyle()));
 
                     PieceWrapper pieceWrapper = new PieceWrapper(piece, image, row, col);
                     boardPieceWrappers.add(pieceWrapper);
@@ -245,6 +253,10 @@ public class ShogiBoard extends Composite implements ClickHandler {
                 }
             }
         }
+    }
+
+    private PieceGraphics.Style getPieceStyle() {
+        return userPreferences.getPieceStyle();
     }
 
     private void displaySenteKomadai() {
@@ -292,7 +304,7 @@ public class ShogiBoard extends Composite implements ClickHandler {
     }
 
     private Image createKomadaiPieceImage(Piece piece, boolean sente) {
-        final Image image = new Image(PieceGraphics.getPieceImage(piece, style));
+        final Image image = new Image(PieceGraphics.getPieceImage(piece, getPieceStyle()));
         PieceWrapper pieceWrapper = new PieceWrapper(piece, image, sente ? BLACK_KOMADAI_ROW : WHITE_KOMADAI_ROW,
                 sente ? BLACK_KOMADAI_ROW : WHITE_KOMADAI_ROW);
         pieceWrapper.setInKomadai(true);
@@ -533,7 +545,6 @@ public class ShogiBoard extends Composite implements ClickHandler {
 
     @EventHandler
     public void onPieceStyleSelected(final PieceStyleSelectedEvent event) {
-        style = event.getStyle();
-        displayPosition();
+        Scheduler.get().scheduleDeferred(this::displayPosition);
     }
 }

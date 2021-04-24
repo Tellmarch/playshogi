@@ -14,6 +14,7 @@ import com.google.web.bindery.event.shared.EventBus;
 import com.playshogi.library.shogi.models.formats.sfen.SfenConverter;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.library.shogi.models.shogivariant.Handicap;
+import com.playshogi.website.gwt.client.SessionInformation;
 import com.playshogi.website.gwt.client.i18n.PlayMessages;
 import com.playshogi.website.gwt.client.widget.board.ShogiBoard;
 import com.playshogi.website.gwt.client.widget.gamenavigator.GameNavigator;
@@ -28,9 +29,9 @@ public class PlayView extends Composite {
     private final PlayMessages messages = GWT.create(PlayMessages.class);
 
     @Inject
-    public PlayView() {
+    public PlayView(final SessionInformation sessionInformation) {
         GWT.log("Creating Play view");
-        shogiBoard = new ShogiBoard(PLAY);
+        shogiBoard = new ShogiBoard(PLAY, sessionInformation.getUserPreferences());
         gameNavigator = new GameNavigator(PLAY);
         shogiBoard.setUpperRightPanel(null);
 

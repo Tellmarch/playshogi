@@ -11,6 +11,7 @@ import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.library.shogi.models.moves.EditMove;
 import com.playshogi.library.shogi.models.record.*;
 import com.playshogi.library.shogi.rules.ShogiRulesEngine;
+import com.playshogi.website.gwt.client.SessionInformation;
 import com.playshogi.website.gwt.client.events.gametree.GameTreeChangedEvent;
 import com.playshogi.website.gwt.client.events.gametree.PositionChangedEvent;
 import com.playshogi.website.gwt.client.events.kifu.EditModeSelectedEvent;
@@ -51,10 +52,10 @@ public class KifuEditorView extends Composite {
     private KifuDetails.KifuType type;
 
     @Inject
-    public KifuEditorView(final PlaceController placeController) {
+    public KifuEditorView(final PlaceController placeController, final SessionInformation sessionInformation) {
         GWT.log("Creating problem editor view");
         saveKifuPanel = new SaveKifuPanel(placeController);
-        shogiBoard = new ShogiBoard(PROBLEM_EDITOR);
+        shogiBoard = new ShogiBoard(PROBLEM_EDITOR, sessionInformation.getUserPreferences());
         shogiBoard.getBoardConfiguration().setPositionEditingMode(false);
 
         gameNavigation = new GameNavigation(new ShogiRulesEngine(), new GameTree());

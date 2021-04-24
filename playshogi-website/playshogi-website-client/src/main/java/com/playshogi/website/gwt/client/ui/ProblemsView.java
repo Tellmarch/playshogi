@@ -6,6 +6,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.web.bindery.event.shared.EventBus;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
+import com.playshogi.website.gwt.client.SessionInformation;
 import com.playshogi.website.gwt.client.widget.board.ShogiBoard;
 import com.playshogi.website.gwt.client.widget.gamenavigator.GameNavigator;
 import com.playshogi.website.gwt.client.widget.kifu.KifuInformationPanel;
@@ -22,9 +23,9 @@ public class ProblemsView extends Composite {
     private final KifuInformationPanel kifuInformationPanel;
 
     @Inject
-    public ProblemsView() {
+    public ProblemsView(final SessionInformation sessionInformation) {
         GWT.log("Creating Problems view");
-        shogiBoard = new ShogiBoard(PROBLEMS);
+        shogiBoard = new ShogiBoard(PROBLEMS, sessionInformation.getUserPreferences());
         gameNavigator = new GameNavigator(PROBLEMS);
         problemFeedbackPanel = new ProblemFeedbackPanel(gameNavigator, false);
         kifuInformationPanel = new KifuInformationPanel();
