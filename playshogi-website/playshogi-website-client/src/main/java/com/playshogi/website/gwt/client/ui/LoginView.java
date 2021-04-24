@@ -2,94 +2,89 @@ package com.playshogi.website.gwt.client.ui;
 
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.event.dom.client.*;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.Grid;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.playshogi.website.gwt.client.SessionInformation;
+import com.playshogi.website.gwt.client.util.ElementWidget;
+import elemental2.dom.Event;
+import elemental2.dom.EventListener;
+import elemental2.dom.HTMLDivElement;
+import org.dominokit.domino.ui.button.Button;
+import org.dominokit.domino.ui.cards.Card;
+import org.dominokit.domino.ui.forms.CheckBox;
+import org.dominokit.domino.ui.forms.TextBox;
+import org.dominokit.domino.ui.grid.Column;
+import org.dominokit.domino.ui.grid.Row;
+import org.dominokit.domino.ui.icons.Icons;
+import org.dominokit.domino.ui.style.Color;
+import org.dominokit.domino.ui.style.Styles;
+
+import static org.jboss.elemento.Elements.div;
 
 @Singleton
-public class LoginView extends Composite implements ClickHandler, KeyUpHandler {
+public class LoginView extends Composite {
 
-    private final Button loginButton;
-    private final Button registerButton;
 
-    private final TextBox usernameTextBox;
-    private final PasswordTextBox passwordTextBox;
-
+    private final TextBox password;
+    private final TextBox userName;
     @Inject
-    SessionInformation sessionInformation;
-
-    private final VerticalPanel loginPanel;
-    private final HTML infoBox;
+    private SessionInformation sessionInformation;
 
     public LoginView() {
-        GWT.log("Creating login view");
 
-        Grid grid = new Grid(2, 2);
-        grid.setWidget(0, 0, new HTML("Username:"));
-        usernameTextBox = new TextBox();
-        usernameTextBox.addKeyUpHandler(this);
-        grid.setWidget(0, 1, usernameTextBox);
-        grid.setWidget(1, 0, new HTML("Password:"));
-        passwordTextBox = new PasswordTextBox();
-        passwordTextBox.addKeyUpHandler(this);
-        grid.setWidget(1, 1, passwordTextBox);
+        password = TextBox.password("Password")
+                .addLeftAddOn(Icons.ALL.security())
+                .setRequired(true)
+                .setAutoValidation(true);
+        userName = TextBox.create("User name")
+                .addLeftAddOn(Icons.ALL.person())
+                .setRequired(true)
+                .setAutoValidation(true);
 
-        HorizontalPanel buttonPanel = new HorizontalPanel();
-
-        loginButton = new Button("Login");
-        loginButton.addClickHandler(this);
-        buttonPanel.add(loginButton);
-        registerButton = new Button("Register");
-        registerButton.addClickHandler(this);
-        buttonPanel.add(registerButton);
-
-        loginPanel = new VerticalPanel();
-        loginPanel.add(grid);
-        loginPanel.add(new HTML("By registering, you agree to be bound by our <a href=\"terms.html\" " +
-                "target=\"_blank\">Terms of Service and Privacy Policy</a>.</br>"));
-        loginPanel.add(buttonPanel);
-
-        VerticalPanel verticalPanel = new VerticalPanel();
-        verticalPanel.add(loginPanel);
-        infoBox = new HTML("");
-        verticalPanel.add(infoBox);
-
-        initWidget(verticalPanel);
-    }
-
-    public void setLoginVisible(final boolean visible) {
-        loginPanel.setVisible(visible);
-    }
-
-    public void setInfoText(final String text) {
-        infoBox.setHTML(text);
-    }
-
-    @Override
-    public void onClick(final ClickEvent event) {
-        Object source = event.getSource();
-        if (source == loginButton) {
-            login();
-        }
-        if (source == registerButton) {
-            register();
-        }
-    }
-
-    @Override
-    public void onKeyUp(KeyUpEvent event) {
-        if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
-            login();
-        }
+        HTMLDivElement element = Row.create()
+                .appendChild(
+                        Column.span4()
+                                .offset4()
+                                .appendChild(
+                                        Card.create("LOGIN")
+                                                .setHeaderBackground(Color.DEEP_PURPLE_LIGHTEN_2)
+                                                .appendChild(
+                                                        userName)
+                                                .appendChild(
+                                                        password)
+                                                .appendChild(CheckBox.create("Remember me").style().add(Styles.m_l_15))
+                                                .appendChild(
+                                                        div()
+                                                                .add(
+                                                                        Button.create(Icons.ALL.lock_open())
+                                                                                .setBackground(Color.DEEP_PURPLE_LIGHTEN_2)
+                                                                                .setContent("Login")
+                                                                                .addClickListener(evt -> login())
+                                                                                .styler(style -> style.setMinWidth(
+                                                                                        "120px")))
+                                                                .add(
+                                                                        Button.create("Register")
+                                                                                .setContent("Register")
+                                                                                .linkify()
+                                                                                .addClickListener(evt -> register())
+                                                                                .style()
+                                                                                .add(Styles.pull_right)))))
+                .element();
+        initWidget(new ElementWidget(element));
     }
 
     private void login() {
-        sessionInformation.login(usernameTextBox.getText(), passwordTextBox.getText());
+        sessionInformation.login(userName.getValue(), password.getValue());
+
     }
 
     private void register() {
-        sessionInformation.register(usernameTextBox.getText(), passwordTextBox.getText());
+        sessionInformation.register(userName.getValue(), password.getValue());
     }
 
 }

@@ -73,7 +73,7 @@ public class AppActivityMapper implements ActivityMapper {
         } else if (place instanceof ProblemStatisticsPlace) {
             return new ProblemStatisticsActivity(problemStatisticsView, sessionInformation);
         } else if (place instanceof LoginPlace) {
-            return new LoginActivity((LoginPlace) place, loginView, sessionInformation);
+            return new LoginActivity((LoginPlace) place, loginView, sessionInformation, placeController);
         } else if (place instanceof ViewKifuPlace) {
             return new ViewKifuActivity((ViewKifuPlace) place, viewKifuView, sessionInformation);
         } else if (place instanceof PreviewKifuPlace) {

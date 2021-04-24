@@ -1,6 +1,7 @@
 package com.playshogi.website.gwt.client.activity;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.place.shared.PlaceController;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
@@ -9,6 +10,8 @@ import com.playshogi.website.gwt.client.SessionInformation;
 import com.playshogi.website.gwt.client.events.user.UserLoggedInEvent;
 import com.playshogi.website.gwt.client.events.user.UserLoggedOutEvent;
 import com.playshogi.website.gwt.client.place.LoginPlace;
+import com.playshogi.website.gwt.client.place.ProblemStatisticsPlace;
+import com.playshogi.website.gwt.client.place.UserKifusPlace;
 import com.playshogi.website.gwt.client.ui.LoginView;
 
 public class LoginActivity extends MyAbstractActivity {
@@ -21,12 +24,14 @@ public class LoginActivity extends MyAbstractActivity {
     private final LoginView loginView;
     private final LoginPlace place;
     private final SessionInformation sessionInformation;
+    private final PlaceController placeController;
 
     public LoginActivity(final LoginPlace place, final LoginView loginView,
-                         final SessionInformation sessionInformation) {
+                         final SessionInformation sessionInformation, final PlaceController placeController) {
         this.place = place;
         this.loginView = loginView;
         this.sessionInformation = sessionInformation;
+        this.placeController = placeController;
     }
 
     @Override
@@ -42,14 +47,11 @@ public class LoginActivity extends MyAbstractActivity {
 
     @EventHandler
     public void onUserLoggedIn(final UserLoggedInEvent event) {
-        loginView.setLoginVisible(false);
-        loginView.setInfoText("Logged in as " + sessionInformation.getUsername());
+       placeController.goTo(new ProblemStatisticsPlace());
     }
 
     @EventHandler
     public void onUserLoggedOut(final UserLoggedOutEvent event) {
-        loginView.setLoginVisible(true);
-        loginView.setInfoText(sessionInformation.getErrorMessage());
     }
 
 }
