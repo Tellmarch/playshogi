@@ -62,7 +62,7 @@ public enum ProblemsCache {
     public ProblemDetails getProblem(final ProblemOptions options) {
         List<ProblemDetails> list = options.getNumMoves() == 0 ? allProblems : byLength.get(options.getNumMoves());
         if (options.isRandom()) {
-            if (list != null) {
+            if (list != null && !list.isEmpty()) {
                 return list.get(random.nextInt(list.size()));
             }
         } else {

@@ -93,7 +93,11 @@ public enum Piece {
     }
 
     public Piece getNextPieceInEditCycle() {
-        return promoted ? opposite().getUnpromotedPiece() : getPromotedPiece();
+        if (promotedPiece != null) {
+            return promoted ? opposite().getUnpromotedPiece() : getPromotedPiece();
+        } else {
+            return opposite();
+        }
     }
 
     @Override
