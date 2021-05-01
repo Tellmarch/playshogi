@@ -104,6 +104,12 @@ public class TsumeView extends Composite {
                         "finally checkmate.").alignLeft())
                 .appendChild(Paragraph.create("This pattern follows the same way for longer moves. " +
                         "Tsumeshogi always have an odd number of moves.").alignLeft())
+                .appendChild(Paragraph.create(" ").alignLeft())
+                .appendChild(Paragraph.create("Futile interposition:").alignLeft().bold())
+                .appendChild(Paragraph.create(" * When the king is checked from a distance (e.g. by a rook), it often" +
+                        " happens that White can try to interpose pieces, but they would just be taken immediately " +
+                        "without changing the outcome. In that case, such interposition moves are not included in the" +
+                        " solution, and do not count for the problem number of moves.").alignLeft())
                 .addOpenListener(
                         () ->
                                 Animation.create(help)
