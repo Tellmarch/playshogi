@@ -93,7 +93,7 @@ public enum Piece {
     }
 
     public Piece getNextPieceInEditCycle() {
-        if (promotedPiece != null) {
+        if (promoted || (promotedPiece != null)) {
             return promoted ? opposite().getUnpromotedPiece() : getPromotedPiece();
         } else {
             return opposite();
