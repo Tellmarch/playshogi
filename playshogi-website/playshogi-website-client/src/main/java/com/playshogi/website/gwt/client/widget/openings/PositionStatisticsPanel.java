@@ -112,12 +112,17 @@ public class PositionStatisticsPanel extends Composite {
                 int gotePixels = moveDetails.getGote_wins() * 100 / moveDetails.getNewPositionOccurences();
                 int otherPixels = 100 - sentePixels - gotePixels;
 
+                String senteWinRateLabel = senteMoveRate != 0 ? (senteMoveRate / 10.) + "%" : "";
+                String goteWinRateLabel = goteMoveRate != 0 ? (goteMoveRate / 10.) + "%" : "";
+
                 String bar = "<table bgcolor=\"#555555\" border=\"0\" cellpadding=\"0\" cellspacing=\"1\" " +
                         "class=\"percent\"><tr><td>"
                         + "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tr height=\"13\">"
-                        + "<td align=\"center\" background=\"green.gif\" width=\"" + sentePixels + "\">  " + (senteMoveRate / 10.) + "% </td>"
+                        + "<td align=\"center\" background=\"green.gif\" width=\"" + sentePixels + "\">  " + senteWinRateLabel + " " +
+                        "</td>"
                         + "<td align=\"center\" background=\"gray.gif\" width=\"" + otherPixels + "\">   </td>"
-                        + "<td align=\"center\" background=\"red.gif\" width=\"" + gotePixels + "\">  " + (goteMoveRate / 10.) + "% </td>" + "</tr></table>"
+                        + "<td align=\"center\" background=\"red.gif\" width=\"" + gotePixels + "\">  " + goteWinRateLabel + " </td" +
+                        ">" + "</tr></table>"
                         + "</td></tr></table>";
 
                 grid.setHTML(i + 1, 2, bar);

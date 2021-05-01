@@ -53,6 +53,9 @@
 .percent {
     font-size: 8pt;
     color: #fff;
+    border-spacing: 2px;
+    border-collapse: separate;
+    width: 100px;
 }
 
 .lesson-title {
