@@ -269,7 +269,8 @@ public enum KifFormat implements GameRecordFormat {
             // nothing in hand
             return;
         }
-        String[] piecesInHandStrings = value.split("　");
+        String[] piecesInHandStrings = value.split("[ 　]");
+
         for (String pieceString : piecesInHandStrings) {
             PieceParsingResult pieceParsingResult = KifUtils.readPiece(pieceString, 0);
             int number;
@@ -280,7 +281,7 @@ public enum KifFormat implements GameRecordFormat {
             } else if (pieceString.length() == 3 && pieceString.charAt(1) == '十') {
                 number = 10 + KifUtils.getNumberFromJapanese(pieceString.charAt(2));
             } else {
-                throw new IllegalArgumentException("Error reading pieces in hand: " + value);
+                throw new IllegalArgumentException("Error reading pieces in hand: " + value + " at " + pieceString);
             }
             komadai.setPiecesOfType(pieceParsingResult.piece.getPieceType(), number);
         }

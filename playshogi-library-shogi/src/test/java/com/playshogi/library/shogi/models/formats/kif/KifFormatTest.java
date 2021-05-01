@@ -12,6 +12,34 @@ import static org.junit.Assert.assertEquals;
 
 public class KifFormatTest {
 
+    private final String SHOGI_GUI_TSUME = "後手の持駒：角 金四 銀四 桂二 香四 歩十七 \n" +
+            "  ９ ８ ７ ６ ５ ４ ３ ２ １\n" +
+            "+---------------------------+\n" +
+            "| ・ ・ ・ ・ ・ ・v歩 ・v玉|一\n" +
+            "| ・ ・ ・ ・ ・ ・ ・ ・ ・|二\n" +
+            "| ・ ・ ・ ・ ・ ・ ・v角 ・|三\n" +
+            "| ・ ・ ・ ・ ・ ・ 桂 ・ ・|四\n" +
+            "| ・ ・ ・ ・ ・ ・ ・ ・ ・|五\n" +
+            "| ・ ・ ・ ・ ・ ・ ・ ・ ・|六\n" +
+            "| ・ ・ ・ ・ ・ ・ ・ ・ ・|七\n" +
+            "| ・ ・ ・ ・ ・ ・ ・ ・ ・|八\n" +
+            "| ・ ・ ・ ・ ・ ・ ・ ・ ・|九\n" +
+            "+---------------------------+\n" +
+            "先手の持駒：飛二 桂 \n" +
+            "先手：\n" +
+            "後手：\n" +
+            "手数----指手---------消費時間--\n" +
+            "**Engines 0 YaneuraOu 2018 T.N.K. (dolphin) NNUE 4.82 64AVX2 TOURNAMENT\n" +
+            "   1 １三飛打           ( 0:00/00:00:00)\n" +
+            "   2 １二角打           ( 0:00/00:00:00)\n" +
+            "   3 同　飛成(13)       ( 0:00/00:00:00)\n" +
+            "   4 同　玉(11)        ( 0:00/00:00:00)\n" +
+            "   5 １一飛打           ( 0:00/00:00:00)\n" +
+            "   6 同　玉(12)        ( 0:00/00:00:00)\n" +
+            "   7 ３三角打           ( 0:00/00:00:00)\n" +
+            "   8 ２一玉(11)        ( 0:00/00:00:00)\n" +
+            "   9 ２二桂成(34)       ( 0:00/00:00:00)\n";
+
     private final String KIF_81 = "#KIF version=2.0 encoding=UTF-8\n" +
             "開始日時：2020/08/10\n" +
             "場所：81Dojo\n" +
@@ -479,4 +507,12 @@ public class KifFormatTest {
         assertEquals("lnsgkgsnl/1r5+B1/pppppp1pp/6p2/9/2P6/PP1PPPPPP/7R1/LNSGKGSNL w B", SfenConverter.toSFEN(pos));
     }
 
+
+    @Test
+    public void readShogiGui() {
+        GameRecord kif = KifFormat.INSTANCE.read(SHOGI_GUI_TSUME).get(0);
+        assertEquals("USF:1.0\n" +
+                "^*6p1k/9/7b1/6N2/9/9/9/9/9 b 2RNb4g4s2n4l17p:R*1cb*1b1c1B1a1bR*1a1b1aB*3c1a2a3d2B\n" +
+                "GD:1000-1-1\n", UsfFormat.INSTANCE.write(kif));
+    }
 }
