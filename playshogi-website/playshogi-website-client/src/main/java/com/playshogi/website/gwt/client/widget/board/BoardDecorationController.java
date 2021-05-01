@@ -33,7 +33,7 @@ public class BoardDecorationController {
         layout.addCanvas(highlightCanvas);
     }
 
-    private void drawCircle(final Square square, final Color color) {
+    void drawCircle(final Square square, final Color color) {
         if (staticCanvas == null) return;
         Context2d context2d = staticCanvas.getContext2d();
         context2d.setLineWidth(5);
@@ -44,7 +44,7 @@ public class BoardDecorationController {
         context2d.stroke();
     }
 
-    public void drawArrow(final Arrow arrow) {
+    void drawArrow(final Arrow arrow) {
         if (arrow.getFrom() != null && arrow.getTo() != null) {
             drawArrow(arrow.getFrom(), arrow.getTo(), arrow.getColor());
         } else if (arrow.getFromKomadaiPiece() != null && arrow.getTo() != null) {
@@ -54,7 +54,7 @@ public class BoardDecorationController {
         //TODO other two cases
     }
 
-    public void drawArrow(final Square fromSquare, final Square toSquare, final Color color) {
+    private void drawArrow(final Square fromSquare, final Square toSquare, final Color color) {
         drawArrow(staticCanvas,
                 layout.getX(fromSquare) + SQUARE_WIDTH / 2,
                 layout.getY(fromSquare) + SQUARE_HEIGHT / 2,
@@ -114,8 +114,8 @@ public class BoardDecorationController {
         }
     }
 
-    public void drawDropArrow(final PieceType pieceType, final Player player, final Square toSquare,
-                              final Color color) {
+    private void drawDropArrow(final PieceType pieceType, final Player player, final Square toSquare,
+                               final Color color) {
         drawDropArrow(staticCanvas, pieceType, player, toSquare, color);
     }
 

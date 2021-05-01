@@ -167,6 +167,11 @@ public class ShogiBoard extends Composite implements ClickHandler {
 
         image.addClickHandler(event -> {
             GWT.log("CLICK - " + row + " " + col);
+            if (event.isControlKeyDown()) {
+                drawCircleAtSquare(getSquare(row, col));
+                return;
+            }
+
             if (selectionController.hasPieceSelected()) {
                 PieceWrapper selectedPieceWrapper = selectionController.getSelectedPieceWrapper();
                 Piece piece = selectedPieceWrapper.getPiece();
@@ -216,6 +221,13 @@ public class ShogiBoard extends Composite implements ClickHandler {
             decorationController.drawArrow(arrow);
             eventBus.fireEvent(new ArrowDrawnEvent(arrow));
         }
+    }
+
+    private void drawCircleAtSquare(final Square square) {
+        if (!boardConfiguration.isAllowDrawArrows()) {
+            return;
+        }
+        decorationController.drawCircle(square, Color.RED);
     }
 
     public void activate(final EventBus eventBus) {
@@ -361,6 +373,11 @@ public class ShogiBoard extends Composite implements ClickHandler {
         });
 
         pieceWrapper.getImage().addClickHandler(event -> {
+            if (event.isControlKeyDown()) {
+                drawCircleAtSquare(pieceWrapper.getSquare());
+                return;
+            }
+
             if (!canPlayMove() && !boardConfiguration.isPositionEditingMode()) {
                 return;
             }
