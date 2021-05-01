@@ -3,6 +3,7 @@ package com.playshogi.website.gwt.client.widget.kifu;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -70,6 +71,7 @@ public class KifuEditorPanel extends Composite implements ClickHandler {
             eventBus.fireEvent(new GameRecordExportRequestedEvent());
         } else if (source == previewButton) {
             GWT.log("Kifu editor: request preview kifu");
+            Window.alert("Use the back button of your browser to come back to editing");
             eventBus.fireEvent(new GameRecordPreviewRequestedEvent());
         }
     }

@@ -85,7 +85,7 @@ public class KifuEditorView extends Composite {
 
         ScrollPanel treeScrollPanel = new ScrollPanel();
         treeScrollPanel.add(gameTreePanel);
-        treeScrollPanel.setSize("200%", "750px");
+        treeScrollPanel.setSize("620px", "600px");
 
         horizontalPanel.add(treeScrollPanel);
 

@@ -2,7 +2,10 @@ package com.playshogi.website.gwt.client.widget.kifu;
 
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.ListBox;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
@@ -13,10 +16,11 @@ import com.playshogi.website.gwt.client.events.gametree.PositionChangedEvent;
 import com.playshogi.website.gwt.client.events.kifu.EditModeSelectedEvent;
 import com.playshogi.website.gwt.client.events.kifu.SwitchPlayerToPlayEvent;
 import com.playshogi.website.gwt.client.i18n.PlayMessages;
+import com.playshogi.website.gwt.client.util.ElementWidget;
+import org.dominokit.domino.ui.forms.SwitchButton;
+import org.dominokit.domino.ui.themes.Theme;
 
 public class PositionEditingPanel extends Composite {
-
-    private final ToggleButton editButton;
 
     interface MyEventBinder extends EventBinder<PositionEditingPanel> {
     }
@@ -35,12 +39,15 @@ public class PositionEditingPanel extends Composite {
 
         FlowPanel flowPanel = new FlowPanel();
 
-        flowPanel.add(new HTML("<br/>"));
+        flowPanel.add(new ElementWidget(SwitchButton.create()
+                .setOffTitle("Play").setOnTitle("Edit").setColor(Theme.DEEP_PURPLE.color())
+                .addChangeHandler(b -> {
+                    eventBus.fireEvent(new EditModeSelectedEvent(b));
+                    setEditingButtonsEnabled(b);
+                }).element()));
 
         presets = createPresetsList();
         flowPanel.add(presets);
-
-        flowPanel.add(new HTML("<br/>"));
 
         importPositionButton = new Button("Import position",
                 (ClickHandler) clickEvent -> {
@@ -49,22 +56,11 @@ public class PositionEditingPanel extends Composite {
                 });
         flowPanel.add(importPositionButton);
 
-        flowPanel.add(new HTML("<br/>"));
 
         toPlayButton = new Button("Sente to play",
                 (ClickHandler) clickEvent -> eventBus.fireEvent(new SwitchPlayerToPlayEvent()));
         flowPanel.add(toPlayButton);
 
-        flowPanel.add(new HTML("<br/>"));
-
-        editButton = new ToggleButton("Edit position");
-        editButton.addValueChangeHandler(valueChangeEvent -> {
-            boolean editMode = valueChangeEvent.getValue();
-            eventBus.fireEvent(new EditModeSelectedEvent(editMode));
-            setEditingButtonsEnabled(editMode);
-        });
-
-        flowPanel.add(editButton);
         setEditingButtonsEnabled(false);
 
         initWidget(flowPanel);
