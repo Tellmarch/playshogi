@@ -1,8 +1,8 @@
 package com.playshogi.website.gwt.client.widget.board;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.ui.*;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.playshogi.website.gwt.client.UserPreferences;
@@ -23,6 +23,7 @@ public class BoardSettingsPanel extends Composite {
     private final MyEventBinder eventBinder = GWT.create(MyEventBinder.class);
 
     private EventBus eventBus;
+    private DialogBox dialogBox = null;
 
     public BoardSettingsPanel(final UserPreferences userPreferences) {
         FlowPanel panel = new FlowPanel();
@@ -59,5 +60,34 @@ public class BoardSettingsPanel extends Composite {
     public void activate(final EventBus eventBus) {
         this.eventBus = eventBus;
         eventBinder.bindEventHandlers(this, this.eventBus);
+    }
+
+    private DialogBox createDialogBox() {
+        final DialogBox dialogBox = new DialogBox();
+        dialogBox.setText("Board Settings");
+        dialogBox.setGlassEnabled(true);
+
+        VerticalPanel dialogContents = new VerticalPanel();
+        dialogContents.setSpacing(4);
+        dialogBox.setWidget(dialogContents);
+
+        dialogContents.add(this);
+        dialogContents.setCellHorizontalAlignment(this, HasHorizontalAlignment.ALIGN_CENTER);
+
+        com.google.gwt.user.client.ui.Button closeButton = new com.google.gwt.user.client.ui.Button("Close",
+                (ClickHandler) event -> dialogBox.hide());
+        dialogContents.add(closeButton);
+
+        dialogContents.setCellHorizontalAlignment(closeButton, HasHorizontalAlignment.ALIGN_RIGHT);
+
+        return dialogBox;
+    }
+
+    public void showInDialog() {
+        if (dialogBox == null) {
+            dialogBox = createDialogBox();
+        }
+        dialogBox.center();
+        dialogBox.show();
     }
 }

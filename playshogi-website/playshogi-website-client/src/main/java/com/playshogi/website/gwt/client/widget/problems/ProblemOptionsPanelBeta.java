@@ -15,7 +15,6 @@ import org.dominokit.domino.ui.grid.Column;
 import org.dominokit.domino.ui.grid.Row;
 import org.dominokit.domino.ui.header.BlockHeader;
 import org.dominokit.domino.ui.icons.Icons;
-import org.dominokit.domino.ui.notifications.Notification;
 import org.dominokit.domino.ui.style.ColorScheme;
 
 import static org.jboss.elemento.Elements.br;
@@ -138,11 +137,6 @@ public class ProblemOptionsPanelBeta extends Composite {
 
     private void handleNumMovesSelection() {
         String selectedValue = numMovesGroup.getSelectedChip().getValue();
-        Notification.createInfo(
-                "Number of moves [ "
-                        + selectedValue
-                        + " ] is selected")
-                .show();
         int numMoves = ("All moves".equals(selectedValue)) ? 0 :
                 Integer.parseInt(selectedValue.substring(0, 2).trim());
         if (eventBus != null) {
@@ -163,11 +157,6 @@ public class ProblemOptionsPanelBeta extends Composite {
     }
 
     private void handleProblemsOrderSelection() {
-        Notification.createInfo(
-                "Order [ "
-                        + orderGroup.getSelectedChip().getValue()
-                        + " ] is selected")
-                .show();
         if (eventBus != null) {
             eventBus.fireEvent(new ProblemsOrderSelectedEvent("Random".equals(orderGroup.getSelectedChip().getValue())));
         }

@@ -21,7 +21,6 @@ import org.dominokit.domino.ui.animations.Transition;
 import org.dominokit.domino.ui.dialogs.MessageDialog;
 import org.dominokit.domino.ui.icons.Icon;
 import org.dominokit.domino.ui.icons.Icons;
-import org.dominokit.domino.ui.notifications.Notification;
 import org.dominokit.domino.ui.style.Color;
 import org.dominokit.domino.ui.style.Styles;
 
@@ -75,8 +74,7 @@ public class TsumeView extends Composite {
                 Icons.ALL.help().style().add(Styles.font_72, Styles.m_b_15, Color.GREEN.getStyle()).get();
         return MessageDialog.createMessage(
                 "What is tsumeshogi?",
-                "",
-                () -> Notification.create("Dialog closed").show())
+                "")
                 .appendChild(Paragraph.create("Tsumeshogi are checkmate problems, where you have to " +
                         "capture the king.").bold())
                 .appendChild(Paragraph.create("Additionally, you have to follow the rules:").alignLeft())

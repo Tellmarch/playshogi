@@ -40,6 +40,7 @@ import static com.playshogi.website.gwt.client.widget.board.PieceWrapper.WHITE_K
 public class ShogiBoard extends Composite implements ClickHandler {
 
     private final UserPreferences userPreferences;
+    private BoardSettingsPanel boardSettingsPanel;
 
     interface MyEventBinder extends EventBinder<ShogiBoard> {
     }
@@ -121,6 +122,16 @@ public class ShogiBoard extends Composite implements ClickHandler {
         absolutePanelWrapper.setWidget(absolutePanel);
 
         initWidget(absolutePanelWrapper);
+    }
+
+    public BoardSettingsPanel getBoardSettingsPanel() {
+        if (boardSettingsPanel == null) {
+            boardSettingsPanel = new BoardSettingsPanel(userPreferences);
+            if (eventBus != null) {
+                boardSettingsPanel.activate(eventBus);
+            }
+        }
+        return boardSettingsPanel;
     }
 
     private void initSquareImages(BoardBundle boardResources, int rows, int columns) {
@@ -210,6 +221,9 @@ public class ShogiBoard extends Composite implements ClickHandler {
         GWT.log(activityId + ": Activating Shogi Board");
         this.eventBus = eventBus;
         eventBinder.bindEventHandlers(this, this.eventBus);
+        if (boardSettingsPanel != null) {
+            boardSettingsPanel.activate(eventBus);
+        }
     }
 
     public void displayPosition() {
