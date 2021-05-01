@@ -83,8 +83,11 @@ public class TutorialView extends Composite {
         return absolutePanel;
     }
 
-    private FlowPanel getOutline() {
+    private ScrollPanel getOutline() {
         FlowPanel flowPanel = new FlowPanel();
+
+        piecesSelectorPanel = new PiecesSelectorPanel();
+        flowPanel.add(piecesSelectorPanel);
 
         flowPanel.add(new Hyperlink(tutorialMessages.introTitle(), historyMapper.getToken(new TutorialPlace(1))));
 
@@ -103,9 +106,11 @@ public class TutorialView extends Composite {
 
         flowPanel.getElement().getStyle().setBackgroundColor("#DBCBCB");
 
-        piecesSelectorPanel = new PiecesSelectorPanel();
-        flowPanel.add(piecesSelectorPanel);
-        return flowPanel;
+        ScrollPanel scrollPanel = new ScrollPanel();
+        scrollPanel.add(flowPanel);
+        scrollPanel.setSize("100%", "100%");
+
+        return scrollPanel;
     }
 
     public ShogiBoard getShogiBoard() {

@@ -15,9 +15,13 @@ import com.playshogi.library.shogi.models.formats.sfen.SfenConverter;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.library.shogi.models.shogivariant.Handicap;
 import com.playshogi.website.gwt.client.SessionInformation;
+import com.playshogi.website.gwt.client.events.kifu.ClearDecorationsEvent;
 import com.playshogi.website.gwt.client.i18n.PlayMessages;
+import com.playshogi.website.gwt.client.util.ElementWidget;
 import com.playshogi.website.gwt.client.widget.board.ShogiBoard;
 import com.playshogi.website.gwt.client.widget.gamenavigator.GameNavigator;
+import org.dominokit.domino.ui.icons.Icons;
+import org.dominokit.domino.ui.themes.Theme;
 
 @Singleton
 public class PlayView extends Composite {
@@ -27,6 +31,7 @@ public class PlayView extends Composite {
     private final GameNavigator gameNavigator;
 
     private final PlayMessages messages = GWT.create(PlayMessages.class);
+    private EventBus eventBus;
 
     @Inject
     public PlayView(final SessionInformation sessionInformation) {
@@ -34,6 +39,7 @@ public class PlayView extends Composite {
         shogiBoard = new ShogiBoard(PLAY, sessionInformation.getUserPreferences());
         gameNavigator = new GameNavigator(PLAY);
         shogiBoard.setUpperRightPanel(null);
+        shogiBoard.setLowerLeftPanel(createLowerLeftPanel());
 
         FlowPanel panel = new FlowPanel();
 
@@ -74,9 +80,25 @@ public class PlayView extends Composite {
         initWidget(shogiBoard);
     }
 
+    private FlowPanel createLowerLeftPanel() {
+
+        FlowPanel panel = new FlowPanel();
+        panel.add(new ElementWidget(org.dominokit.domino.ui.button.Button.createPrimary(Icons.ALL.settings_mdi())
+                .setBackground(Theme.DEEP_PURPLE.color()).circle()
+                .setTooltip("Settings")
+                .addClickListener(e -> shogiBoard.getBoardSettingsPanel().showInDialog()).element()));
+        panel.add(new ElementWidget(org.dominokit.domino.ui.button.Button.createPrimary(Icons.ALL.do_not_disturb_alt())
+                .setBackground(Theme.DEEP_PURPLE.color()).circle()
+                .addClickListener(e -> eventBus.fireEvent(new ClearDecorationsEvent()))
+                .setTooltip("Clear arrows")
+                .style().setMarginLeft("1em").element()));
+        return panel;
+    }
+
 
     public void activate(final EventBus eventBus) {
         com.google.gwt.core.shared.GWT.log("Activating Play view");
+        this.eventBus = eventBus;
         shogiBoard.activate(eventBus);
         gameNavigator.activate(eventBus);
     }
