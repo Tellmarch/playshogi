@@ -1,3 +1,8 @@
+.gwt-DecoratorPanel {
+    border-spacing: 2px;
+    border-collapse: separate;
+}
+
 .gwt-piece-selected {
 	background: rgba(255, 0, 0, 0.5);
 }

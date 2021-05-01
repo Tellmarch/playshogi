@@ -15,7 +15,7 @@ public class AppActivityMapper implements ActivityMapper {
     @Inject
     SessionInformation sessionInformation;
     @Inject
-    MainPageViewBeta2 mainPageView;
+    MainPageView mainPageView;
     @Inject
     LinksView linksView;
     @Inject

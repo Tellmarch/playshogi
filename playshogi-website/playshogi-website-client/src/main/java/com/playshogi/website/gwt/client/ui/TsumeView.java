@@ -1,8 +1,6 @@
 package com.playshogi.website.gwt.client.ui;
 
 import com.google.gwt.core.shared.GWT;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -11,6 +9,8 @@ import com.google.inject.Singleton;
 import com.google.web.bindery.event.shared.EventBus;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.website.gwt.client.SessionInformation;
+import com.playshogi.website.gwt.client.events.kifu.ClearDecorationsEvent;
+import com.playshogi.website.gwt.client.util.ElementWidget;
 import com.playshogi.website.gwt.client.widget.board.ShogiBoard;
 import com.playshogi.website.gwt.client.widget.gamenavigator.GameNavigator;
 import com.playshogi.website.gwt.client.widget.problems.ProblemFeedbackPanel;
@@ -23,6 +23,7 @@ import org.dominokit.domino.ui.icons.Icon;
 import org.dominokit.domino.ui.icons.Icons;
 import org.dominokit.domino.ui.style.Color;
 import org.dominokit.domino.ui.style.Styles;
+import org.dominokit.domino.ui.themes.Theme;
 
 @Singleton
 public class TsumeView extends Composite {
@@ -35,6 +36,7 @@ public class TsumeView extends Composite {
     private final GameNavigator gameNavigator;
     private final ProblemFeedbackPanel problemFeedbackPanel;
     private final ProblemOptionsPanelBeta problemOptionsPanelBeta;
+    private EventBus eventBus;
 
     @Inject
     public TsumeView(final SessionInformation sessionInformation) {
@@ -60,13 +62,23 @@ public class TsumeView extends Composite {
     }
 
     private FlowPanel createLowerLeftPanel() {
-        Button whatIsTsumeshogi = new Button("What is tsumeshogi?", (ClickHandler) clickEvent -> {
-            MessageDialog customHeaderContent = getHelpDialog();
-            customHeaderContent.open();
-        });
-        FlowPanel lowerLeftPanel = new FlowPanel();
-        lowerLeftPanel.add(whatIsTsumeshogi);
-        return lowerLeftPanel;
+
+        FlowPanel panel = new FlowPanel();
+        panel.add(new ElementWidget(org.dominokit.domino.ui.button.Button.createPrimary(Icons.ALL.settings_mdi())
+                .setBackground(Theme.DEEP_PURPLE.color()).circle()
+                .setTooltip("Settings")
+                .addClickListener(e -> shogiBoard.getBoardSettingsPanel().showInDialog()).element()));
+        panel.add(new ElementWidget(org.dominokit.domino.ui.button.Button.createPrimary(Icons.ALL.do_not_disturb_alt())
+                .setBackground(Theme.DEEP_PURPLE.color()).circle()
+                .addClickListener(e -> eventBus.fireEvent(new ClearDecorationsEvent()))
+                .setTooltip("Clear arrows")
+                .style().setMarginLeft("1em").element()));
+        panel.add(new ElementWidget(org.dominokit.domino.ui.button.Button.createPrimary(Icons.ALL.help_outline())
+                .setBackground(Theme.DEEP_PURPLE.color()).circle()
+                .addClickListener(e -> getHelpDialog().open())
+                .setTooltip("What is TsumeShogi?")
+                .style().setMarginLeft("1em").element()));
+        return panel;
     }
 
     private MessageDialog getHelpDialog() {
@@ -108,6 +120,7 @@ public class TsumeView extends Composite {
 
     public void activate(final EventBus eventBus) {
         GWT.log("Activating tsume view");
+        this.eventBus = eventBus;
         shogiBoard.activate(eventBus);
         gameNavigator.activate(eventBus);
         problemFeedbackPanel.activate(eventBus);
