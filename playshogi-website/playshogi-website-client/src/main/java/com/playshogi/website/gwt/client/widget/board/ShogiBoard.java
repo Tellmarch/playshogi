@@ -27,6 +27,7 @@ import com.playshogi.website.gwt.client.events.gametree.HighlightMoveEvent;
 import com.playshogi.website.gwt.client.events.gametree.MovePlayedEvent;
 import com.playshogi.website.gwt.client.events.gametree.PositionChangedEvent;
 import com.playshogi.website.gwt.client.events.kifu.ArrowDrawnEvent;
+import com.playshogi.website.gwt.client.events.user.ArrowModeSelectedEvent;
 import com.playshogi.website.gwt.client.events.user.PieceStyleSelectedEvent;
 import com.playshogi.website.gwt.client.widget.board.KomadaiPositioning.Point;
 
@@ -560,5 +561,10 @@ public class ShogiBoard extends Composite implements ClickHandler {
     @EventHandler
     public void onPieceStyleSelected(final PieceStyleSelectedEvent event) {
         Scheduler.get().scheduleDeferred(this::displayPosition);
+    }
+
+    @EventHandler
+    public void onArrowModeSelected(final ArrowModeSelectedEvent event) {
+        boardConfiguration.setAllowDrawArrows(event.isEnabled());
     }
 }

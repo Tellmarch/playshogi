@@ -27,7 +27,8 @@ public class BoardSettingsPanel extends Composite {
 
     public BoardSettingsPanel(final UserPreferences userPreferences) {
         FlowPanel panel = new FlowPanel();
-        panel.add(new ElementWidget(CheckBox.create("Flip Board").addChangeHandler(value -> GWT.log(String.valueOf(value))).element()));
+//        panel.add(new ElementWidget(CheckBox.create("Flip Board").addChangeHandler(value -> GWT.log(String.valueOf
+//        (value))).element()));
         SwitchButton pieces = SwitchButton.create("Pieces", "Traditional", "International");
         if (userPreferences.getPieceStyle() == PieceGraphics.Style.HIDETCHI) {
             pieces.check();
