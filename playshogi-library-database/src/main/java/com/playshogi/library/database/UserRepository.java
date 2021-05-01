@@ -1,5 +1,6 @@
 package com.playshogi.library.database;
 
+import com.playshogi.library.database.models.PersistentHighScore;
 import com.playshogi.library.database.models.PersistentUserProblemStats;
 
 import java.sql.*;
@@ -121,7 +122,7 @@ public class UserRepository {
         }
     }
 
-    public List<PersistentUserProblemStats> getUserPbStats(int userId) {
+    public List<PersistentUserProblemStats> getUserPbStats(final int userId) {
         Connection connection = dbConnection.getConnection();
         try (PreparedStatement preparedStatement = connection.prepareStatement(GET_USER_PB_STATS)) {
             preparedStatement.setInt(1, userId);
@@ -166,6 +167,30 @@ public class UserRepository {
 
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error saving the user high score in db", e);
+        }
+    }
+
+
+    public List<PersistentHighScore> getHighScoresForEvent(final String event) {
+        Connection connection = dbConnection.getConnection();
+        try (PreparedStatement preparedStatement = connection.prepareStatement(GET_USER_HIGHSCORES)) {
+            preparedStatement.setString(1, event);
+            ResultSet rs = preparedStatement.executeQuery();
+            List<PersistentHighScore> result = new ArrayList<>();
+
+            while (rs.next()) {
+                int score = rs.getInt("score");
+                String name = rs.getString("name");
+                result.add(new PersistentHighScore(0, null, score, null, name, null));
+
+            }
+
+            LOGGER.log(Level.INFO, "Found high scores: " + result);
+
+            return result;
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error looking up the high scores", e);
+            return new ArrayList<>();
         }
     }
 }

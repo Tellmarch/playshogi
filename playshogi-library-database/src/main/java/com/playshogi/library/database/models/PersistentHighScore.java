@@ -5,13 +5,14 @@ import java.util.Objects;
 
 public class PersistentHighScore {
     private final int index;
-    private final int userId;
+    private final Integer userId;
     private final int score;
     private final Date date;
     private final String name;
     private final String event;
 
-    public PersistentHighScore(final int index, final int userId, final int score, final Date date, final String name
+    public PersistentHighScore(final int index, final Integer userId, final int score, final Date date,
+                               final String name
             , final String event) {
         this.index = index;
         this.userId = userId;
@@ -25,7 +26,7 @@ public class PersistentHighScore {
         return index;
     }
 
-    public int getUserId() {
+    public Integer getUserId() {
         return userId;
     }
 
@@ -50,12 +51,7 @@ public class PersistentHighScore {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         PersistentHighScore that = (PersistentHighScore) o;
-        return index == that.index &&
-                userId == that.userId &&
-                score == that.score &&
-                Objects.equals(date, that.date) &&
-                Objects.equals(name, that.name) &&
-                Objects.equals(event, that.event);
+        return index == that.index && score == that.score && Objects.equals(userId, that.userId) && Objects.equals(date, that.date) && Objects.equals(name, that.name) && Objects.equals(event, that.event);
     }
 
     @Override

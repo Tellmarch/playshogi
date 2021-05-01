@@ -5,6 +5,7 @@ import com.playshogi.library.database.DbConnection;
 import com.playshogi.library.database.KifuRepository;
 import com.playshogi.library.database.ProblemRepository;
 import com.playshogi.library.database.UserRepository;
+import com.playshogi.library.database.models.PersistentHighScore;
 import com.playshogi.library.database.models.PersistentKifu;
 import com.playshogi.library.database.models.PersistentProblem;
 import com.playshogi.library.database.models.PersistentUserProblemStats;
@@ -39,6 +40,10 @@ public class ProblemsServiceImpl extends RemoteServiceServlet implements Problem
 
     private void initHighScores() {
         highScores.put("Pro", 18);
+        List<PersistentHighScore> scores = userRepository.getHighScoresForEvent("byoyomi");
+        for (PersistentHighScore score : scores) {
+            highScores.put(score.getName(), score.getScore());
+        }
     }
 
     @Override
