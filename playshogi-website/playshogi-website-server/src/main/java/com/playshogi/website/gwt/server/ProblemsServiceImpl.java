@@ -64,22 +64,22 @@ public class ProblemsServiceImpl extends RemoteServiceServlet implements Problem
     public ProblemDetails getProblem(final ProblemOptions options) {
         LOGGER.log(Level.INFO, "getting problem with options: " + options);
 
-        return ProblemsCache.INSTANCE.getProblem(options);
+//        return ProblemsCache.INSTANCE.getProblem(options);
 
-//        if (options.isRandom()) {
-//            if (options.getNumMoves() != 0) {
-//                return getRandomProblem(options.getNumMoves());
-//            } else {
-//                return getRandomProblem();
-//            }
-//        } else {
-//            String previousId = options.getPreviousProblemId();
-//            if (previousId == null) {
-//                return getProblem("1");
-//            } else {
-//                return getProblem(String.valueOf(Integer.parseInt(previousId) + 1));
-//            }
-//        }
+        if (options.isRandom()) {
+            if (options.getNumMoves() != 0) {
+                return getRandomProblem(options.getNumMoves());
+            } else {
+                return getRandomProblem();
+            }
+        } else {
+            String previousId = options.getPreviousProblemId();
+            if (previousId == null) {
+                return getProblem("1");
+            } else {
+                return getProblem(String.valueOf(Integer.parseInt(previousId) + 1));
+            }
+        }
     }
 
     @Override
