@@ -21,7 +21,7 @@ public class ArrowTest {
         Arrow arrow = Arrow.parseArrowObject("ARROW,2h2c,3,0,0,(240,5,127,255),(240,5,127,255)");
         assertEquals(Square.of(2, 8), arrow.getFrom());
         assertEquals(Square.of(2, 3), arrow.getTo());
-        assertEquals("#f0057f", arrow.getColor().toString());
+        assertEquals("#f0057fff", arrow.getColor().toString());
         assertEquals(255, arrow.getColor().getA());
     }
 
@@ -30,7 +30,7 @@ public class ArrowTest {
         Arrow arrow = Arrow.parseArrowObject("ARROW,b*2c,3,0,0,(240,5,127,255),(240,5,127,255)");
         assertEquals(Piece.GOTE_BISHOP, arrow.getFromKomadaiPiece());
         assertEquals(Square.of(2, 3), arrow.getTo());
-        assertEquals("#f0057f", arrow.getColor().toString());
+        assertEquals("#f0057fff", arrow.getColor().toString());
         assertEquals(255, arrow.getColor().getA());
     }
 }

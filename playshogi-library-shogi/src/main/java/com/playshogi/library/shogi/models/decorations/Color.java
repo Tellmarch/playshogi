@@ -2,7 +2,7 @@ package com.playshogi.library.shogi.models.decorations;
 
 public class Color {
 
-    public final static Color RED = new Color(204, 0, 0, 255);
+    public final static Color RED = new Color(204, 0, 0, 150);
 
     private final int r;
     private final int g;
@@ -36,7 +36,8 @@ public class Color {
     public String toString() {
         return "#" + pad(Integer.toHexString(r))
                 + pad(Integer.toHexString(g))
-                + pad(Integer.toHexString(b));
+                + pad(Integer.toHexString(b))
+                + pad(Integer.toHexString(a));
     }
 
     private String pad(String s) {
