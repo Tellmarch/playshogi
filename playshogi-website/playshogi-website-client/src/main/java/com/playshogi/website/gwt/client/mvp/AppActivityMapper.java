@@ -35,6 +35,8 @@ public class AppActivityMapper implements ActivityMapper {
     @Inject
     PublicCollectionsView publicCollectionsView;
     @Inject
+    MyCollectionsView myCollectionsView;
+    @Inject
     ProblemStatisticsView problemStatisticsView;
     @Inject
     OpeningsView openingsView;
@@ -95,6 +97,8 @@ public class AppActivityMapper implements ActivityMapper {
             return new UserKifusActivity((UserKifusPlace) place, userKifusView, sessionInformation);
         } else if (place instanceof ManageProblemsPlace) {
             return new ManageProblemsActivity((ManageProblemsPlace) place, manageProblemsView, sessionInformation);
+        } else if (place instanceof MyCollectionsPlace) {
+            return new MyCollectionsActivity((MyCollectionsPlace) place, myCollectionsView, sessionInformation);
         } else if (place instanceof PublicCollectionsPlace) {
             return new PublicCollectionsActivity((PublicCollectionsPlace) place, publicCollectionsView, sessionInformation);
         }

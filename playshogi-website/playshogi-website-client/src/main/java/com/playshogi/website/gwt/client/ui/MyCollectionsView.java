@@ -20,6 +20,7 @@ import com.playshogi.website.gwt.client.events.collections.DeleteGameCollectionE
 import com.playshogi.website.gwt.client.events.collections.ListCollectionGamesEvent;
 import com.playshogi.website.gwt.client.events.collections.ListGameCollectionsEvent;
 import com.playshogi.website.gwt.client.events.collections.RemoveGameFromCollectionEvent;
+import com.playshogi.website.gwt.client.events.user.UserLoggedInEvent;
 import com.playshogi.website.gwt.client.place.GameCollectionsPlace;
 import com.playshogi.website.gwt.client.place.OpeningsPlace;
 import com.playshogi.website.gwt.client.place.ProblemsPlace;
@@ -42,12 +43,9 @@ public class MyCollectionsView extends Composite {
     private final MyEventBinder eventBinder = GWT.create(MyEventBinder.class);
 
     private final PlaceController placeController;
+    private SessionInformation sessionInformation;
     private final CellTable<GameCollectionDetails> myCollectionsTable;
-    private final CellTable<GameCollectionDetails> publicCollectionsTable;
-    private final CellTable<GameDetails> kifusTable;
     private final TablePanel myCollectionsPanel;
-    private final TablePanel publicCollectionsPanel;
-    private final TablePanel kifusPanel;
     private final ImportCollectionPanel importCollectionPanel = new ImportCollectionPanel();
     private final CollectionPropertiesPanel collectionPropertiesPanel = new CollectionPropertiesPanel();
     private final ImportKifuPanel importKifuPanel = new ImportKifuPanel();
@@ -58,6 +56,7 @@ public class MyCollectionsView extends Composite {
     @Inject
     public MyCollectionsView(final PlaceController placeController, final SessionInformation sessionInformation) {
         this.placeController = placeController;
+        this.sessionInformation = sessionInformation;
         GWT.log("Creating game collections view");
         FlowPanel flowPanel = new FlowPanel();
 
@@ -86,14 +85,6 @@ public class MyCollectionsView extends Composite {
         myCollectionsTable = createGameCollectionTable(true);
         myCollectionsPanel = new TablePanel("My Game Collections", myCollectionsTable);
         flowPanel.add(myCollectionsPanel);
-
-        publicCollectionsTable = createGameCollectionTable(false);
-        publicCollectionsPanel = new TablePanel("Public Game Collections", publicCollectionsTable);
-        flowPanel.add(publicCollectionsPanel);
-
-        kifusTable = createKifusTable();
-        kifusPanel = new TablePanel("Games in Collection: ", kifusTable);
-        flowPanel.add(kifusPanel);
 
         ScrollPanel scrollPanel = new ScrollPanel();
         scrollPanel.add(flowPanel);
@@ -188,54 +179,6 @@ public class MyCollectionsView extends Composite {
         return collectionsTable;
     }
 
-    private CellTable<GameDetails> createKifusTable() {
-        final CellTable<GameDetails> collectionsTable;
-        collectionsTable = new CellTable<>(20);
-        collectionsTable.setKeyboardSelectionPolicy(HasKeyboardSelectionPolicy.KeyboardSelectionPolicy.ENABLED);
-
-        collectionsTable.addColumn(new TextColumn<GameDetails>() {
-            @Override
-            public String getValue(final GameDetails object) {
-                return String.valueOf(object.getId());
-            }
-        }, "Id");
-
-        collectionsTable.addColumn(new TextColumn<GameDetails>() {
-            @Override
-            public String getValue(final GameDetails object) {
-                return String.valueOf(object.getSente());
-            }
-        }, "Sente");
-
-        collectionsTable.addColumn(new TextColumn<GameDetails>() {
-            @Override
-            public String getValue(final GameDetails object) {
-                return String.valueOf(object.getGote());
-            }
-        }, "Gote");
-
-        ActionCell<GameDetails> viewActionCell = new ActionCell<>("View",
-                this::viewKifu);
-
-        collectionsTable.addColumn(new Column<GameDetails, GameDetails>(viewActionCell) {
-            @Override
-            public GameDetails getValue(final GameDetails gameDetails) {
-                return gameDetails;
-            }
-        }, "View");
-
-        ActionCell<GameDetails> deleteActionCell = new ActionCell<>("Remove",
-                this::confirmKifuRemoval);
-
-        collectionsTable.addColumn(new Column<GameDetails, GameDetails>(deleteActionCell) {
-            @Override
-            public GameDetails getValue(final GameDetails gameDetails) {
-                return gameDetails;
-            }
-        }, "Remove");
-
-        return collectionsTable;
-    }
 
     private void viewKifu(final GameDetails details) {
         GWT.log("Going to kifu" + details.getKifuId());
@@ -247,7 +190,6 @@ public class MyCollectionsView extends Composite {
         this.eventBus = eventBus;
         eventBinder.bindEventHandlers(this, eventBus);
         myCollectionsPanel.setVisible(false);
-        kifusPanel.setVisible(false);
         importCollectionPanel.activate(eventBus);
         collectionPropertiesPanel.activate(eventBus);
         importKifuPanel.activate(eventBus);
@@ -259,19 +201,11 @@ public class MyCollectionsView extends Composite {
 
         new ListDataProvider<>(Arrays.asList(event.getMyCollections())).addDataDisplay(myCollectionsTable);
         myCollectionsPanel.setVisible(event.getMyCollections().length > 0);
-
-        new ListDataProvider<>(Arrays.asList(event.getPublicCollections())).addDataDisplay(publicCollectionsTable);
-        publicCollectionsPanel.setVisible(true);
-    }
-
-    @EventHandler
-    public void onListCollectionGamesEvent(final ListCollectionGamesEvent event) {
-        GWT.log("GameCollectionsView: handle GameCollectionsEvent");
-        ListDataProvider<GameDetails> dataProvider = new ListDataProvider<>(Arrays.asList(event.getDetails()));
-        dataProvider.addDataDisplay(kifusTable);
-        kifusPanel.setVisible(true);
-        kifusPanel.setTableTitle(event.getCollectionDetails().getName());
-        collectionDetails = event.getCollectionDetails();
+//        if(event.getMyCollections().length==0){
+//            if(sessionInformation.isLoggedIn()){
+//
+//            }
+//        }
     }
 
     private void confirmCollectionDeletion(final GameCollectionDetails details) {
@@ -285,14 +219,4 @@ public class MyCollectionsView extends Composite {
         }
     }
 
-    public void confirmKifuRemoval(final GameDetails details) {
-        boolean confirm = Window.confirm("Are you sure you want to remove the game " + details.toString() + "?\n" +
-                "This is not revertible.");
-        if (confirm) {
-            GWT.log("Removing game: " + details);
-            eventBus.fireEvent(new RemoveGameFromCollectionEvent(details.getId(), collectionDetails.getId()));
-        } else {
-            GWT.log("Removed game: " + details);
-        }
-    }
 }

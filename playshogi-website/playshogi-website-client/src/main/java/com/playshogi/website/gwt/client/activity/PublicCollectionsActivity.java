@@ -38,7 +38,7 @@ public class PublicCollectionsActivity extends MyAbstractActivity {
 
     @Override
     public void start(final AcceptsOneWidget containerWidget, final EventBus eventBus) {
-        GWT.log("Starting game collections activity");
+        GWT.log("Starting public collections activity");
         this.eventBus = eventBus;
         eventBinder.bindEventHandlers(this, eventBus);
         view.activate(eventBus);
@@ -53,12 +53,12 @@ public class PublicCollectionsActivity extends MyAbstractActivity {
                 new AsyncCallback<GameCollectionDetailsList>() {
                     @Override
                     public void onFailure(Throwable throwable) {
-                        GWT.log("GameCollectionsActivity: error retrieving collections list");
+                        GWT.log("PublicCollectionsActivity: error retrieving collections list");
                     }
 
                     @Override
                     public void onSuccess(GameCollectionDetailsList gameCollectionDetails) {
-                        GWT.log("GameCollectionsActivity: retrieved collections list");
+                        GWT.log("PublicCollectionsActivity: retrieved collections list");
                         eventBus.fireEvent(new ListGameCollectionsEvent(gameCollectionDetails.getMyCollections(),
                                 gameCollectionDetails.getPublicCollections()));
                     }
