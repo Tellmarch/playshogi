@@ -8,7 +8,12 @@ import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.HasKeyboardSelectionPolicy;
 import com.google.gwt.user.cellview.client.TextColumn;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.view.client.ListDataProvider;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -25,12 +30,17 @@ import com.playshogi.website.gwt.client.place.GameCollectionsPlace;
 import com.playshogi.website.gwt.client.place.OpeningsPlace;
 import com.playshogi.website.gwt.client.place.ProblemsPlace;
 import com.playshogi.website.gwt.client.place.ViewKifuPlace;
+import com.playshogi.website.gwt.client.util.ElementWidget;
 import com.playshogi.website.gwt.client.widget.TablePanel;
 import com.playshogi.website.gwt.client.widget.kifu.CollectionPropertiesPanel;
 import com.playshogi.website.gwt.client.widget.kifu.ImportCollectionPanel;
 import com.playshogi.website.gwt.client.widget.kifu.ImportKifuPanel;
 import com.playshogi.website.gwt.shared.models.GameCollectionDetails;
 import com.playshogi.website.gwt.shared.models.GameDetails;
+import org.dominokit.domino.ui.Typography.Strong;
+import org.dominokit.domino.ui.alerts.Alert;
+import org.dominokit.domino.ui.labels.Label;
+import org.jboss.elemento.Elements;
 
 import java.util.Arrays;
 
@@ -49,6 +59,9 @@ public class MyCollectionsView extends Composite {
     private final ImportCollectionPanel importCollectionPanel = new ImportCollectionPanel();
     private final CollectionPropertiesPanel collectionPropertiesPanel = new CollectionPropertiesPanel();
     private final ImportKifuPanel importKifuPanel = new ImportKifuPanel();
+    private final ElementWidget loggedOutWarning;
+    private final ElementWidget noCollectionsWarning;
+    private final ElementWidget header;
 
     private EventBus eventBus;
     private GameCollectionDetails collectionDetails;
@@ -60,30 +73,42 @@ public class MyCollectionsView extends Composite {
         GWT.log("Creating game collections view");
         FlowPanel flowPanel = new FlowPanel();
 
-        flowPanel.add(new HTML("<b>Warning</b>: feature in development, please keep backups of your game collections" +
-                ".</br>"));
-        flowPanel.add(new HTML("Expect bugs, e.g. accidental data deletion or bad access control.</br>"));
+        //TODO add margin to the left side in domino ui
 
-        flowPanel.add(new HTML("<br/>"));
+        header = new ElementWidget(Elements.h(1).textContent("My Collections").element());
+        loggedOutWarning = new ElementWidget(Elements.h(4).textContent("You are logged out.").element());
+        noCollectionsWarning = new ElementWidget(Elements.h(4).textContent("You have no Collections. Add some using buttons!").element());
+        flowPanel.add(header);
+        flowPanel.add(new ElementWidget( Alert.warning()
+                .appendChild(Strong.of("Warning! "))
+                .appendChild("feature in development, please keep backups of your game collections to avoid accidental data deletion.").element()));
+        flowPanel.add(loggedOutWarning);
+        flowPanel.add(noCollectionsWarning);
+
+
+//        flowPanel.add(new HTML("<b>Warning</b>: feature in development, please keep backups of your game collections" +
+//                ".</br>"));
+//        flowPanel.add(new HTML("Expect bugs, e.g. accidental data deletion or bad access control.</br>"));
+//
+//        flowPanel.add(new HTML("<br/>"));
 
         HorizontalPanel buttonsPanel = new HorizontalPanel();
         buttonsPanel.setSpacing(5);
 
-        Button createButton = new Button("Create New Game Collection");
+        Button createButton = new Button("Create New Collection");
         createButton.addClickHandler(clickEvent -> sessionInformation.ifLoggedIn(collectionPropertiesPanel::showInCreateDialog));
         buttonsPanel.add(createButton);
 
-        Button importButton = new Button("Import Game Collection");
-        importButton.addClickHandler(clickEvent -> sessionInformation.ifLoggedIn(importCollectionPanel::showInDialog));
-        buttonsPanel.add(importButton);
-
+//        Button importButton = new Button("Import Collection");
+//        importButton.addClickHandler(clickEvent -> sessionInformation.ifLoggedIn(importCollectionPanel::showInDialog));
+//        buttonsPanel.add(importButton);
 
         flowPanel.add(buttonsPanel);
 
         flowPanel.add(new HTML("<br/>"));
 
         myCollectionsTable = createGameCollectionTable(true);
-        myCollectionsPanel = new TablePanel("My Game Collections", myCollectionsTable);
+        myCollectionsPanel = new TablePanel("My Collections List", myCollectionsTable);
         flowPanel.add(myCollectionsPanel);
 
         ScrollPanel scrollPanel = new ScrollPanel();
@@ -190,6 +215,8 @@ public class MyCollectionsView extends Composite {
         this.eventBus = eventBus;
         eventBinder.bindEventHandlers(this, eventBus);
         myCollectionsPanel.setVisible(false);
+        noCollectionsWarning.setVisible(false);
+        loggedOutWarning.setVisible(false);
         importCollectionPanel.activate(eventBus);
         collectionPropertiesPanel.activate(eventBus);
         importKifuPanel.activate(eventBus);
@@ -200,12 +227,22 @@ public class MyCollectionsView extends Composite {
         GWT.log("GameCollectionsView: handle GameCollectionsEvent:\n" + event);
 
         new ListDataProvider<>(Arrays.asList(event.getMyCollections())).addDataDisplay(myCollectionsTable);
-        myCollectionsPanel.setVisible(event.getMyCollections().length > 0);
-//        if(event.getMyCollections().length==0){
-//            if(sessionInformation.isLoggedIn()){
-//
-//            }
-//        }
+
+        loggedOutWarning.setVisible(false);
+        noCollectionsWarning.setVisible(false);
+        myCollectionsPanel.setVisible(false);
+
+        if(sessionInformation.isLoggedIn()){
+            if(event.getMyCollections().length > 0){
+                myCollectionsPanel.setVisible(true);
+            }else{
+                noCollectionsWarning.setVisible(true);
+            }
+
+        }else{
+            loggedOutWarning.setVisible(true);
+        }
+
     }
 
     private void confirmCollectionDeletion(final GameCollectionDetails details) {
