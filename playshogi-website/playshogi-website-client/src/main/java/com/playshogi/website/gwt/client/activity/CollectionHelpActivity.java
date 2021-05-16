@@ -7,16 +7,16 @@ import com.google.web.bindery.event.shared.EventBus;
 
 public class CollectionHelpActivity extends MyAbstractActivity {
 
-    private final Widget mainPageView;
+    private final Widget collectionHelpView;
 
-    public CollectionHelpActivity(final Widget mainPageView) {
-        this.mainPageView = mainPageView;
+    public CollectionHelpActivity(final Widget collectionHelpView) {
+        this.collectionHelpView = collectionHelpView;
     }
 
     @Override
     public void start(final AcceptsOneWidget containerWidget, final EventBus eventBus) {
-        GWT.log("Starting main page activity");
-        containerWidget.setWidget(mainPageView.asWidget());
+        GWT.log("Starting collection help activity");
+        containerWidget.setWidget(collectionHelpView.asWidget());
     }
 
 }

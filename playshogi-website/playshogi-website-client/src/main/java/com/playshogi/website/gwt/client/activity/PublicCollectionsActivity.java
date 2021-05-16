@@ -11,6 +11,7 @@ import com.playshogi.website.gwt.client.events.collections.*;
 import com.playshogi.website.gwt.client.events.user.UserLoggedInEvent;
 import com.playshogi.website.gwt.client.place.PublicCollectionsPlace;
 import com.playshogi.website.gwt.client.ui.PublicCollectionsView;
+import com.playshogi.website.gwt.shared.models.GameCollectionDetails;
 import com.playshogi.website.gwt.shared.models.GameCollectionDetailsList;
 import com.playshogi.website.gwt.shared.services.KifuService;
 import com.playshogi.website.gwt.shared.services.KifuServiceAsync;
@@ -59,8 +60,12 @@ public class PublicCollectionsActivity extends MyAbstractActivity {
                     @Override
                     public void onSuccess(GameCollectionDetailsList gameCollectionDetails) {
                         GWT.log("PublicCollectionsActivity: retrieved collections list");
+                        GameCollectionDetails[] publicCollections = gameCollectionDetails.getPublicCollections();
+                        for (int i = 0; i < publicCollections.length; i++) {
+                            publicCollections[i].setRow(i+1);
+                        }
                         eventBus.fireEvent(new ListGameCollectionsEvent(gameCollectionDetails.getMyCollections(),
-                                gameCollectionDetails.getPublicCollections()));
+                                publicCollections));
                     }
                 });
     }

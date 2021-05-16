@@ -37,6 +37,10 @@ public class AppActivityMapper implements ActivityMapper {
     @Inject
     MyCollectionsView myCollectionsView;
     @Inject
+    CollectionView collectionView;
+    @Inject
+    CollectionHelpView collectionHelpView;
+    @Inject
     ProblemStatisticsView problemStatisticsView;
     @Inject
     OpeningsView openingsView;
@@ -101,7 +105,12 @@ public class AppActivityMapper implements ActivityMapper {
             return new MyCollectionsActivity((MyCollectionsPlace) place, myCollectionsView, sessionInformation);
         } else if (place instanceof PublicCollectionsPlace) {
             return new PublicCollectionsActivity((PublicCollectionsPlace) place, publicCollectionsView, sessionInformation);
+        } else if (place instanceof CollectionHelpPlace) {
+            return new CollectionHelpActivity(collectionHelpView);
+        } else if (place instanceof CollectionPlace) {
+            return new CollectionActivity((CollectionPlace) place, collectionView, sessionInformation);
         }
+
 
         return null;
     }

@@ -20,10 +20,7 @@ import com.playshogi.website.gwt.client.events.collections.DeleteGameCollectionE
 import com.playshogi.website.gwt.client.events.collections.ListCollectionGamesEvent;
 import com.playshogi.website.gwt.client.events.collections.ListGameCollectionsEvent;
 import com.playshogi.website.gwt.client.events.collections.RemoveGameFromCollectionEvent;
-import com.playshogi.website.gwt.client.place.GameCollectionsPlace;
-import com.playshogi.website.gwt.client.place.OpeningsPlace;
-import com.playshogi.website.gwt.client.place.ProblemsPlace;
-import com.playshogi.website.gwt.client.place.ViewKifuPlace;
+import com.playshogi.website.gwt.client.place.*;
 import com.playshogi.website.gwt.client.widget.TablePanel;
 import com.playshogi.website.gwt.client.widget.kifu.CollectionPropertiesPanel;
 import com.playshogi.website.gwt.client.widget.kifu.ImportCollectionPanel;
@@ -51,7 +48,7 @@ public class PublicCollectionsView extends Composite {
     @Inject
     public PublicCollectionsView(final PlaceController placeController, final SessionInformation sessionInformation) {
         this.placeController = placeController;
-        GWT.log("Creating game collections view");
+        GWT.log("Creating public collections view");
         FlowPanel flowPanel = new FlowPanel();
 
         publicCollectionsTable = createGameCollectionTable(false);
@@ -72,7 +69,7 @@ public class PublicCollectionsView extends Composite {
         TextColumn<GameCollectionDetails> idColumn = new TextColumn<GameCollectionDetails>() {
             @Override
             public String getValue(final GameCollectionDetails object) {
-                return String.valueOf(object.getId());
+                return String.valueOf(object.getRow());
             }
         };
         collectionsTable.addColumn(idColumn, "Id");
@@ -85,32 +82,48 @@ public class PublicCollectionsView extends Composite {
         };
         collectionsTable.addColumn(nameColumn, "Name");
 
-        ActionCell<GameCollectionDetails> listActionCell = new ActionCell<>("List Games",
-                gameCollectionDetails -> placeController.goTo(new GameCollectionsPlace(gameCollectionDetails.getId())));
+        TextColumn<GameCollectionDetails> dscColumn = new TextColumn<GameCollectionDetails>() {
+            @Override
+            public String getValue(final GameCollectionDetails object) {
+                return String.valueOf(object.getDescription()); //TODO set up max number of characters
+            }
+        };
+        collectionsTable.addColumn(dscColumn, "Description");
+
+        TextColumn<GameCollectionDetails> typeColumn = new TextColumn<GameCollectionDetails>() {
+            @Override
+            public String getValue(final GameCollectionDetails object) {
+                return String.valueOf(object.getType()); //TODO set up max number of characters
+            }
+        };
+        collectionsTable.addColumn(typeColumn, "Type");
+
+        ActionCell<GameCollectionDetails> listActionCell = new ActionCell<>("Open",
+                gameCollectionDetails -> placeController.goTo(new CollectionPlace(gameCollectionDetails.getId())));
 
         collectionsTable.addColumn(new Column<GameCollectionDetails, GameCollectionDetails>(listActionCell) {
             @Override
             public GameCollectionDetails getValue(final GameCollectionDetails gameCollectionDetails) {
                 return gameCollectionDetails;
             }
-        }, "List Games");
+        }, "Open Collection");
 
-        ActionCell<GameCollectionDetails> exploreActionCell = new ActionCell<>("Explore",
-                gameCollectionDetails -> {
-                    if ("games".equals(gameCollectionDetails.getType())) {
-                        placeController.goTo(new OpeningsPlace(OpeningsPlace.DEFAULT_SFEN,
-                                gameCollectionDetails.getId()));
-                    } else {
-                        placeController.goTo(new ProblemsPlace(gameCollectionDetails.getId(), 0));
-                    }
-                });
-
-        collectionsTable.addColumn(new Column<GameCollectionDetails, GameCollectionDetails>(exploreActionCell) {
-            @Override
-            public GameCollectionDetails getValue(final GameCollectionDetails gameCollectionDetails) {
-                return gameCollectionDetails;
-            }
-        }, "Explore");
+//        ActionCell<GameCollectionDetails> exploreActionCell = new ActionCell<>("Explore",
+//                gameCollectionDetails -> {
+//                    if ("games".equals(gameCollectionDetails.getType())) {
+//                        placeController.goTo(new OpeningsPlace(OpeningsPlace.DEFAULT_SFEN,
+//                                gameCollectionDetails.getId()));
+//                    } else {
+//                        placeController.goTo(new ProblemsPlace(gameCollectionDetails.getId(), 0));
+//                    }
+//                });
+//
+//        collectionsTable.addColumn(new Column<GameCollectionDetails, GameCollectionDetails>(exploreActionCell) {
+//            @Override
+//            public GameCollectionDetails getValue(final GameCollectionDetails gameCollectionDetails) {
+//                return gameCollectionDetails;
+//            }
+//        }, "Explore");
 
         return collectionsTable;
     }
@@ -123,7 +136,7 @@ public class PublicCollectionsView extends Composite {
 
     @EventHandler
     public void onListGameCollectionsEvent(final ListGameCollectionsEvent event) {
-        GWT.log("GameCollectionsView: handle GameCollectionsEvent:\n" + event);
+        GWT.log("PublicCollectionsView: handle PublicCollectionsEvent:\n" + event);
 
         new ListDataProvider<>(Arrays.asList(event.getPublicCollections())).addDataDisplay(publicCollectionsTable);
         publicCollectionsPanel.setVisible(true);

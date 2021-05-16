@@ -58,7 +58,7 @@ public class CollectionView extends Composite {
     @Inject
     public CollectionView(final PlaceController placeController, final SessionInformation sessionInformation) {
         this.placeController = placeController;
-        GWT.log("Creating game collections view");
+        GWT.log("Creating collection view");
         FlowPanel flowPanel = new FlowPanel();
 
         flowPanel.add(new HTML("<b>Warning</b>: feature in development, please keep backups of your game collections" +
@@ -255,7 +255,7 @@ public class CollectionView extends Composite {
 
     @EventHandler
     public void onListGameCollectionsEvent(final ListGameCollectionsEvent event) {
-        GWT.log("GameCollectionsView: handle GameCollectionsEvent:\n" + event);
+        GWT.log("CollectionView: handle GameCollectionsEvent:\n" + event);
 
         new ListDataProvider<>(Arrays.asList(event.getMyCollections())).addDataDisplay(myCollectionsTable);
         myCollectionsPanel.setVisible(event.getMyCollections().length > 0);
@@ -266,7 +266,7 @@ public class CollectionView extends Composite {
 
     @EventHandler
     public void onListCollectionGamesEvent(final ListCollectionGamesEvent event) {
-        GWT.log("GameCollectionsView: handle GameCollectionsEvent");
+        GWT.log("CollectionView: handle GameCollectionsEvent");
         ListDataProvider<GameDetails> dataProvider = new ListDataProvider<>(Arrays.asList(event.getDetails()));
         dataProvider.addDataDisplay(kifusTable);
         kifusPanel.setVisible(true);

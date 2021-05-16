@@ -12,12 +12,16 @@ import com.playshogi.website.gwt.client.SessionInformation;
 import com.playshogi.website.gwt.client.events.collections.*;
 import com.playshogi.website.gwt.client.events.kifu.ImportGameRecordEvent;
 import com.playshogi.website.gwt.client.events.user.UserLoggedInEvent;
+import com.playshogi.website.gwt.client.place.CollectionPlace;
 import com.playshogi.website.gwt.client.place.GameCollectionsPlace;
+import com.playshogi.website.gwt.client.ui.CollectionView;
 import com.playshogi.website.gwt.client.ui.GameCollectionsView;
 import com.playshogi.website.gwt.shared.models.GameCollectionDetailsAndGames;
 import com.playshogi.website.gwt.shared.models.GameCollectionDetailsList;
 import com.playshogi.website.gwt.shared.services.KifuService;
 import com.playshogi.website.gwt.shared.services.KifuServiceAsync;
+
+import java.util.Arrays;
 
 public class CollectionActivity extends MyAbstractActivity {
 
@@ -29,57 +33,43 @@ public class CollectionActivity extends MyAbstractActivity {
 
     private final MyEventBinder eventBinder = GWT.create(MyEventBinder.class);
 
-    private final GameCollectionsPlace place;
-    private final GameCollectionsView gameCollectionsView;
+    private final CollectionPlace place;
+    private final CollectionView view;
     private final SessionInformation sessionInformation;
 
-    public CollectionActivity(final GameCollectionsPlace place, final GameCollectionsView gameCollectionsView,
+    public CollectionActivity(final CollectionPlace place, final CollectionView view,
                               final SessionInformation sessionInformation) {
         this.place = place;
-        this.gameCollectionsView = gameCollectionsView;
+        this.view = view;
         this.sessionInformation = sessionInformation;
     }
 
     @Override
     public void start(final AcceptsOneWidget containerWidget, final EventBus eventBus) {
-        GWT.log("Starting game collections activity");
+        GWT.log("Starting collection activity");
         this.eventBus = eventBus;
         eventBinder.bindEventHandlers(this, eventBus);
-        gameCollectionsView.activate(eventBus);
+        view.activate(eventBus);
 
         fetchData();
 
-        containerWidget.setWidget(gameCollectionsView.asWidget());
+        containerWidget.setWidget(view.asWidget());
     }
 
     private void fetchData() {
-        kifuService.getGameCollections(sessionInformation.getSessionId(),
-                new AsyncCallback<GameCollectionDetailsList>() {
-                    @Override
-                    public void onFailure(Throwable throwable) {
-                        GWT.log("GameCollectionsActivity: error retrieving collections list");
-                    }
-
-                    @Override
-                    public void onSuccess(GameCollectionDetailsList gameCollectionDetails) {
-                        GWT.log("GameCollectionsActivity: retrieved collections list");
-                        eventBus.fireEvent(new ListGameCollectionsEvent(gameCollectionDetails.getMyCollections(),
-                                gameCollectionDetails.getPublicCollections()));
-                    }
-                });
-
-        if (place.getCollectionId().isPresent()) {
+         if (place.getCollectionId().isPresent()) {
             GWT.log("Querying for collection games");
             kifuService.getGameSetKifuDetails(sessionInformation.getSessionId(), place.getCollectionId().get(),
                     new AsyncCallback<GameCollectionDetailsAndGames>() {
                         @Override
                         public void onFailure(Throwable throwable) {
-                            GWT.log("GameCollectionsActivity: error retrieving collection games");
+                            GWT.log("CollectionActivity: error retrieving collection games");
                         }
 
                         @Override
                         public void onSuccess(GameCollectionDetailsAndGames result) {
-                            GWT.log("GameCollectionsActivity: retrieved collection games");
+                            GWT.log("CollectionActivity: retrieved collection games");
+                            GWT.log(Arrays.toString(result.getGames()));
                             eventBus.fireEvent(new ListCollectionGamesEvent(result.getGames(), result.getDetails()));
                         }
                     });
@@ -88,19 +78,19 @@ public class CollectionActivity extends MyAbstractActivity {
 
     @EventHandler
     public void onDraftCollectionUploaded(final DraftCollectionUploadedEvent event) {
-        GWT.log("GameCollectionsActivity: Handling DraftCollectionUploadedEvent");
+        GWT.log("CollectionActivity: Handling DraftCollectionUploadedEvent");
         Window.alert("Your collection is uploading - it may take a few minutes to import all games to the database. " +
                 "You can keep using the website during that time.");
         kifuService.saveGameCollection(sessionInformation.getSessionId(), event.getId(), new AsyncCallback<String>() {
             @Override
             public void onFailure(final Throwable throwable) {
-                GWT.log("GameCollectionsActivity: error saving draft collection");
+                GWT.log("CollectionActivity: error saving draft collection");
                 Window.alert("Failed to upload the game collection.");
             }
 
             @Override
             public void onSuccess(final String s) {
-                GWT.log("GameCollectionsActivity: saved draft collection");
+                GWT.log("CollectionActivity: saved draft collection");
                 refresh();
             }
         });
@@ -108,18 +98,18 @@ public class CollectionActivity extends MyAbstractActivity {
 
     @EventHandler
     public void onSaveGameCollectionDetails(final SaveGameCollectionDetailsEvent event) {
-        GWT.log("GameCollectionsActivity: Handling SaveGameCollectionDetailsEvent: " + event.getDetails());
+        GWT.log("CollectionActivity: Handling SaveGameCollectionDetailsEvent: " + event.getDetails());
         kifuService.updateGameCollectionDetails(sessionInformation.getSessionId(), event.getDetails(),
                 new AsyncCallback<Void>() {
                     @Override
                     public void onFailure(final Throwable throwable) {
-                        GWT.log("GameCollectionsActivity: error during saveGameCollectionDetails");
+                        GWT.log("CollectionActivity: error during saveGameCollectionDetails");
                         eventBus.fireEvent(new SaveGameCollectionDetailsResultEvent(false));
                     }
 
                     @Override
                     public void onSuccess(final Void unused) {
-                        GWT.log("GameCollectionsActivity: saveGameCollectionDetails success");
+                        GWT.log("CollectionActivity: saveGameCollectionDetails success");
                         eventBus.fireEvent(new SaveGameCollectionDetailsResultEvent(true));
                         refresh();
                     }
@@ -128,18 +118,18 @@ public class CollectionActivity extends MyAbstractActivity {
 
     @EventHandler
     public void onCreateGameCollection(final CreateGameCollectionEvent event) {
-        GWT.log("GameCollectionsActivity: Handling CreateGameCollectionEvent: " + event.getDetails());
+        GWT.log("CollectionActivity: Handling CreateGameCollectionEvent: " + event.getDetails());
         kifuService.createGameCollection(sessionInformation.getSessionId(), event.getDetails(),
                 new AsyncCallback<Void>() {
                     @Override
                     public void onFailure(final Throwable throwable) {
-                        GWT.log("GameCollectionsActivity: error during createGameCollection");
+                        GWT.log("CollectionActivity: error during createGameCollection");
                         eventBus.fireEvent(new SaveGameCollectionDetailsResultEvent(false));
                     }
 
                     @Override
                     public void onSuccess(final Void unused) {
-                        GWT.log("GameCollectionsActivity: createGameCollection success");
+                        GWT.log("CollectionActivity: createGameCollection success");
                         eventBus.fireEvent(new SaveGameCollectionDetailsResultEvent(true));
                         refresh();
                     }
@@ -148,19 +138,19 @@ public class CollectionActivity extends MyAbstractActivity {
 
     @EventHandler
     public void onImportGameRecord(final ImportGameRecordEvent event) {
-        GWT.log("GameCollectionsActivity Handling ImportGameRecordEvent");
+        GWT.log("CollectionActivity Handling ImportGameRecordEvent");
 
         kifuService.saveGameAndAddToCollection(sessionInformation.getSessionId(),
                 UsfFormat.INSTANCE.write(event.getGameRecord()),
                 event.getCollectionId(), new AsyncCallback<Void>() {
                     @Override
                     public void onFailure(final Throwable throwable) {
-                        GWT.log("GameCollectionsActivity: error during saveKifu");
+                        GWT.log("CollectionActivity: error during saveKifu");
                     }
 
                     @Override
                     public void onSuccess(final Void unused) {
-                        GWT.log("GameCollectionsActivity: saveKifu success");
+                        GWT.log("CollectionActivity: saveKifu success");
                         refresh();
                     }
                 });
@@ -175,18 +165,18 @@ public class CollectionActivity extends MyAbstractActivity {
 
     @EventHandler
     public void onDeleteGameCollection(final DeleteGameCollectionEvent event) {
-        GWT.log("GameCollectionsActivity Handling DeleteGameCollectionEvent");
+        GWT.log("CollectionActivity Handling DeleteGameCollectionEvent");
         kifuService.deleteGameCollection(sessionInformation.getSessionId(), event.getCollectionId(),
                 new AsyncCallback<Void>() {
                     @Override
                     public void onFailure(final Throwable throwable) {
-                        GWT.log("GameCollectionsActivity: error during deleteGameCollection");
+                        GWT.log("CollectionActivity: error during deleteGameCollection");
                         Window.alert("Deletion failed - maybe you do not have permission?");
                     }
 
                     @Override
                     public void onSuccess(final Void unused) {
-                        GWT.log("GameCollectionsActivity: deleteGameCollection success");
+                        GWT.log("CollectionActivity: deleteGameCollection success");
                         refresh();
                     }
                 });
@@ -195,19 +185,19 @@ public class CollectionActivity extends MyAbstractActivity {
 
     @EventHandler
     public void onRemoveGameFromCollection(final RemoveGameFromCollectionEvent event) {
-        GWT.log("GameCollectionsActivity Handling RemoveGameFromCollectionEvent");
+        GWT.log("CollectionActivity Handling RemoveGameFromCollectionEvent");
         kifuService.removeGameFromCollection(sessionInformation.getSessionId(), event.getGameId(),
                 event.getCollectionId(),
                 new AsyncCallback<Void>() {
                     @Override
                     public void onFailure(final Throwable throwable) {
-                        GWT.log("GameCollectionsActivity: error during removeGameFromCollection");
+                        GWT.log("CollectionActivity: error during removeGameFromCollection");
                         Window.alert("Deletion failed - maybe you do not have permission?");
                     }
 
                     @Override
                     public void onSuccess(final Void unused) {
-                        GWT.log("GameCollectionsActivity: removeGameFromCollection success");
+                        GWT.log("CollectionActivity: removeGameFromCollection success");
                         refresh();
                     }
                 });
