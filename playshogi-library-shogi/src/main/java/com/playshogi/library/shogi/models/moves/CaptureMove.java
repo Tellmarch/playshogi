@@ -23,8 +23,8 @@ public class CaptureMove extends NormalMove {
     }
 
     @Override
-    public CaptureMove withPromotionPiece(Piece promotionPiece) {
-        return new CaptureMove(piece, fromSquare, toSquare, capturedPiece, promotionPiece);
+    public CaptureMove withPromotion() {
+        return new CaptureMove(piece, fromSquare, toSquare, capturedPiece, true);
     }
 
     public Piece getCapturedPiece() {

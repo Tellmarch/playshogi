@@ -7,10 +7,10 @@ import com.google.gwt.user.client.ui.*;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
-import com.playshogi.library.shogi.models.formats.kif.KifMoveConverter;
 import com.playshogi.library.shogi.models.formats.usf.UsfMoveConverter;
 import com.playshogi.library.shogi.models.moves.ShogiMove;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
+import com.playshogi.website.gwt.client.UserPreferences;
 import com.playshogi.website.gwt.client.events.gametree.HighlightMoveEvent;
 import com.playshogi.website.gwt.client.events.kifu.PositionStatisticsEvent;
 import com.playshogi.website.gwt.client.mvp.AppPlaceHistoryMapper;
@@ -32,12 +32,14 @@ public class PositionStatisticsPanel extends Composite {
     private final FlowPanel verticalPanel;
 
     private final AppPlaceHistoryMapper historyMapper;
+    private final UserPreferences userPreferences;
 
     private ShogiPosition shogiPosition;
     private String gameSetId;
 
-    public PositionStatisticsPanel(final AppPlaceHistoryMapper historyMapper) {
+    public PositionStatisticsPanel(final AppPlaceHistoryMapper historyMapper, final UserPreferences userPreferences) {
         this.historyMapper = historyMapper;
+        this.userPreferences = userPreferences;
         verticalPanel = new FlowPanel();
 
         verticalPanel.add(new HTML(SafeHtmlUtils.fromSafeConstant("<br>")));
@@ -87,7 +89,7 @@ public class PositionStatisticsPanel extends Composite {
 
                 String moveUsf = moveDetails.getMove();
                 final ShogiMove move = UsfMoveConverter.fromUsfString(moveUsf, shogiPosition);
-                Hyperlink hyperlink = new Hyperlink(KifMoveConverter.toKifStringShort(move),
+                Hyperlink hyperlink = new Hyperlink(userPreferences.getMoveNotationAccordingToPreferences(move, false),
                         historyMapper.getToken(new OpeningsPlace(moveDetails.getNewSfen(), gameSetId)));
 
                 hyperlink.setStyleName("movelink");

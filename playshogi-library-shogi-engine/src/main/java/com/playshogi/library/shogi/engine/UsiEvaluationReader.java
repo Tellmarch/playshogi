@@ -65,10 +65,10 @@ public class UsiEvaluationReader {
         if (!"bestmove".equals(split[0])) {
             LOGGER.log(Level.SEVERE, "Unexpected bestmove line: " + nextLine);
         }
-        String bestMove = UsiMoveConverter.fromPsnToUsfSTring(split[1], sfen);
+        String bestMove = UsiMoveConverter.fromUsiToUsfSTring(split[1], sfen);
         String ponderMove = "";
         if (split.length == 4) {
-            ponderMove = UsiMoveConverter.fromPsnToUsfSTring(split[3], sfen);
+            ponderMove = UsiMoveConverter.fromUsiToUsfSTring(split[3], sfen);
         }
 
         return new PositionEvaluation(sfen, variationsHistory, bestMove,
@@ -119,7 +119,7 @@ public class UsiEvaluationReader {
                     Player player = SfenConverter.extractPlayer(sfen);
                     StringBuilder variation = new StringBuilder();
                     for (int j = i + 1; j < split.length; j++) {
-                        variation.append(UsiMoveConverter.fromPsnToUsfSTring(split[j], player)).append(" ");
+                        variation.append(UsiMoveConverter.fromUsiToUsfSTring(split[j], player)).append(" ");
                         player = player.opposite();
                     }
                     principalVariation.setUsf(variation.toString());

@@ -2,6 +2,10 @@ package com.playshogi.website.gwt.client;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Cookies;
+import com.playshogi.library.shogi.models.Player;
+import com.playshogi.library.shogi.models.formats.kif.KifMoveConverter;
+import com.playshogi.library.shogi.models.formats.psn.PsnMoveConverter;
+import com.playshogi.library.shogi.models.moves.ShogiMove;
 import com.playshogi.website.gwt.client.widget.board.PieceGraphics;
 
 public class UserPreferences {
@@ -22,7 +26,7 @@ public class UserPreferences {
 
     public UserPreferences() {
         String pieceStyleCookie = Cookies.getCookie(PIECE_STYLE_COOKIE);
-        if (pieceStyleCookie != null && ("RYOKO" .equals(pieceStyleCookie) || "HIDETCHI" .equals(pieceStyleCookie))) {
+        if (("RYOKO".equals(pieceStyleCookie) || "HIDETCHI".equals(pieceStyleCookie))) {
             pieceStyle = PieceGraphics.Style.valueOf(pieceStyleCookie);
         }
         String notationStyleCookie = Cookies.getCookie(NOTATION_STYLE_COOKIE);
@@ -53,6 +57,30 @@ public class UserPreferences {
     public void setNotationStyle(final NotationStyle notationStyle) {
         this.notationStyle = notationStyle;
         Cookies.setCookie(NOTATION_STYLE_COOKIE, notationStyle.name());
+    }
+
+    public String getMoveNotationAccordingToPreferences(final ShogiMove move, final boolean withColorSymbol) {
+        return getMoveNotationAccordingToPreferences(move, null, withColorSymbol);
+    }
+
+    public String getMoveNotationAccordingToPreferences(final ShogiMove move, final ShogiMove previousMove,
+                                                        final boolean withColorSymbol) {
+        switch (notationStyle) {
+            case TRADITIONAL:
+                return getPlayerSymbol(move, withColorSymbol) + KifMoveConverter.toKifStringShort(move, previousMove);
+            case WESTERN_ALPHABETICAL:
+                return getPlayerSymbol(move, withColorSymbol) + PsnMoveConverter.toPsnStringShort(move, previousMove);
+            case KK_NOTATION:
+            case NUMERICAL_JAPANESE:
+            case WESTERN_NUMERICAL:
+            default:
+                throw new IllegalStateException("Unexpected notation style: " + notationStyle);
+        }
+    }
+
+    public String getPlayerSymbol(final ShogiMove move, final boolean withColorSymbol) {
+        if (!withColorSymbol) return "";
+        return move.getPlayer() == Player.BLACK ? "☗ " : "☖ ";
     }
 
     @Override

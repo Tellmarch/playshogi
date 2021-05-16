@@ -29,7 +29,7 @@ public class OpeningsView extends Composite {
         shogiBoard = new ShogiBoard(OPENINGS, sessionInformation.getUserPreferences());
         gameNavigator = new GameNavigator(OPENINGS);
 
-        positionStatisticsPanel = new PositionStatisticsPanel(historyMapper);
+        positionStatisticsPanel = new PositionStatisticsPanel(historyMapper, sessionInformation.getUserPreferences());
         positionKifusPanel = new PositionKifusPanel(historyMapper);
 
         shogiBoard.setUpperRightPanel(positionStatisticsPanel);

@@ -8,12 +8,12 @@ import com.google.gwt.user.client.ui.*;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
-import com.playshogi.library.shogi.models.formats.kif.KifMoveConverter;
 import com.playshogi.library.shogi.models.formats.sfen.SfenConverter;
 import com.playshogi.library.shogi.models.formats.usf.UsfMoveConverter;
 import com.playshogi.library.shogi.models.moves.ShogiMove;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.library.shogi.rules.ShogiRulesEngine;
+import com.playshogi.website.gwt.client.UserPreferences;
 import com.playshogi.website.gwt.client.events.gametree.HighlightMoveEvent;
 import com.playshogi.website.gwt.client.events.gametree.PositionChangedEvent;
 import com.playshogi.website.gwt.client.events.kifu.PositionEvaluationEvent;
@@ -35,13 +35,15 @@ public class PositionEvaluationDetailsPanel extends Composite {
     private final ShogiRulesEngine shogiRulesEngine = new ShogiRulesEngine();
     private final CheckBox highlightCheckBox;
     private final ShogiBoard shogiBoard;
+    private final UserPreferences userPreferences;
 
     private EventBus eventBus;
     private PositionEvaluationDetails evaluation;
     private boolean sync = false; // Whether the evaluation matches the current position of the board
 
-    public PositionEvaluationDetailsPanel(final ShogiBoard shogiBoard) {
+    public PositionEvaluationDetailsPanel(final ShogiBoard shogiBoard, final UserPreferences userPreferences) {
         GWT.log("Creating PositionEvaluationDetailsPanel");
+        this.userPreferences = userPreferences;
         this.shogiBoard = shogiBoard;
         VerticalPanel verticalPanel = new VerticalPanel();
 
@@ -124,7 +126,7 @@ public class PositionEvaluationDetailsPanel extends Composite {
         for (String usfMove : usfMoves) {
             ShogiMove move = UsfMoveConverter.fromUsfString(usfMove, position);
             shogiRulesEngine.playMoveInPosition(position, move);
-            result += KifMoveConverter.toKifStringShort(move, previousMove) + " ";
+            result += userPreferences.getMoveNotationAccordingToPreferences(move, previousMove, true) + " ";
             previousMove = move;
         }
 

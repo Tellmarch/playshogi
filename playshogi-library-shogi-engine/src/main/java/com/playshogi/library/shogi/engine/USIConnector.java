@@ -146,14 +146,14 @@ public class USIConnector {
             Player player = SfenConverter.extractPlayer(sfen);
             StringBuilder variation = new StringBuilder();
             for (int i = 1; i < split.length; i++) {
-                variation.append(UsiMoveConverter.fromPsnToUsfSTring(split[i], player)).append(" ");
+                variation.append(UsiMoveConverter.fromUsiToUsfSTring(split[i], player)).append(" ");
                 player = player.opposite();
             }
             int numMoves = split.length - 1;
             Variation principalVariation = new Variation();
             principalVariation.setScore(PositionScore.mateIn(numMoves));
             principalVariation.setUsf(variation.toString());
-            String bestMove = UsiMoveConverter.fromPsnToUsfSTring(split[1], sfen);
+            String bestMove = UsiMoveConverter.fromUsiToUsfSTring(split[1], sfen);
             return new PositionEvaluation(sfen, Collections.singletonList(new MultiVariations(principalVariation)),
                     bestMove, null);
         }

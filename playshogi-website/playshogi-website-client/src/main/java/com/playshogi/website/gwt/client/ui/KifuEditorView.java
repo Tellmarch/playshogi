@@ -81,7 +81,8 @@ public class KifuEditorView extends Composite {
 
         horizontalPanel.add(verticalPanel);
 
-        gameTreePanel = new GameTreePanel(PROBLEM_EDITOR, gameNavigation, false);
+        gameTreePanel = new GameTreePanel(PROBLEM_EDITOR, gameNavigation, false,
+                sessionInformation.getUserPreferences());
 
         ScrollPanel treeScrollPanel = new ScrollPanel();
         treeScrollPanel.add(gameTreePanel);

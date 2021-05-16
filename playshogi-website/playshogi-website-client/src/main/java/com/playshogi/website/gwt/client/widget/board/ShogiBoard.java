@@ -242,6 +242,7 @@ public class ShogiBoard extends Composite implements ClickHandler {
         if (boardSettingsPanel != null) {
             boardSettingsPanel.activate(eventBus);
         }
+        refreshCoordinates();
     }
 
     public void displayPosition() {
@@ -587,8 +588,11 @@ public class ShogiBoard extends Composite implements ClickHandler {
 
     @EventHandler
     public void onNotationStyleSelected(final NotationStyleSelectedEvent event) {
-        coordinates.setResource(getCoordinatesImage(event.getStyle()));
-        Scheduler.get().scheduleDeferred(this::displayPosition);
+        refreshCoordinates();
+    }
+
+    private void refreshCoordinates() {
+        coordinates.setResource(getCoordinatesImage(userPreferences.getNotationStyle()));
     }
 
     private ImageResource getCoordinatesImage(final UserPreferences.NotationStyle style) {

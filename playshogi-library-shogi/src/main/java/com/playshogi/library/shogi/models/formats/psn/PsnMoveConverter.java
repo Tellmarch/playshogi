@@ -66,4 +66,45 @@ public class PsnMoveConverter {
             throw new IllegalArgumentException("Can not parse move: " + moveStr);
         }
     }
+
+
+    public static String toPsnStringShort(final ShogiMove move, final ShogiMove previousMove) {
+        if (move instanceof NormalMove) {
+            NormalMove normalMove = (NormalMove) move;
+
+            String dest = "" +
+                    columnNumber2Char(normalMove.getToSquare().getColumn()) +
+                    rowNumber2Char(normalMove.getToSquare().getRow());
+
+            if (previousMove instanceof ToSquareMove) {
+                ToSquareMove toSquareMove = (ToSquareMove) previousMove;
+                if (normalMove.getToSquare().equals(toSquareMove.getToSquare())) {
+                    dest = "";
+                }
+            }
+
+            char separator = (move instanceof CaptureMove) ? 'x' : '-';
+
+            return PsnUtil.pieceToString(normalMove.getPiece()) + separator + dest + (normalMove.isPromote() ? "+" :
+                    "");
+
+        } else if (move instanceof DropMove) {
+            DropMove dropMove = (DropMove) move;
+
+            String dest = "" +
+                    columnNumber2Char(dropMove.getToSquare().getColumn()) +
+                    rowNumber2Char(dropMove.getToSquare().getRow());
+
+            return PsnUtil.pieceTypeToChar(dropMove.getPieceType()) + "*" + dest;
+
+        } else if (move instanceof SpecialMove) {
+            SpecialMove specialMove = (SpecialMove) move;
+
+            // TODO
+            return specialMove.getUsfString();
+
+        } else {
+            throw new IllegalArgumentException("Unknown move type " + move);
+        }
+    }
 }

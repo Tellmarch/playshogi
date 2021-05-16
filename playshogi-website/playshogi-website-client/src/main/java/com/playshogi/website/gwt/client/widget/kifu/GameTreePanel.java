@@ -8,7 +8,6 @@ import com.google.gwt.user.client.ui.*;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
-import com.playshogi.library.shogi.models.formats.kif.KifMoveConverter;
 import com.playshogi.library.shogi.models.formats.sfen.SfenConverter;
 import com.playshogi.library.shogi.models.moves.EditMove;
 import com.playshogi.library.shogi.models.moves.Move;
@@ -16,6 +15,7 @@ import com.playshogi.library.shogi.models.moves.ShogiMove;
 import com.playshogi.library.shogi.models.record.GameNavigation;
 import com.playshogi.library.shogi.models.record.GameTree;
 import com.playshogi.library.shogi.models.record.Node;
+import com.playshogi.website.gwt.client.UserPreferences;
 import com.playshogi.website.gwt.client.events.gametree.GameTreeChangedEvent;
 import com.playshogi.website.gwt.client.events.gametree.NewVariationPlayedEvent;
 import com.playshogi.website.gwt.client.events.gametree.NodeChangedEvent;
@@ -34,6 +34,7 @@ public class GameTreePanel extends Composite {
     private final String activityId;
     private final GameNavigation gameNavigation;
     private final boolean readOnly;
+    private final UserPreferences userPreferences;
     private final Tree tree;
     private final PopupPanel contextMenu;
     private MenuItem promoteVariationMenu;
@@ -41,10 +42,12 @@ public class GameTreePanel extends Composite {
     private MenuItem rebaseMenu;
     private EventBus eventBus;
 
-    public GameTreePanel(final String activityId, final GameNavigation gameNavigation, final boolean readOnly) {
+    public GameTreePanel(final String activityId, final GameNavigation gameNavigation, final boolean readOnly,
+                         final UserPreferences userPreferences) {
         this.activityId = activityId;
         this.gameNavigation = gameNavigation;
         this.readOnly = readOnly;
+        this.userPreferences = userPreferences;
 
         if (readOnly) {
             contextMenu = null;
@@ -238,7 +241,8 @@ public class GameTreePanel extends Composite {
         } else if (move instanceof EditMove) {
             item.setText("POSITION (" + SfenConverter.toSFEN(((EditMove) move).getPosition()) + ")");
         } else if (move instanceof ShogiMove) {
-            item.setText(moveCount + ". " + KifMoveConverter.toKifStringShort((ShogiMove) move));
+            item.setText(moveCount + ". " + userPreferences.getMoveNotationAccordingToPreferences((ShogiMove) move,
+                    true));
         } else {
             item.setText(moveCount + ". " + move);
         }

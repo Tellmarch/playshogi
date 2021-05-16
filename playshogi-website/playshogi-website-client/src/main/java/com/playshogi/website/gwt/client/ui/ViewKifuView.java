@@ -59,10 +59,12 @@ public class ViewKifuView extends Composite {
 
         textArea = createCommentsArea();
 
-        gameTreePanel = new GameTreePanel(VIEWKIFU, gameNavigator.getGameNavigation(), true);
+        gameTreePanel = new GameTreePanel(VIEWKIFU, gameNavigator.getGameNavigation(), true,
+                sessionInformation.getUserPreferences());
         boardSettingsPanel = new BoardSettingsPanel(this.sessionInformation.getUserPreferences());
 
-        positionEvaluationDetailsPanel = new PositionEvaluationDetailsPanel(shogiBoard);
+        positionEvaluationDetailsPanel = new PositionEvaluationDetailsPanel(shogiBoard,
+                sessionInformation.getUserPreferences());
         positionEvaluationDetailsPanel.setSize("1450px", "300px");
 
         VerticalPanel boardAndTextPanel = new VerticalPanel();

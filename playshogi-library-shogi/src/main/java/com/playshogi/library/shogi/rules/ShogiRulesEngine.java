@@ -169,7 +169,7 @@ public class ShogiRulesEngine {
     public Optional<NormalMove> getPromotionMove(final ShogiPosition position, final NormalMove move) {
         Piece promotedPiece = move.getPiece().getPromotedPiece();
         if (promotedPiece != null && canMoveWithPromotion(position, move)) {
-            return Optional.of(move.withPromotionPiece(promotedPiece));
+            return Optional.of(move.withPromotion());
         }
         return Optional.empty();
     }
