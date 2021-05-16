@@ -34,7 +34,7 @@ class BoardLayout {
     private final int height;
 
     BoardLayout(final BoardBundle boardResources, final AbsolutePanel absolutePanel, final Image goteKomadaiImage,
-                final Image senteKomadaiImage) {
+                final Image senteKomadaiImage, final Image coordinates) {
         this.absolutePanel = absolutePanel;
 
         komadaiWidth = goteKomadaiImage.getWidth();
@@ -43,7 +43,6 @@ class BoardLayout {
         boardTop = TATAMI_TOP_MARGIN;
 
         Image grid = new Image(boardResources.masu_dot());
-        Image coordinates = new Image(boardResources.scoordE());
         Image ban = new Image(boardResources.ban_kaya_a());
         Image tatami = new Image(boardResources.bg_tatami());
 

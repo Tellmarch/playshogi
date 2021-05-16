@@ -29,8 +29,14 @@ public interface BoardBundle extends ClientBundle {
     @Source("com/playshogi/website/gwt/resources/masu_dot.png")
     ImageResource masu_dot();
 
-    @Source("com/playshogi/website/gwt/resources/Scoord_e.png")
-    ImageResource scoordE();
+    @Source("com/playshogi/website/gwt/resources/Scoord_e2.png")
+    ImageResource scoordLetters();
+
+    @Source("com/playshogi/website/gwt/resources/Scoord_kanji.png")
+    ImageResource scoordKanji();
+
+    @Source("com/playshogi/website/gwt/resources/Scoord_numb.png")
+    ImageResource scoordNumbers();
 
     @Source("com/playshogi/website/gwt/resources/Shand.png")
     ImageResource shand();

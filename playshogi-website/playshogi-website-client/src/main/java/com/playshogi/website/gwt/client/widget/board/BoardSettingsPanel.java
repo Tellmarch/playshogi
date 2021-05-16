@@ -34,11 +34,11 @@ public class BoardSettingsPanel extends Composite {
             pieces.check();
         }
         panel.add(new ElementWidget(pieces.addChangeHandler(this::setInternationalPieceStyle).element()));
-//        SwitchButton notation = SwitchButton.create("Move Notation", "Traditional", "International");
-//        if (userPreferences.getNotationStyle() == UserPreferences.NotationStyle.WESTERN_ALPHABETICAL) {
-//            notation.check();
-//        }
-//        panel.add(new ElementWidget(notation.addChangeHandler(this::setInternationalMoveNotation).element()));
+        SwitchButton notation = SwitchButton.create("Move Notation", "Traditional", "International");
+        if (userPreferences.getNotationStyle() == UserPreferences.NotationStyle.WESTERN_ALPHABETICAL) {
+            notation.check();
+        }
+        panel.add(new ElementWidget(notation.addChangeHandler(this::setInternationalMoveNotation).element()));
         CheckBox drawArrows =
                 CheckBox.create("Let me draw arrows").check().addChangeHandler(value -> eventBus.fireEvent(new ArrowModeSelectedEvent(value)));
         panel.add(new ElementWidget(drawArrows.element()));

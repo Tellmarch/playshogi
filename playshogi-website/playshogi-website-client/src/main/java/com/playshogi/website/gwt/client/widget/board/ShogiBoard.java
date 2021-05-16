@@ -4,6 +4,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.*;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
@@ -28,6 +29,7 @@ import com.playshogi.website.gwt.client.events.gametree.MovePlayedEvent;
 import com.playshogi.website.gwt.client.events.gametree.PositionChangedEvent;
 import com.playshogi.website.gwt.client.events.kifu.ArrowDrawnEvent;
 import com.playshogi.website.gwt.client.events.user.ArrowModeSelectedEvent;
+import com.playshogi.website.gwt.client.events.user.NotationStyleSelectedEvent;
 import com.playshogi.website.gwt.client.events.user.PieceStyleSelectedEvent;
 import com.playshogi.website.gwt.client.widget.board.KomadaiPositioning.Point;
 
@@ -39,6 +41,8 @@ import static com.playshogi.website.gwt.client.widget.board.PieceWrapper.BLACK_K
 import static com.playshogi.website.gwt.client.widget.board.PieceWrapper.WHITE_KOMADAI_ROW;
 
 public class ShogiBoard extends Composite implements ClickHandler {
+
+    private static final BoardBundle BOARD_RESOURCES = GWT.create(BoardBundle.class);
 
     private final UserPreferences userPreferences;
     private BoardSettingsPanel boardSettingsPanel;
@@ -58,6 +62,7 @@ public class ShogiBoard extends Composite implements ClickHandler {
 
     private final Image goteKomadaiImage;
     private final Image senteKomadaiImage;
+    private final Image coordinates;
 
     private final List<PieceWrapper> boardPieceWrappers = new ArrayList<>();
     private final List<PieceWrapper> senteKomadaiPieceWrappers = new ArrayList<>();
@@ -96,13 +101,13 @@ public class ShogiBoard extends Composite implements ClickHandler {
         this.position = position;
         this.promotionPopupController = new PromotionPopupController(this);
 
-        BoardBundle boardResources = GWT.create(BoardBundle.class);
         absolutePanel = new AbsolutePanel();
 
-        goteKomadaiImage = new Image(boardResources.ghand());
-        senteKomadaiImage = new Image(boardResources.shand());
+        goteKomadaiImage = new Image(BOARD_RESOURCES.ghand());
+        senteKomadaiImage = new Image(BOARD_RESOURCES.shand());
+        coordinates = new Image(getCoordinatesImage(userPreferences.getNotationStyle()));
 
-        layout = new BoardLayout(boardResources, absolutePanel, goteKomadaiImage, senteKomadaiImage);
+        layout = new BoardLayout(BOARD_RESOURCES, absolutePanel, goteKomadaiImage, senteKomadaiImage, coordinates);
 
         decorationController = new BoardDecorationController(this, layout);
 
@@ -114,7 +119,7 @@ public class ShogiBoard extends Composite implements ClickHandler {
             layout.addSenteKomadai(senteKomadaiImage);
         }
 
-        initSquareImages(boardResources, position.getRows(), position.getColumns());
+        initSquareImages(BOARD_RESOURCES, position.getRows(), position.getColumns());
 
         goteKomadaiImage.addClickHandler(this);
         senteKomadaiImage.addClickHandler(this);
@@ -578,6 +583,27 @@ public class ShogiBoard extends Composite implements ClickHandler {
     @EventHandler
     public void onPieceStyleSelected(final PieceStyleSelectedEvent event) {
         Scheduler.get().scheduleDeferred(this::displayPosition);
+    }
+
+    @EventHandler
+    public void onNotationStyleSelected(final NotationStyleSelectedEvent event) {
+        coordinates.setResource(getCoordinatesImage(event.getStyle()));
+        Scheduler.get().scheduleDeferred(this::displayPosition);
+    }
+
+    private ImageResource getCoordinatesImage(final UserPreferences.NotationStyle style) {
+        switch (style) {
+            case TRADITIONAL:
+                return BOARD_RESOURCES.scoordKanji();
+            case KK_NOTATION:
+            case WESTERN_NUMERICAL:
+            case NUMERICAL_JAPANESE:
+                return BOARD_RESOURCES.scoordNumbers();
+            case WESTERN_ALPHABETICAL:
+                return BOARD_RESOURCES.scoordLetters();
+            default:
+                throw new IllegalStateException("Unexpected value: " + style);
+        }
     }
 
     @EventHandler
