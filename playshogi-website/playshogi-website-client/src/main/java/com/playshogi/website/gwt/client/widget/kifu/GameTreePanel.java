@@ -20,6 +20,7 @@ import com.playshogi.website.gwt.client.events.gametree.GameTreeChangedEvent;
 import com.playshogi.website.gwt.client.events.gametree.NewVariationPlayedEvent;
 import com.playshogi.website.gwt.client.events.gametree.NodeChangedEvent;
 import com.playshogi.website.gwt.client.events.gametree.PositionChangedEvent;
+import com.playshogi.website.gwt.client.events.user.NotationStyleSelectedEvent;
 
 import java.util.Iterator;
 import java.util.List;
@@ -148,6 +149,13 @@ public class GameTreePanel extends Composite {
         GWT.log(activityId + " GameTreePanel: Handling NodeChangedEvent");
         updateSelection();
     }
+
+    @EventHandler
+    public void onNotationStyleSelected(final NotationStyleSelectedEvent event) {
+        GWT.log(activityId + " GameTreePanel: Handling NotationStyleSelectedEvent");
+        populateTree();
+    }
+
 
     private void updateSelection() {
         Iterator<TreeItem> iterator = tree.treeItemIterator();

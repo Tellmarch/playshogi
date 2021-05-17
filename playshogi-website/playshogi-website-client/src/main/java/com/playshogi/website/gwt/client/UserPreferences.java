@@ -4,6 +4,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Cookies;
 import com.playshogi.library.shogi.models.Player;
 import com.playshogi.library.shogi.models.formats.kif.KifMoveConverter;
+import com.playshogi.library.shogi.models.formats.notations.MoveConverter;
 import com.playshogi.library.shogi.models.formats.psn.PsnMoveConverter;
 import com.playshogi.library.shogi.models.moves.ShogiMove;
 import com.playshogi.website.gwt.client.widget.board.PieceGraphics;
@@ -70,9 +71,10 @@ public class UserPreferences {
                 return getPlayerSymbol(move, withColorSymbol) + KifMoveConverter.toKifStringShort(move, previousMove);
             case WESTERN_ALPHABETICAL:
                 return getPlayerSymbol(move, withColorSymbol) + PsnMoveConverter.toPsnStringShort(move, previousMove);
+            case WESTERN_NUMERICAL:
+                return getPlayerSymbol(move, withColorSymbol) + MoveConverter.toNumericalWestern(move, previousMove);
             case KK_NOTATION:
             case NUMERICAL_JAPANESE:
-            case WESTERN_NUMERICAL:
             default:
                 throw new IllegalStateException("Unexpected notation style: " + notationStyle);
         }

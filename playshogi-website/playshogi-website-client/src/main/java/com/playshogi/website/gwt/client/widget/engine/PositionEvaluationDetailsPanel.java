@@ -18,6 +18,7 @@ import com.playshogi.website.gwt.client.events.gametree.HighlightMoveEvent;
 import com.playshogi.website.gwt.client.events.gametree.PositionChangedEvent;
 import com.playshogi.website.gwt.client.events.kifu.PositionEvaluationEvent;
 import com.playshogi.website.gwt.client.events.kifu.RequestPositionEvaluationEvent;
+import com.playshogi.website.gwt.client.events.user.NotationStyleSelectedEvent;
 import com.playshogi.website.gwt.client.widget.board.ShogiBoard;
 import com.playshogi.website.gwt.shared.models.PositionEvaluationDetails;
 import com.playshogi.website.gwt.shared.models.PrincipalVariationDetails;
@@ -145,15 +146,21 @@ public class PositionEvaluationDetailsPanel extends Composite {
             setSync(true);
         }
         evaluation = event.getEvaluation();
-        PrincipalVariationDetails[] principalVariationHistory = evaluation.getPrincipalVariationHistory();
-        table.setRowCount(principalVariationHistory.length);
-        ArrayList<PrincipalVariationDetails> list = new ArrayList<>(principalVariationHistory.length);
-        for (int i = principalVariationHistory.length - 1; i >= 0; i--) {
-            list.add(principalVariationHistory[i]);
-        }
-        table.setRowData(0, list);
-        table.setVisible(true);
+        showEvaluation();
         highlightBestMove();
+    }
+
+    private void showEvaluation() {
+        if (evaluation != null) {
+            PrincipalVariationDetails[] principalVariationHistory = evaluation.getPrincipalVariationHistory();
+            table.setRowCount(principalVariationHistory.length);
+            ArrayList<PrincipalVariationDetails> list = new ArrayList<>(principalVariationHistory.length);
+            for (int i = principalVariationHistory.length - 1; i >= 0; i--) {
+                list.add(principalVariationHistory[i]);
+            }
+            table.setRowData(0, list);
+            table.setVisible(true);
+        }
     }
 
     private void highlightBestMove() {
@@ -170,6 +177,12 @@ public class PositionEvaluationDetailsPanel extends Composite {
     public void onPositionChangedEvent(final PositionChangedEvent event) {
         GWT.log("PositionEvaluationDetailsPanel: handle PositionChangedEvent");
         setSync(false);
+    }
+
+    @EventHandler
+    public void onNotationStyleSelected(final NotationStyleSelectedEvent event) {
+        GWT.log("PositionEvaluationDetailsPanel: handle NotationStyleSelectedEvent");
+        showEvaluation();
     }
 
     private void setSync(final boolean sync) {
