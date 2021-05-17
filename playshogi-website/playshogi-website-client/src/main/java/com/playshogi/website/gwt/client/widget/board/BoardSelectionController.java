@@ -4,7 +4,7 @@ import com.google.gwt.user.client.ui.Image;
 import com.playshogi.library.shogi.models.moves.DropMove;
 import com.playshogi.library.shogi.models.moves.NormalMove;
 import com.playshogi.library.shogi.models.moves.ShogiMove;
-import com.playshogi.library.shogi.models.position.ShogiPosition;
+import com.playshogi.library.shogi.models.position.ReadOnlyShogiPosition;
 import com.playshogi.library.shogi.models.position.Square;
 import com.playshogi.library.shogi.rules.ShogiRulesEngine;
 
@@ -68,11 +68,11 @@ public class BoardSelectionController {
         }
     }
 
-    void selectPossibleMoves(final PieceWrapper pieceWrapper, final ShogiPosition position) {
+    void selectPossibleMoves(final PieceWrapper pieceWrapper, final ReadOnlyShogiPosition position) {
         selectPossibleMoves(pieceWrapper.getSquare(), position);
     }
 
-    public void selectPossibleMoves(final Square square, final ShogiPosition position) {
+    public void selectPossibleMoves(final Square square, final ReadOnlyShogiPosition position) {
         List<Square> possibleTargets = shogiRulesEngine.getPossibleTargetSquares(position, square);
         for (Square targetSquare : possibleTargets) {
             selectSquare(targetSquare);
@@ -106,8 +106,8 @@ public class BoardSelectionController {
         pieceWrapper.getImage().addMouseOverHandler(event -> {
             if (!hasPieceSelected()) {
                 if (!pieceWrapper.isInKomadai()) {
-                    if (shogiBoard.getPosition().getPlayerToMove() == pieceWrapper.getPiece().getOwner()) {
-                        selectPossibleMoves(pieceWrapper, shogiBoard.getPosition());
+                    if (shogiBoard.getDisplayPosition().getPlayerToMove() == pieceWrapper.getPiece().getOwner()) {
+                        selectPossibleMoves(pieceWrapper, shogiBoard.getDisplayPosition());
                         selectSquare(pieceWrapper.getSquare());
                     }
                 }

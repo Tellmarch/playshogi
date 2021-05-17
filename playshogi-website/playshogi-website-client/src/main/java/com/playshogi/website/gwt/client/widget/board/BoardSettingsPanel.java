@@ -7,6 +7,7 @@ import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.playshogi.website.gwt.client.UserPreferences;
 import com.playshogi.website.gwt.client.events.kifu.ClearDecorationsEvent;
+import com.playshogi.website.gwt.client.events.kifu.FlipBoardEvent;
 import com.playshogi.website.gwt.client.events.user.ArrowModeSelectedEvent;
 import com.playshogi.website.gwt.client.events.user.NotationStyleSelectedEvent;
 import com.playshogi.website.gwt.client.events.user.PieceStyleSelectedEvent;
@@ -31,8 +32,7 @@ public class BoardSettingsPanel extends Composite {
 
     public BoardSettingsPanel(final UserPreferences userPreferences) {
         FlowPanel panel = new FlowPanel();
-//        panel.add(new ElementWidget(CheckBox.create("Flip Board").addChangeHandler(value -> GWT.log(String.valueOf
-//        (value))).element()));
+        panel.add(new ElementWidget(CheckBox.create("Flip Board").addChangeHandler(this::onFlipBoard).element()));
         SwitchButton pieces = SwitchButton.create("Pieces", "Traditional", "International");
         if (userPreferences.getPieceStyle() == PieceGraphics.Style.HIDETCHI) {
             pieces.check();
@@ -77,6 +77,11 @@ public class BoardSettingsPanel extends Composite {
 
 
         initWidget(panel);
+    }
+
+    private void onFlipBoard(boolean inverted) {
+        GWT.log("Flip board: " + inverted);
+        eventBus.fireEvent(new FlipBoardEvent(inverted));
     }
 
     private void setInternationalMoveNotation(final UserPreferences.NotationStyle notationStyle) {

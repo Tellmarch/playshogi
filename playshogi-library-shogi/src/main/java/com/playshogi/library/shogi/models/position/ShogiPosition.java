@@ -18,6 +18,7 @@ public class ShogiPosition implements ReadOnlyShogiPosition {
     private final MutableShogiBoardState shogiBoardState;
     private final MutableKomadaiState senteKomadai;
     private final MutableKomadaiState goteKomadai;
+    private InvertedShogiPosition invert;
 
     public ShogiPosition() {
         this(ShogiVariant.NORMAL_SHOGI);
@@ -172,5 +173,13 @@ public class ShogiPosition implements ReadOnlyShogiPosition {
     public ShogiPosition clonePosition() {
         // TODO optimize... maybe...
         return SfenConverter.fromSFEN(SfenConverter.toSFEN(this));
+    }
+
+    @Override
+    public ReadOnlyShogiPosition opposite() {
+        if (invert == null) {
+            invert = new InvertedShogiPosition(this);
+        }
+        return invert;
     }
 }

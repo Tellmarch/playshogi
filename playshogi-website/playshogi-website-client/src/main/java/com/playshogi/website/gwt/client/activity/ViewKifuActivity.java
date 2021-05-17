@@ -47,6 +47,7 @@ public class ViewKifuActivity extends MyAbstractActivity {
     private final String kifuUsf;
     private final int initialMoveCount;
     private AnalysisRequestResult analysisResult;
+    private boolean inverted = false;
 
     public ViewKifuActivity(final ViewKifuPlace place, final ViewKifuView viewKifuView,
                             final SessionInformation sessionInformation) {
@@ -55,6 +56,7 @@ public class ViewKifuActivity extends MyAbstractActivity {
         kifuId = place.getKifuId();
         kifuUsf = null;
         initialMoveCount = place.getMove();
+        inverted = place.isInverted();
     }
 
     public ViewKifuActivity(final PreviewKifuPlace place, final ViewKifuView viewKifuView,
@@ -71,7 +73,7 @@ public class ViewKifuActivity extends MyAbstractActivity {
         GWT.log("Starting view kifu activity");
         this.eventBus = eventBus;
         eventBinder.bindEventHandlers(this, eventBus);
-        viewKifuView.activate(eventBus, kifuId);
+        viewKifuView.activate(eventBus, kifuId, inverted);
         containerWidget.setWidget(viewKifuView.asWidget());
 
         if (kifuUsf != null) {

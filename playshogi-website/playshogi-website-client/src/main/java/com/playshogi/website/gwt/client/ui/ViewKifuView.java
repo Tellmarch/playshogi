@@ -111,9 +111,10 @@ public class ViewKifuView extends Composite {
         return tabsPanel;
     }
 
-    public void activate(final EventBus eventBus, final String kifuId) {
+    public void activate(final EventBus eventBus, final String kifuId, final boolean inverted) {
         GWT.log("Activating ViewKifuView");
         eventBinder.bindEventHandlers(this, eventBus);
+        shogiBoard.getBoardConfiguration().setInverted(inverted);
         shogiBoard.activate(eventBus);
         gameNavigator.activate(eventBus);
         kifuInformationPanel.activate(eventBus);
