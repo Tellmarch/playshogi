@@ -1,9 +1,12 @@
 package com.playshogi.website.gwt.client.widget.engine;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.BrowserEvents;
+import com.google.gwt.event.dom.client.ContextMenuEvent;
 import com.google.gwt.user.cellview.client.CellTable;
 import com.google.gwt.user.cellview.client.HasKeyboardSelectionPolicy;
 import com.google.gwt.user.cellview.client.TextColumn;
+import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.*;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
@@ -15,6 +18,7 @@ import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.library.shogi.rules.ShogiRulesEngine;
 import com.playshogi.website.gwt.client.UserPreferences;
 import com.playshogi.website.gwt.client.events.gametree.HighlightMoveEvent;
+import com.playshogi.website.gwt.client.events.gametree.InsertVariationEvent;
 import com.playshogi.website.gwt.client.events.gametree.PositionChangedEvent;
 import com.playshogi.website.gwt.client.events.kifu.PositionEvaluationEvent;
 import com.playshogi.website.gwt.client.events.kifu.RequestPositionEvaluationEvent;
@@ -26,6 +30,7 @@ import com.playshogi.website.gwt.shared.models.PrincipalVariationDetails;
 import java.util.ArrayList;
 
 public class PositionEvaluationDetailsPanel extends Composite {
+
 
     interface MyEventBinder extends EventBinder<PositionEvaluationDetailsPanel> {
     }
@@ -41,6 +46,7 @@ public class PositionEvaluationDetailsPanel extends Composite {
     private EventBus eventBus;
     private PositionEvaluationDetails evaluation;
     private boolean sync = false; // Whether the evaluation matches the current position of the board
+    private PrincipalVariationDetails selectedVariation;
 
     public PositionEvaluationDetailsPanel(final ShogiBoard shogiBoard, final UserPreferences userPreferences) {
         GWT.log("Creating PositionEvaluationDetailsPanel");
@@ -114,9 +120,55 @@ public class PositionEvaluationDetailsPanel extends Composite {
         };
         table.addColumn(variationColumn, "Principal variation");
 
+        table.addCellPreviewHandler(event -> {
+            if (BrowserEvents.MOUSEDOWN.equals(event.getNativeEvent().getType()) ||
+                    BrowserEvents.CLICK.equals(event.getNativeEvent().getType())) {
+                selectedVariation = event.getValue();
+            } else if (BrowserEvents.MOUSEOVER.equals(event.getNativeEvent().getType())) {
+                if (isSync() && evaluation != null && event.getValue().getPrincipalVariation().length() >= 4) {
+                    String move = event.getValue().getPrincipalVariation().substring(0, 4);
+                    GWT.log("Highlighting move: " + move);
+                    eventBus.fireEvent(new HighlightMoveEvent(UsfMoveConverter.fromUsfString(move,
+                            shogiBoard.getPosition())));
+                }
+            } else if (BrowserEvents.MOUSEOUT.equals(event.getNativeEvent().getType())) {
+                if (isSync() && evaluation != null) {
+                    clearHighlight();
+                    highlightBestMove();
+                }
+            }
+        });
+
+        PopupPanel contextMenu = createContextMenu();
+        table.sinkEvents(Event.ONCONTEXTMENU);
+        table.addHandler(event -> {
+            event.preventDefault();
+            event.stopPropagation();
+            contextMenu.setPopupPosition(event.getNativeEvent().getClientX(), event.getNativeEvent().getClientY());
+            contextMenu.show();
+        }, ContextMenuEvent.getType());
+
         verticalPanel.add(table);
 
         initWidget(verticalPanel);
+    }
+
+    private PopupPanel createContextMenu() {
+        final PopupPanel contextMenu;
+        contextMenu = new PopupPanel(true);
+        MenuBar menuBar = new MenuBar(true);
+        MenuItem addVariation = new MenuItem("Add Variation", () -> {
+            if (isSync() && selectedVariation != null) {
+                GWT.log("Add variation: " + selectedVariation);
+                eventBus.fireEvent(new InsertVariationEvent(selectedVariation));
+            }
+            contextMenu.hide();
+        });
+        menuBar.addItem(addVariation);
+
+        contextMenu.add(menuBar);
+        contextMenu.hide();
+        return contextMenu;
     }
 
     private String getPVStringFromUSF(final String usfPvString) {
@@ -148,6 +200,7 @@ public class PositionEvaluationDetailsPanel extends Composite {
         evaluation = event.getEvaluation();
         showEvaluation();
         highlightBestMove();
+        selectedVariation = null;
     }
 
     private void showEvaluation() {
@@ -177,6 +230,7 @@ public class PositionEvaluationDetailsPanel extends Composite {
     public void onPositionChangedEvent(final PositionChangedEvent event) {
         GWT.log("PositionEvaluationDetailsPanel: handle PositionChangedEvent");
         setSync(false);
+        selectedVariation = null;
     }
 
     @EventHandler

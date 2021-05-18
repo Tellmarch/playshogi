@@ -49,12 +49,7 @@ public class GameTreePanel extends Composite {
         this.gameNavigation = gameNavigation;
         this.readOnly = readOnly;
         this.userPreferences = userPreferences;
-
-        if (readOnly) {
-            contextMenu = null;
-        } else {
-            contextMenu = createContextMenu();
-        }
+        contextMenu = createContextMenu();
 
         FlowPanel panel = new FlowPanel();
 
@@ -93,33 +88,35 @@ public class GameTreePanel extends Composite {
         });
         menuBar.addItem(deleteVariationMenu);
 
-        promoteVariationMenu = new MenuItem("Promote variation to main line", () -> {
-            GWT.log("Promote variation");
-            Node node = (Node) tree.getSelectedItem().getUserObject();
-            node.promoteVariation();
-            eventBus.fireEvent(new GameTreeChangedEvent(gameNavigation.getGameTree()));
-            contextMenu.hide();
-        });
-        menuBar.addItem(promoteVariationMenu);
+        if (!readOnly) {
+            promoteVariationMenu = new MenuItem("Promote variation to main line", () -> {
+                GWT.log("Promote variation");
+                Node node = (Node) tree.getSelectedItem().getUserObject();
+                node.promoteVariation();
+                eventBus.fireEvent(new GameTreeChangedEvent(gameNavigation.getGameTree()));
+                contextMenu.hide();
+            });
+            menuBar.addItem(promoteVariationMenu);
 
-        rebaseMenu = new MenuItem("Start from here", () -> {
-            GWT.log("Rebase");
-            Node node = (Node) tree.getSelectedItem().getUserObject();
-            if (!(node.getMove() instanceof EditMove)) {
-                GWT.log("Not an edit move - aborting");
-                return;
-            }
-            boolean confirm = Window.confirm("Only keep the variations starting from this position?" +
-                    " This can not be undone.");
-            if (confirm) {
-                node.setParent(null);
-                node.setParentIndex(0);
-                GameTree gameTree = new GameTree(node);
-                eventBus.fireEvent(new GameTreeChangedEvent(gameTree));
-            }
-            contextMenu.hide();
-        });
-        menuBar.addItem(rebaseMenu);
+            rebaseMenu = new MenuItem("Start from here", () -> {
+                GWT.log("Rebase");
+                Node node = (Node) tree.getSelectedItem().getUserObject();
+                if (!(node.getMove() instanceof EditMove)) {
+                    GWT.log("Not an edit move - aborting");
+                    return;
+                }
+                boolean confirm = Window.confirm("Only keep the variations starting from this position?" +
+                        " This can not be undone.");
+                if (confirm) {
+                    node.setParent(null);
+                    node.setParentIndex(0);
+                    GameTree gameTree = new GameTree(node);
+                    eventBus.fireEvent(new GameTreeChangedEvent(gameTree));
+                }
+                contextMenu.hide();
+            });
+            menuBar.addItem(rebaseMenu);
+        }
 
         contextMenu.add(menuBar);
         contextMenu.hide();
@@ -207,11 +204,7 @@ public class GameTreePanel extends Composite {
     }
 
     private TreeItem createTreeItem() {
-        if (readOnly) {
-            return new TreeItem();
-        } else {
-            return new MoveTreeItem();
-        }
+        return new MoveTreeItem();
     }
 
     /**
@@ -276,8 +269,8 @@ public class GameTreePanel extends Composite {
             tree.setSelectedItem(this);
             Node node = (Node) getUserObject();
             deleteVariationMenu.setVisible(node.getParent() != null);
-            promoteVariationMenu.setVisible(node.getParentIndex() > 0);
-            rebaseMenu.setVisible(node.getMove() instanceof EditMove);
+            if (promoteVariationMenu != null) promoteVariationMenu.setVisible(node.getParentIndex() > 0);
+            if (rebaseMenu != null) rebaseMenu.setVisible(node.getMove() instanceof EditMove);
             contextMenu.setPopupPosition(event.getNativeEvent().getClientX(), event.getNativeEvent().getClientY());
             contextMenu.show();
         }
