@@ -9,62 +9,46 @@ public class PieceWrapper {
     static final int BLACK_KOMADAI_ROW = -1;
     static final int WHITE_KOMADAI_ROW = -2;
 
-    private Piece piece;
-    private Image image;
+    private final Piece piece;
+    private final Image image;
     // Coordinates from top left, starting at 0
-    private int row;
-    private int column;
-    private boolean inKomadai = false;
+    private final int row;
+    private final int column;
+    private final Square square;
+    private final boolean inKomadai;
 
-    public PieceWrapper(final Piece piece, final Image image, final int row, final int column) {
+    PieceWrapper(final Piece piece, final Image image, final int row, final int column, final Square square,
+                 final boolean inKomadai) {
         this.piece = piece;
         this.image = image;
         this.row = row;
         this.column = column;
+        this.square = square;
+        this.inKomadai = inKomadai;
     }
 
     public Piece getPiece() {
         return piece;
     }
 
-    public void setPiece(final Piece piece) {
-        this.piece = piece;
-    }
-
     public Image getImage() {
         return image;
-    }
-
-    public void setImage(final Image image) {
-        this.image = image;
     }
 
     public int getRow() {
         return row;
     }
 
-    public void setRow(final int row) {
-        this.row = row;
-    }
-
     public int getColumn() {
         return column;
-    }
-
-    public void setColumn(final int column) {
-        this.column = column;
     }
 
     public boolean isInKomadai() {
         return inKomadai;
     }
 
-    public void setInKomadai(final boolean inKomadai) {
-        this.inKomadai = inKomadai;
-    }
-
     public Square getSquare() {
-        return Square.of(((8 - column) + 1), row + 1);
+        return square;
     }
 
     @Override

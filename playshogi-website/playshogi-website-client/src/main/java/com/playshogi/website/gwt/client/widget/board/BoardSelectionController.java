@@ -43,7 +43,11 @@ public class BoardSelectionController {
         if (selectionLocked) {
             return;
         }
-        squareImages[square.getRow() - 1][8 - (square.getColumn() - 1)].setStyleName(STYLE_SQUARE_SELECTED);
+        if (shogiBoard.getBoardConfiguration().isInverted()) {
+            squareImages[9 - square.getRow()][square.getColumn() - 1].setStyleName(STYLE_SQUARE_SELECTED);
+        } else {
+            squareImages[square.getRow() - 1][9 - square.getColumn()].setStyleName(STYLE_SQUARE_SELECTED);
+        }
     }
 
     private void unSelectSquare(final Image image) {
@@ -106,8 +110,8 @@ public class BoardSelectionController {
         pieceWrapper.getImage().addMouseOverHandler(event -> {
             if (!hasPieceSelected()) {
                 if (!pieceWrapper.isInKomadai()) {
-                    if (shogiBoard.getDisplayPosition().getPlayerToMove() == pieceWrapper.getPiece().getOwner()) {
-                        selectPossibleMoves(pieceWrapper, shogiBoard.getDisplayPosition());
+                    if (shogiBoard.getPosition().getPlayerToMove() == pieceWrapper.getPiece().getOwner()) {
+                        selectPossibleMoves(pieceWrapper, shogiBoard.getPosition());
                         selectSquare(pieceWrapper.getSquare());
                     }
                 }

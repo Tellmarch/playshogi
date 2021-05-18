@@ -21,9 +21,11 @@ public class BoardDecorationController {
 
     private final Canvas staticCanvas; // May be null if not supported by the browser
     private final Canvas highlightCanvas; // May be null if not supported by the browser
+    private final ShogiBoard shogiBoard;
     private final BoardLayout layout;
 
     BoardDecorationController(final ShogiBoard shogiBoard, final BoardLayout layout) {
+        this.shogiBoard = shogiBoard;
         this.layout = layout;
         staticCanvas = Canvas.createIfSupported();
         staticCanvas.addStyleName("board-canvas");
