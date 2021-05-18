@@ -15,6 +15,10 @@
 	background: rgba(255, 0, 0, 0.3);
 }
 
+.gwt-square-previous-move {
+	background: rgba(255, 0, 0, 0.2);
+}
+
 .gwt-square-unselected {
 	
 }

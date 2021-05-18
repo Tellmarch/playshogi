@@ -76,7 +76,6 @@ public class BoardDecorationController {
 
     private void drawArrow(final Canvas canvas, final int fromX, final int fromY, final int toX, final int toY,
                            final Color color) {
-        GWT.log("Drawing arrow");
         if (canvas == null) return;
         Context2d ctx = canvas.getContext2d();
         ctx.setStrokeStyle(color.toString());

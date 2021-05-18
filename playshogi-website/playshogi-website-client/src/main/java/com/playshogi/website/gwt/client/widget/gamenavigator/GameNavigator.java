@@ -110,7 +110,7 @@ public class GameNavigator extends Composite implements ClickHandler {
     private void firePositionChanged(final boolean triggeredByUser) {
         GWT.log(activityId + " GameNavigator: firing position changed");
         eventBus.fireEvent(new PositionChangedEvent(gameNavigation.getPosition(),
-                gameNavigation.getBoardDecorations(), triggeredByUser));
+                gameNavigation.getBoardDecorations(), gameNavigation.getPreviousMove(), triggeredByUser));
     }
 
     public NavigatorConfiguration getNavigatorConfiguration() {

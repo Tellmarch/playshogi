@@ -19,7 +19,6 @@ import com.playshogi.library.shogi.models.moves.CaptureMove;
 import com.playshogi.library.shogi.models.moves.DropMove;
 import com.playshogi.library.shogi.models.moves.NormalMove;
 import com.playshogi.library.shogi.models.moves.ShogiMove;
-import com.playshogi.library.shogi.models.position.ReadOnlyShogiPosition;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.library.shogi.models.position.Square;
 import com.playshogi.library.shogi.models.shogivariant.ShogiInitialPositionFactory;
@@ -174,7 +173,6 @@ public class ShogiBoard extends Composite implements ClickHandler {
         });
 
         image.addClickHandler(event -> {
-            GWT.log("CLICK - " + row + " " + col);
             if (event.isControlKeyDown()) {
                 drawCircleAtSquare(getSquare(row, col));
                 return;
@@ -249,8 +247,8 @@ public class ShogiBoard extends Composite implements ClickHandler {
     }
 
     public void displayPosition() {
-        GWT.log(activityId + ": Displaying position");
-        GWT.log(((ReadOnlyShogiPosition) position).toString());
+//        GWT.log(activityId + ": Displaying position");
+//        GWT.log(position.toString());
 
         selectionController.unselect();
         decorationController.clear();
@@ -438,7 +436,7 @@ public class ShogiBoard extends Composite implements ClickHandler {
             }
 
             // Select one of our pieces?
-            if (((ReadOnlyShogiPosition) position).getPlayerToMove() == pieceWrapper.getPiece().getOwner() || boardConfiguration.isPositionEditingMode()) {
+            if (position.getPlayerToMove() == pieceWrapper.getPiece().getOwner() || boardConfiguration.isPositionEditingMode()) {
                 selectionController.selectPiece(pieceWrapper);
 
                 if (!pieceWrapper.isInKomadai() && !boardConfiguration.isPositionEditingMode()) {
@@ -645,6 +643,8 @@ public class ShogiBoard extends Composite implements ClickHandler {
 
     @EventHandler
     public void onPositionChanged(final PositionChangedEvent event) {
+        GWT.log("ShogiBoard Handling PositionChangedEvent");
+        selectionController.setPreviousMove(event.getPreviousMove());
         setPosition(event.getPosition());
         if (event.getDecorations().isPresent()) {
             Scheduler.get().scheduleDeferred(() -> drawDecorations(event.getDecorations().get()));
@@ -653,7 +653,7 @@ public class ShogiBoard extends Composite implements ClickHandler {
 
     @EventHandler
     public void onHighlightMove(final HighlightMoveEvent event) {
-        GWT.log("Handling HighlightMoveEvent: " + event.getMove());
+        GWT.log("ShogiBoard Handling HighlightMoveEvent: " + event.getMove());
         selectionController.highlightMove(event.getMove());
         decorationController.highlightMove(event.getMove());
     }
@@ -675,7 +675,7 @@ public class ShogiBoard extends Composite implements ClickHandler {
 
     @EventHandler
     public void onFlipBoard(final FlipBoardEvent event) {
-        GWT.log("Handling FlipBoardEvent: " + event.isInverted());
+        GWT.log("ShogiBoard Handling FlipBoardEvent: " + event.isInverted());
         boardConfiguration.setInverted(event.isInverted());
         refreshCoordinates();
         Scheduler.get().scheduleDeferred(this::displayPosition);

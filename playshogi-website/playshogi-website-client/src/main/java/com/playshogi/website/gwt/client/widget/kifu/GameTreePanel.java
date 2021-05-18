@@ -60,7 +60,7 @@ public class GameTreePanel extends Composite {
                 Node node = (Node) item.getUserObject();
                 gameNavigation.moveToNode(node);
                 eventBus.fireEvent(new PositionChangedEvent(gameNavigation.getPosition(),
-                        gameNavigation.getBoardDecorations(), true));
+                        gameNavigation.getBoardDecorations(), gameNavigation.getPreviousMove(), true));
             }
         });
         panel.add(tree);
