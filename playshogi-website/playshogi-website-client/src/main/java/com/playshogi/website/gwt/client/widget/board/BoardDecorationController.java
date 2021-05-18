@@ -123,12 +123,14 @@ public class BoardDecorationController {
 
     private void drawDropArrow(final Canvas canvas, final PieceType pieceType, final Player player,
                                final Square toSquare, final Color color) {
+        boolean lowerKomadai = shogiBoard.getBoardConfiguration().isInverted() ? player == Player.WHITE :
+                player == Player.BLACK;
         KomadaiPositioning.Point[] points =
-                KomadaiPositioning.getPiecesPositions(pieceType.ordinal(), 1, player == Player.BLACK,
+                KomadaiPositioning.getPiecesPositions(pieceType.ordinal(), 1, lowerKomadai,
                         layout.getKomadaiWidth());
 
-        int komadaiX = player == Player.BLACK ? layout.getSenteKomadaiX() : layout.getGoteKomadaiX();
-        int komadaiY = player == Player.BLACK ? layout.getSenteKomadaiY() : layout.getGoteKomadaiY();
+        int komadaiX = lowerKomadai ? layout.getSenteKomadaiX() : layout.getGoteKomadaiX();
+        int komadaiY = lowerKomadai ? layout.getSenteKomadaiY() : layout.getGoteKomadaiY();
 
         drawArrow(canvas, komadaiX + points[0].x + SQUARE_WIDTH / 2,
                 komadaiY + points[0].y + SQUARE_HEIGHT / 2,
