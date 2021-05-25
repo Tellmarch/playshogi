@@ -14,6 +14,7 @@ import com.googlecode.gwt.charts.client.event.SelectHandler;
 import com.googlecode.gwt.charts.client.options.ChartArea;
 import com.googlecode.gwt.charts.client.options.HAxis;
 import com.googlecode.gwt.charts.client.options.VAxis;
+import com.playshogi.library.shogi.models.formats.sfen.SfenConverter;
 import com.playshogi.website.gwt.client.events.gametree.MoveSelectedEvent;
 import com.playshogi.website.gwt.client.events.gametree.PositionChangedEvent;
 import com.playshogi.website.gwt.client.events.kifu.KifuEvaluationEvent;
@@ -117,6 +118,98 @@ public class KifuEvaluationChartPanel extends Composite {
 
     }
 
+    private void summarizeInsights(GameInsightsDetails details) {
+        this.gameInsightsDetails = details;
+        insightsHTML.setHTML("<br/>Black average centipawn loss: " + details.getBlackAvgCentipawnLoss() + "<br/>" +
+                getMistakesSummary(details.getBlackMistakes()) +
+                "<br/>White average centipawn loss: " + details.getWhiteAvgCentipawnLoss() + "<br/>" +
+                getMistakesSummary(details.getWhiteMistakes()) + "<br/>");
+    }
+
+    private String getMistakesSummary(final MistakeDetails[] details) {
+        int imprecisions = 0;
+        int mistakes = 0;
+        int blunders = 0;
+
+        for (MistakeDetails mistake : details) {
+            switch (mistake.getType()) {
+                case IMPRECISION:
+                    imprecisions++;
+                    break;
+                case MISTAKE:
+                    mistakes++;
+                    break;
+                case BLUNDER:
+                    blunders++;
+                    break;
+            }
+        }
+
+        return imprecisions + " imprecisions<br/>" +
+                mistakes + " mistakes<br/>" +
+                blunders + " blunders<br/>";
+    }
+
+    private native void addTooltipColumn(DataTable data) /*-{
+        data.addColumn({type:'string', role:'tooltip'});
+    }-*/;
+
+    private void drawEvaluation(KifuEvaluationEvent event) {
+        DataTable dataTable = DataTable.create();
+        dataTable.addColumn(ColumnType.NUMBER, "move");
+        dataTable.addColumn(ColumnType.NUMBER, "evaluation");
+        addTooltipColumn(dataTable);
+        positionEvaluationDetails = event.getPositionEvaluationDetails();
+        dataTable.addRows(positionEvaluationDetails.length);
+        for (int i = 0; i < positionEvaluationDetails.length; i++) {
+            PrincipalVariationDetails[] history = positionEvaluationDetails[i].getPrincipalVariationHistory();
+            if (history.length > 0) {
+                dataTable.setValue(i, 0, i);
+                PrincipalVariationDetails latest = history[history.length - 1];
+
+                int toolTipValue = i % 2 == 0 ? latest.getEvaluationCP() : -latest.getEvaluationCP();
+                int graphValue = Math.min(2000, Math.max(-2000, toolTipValue));
+
+                String toolTip = "Move " + i + "\n" + "Evaluation: " + toolTipValue;
+
+                if (latest.isForcedMate()) {
+                    graphValue = (latest.getNumMovesBeforeMate() <= 0) == (i % 2 == 0) ? -2000 : 2000;
+                    toolTip = "Move " + i + "\n" + "Mate in " + Math.abs(latest.getNumMovesBeforeMate());
+                }
+                dataTable.setValue(i, 1, graphValue);
+                dataTable.setValue(i, 2, toolTip);
+            }
+        }
+
+        LineChartOptions options = LineChartOptions.create();
+        options.setBackgroundColor("#f0f0f0");
+        options.setFontName("Tahoma");
+        options.setTitle("Evaluation");
+        options.setHAxis(HAxis.create("Move"));
+        options.setVAxis(VAxis.create("Centipawns"));
+        options.setWidth(600);
+        options.setHeight(300);
+
+        ChartArea chartArea = ChartArea.create();
+        chartArea.setLeft(60);
+        chartArea.setWidth(540);
+        chartArea.setTop(30);
+        chartArea.setHeight(240);
+        options.setChartArea(chartArea);
+        chart.draw(dataTable, options);
+        chart.setVisible(true);
+    }
+
+    public void activate(final EventBus eventBus, final String kifuId) {
+        GWT.log("Activating KifuEvaluationChartPanel");
+        this.kifuId = kifuId;
+        this.eventBus = eventBus;
+        eventBinder.bindEventHandlers(this, eventBus);
+        if (chart != null) {
+            chart.setVisible(false);
+        }
+    }
+
     @EventHandler
     public void onKifuEvaluationEvent(final KifuEvaluationEvent event) {
         GWT.log("KifuEvaluationChartPanel: handle KifuEvaluationEvent");
@@ -155,92 +248,15 @@ public class KifuEvaluationChartPanel extends Composite {
         }
     }
 
-    private void summarizeInsights(GameInsightsDetails details) {
-        this.gameInsightsDetails = details;
-        insightsHTML.setHTML("<br/>Black average centipawn loss: " + details.getBlackAvgCentipawnLoss() + "<br/>" +
-                getMistakesSummary(details.getBlackMistakes()) +
-                "<br/>White average centipawn loss: " + details.getWhiteAvgCentipawnLoss() + "<br/>" +
-                getMistakesSummary(details.getWhiteMistakes()) + "<br/>");
-    }
-
-    private String getMistakesSummary(final MistakeDetails[] details) {
-        int imprecisions = 0;
-        int mistakes = 0;
-        int blunders = 0;
-
-        for (MistakeDetails mistake : details) {
-            switch (mistake.getType()) {
-                case IMPRECISION:
-                    imprecisions++;
-                    break;
-                case MISTAKE:
-                    mistakes++;
-                    break;
-                case BLUNDER:
-                    blunders++;
-                    break;
-            }
-        }
-
-        return imprecisions + " imprecisions<br/>" +
-                mistakes + " mistakes<br/>" +
-                blunders + " blunders<br/>";
-    }
-
-    private void drawEvaluation(KifuEvaluationEvent event) {
-        DataTable dataTable = DataTable.create();
-        dataTable.addColumn(ColumnType.NUMBER, "move");
-        dataTable.addColumn(ColumnType.NUMBER, "evaluation");
-        positionEvaluationDetails = event.getPositionEvaluationDetails();
-        dataTable.addRows(positionEvaluationDetails.length);
-        for (int i = 0; i < positionEvaluationDetails.length; i++) {
-            PrincipalVariationDetails[] history = positionEvaluationDetails[i].getPrincipalVariationHistory();
-            if (history.length > 0) {
-                dataTable.setValue(i, 0, i);
-                PrincipalVariationDetails latest = history[history.length - 1];
-                int graphValue = i % 2 == 0 ? latest.getEvaluationCP() : -latest.getEvaluationCP();
-                graphValue = Math.min(2000, Math.max(-2000, graphValue));
-                if (latest.isForcedMate()) {
-                    graphValue = (latest.getNumMovesBeforeMate() < 0) == (i % 2 == 0) ? -2000 : 2000;
-                }
-                dataTable.setValue(i, 1, graphValue);
-            }
-        }
-
-        LineChartOptions options = LineChartOptions.create();
-        options.setBackgroundColor("#f0f0f0");
-        options.setFontName("Tahoma");
-        options.setTitle("Evaluation");
-        options.setHAxis(HAxis.create("Move"));
-        options.setVAxis(VAxis.create("Centipawns"));
-        options.setWidth(600);
-        options.setHeight(300);
-
-        ChartArea chartArea = ChartArea.create();
-        chartArea.setLeft(60);
-        chartArea.setWidth(540);
-        chartArea.setTop(30);
-        chartArea.setHeight(240);
-        options.setChartArea(chartArea);
-        chart.draw(dataTable, options);
-        chart.setVisible(true);
-    }
-
-    public void activate(final EventBus eventBus, final String kifuId) {
-        GWT.log("Activating KifuEvaluationChartPanel");
-        this.kifuId = kifuId;
-        this.eventBus = eventBus;
-        eventBinder.bindEventHandlers(this, eventBus);
-        if (chart != null) {
-            chart.setVisible(false);
-        }
-    }
-
     @EventHandler
     public void onPositionChangedEvent(final PositionChangedEvent event) {
         GWT.log("KifuEvaluationChartPanel handling PositionChangedEvent");
-        if (positionEvaluationDetails != null && positionEvaluationDetails.length > event.getPosition().getMoveCount() && chart != null && chart.isVisible()) {
-            chart.setSelection(Selection.create(event.getPosition().getMoveCount(), 1));
+        if (positionEvaluationDetails != null) {
+            int moveCount = event.getPosition().getMoveCount();
+            if (positionEvaluationDetails.length > moveCount && chart != null && chart.isVisible()
+                    && positionEvaluationDetails[moveCount].getSfen().equals(SfenConverter.toSFEN(event.getPosition()))) {
+                chart.setSelection(Selection.create(moveCount, 1));
+            }
         }
     }
 }
