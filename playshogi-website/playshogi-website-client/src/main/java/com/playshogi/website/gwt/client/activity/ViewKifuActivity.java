@@ -11,6 +11,7 @@ import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.library.shogi.models.formats.sfen.SfenConverter;
 import com.playshogi.library.shogi.models.formats.usf.UsfFormat;
+import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.library.shogi.models.record.GameRecord;
 import com.playshogi.website.gwt.client.SessionInformation;
 import com.playshogi.website.gwt.client.events.gametree.GameTreeChangedEvent;
@@ -22,6 +23,7 @@ import com.playshogi.website.gwt.client.place.ViewKifuPlace;
 import com.playshogi.website.gwt.client.ui.ViewKifuView;
 import com.playshogi.website.gwt.shared.models.AnalysisRequestResult;
 import com.playshogi.website.gwt.shared.models.AnalysisRequestStatus;
+import com.playshogi.website.gwt.shared.models.PositionDetails;
 import com.playshogi.website.gwt.shared.models.PositionEvaluationDetails;
 import com.playshogi.website.gwt.shared.services.KifuService;
 import com.playshogi.website.gwt.shared.services.KifuServiceAsync;
@@ -192,7 +194,8 @@ public class ViewKifuActivity extends MyAbstractActivity {
 
         //TODO: do all this only if we are in mainline
 
-        int moveCount = event.getPosition().getMoveCount();
+        ShogiPosition position = event.getPosition();
+        int moveCount = position.getMoveCount();
 
         if (!isPreviewOnly()) {
             //Update URL with the new move count
@@ -204,6 +207,21 @@ public class ViewKifuActivity extends MyAbstractActivity {
             PositionEvaluationDetails detail = analysisResult.getEvaluationDetails()[moveCount];
             Scheduler.get().scheduleDeferred(() -> eventBus.fireEvent(new PositionEvaluationEvent(detail)));
         }
+
+        String gameSetId = "1";
+        kifuService.getPositionDetails(SfenConverter.toSFEN(position), gameSetId, new AsyncCallback<PositionDetails>() {
+
+            @Override
+            public void onSuccess(final PositionDetails result) {
+                GWT.log("VIEW KIFU - GOT POSITION DETAILS " + result);
+                eventBus.fireEvent(new PositionStatisticsEvent(result, position, gameSetId));
+            }
+
+            @Override
+            public void onFailure(final Throwable caught) {
+                GWT.log("VIEW KIFU - ERROR GETTING POSITION STATS");
+            }
+        });
     }
 
     private boolean isPreviewOnly() {

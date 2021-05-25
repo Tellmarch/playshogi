@@ -5,6 +5,7 @@ import com.google.web.bindery.event.shared.Event;
 import com.google.web.bindery.event.shared.Event.Type;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
+import com.playshogi.website.gwt.client.events.gametree.HighlightMoveEvent;
 
 public class LoggingEventBus extends SimpleEventBus {
 
@@ -22,9 +23,11 @@ public class LoggingEventBus extends SimpleEventBus {
 
     @Override
     public void fireEvent(final Event<?> event) {
-        GWT.log("firingevent: " + event.toDebugString());
-        //noinspection deprecation
-        GWT.log("#handlers: " + getHandlerCount(event.getAssociatedType()));
+        if (!(event instanceof HighlightMoveEvent)) {
+            GWT.log("firingevent: " + event.toDebugString());
+            //noinspection deprecation
+            GWT.log("#handlers: " + getHandlerCount(event.getAssociatedType()));
+        }
         super.fireEvent(event);
     }
 

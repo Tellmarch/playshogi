@@ -392,9 +392,7 @@ public class ShogiBoard extends Composite implements ClickHandler {
         });
 
         pieceWrapper.getImage().addMouseUpHandler(event -> {
-            if (pieceWrapper.isInKomadai()) {
-                //TODO
-            } else {
+            if (!pieceWrapper.isInKomadai()) {
                 Square to = pieceWrapper.getSquare();
                 drawArrowToSquare(to);
             }
@@ -653,7 +651,7 @@ public class ShogiBoard extends Composite implements ClickHandler {
 
     @EventHandler
     public void onHighlightMove(final HighlightMoveEvent event) {
-        GWT.log("ShogiBoard Handling HighlightMoveEvent: " + event.getMove());
+        //GWT.log("ShogiBoard Handling HighlightMoveEvent: " + event.getMove());
         selectionController.highlightMove(event.getMove());
         decorationController.highlightMove(event.getMove());
     }

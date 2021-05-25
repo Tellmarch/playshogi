@@ -1,6 +1,7 @@
 package com.playshogi.website.gwt.client.widget.openings;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.ui.*;
@@ -12,6 +13,7 @@ import com.playshogi.library.shogi.models.moves.ShogiMove;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.website.gwt.client.UserPreferences;
 import com.playshogi.website.gwt.client.events.gametree.HighlightMoveEvent;
+import com.playshogi.website.gwt.client.events.gametree.MovePlayedEvent;
 import com.playshogi.website.gwt.client.events.kifu.PositionStatisticsEvent;
 import com.playshogi.website.gwt.client.mvp.AppPlaceHistoryMapper;
 import com.playshogi.website.gwt.client.place.OpeningsPlace;
@@ -33,26 +35,30 @@ public class PositionStatisticsPanel extends Composite {
 
     private final AppPlaceHistoryMapper historyMapper;
     private final UserPreferences userPreferences;
+    private final boolean inOpeningExplorer;
 
     private ShogiPosition shogiPosition;
     private String gameSetId;
 
-    public PositionStatisticsPanel(final AppPlaceHistoryMapper historyMapper, final UserPreferences userPreferences) {
+    public PositionStatisticsPanel(final AppPlaceHistoryMapper historyMapper, final UserPreferences userPreferences,
+                                   final boolean inOpeningExplorer) {
         this.historyMapper = historyMapper;
         this.userPreferences = userPreferences;
+        this.inOpeningExplorer = inOpeningExplorer;
         verticalPanel = new FlowPanel();
 
         verticalPanel.add(new HTML(SafeHtmlUtils.fromSafeConstant("<br>")));
 
-        verticalPanel.getElement().getStyle().setBackgroundColor("#DBCBCB");
+        if (inOpeningExplorer) {
+            verticalPanel.getElement().getStyle().setBackgroundColor("#DBCBCB");
+        }
 
         initWidget(verticalPanel);
     }
 
-    public void activate(final String gameSetId, final EventBus eventBus) {
+    public void activate(final EventBus eventBus) {
         GWT.log("Activating position statistics panel");
         this.eventBus = eventBus;
-        this.gameSetId = gameSetId;
         eventBinder.bindEventHandlers(this, eventBus);
     }
 
@@ -61,6 +67,7 @@ public class PositionStatisticsPanel extends Composite {
         GWT.log("Position statistics: handle PositionStatisticsEvent");
         positionDetails = event.getPositionDetails();
         shogiPosition = event.getShogiPosition();
+        gameSetId = event.getGameSetId();
         refreshInformation();
     }
 
@@ -89,16 +96,21 @@ public class PositionStatisticsPanel extends Composite {
 
                 String moveUsf = moveDetails.getMove();
                 final ShogiMove move = UsfMoveConverter.fromUsfString(moveUsf, shogiPosition);
-                Hyperlink hyperlink = new Hyperlink(userPreferences.getMoveNotationAccordingToPreferences(move, false),
-                        historyMapper.getToken(new OpeningsPlace(moveDetails.getNewSfen(), gameSetId)));
+
+                Widget hyperlink;
+                if (inOpeningExplorer) {
+                    hyperlink = new Hyperlink(userPreferences.getMoveNotationAccordingToPreferences(move, false),
+                            historyMapper.getToken(new OpeningsPlace(moveDetails.getNewSfen(), gameSetId)));
+                } else {
+                    hyperlink = new Anchor(userPreferences.getMoveNotationAccordingToPreferences(move, false));
+                    hyperlink.addDomHandler(event -> eventBus.fireEvent(new MovePlayedEvent(move)),
+                            ClickEvent.getType());
+                }
 
                 hyperlink.setStyleName("movelink");
 
-                hyperlink.addDomHandler(event -> {
-                    GWT.log("mouse over");
-                    eventBus.fireEvent(new HighlightMoveEvent(move));
-
-                }, MouseOverEvent.getType());
+                hyperlink.addDomHandler(event -> eventBus.fireEvent(new HighlightMoveEvent(move)),
+                        MouseOverEvent.getType());
 
                 grid.setWidget(i + 1, 0, hyperlink);
 

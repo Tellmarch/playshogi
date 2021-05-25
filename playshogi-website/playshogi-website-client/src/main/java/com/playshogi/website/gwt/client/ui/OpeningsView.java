@@ -29,8 +29,9 @@ public class OpeningsView extends Composite {
         shogiBoard = new ShogiBoard(OPENINGS, sessionInformation.getUserPreferences());
         gameNavigator = new GameNavigator(OPENINGS);
 
-        positionStatisticsPanel = new PositionStatisticsPanel(historyMapper, sessionInformation.getUserPreferences());
-        positionKifusPanel = new PositionKifusPanel(historyMapper);
+        positionStatisticsPanel = new PositionStatisticsPanel(historyMapper, sessionInformation.getUserPreferences(),
+                true);
+        positionKifusPanel = new PositionKifusPanel(historyMapper, true);
 
         shogiBoard.setUpperRightPanel(positionStatisticsPanel);
         shogiBoard.setLowerLeftPanel(positionKifusPanel);
@@ -38,12 +39,12 @@ public class OpeningsView extends Composite {
         initWidget(shogiBoard);
     }
 
-    public void activate(final ShogiPosition position, final String gameSetId, final EventBus eventBus) {
+    public void activate(final ShogiPosition position, final EventBus eventBus) {
         GWT.log("Activating openings view");
         shogiBoard.activate(eventBus);
         gameNavigator.getGameNavigation().setGameTree(new GameTree(position), 0);
         gameNavigator.activate(eventBus);
-        positionStatisticsPanel.activate(gameSetId, eventBus);
+        positionStatisticsPanel.activate(eventBus);
         positionKifusPanel.activate(eventBus);
     }
 
