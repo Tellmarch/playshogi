@@ -57,7 +57,7 @@ public class ViewKifuView extends Composite {
         shogiBoard.setUpperRightPanel(new KifuNavigationPanel(gameNavigator));
         shogiBoard.setLowerLeftPanel(kifuInformationPanel);
 
-        kifuEvaluationChartPanel = new KifuEvaluationChartPanel();
+        kifuEvaluationChartPanel = new KifuEvaluationChartPanel(sessionInformation.getUserPreferences());
 
         textArea = createCommentsArea();
 

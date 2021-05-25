@@ -15,6 +15,7 @@ import com.googlecode.gwt.charts.client.options.ChartArea;
 import com.googlecode.gwt.charts.client.options.HAxis;
 import com.googlecode.gwt.charts.client.options.VAxis;
 import com.playshogi.library.shogi.models.formats.sfen.SfenConverter;
+import com.playshogi.website.gwt.client.UserPreferences;
 import com.playshogi.website.gwt.client.events.gametree.MoveSelectedEvent;
 import com.playshogi.website.gwt.client.events.gametree.PositionChangedEvent;
 import com.playshogi.website.gwt.client.events.kifu.KifuEvaluationEvent;
@@ -28,6 +29,8 @@ public class KifuEvaluationChartPanel extends Composite {
 
     private final MyEventBinder eventBinder = GWT.create(MyEventBinder.class);
 
+    private final UserPreferences userPreferences;
+
     private EventBus eventBus;
     private final VerticalPanel panel;
     private LineChart chart;
@@ -40,7 +43,8 @@ public class KifuEvaluationChartPanel extends Composite {
     private int mistakeIndex = -1;
     private boolean blackMistakes = true;
 
-    public KifuEvaluationChartPanel() {
+    public KifuEvaluationChartPanel(final UserPreferences userPreferences) {
+        this.userPreferences = userPreferences;
         panel = new VerticalPanel();
 
         FlowPanel flowPanel = new FlowPanel();
@@ -154,13 +158,23 @@ public class KifuEvaluationChartPanel extends Composite {
         data.addColumn({type:'string', role:'tooltip'});
     }-*/;
 
+    private native void addAnnotationColumn(DataTable data) /*-{
+        data.addColumn({type:'string', role:'annotation'});
+    }-*/;
+
     private void drawEvaluation(KifuEvaluationEvent event) {
         DataTable dataTable = DataTable.create();
         dataTable.addColumn(ColumnType.NUMBER, "move");
         dataTable.addColumn(ColumnType.NUMBER, "evaluation");
         addTooltipColumn(dataTable);
+        if (userPreferences.isAnnotateGraphs()) {
+            addAnnotationColumn(dataTable);
+        }
         positionEvaluationDetails = event.getPositionEvaluationDetails();
         dataTable.addRows(positionEvaluationDetails.length);
+
+        boolean mate = false;
+
         for (int i = 0; i < positionEvaluationDetails.length; i++) {
             PrincipalVariationDetails[] history = positionEvaluationDetails[i].getPrincipalVariationHistory();
             if (history.length > 0) {
@@ -171,13 +185,24 @@ public class KifuEvaluationChartPanel extends Composite {
                 int graphValue = Math.min(2000, Math.max(-2000, toolTipValue));
 
                 String toolTip = "Move " + i + "\n" + "Evaluation: " + toolTipValue;
+                String annotation = null;
 
                 if (latest.isForcedMate()) {
+                    mate = true;
                     graphValue = (latest.getNumMovesBeforeMate() <= 0) == (i % 2 == 0) ? -2000 : 2000;
                     toolTip = "Move " + i + "\n" + "Mate in " + Math.abs(latest.getNumMovesBeforeMate());
+                } else {
+                    if (mate) {
+                        annotation = "Missed mate";
+                    }
+                    mate = false;
                 }
+
                 dataTable.setValue(i, 1, graphValue);
                 dataTable.setValue(i, 2, toolTip);
+                if (userPreferences.isAnnotateGraphs()) {
+                    dataTable.setValue(i, 3, annotation);
+                }
             }
         }
 
