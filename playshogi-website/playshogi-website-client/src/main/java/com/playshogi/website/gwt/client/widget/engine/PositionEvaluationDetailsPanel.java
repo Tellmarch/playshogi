@@ -7,6 +7,8 @@ import com.google.gwt.user.cellview.client.CellTable;
 import com.google.gwt.user.cellview.client.HasKeyboardSelectionPolicy;
 import com.google.gwt.user.cellview.client.TextColumn;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
@@ -16,6 +18,7 @@ import com.playshogi.library.shogi.models.formats.usf.UsfMoveConverter;
 import com.playshogi.library.shogi.models.moves.ShogiMove;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.library.shogi.rules.ShogiRulesEngine;
+import com.playshogi.website.gwt.client.SessionInformation;
 import com.playshogi.website.gwt.client.UserPreferences;
 import com.playshogi.website.gwt.client.events.gametree.HighlightMoveEvent;
 import com.playshogi.website.gwt.client.events.gametree.InsertVariationEvent;
@@ -23,14 +26,17 @@ import com.playshogi.website.gwt.client.events.gametree.PositionChangedEvent;
 import com.playshogi.website.gwt.client.events.kifu.PositionEvaluationEvent;
 import com.playshogi.website.gwt.client.events.kifu.RequestPositionEvaluationEvent;
 import com.playshogi.website.gwt.client.events.user.NotationStyleSelectedEvent;
+import com.playshogi.website.gwt.client.util.ElementWidget;
 import com.playshogi.website.gwt.client.widget.board.ShogiBoard;
 import com.playshogi.website.gwt.shared.models.PositionEvaluationDetails;
 import com.playshogi.website.gwt.shared.models.PrincipalVariationDetails;
+import org.dominokit.domino.ui.button.Button;
+import org.dominokit.domino.ui.loaders.Loader;
+import org.dominokit.domino.ui.loaders.LoaderEffect;
 
 import java.util.ArrayList;
 
 public class PositionEvaluationDetailsPanel extends Composite {
-
 
     interface MyEventBinder extends EventBinder<PositionEvaluationDetailsPanel> {
     }
@@ -42,24 +48,43 @@ public class PositionEvaluationDetailsPanel extends Composite {
     private final CheckBox highlightCheckBox;
     private final ShogiBoard shogiBoard;
     private final UserPreferences userPreferences;
+    private final Loader loader;
 
     private EventBus eventBus;
     private PositionEvaluationDetails evaluation;
     private boolean sync = false; // Whether the evaluation matches the current position of the board
     private PrincipalVariationDetails selectedVariation;
 
-    public PositionEvaluationDetailsPanel(final ShogiBoard shogiBoard, final UserPreferences userPreferences) {
+    public PositionEvaluationDetailsPanel(final ShogiBoard shogiBoard, final SessionInformation sessionInformation) {
         GWT.log("Creating PositionEvaluationDetailsPanel");
-        this.userPreferences = userPreferences;
+        this.userPreferences = sessionInformation.getUserPreferences();
         this.shogiBoard = shogiBoard;
         VerticalPanel verticalPanel = new VerticalPanel();
 
         FlowPanel flowPanel = new FlowPanel();
 
-        Button evaluateButton = new Button("Position Evaluation (5 seconds)");
-        evaluateButton.addClickHandler(clickEvent -> eventBus.fireEvent(new RequestPositionEvaluationEvent()));
+        Button button = Button.createDefault("Position Evaluation (5 seconds)").style().setMarginRight("1em").get();
 
-        flowPanel.add(evaluateButton);
+        loader = Loader.create(button, LoaderEffect.PULSE);
+
+        button.addClickListener(
+                evt -> {
+                    if (!sessionInformation.isLoggedIn()) {
+                        Window.alert("Only logged in users can use the computer analysis. Please register or log-in.");
+                        return;
+                    }
+                    loader.start();
+                    new Timer() {
+                        @Override
+                        public void run() {
+                            loader.stop();
+                        }
+                    }.schedule(5000);
+                    eventBus.fireEvent(new RequestPositionEvaluationEvent());
+                });
+
+        flowPanel.add(new ElementWidget(button.element()));
+
         highlightCheckBox = new CheckBox("Highlight best move");
         highlightCheckBox.addValueChangeHandler(valueChangeEvent -> {
             if (valueChangeEvent.getValue()) {
@@ -197,6 +222,7 @@ public class PositionEvaluationDetailsPanel extends Composite {
         } else {
             setSync(true);
         }
+        loader.stop();
         evaluation = event.getEvaluation();
         showEvaluation();
         highlightBestMove();
