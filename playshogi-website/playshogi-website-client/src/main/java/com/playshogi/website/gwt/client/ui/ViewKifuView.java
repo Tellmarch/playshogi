@@ -67,7 +67,7 @@ public class ViewKifuView extends Composite {
         databasePanel = new DatabasePanel(appPlaceHistoryMapper, sessionInformation.getUserPreferences());
 
         positionEvaluationDetailsPanel = new PositionEvaluationDetailsPanel(shogiBoard,
-                sessionInformation.getUserPreferences());
+                sessionInformation);
         positionEvaluationDetailsPanel.setSize("1450px", "300px");
 
         VerticalPanel boardAndTextPanel = new VerticalPanel();
