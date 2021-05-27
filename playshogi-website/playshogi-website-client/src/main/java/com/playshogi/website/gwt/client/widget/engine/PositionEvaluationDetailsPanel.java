@@ -65,7 +65,7 @@ public class PositionEvaluationDetailsPanel extends Composite {
 
         Button button = Button.createDefault("Position Evaluation (5 seconds)").style().setMarginRight("1em").get();
 
-        loader = Loader.create(button, LoaderEffect.PULSE);
+        loader = Loader.create(button, LoaderEffect.WIN8_LINEAR).setRemoveLoadingText(true);
 
         button.addClickListener(
                 evt -> {
