@@ -540,4 +540,53 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
             throw new IllegalArgumentException("Could not delete the Kifu");
         }
     }
+
+    @Override
+    public LessonDetails[] getAllLessons(final String sessionId) {
+        LOGGER.log(Level.INFO, "getAllLessons");
+        return new LessonDetails[]{
+                new LessonDetails("Openings", null, null, "Openings", "Learn all about openings!", new String[]{
+                        "openings"}, "", 1, 5, false),
+                new LessonDetails("OpeningsSvS", null, "Openings", "Static Rook vs Static Rook", "Learn all about " +
+                        "openings!", new String[]{"openings", "static rook"}, "", 1, 5, false),
+                new LessonDetails("OpeningsSvR", null, "Openings", "Static Rook vs Ranging Rook", "Learn all about " +
+                        "openings!", new String[]{"openings"}, "", 1, 5, false),
+                new LessonDetails("OpeningsRvR", null, "Openings", "Ranging Rook vs Ranging Rook", "Learn all about " +
+                        "openings!", new String[]{"openings"}, "", 1, 5, false),
+
+                new LessonDetails("Middle-game", null, null, "Middle-game", "Learn all about the middle game!",
+                        new String[]{"openings"}, "", 1, 5, false),
+                new LessonDetails("Castles", null, "Middle-game", "Castles", "Learn all about castles!",
+                        new String[]{"openings"}, "", 1, 5, false),
+                new LessonDetails("Mino Castle", null, "Castles", "Mino Castle", "Learn all about the Mino Castle!",
+                        new String[]{"openings"}, "", 1, 5, false),
+
+                new LessonDetails("Endgame", null, null, "Endgame", "Learn all about endgame techniques!",
+                        new String[]{"openings"}, "", 1, 5, false),
+
+                new LessonDetails("Proverbs", null, null, "Proverbs", "Improve your play by learning Shogi proverbs",
+                        new String[]{"openings"}, "", 1, 5, false),
+                new LessonDetails("Proverbs-Pawn", null, "Proverbs", "The Pawn", "Proverbs about pawns",
+                        new String[]{"openings"}, "", 1, 5, false),
+                new LessonDetails("apiwatg", null, "Proverbs-Pawn", "A Pawn is Worth a Thousand Generals", "A Pawn is" +
+                        " Worth a Thousand Generals", new String[]{"openings"}, "", 1, 5, false),
+                new LessonDetails("apiwatg1", "58998", "apiwatg", "A Pawn is Worth a Thousand Generals - Part 1", "A " +
+                        "Pawn is Worth a Thousand Generals, Part 1", new String[]{"openings"}, "", 1, 5, false),
+                new LessonDetails("apiwatg2", "58999", "apiwatg", "A Pawn is Worth a Thousand Generals - Part 2", "A " +
+                        "Pawn is Worth a Thousand Generals, Part 2", new String[]{"openings"}, "", 1, 5, false),
+                new LessonDetails("apiwatg3", "59000", "apiwatg", "A Pawn is Worth a Thousand Generals - Part 3", "A " +
+                        "Pawn is Worth a Thousand Generals, Part 3", new String[]{"openings"}, "", 1, 5, false),
+                new LessonDetails("apiwatg4", "59001", "apiwatg", "A Pawn is Worth a Thousand Generals - Part 4", "A " +
+                        "Pawn is Worth a Thousand Generals, Part 4", new String[]{"openings"}, "", 1, 5, false),
+                new LessonDetails("apiwatg5", "59002", "apiwatg", "A Pawn is Worth a Thousand Generals - Part 5", "A " +
+                        "Pawn is Worth a Thousand Generals, Part 5", new String[]{"openings"}, "", 1, 5, false),
+                new LessonDetails("apiwatg6", "59003", "apiwatg", "A Pawn is Worth a Thousand Generals - Part 6", "A " +
+                        "Pawn is Worth a Thousand Generals, Part 6", new String[]{"openings"}, "", 1, 5, false),
+                new LessonDetails("apiwatg7", "59004", "apiwatg", "A Pawn is Worth a Thousand Generals - Part 7", "A " +
+                        "Pawn is Worth a Thousand Generals, Part 7", new String[]{"openings"}, "", 1, 5, false),
+                new LessonDetails("apiwatg8", "59005", "apiwatg", "A Pawn is Worth a Thousand Generals - Part 8", "A " +
+                        "Pawn is Worth a Thousand Generals, Part 8", new String[]{"openings"}, "", 1, 5, false),
+
+        };
+    }
 }

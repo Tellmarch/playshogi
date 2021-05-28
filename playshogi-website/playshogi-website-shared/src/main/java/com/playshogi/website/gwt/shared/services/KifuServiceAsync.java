@@ -44,4 +44,6 @@ public interface KifuServiceAsync {
 
     void addExistingKifuToCollection(String sessionId, String kifuId, String collectionId,
                                      AsyncCallback<Void> voidAsyncCallback);
+
+    void getAllLessons(String sessionId, AsyncCallback<LessonDetails[]> callback);
 }
