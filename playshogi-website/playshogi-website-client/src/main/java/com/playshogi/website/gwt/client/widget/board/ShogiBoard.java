@@ -43,7 +43,7 @@ import static com.playshogi.website.gwt.client.widget.board.PieceWrapper.WHITE_K
 
 public class ShogiBoard extends Composite implements ClickHandler {
 
-    private static final BoardBundle BOARD_RESOURCES = GWT.create(BoardBundle.class);
+    public static final BoardBundle BOARD_RESOURCES = GWT.create(BoardBundle.class);
 
     private final UserPreferences userPreferences;
     private BoardSettingsPanel boardSettingsPanel;

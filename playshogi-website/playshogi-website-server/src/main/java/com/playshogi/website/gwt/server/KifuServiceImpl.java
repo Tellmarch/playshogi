@@ -548,7 +548,8 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
                 new LessonDetails("Openings", null, null, "Openings", "Learn all about openings!", new String[]{
                         "openings"}, "", 1, 5, false),
                 new LessonDetails("OpeningsSvS", null, "Openings", "Static Rook vs Static Rook", "Learn all about " +
-                        "openings!", new String[]{"openings", "static rook"}, "", 1, 5, false),
+                        "openings!", new String[]{"openings", "static rook"}, "lnsgkgsnl/1r5b1/p1ppppppp/9/1p5P1/9" +
+                        "/PPPPPPP1P/1B5R1/LNSGKGSNL b -", 1, 5, false),
                 new LessonDetails("OpeningsSvR", null, "Openings", "Static Rook vs Ranging Rook", "Learn all about " +
                         "openings!", new String[]{"openings"}, "", 1, 5, false),
                 new LessonDetails("OpeningsRvR", null, "Openings", "Ranging Rook vs Ranging Rook", "Learn all about " +

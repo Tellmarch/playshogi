@@ -9,12 +9,19 @@ import com.google.inject.Singleton;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
+import com.playshogi.library.shogi.models.formats.sfen.SfenConverter;
+import com.playshogi.website.gwt.client.SessionInformation;
 import com.playshogi.website.gwt.client.events.tutorial.LessonsListEvent;
+import com.playshogi.website.gwt.client.place.ViewKifuPlace;
 import com.playshogi.website.gwt.client.util.ElementWidget;
+import com.playshogi.website.gwt.client.widget.board.BoardPreview;
 import com.playshogi.website.gwt.shared.models.LessonDetails;
 import elemental2.dom.HTMLElement;
 import elemental2.dom.HTMLHeadingElement;
+import elemental2.dom.Node;
+import jsinterop.base.Js;
 import org.dominokit.domino.ui.breadcrumbs.Breadcrumb;
+import org.dominokit.domino.ui.button.Button;
 import org.dominokit.domino.ui.cards.Card;
 import org.dominokit.domino.ui.grid.Column;
 import org.dominokit.domino.ui.grid.Row;
@@ -33,9 +40,6 @@ import java.util.Map;
 @Singleton
 public class LessonsView extends Composite {
 
-
-    private final HtmlContentBuilder<HTMLHeadingElement> difficulty;
-
     interface MyEventBinder extends EventBinder<LessonsView> {
     }
 
@@ -46,12 +50,20 @@ public class LessonsView extends Composite {
     private final Card previewCard;
     private final HtmlContentBuilder<HTMLElement> previewDescription;
     private final HtmlContentBuilder<HTMLElement> previewTags;
+    private final HtmlContentBuilder<HTMLHeadingElement> difficulty;
+    private final Node previewDiagram;
+    private final Button openButton;
+    private final BoardPreview boardPreview;
 
     private final PlaceController placeController;
+    private final SessionInformation sessionInformation;
+
+    private LessonDetails lesson;
 
     @Inject
-    public LessonsView(final PlaceController placeController) {
+    public LessonsView(final PlaceController placeController, final SessionInformation sessionInformation) {
         this.placeController = placeController;
+        this.sessionInformation = sessionInformation;
         GWT.log("Creating lessons view");
 
         breadcrumb = Breadcrumb.create().setColor(Color.ORANGE);
@@ -63,13 +75,25 @@ public class LessonsView extends Composite {
         previewDescription = Elements.span();
         previewTags = Elements.span();
         difficulty = Elements.h(4);
+        boardPreview = new BoardPreview(SfenConverter.fromSFEN(SfenConverter.INITIAL_POSITION_SFEN), false,
+                sessionInformation.getUserPreferences());
+        previewDiagram = Js.uncheckedCast(boardPreview.getElement());
+        openButton = Button.createPrimary("Open Lesson!").addClickListener(evt -> {
+            if (lesson != null && lesson.getKifuId() != null) {
+                placeController.goTo(new ViewKifuPlace(lesson.getKifuId(), 0));
+            }
+        });
         previewCard =
                 Card.create("Select a Lesson on the left")
                         .appendChild(previewTags)
                         .appendChild(Elements.p())
                         .appendChild(difficulty)
                         .appendChild(Elements.p())
-                        .appendChild(previewDescription);
+                        .appendChild(previewDescription)
+                        .appendChild(Elements.p())
+                        .appendChild(previewDiagram)
+                        .appendChild(Elements.p())
+                        .appendChild(openButton);
 
         Row_12 row_12 = Row.create()
                 .addColumn(Column.span3().appendChild(lessonsTree))
@@ -128,6 +152,7 @@ public class LessonsView extends Composite {
     }
 
     private void showLessonPreview(final LessonDetails lesson) {
+        this.lesson = lesson;
         previewCard.setTitle(lesson.getTitle());
         previewDescription.textContent(lesson.getDescription());
 
@@ -143,6 +168,17 @@ public class LessonsView extends Composite {
         previewTags.textContent("");
         for (String tag : lesson.getTags()) {
             previewTags.add(Label.createPrimary(tag).style().setMargin("1em"));
+        }
+
+        if (lesson.getPreviewSfen() != null && !lesson.getPreviewSfen().isEmpty()) {
+            GWT.log("Showing position " + lesson.getPreviewSfen());
+            boardPreview.showPosition(SfenConverter.fromSFEN(lesson.getPreviewSfen()));
+        }
+
+        if (lesson.getKifuId() != null) {
+            openButton.show();
+        } else {
+            openButton.hide();
         }
 
     }
