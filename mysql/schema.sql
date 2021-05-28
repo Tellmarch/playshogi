@@ -420,6 +420,7 @@ CREATE TABLE IF NOT EXISTS `playshogi`.`ps_lessons` (
   `create_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `update_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `type` TINYINT UNSIGNED NOT NULL DEFAULT 0,
+  `index` INT NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   INDEX `fk_ps_lessons_1_idx` (`kifu_id` ASC),
   INDEX `fk_ps_lessons_2_idx` (`author_id` ASC),
