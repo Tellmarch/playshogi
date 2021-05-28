@@ -399,6 +399,42 @@ CREATE TABLE IF NOT EXISTS `playshogi`.`ps_highscore` (
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
+
+-- -----------------------------------------------------
+-- Table `playshogi`.`ps_lessons`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `playshogi`.`ps_lessons` ;
+
+CREATE TABLE IF NOT EXISTS `playshogi`.`ps_lessons` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `kifu_id` INT UNSIGNED NULL,
+  `parent_id` INT UNSIGNED NULL,
+  `title` VARCHAR(255) NOT NULL,
+  `description` MEDIUMTEXT NULL,
+  `tags` VARCHAR(1000) NULL,
+  `preview_sfen` VARCHAR(200) NULL,
+  `difficulty` TINYINT UNSIGNED NULL,
+  `likes` INT NOT NULL DEFAULT 0,
+  `author_id` INT UNSIGNED NULL,
+  `hidden` TINYINT(1) NOT NULL DEFAULT 0,
+  `create_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `update_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `type` TINYINT UNSIGNED NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`),
+  INDEX `fk_ps_lessons_1_idx` (`kifu_id` ASC),
+  INDEX `fk_ps_lessons_2_idx` (`author_id` ASC),
+  CONSTRAINT `fk_ps_lessons_1`
+    FOREIGN KEY (`kifu_id`)
+    REFERENCES `playshogi`.`ps_kifu` (`id`)
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_ps_lessons_2`
+    FOREIGN KEY (`author_id`)
+    REFERENCES `playshogi`.`ps_user` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
 SET SQL_MODE = '';
 DROP USER IF EXISTS playshogi;
 SET SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
