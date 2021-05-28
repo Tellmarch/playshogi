@@ -56,6 +56,8 @@ public class AppActivityMapper implements ActivityMapper {
     ManageProblemsView manageProblemsView;
     @Inject
     LessonsView lessonsView;
+    @Inject
+    ManageLessonsView manageLessonsView;
 
     @Override
     public Activity getActivity(final Place place) {
@@ -99,6 +101,8 @@ public class AppActivityMapper implements ActivityMapper {
             return new UserKifusActivity((UserKifusPlace) place, userKifusView, sessionInformation);
         } else if (place instanceof ManageProblemsPlace) {
             return new ManageProblemsActivity((ManageProblemsPlace) place, manageProblemsView, sessionInformation);
+        } else if (place instanceof ManageLessonsPlace) {
+            return new ManageLessonsActivity((ManageLessonsPlace) place, manageLessonsView, sessionInformation);
         } else if (place instanceof MyCollectionsPlace) {
             return new MyCollectionsActivity((MyCollectionsPlace) place, myCollectionsView, sessionInformation);
         } else if (place instanceof PublicCollectionsPlace) {

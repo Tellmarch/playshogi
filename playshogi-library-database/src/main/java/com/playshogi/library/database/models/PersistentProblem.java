@@ -2,13 +2,13 @@ package com.playshogi.library.database.models;
 
 public class PersistentProblem {
 
-    public static enum ProblemType {
+    public enum ProblemType {
         TSUME(1, "Tsume"), OPENING(2, "Opening Problem");
 
         private final int dbInt;
         private final String description;
 
-        private ProblemType(final int dbInt, final String description) {
+        ProblemType(final int dbInt, final String description) {
             this.dbInt = dbInt;
             this.description = description;
         }

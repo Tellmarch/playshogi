@@ -14,13 +14,14 @@ public class LessonDetails implements Serializable {
     private int difficulty;
     private int likes;
     private boolean completed;
+    private boolean hidden;
 
     public LessonDetails() {
     }
 
     public LessonDetails(final String lessonId, final String kifuId, final String parentLessonId, final String title,
                          final String description, final String[] tags, final String previewSfen,
-                         final int difficulty, final int likes, final boolean completed) {
+                         final int difficulty, final int likes, final boolean completed, final boolean hidden) {
         this.lessonId = lessonId;
         this.kifuId = kifuId;
         this.parentLessonId = parentLessonId;
@@ -31,6 +32,21 @@ public class LessonDetails implements Serializable {
         this.difficulty = difficulty;
         this.likes = likes;
         this.completed = completed;
+        this.hidden = hidden;
+    }
+
+    public LessonDetails(final LessonDetails other) {
+        this.lessonId = other.lessonId;
+        this.kifuId = other.kifuId;
+        this.parentLessonId = other.parentLessonId;
+        this.title = other.title;
+        this.description = other.description;
+        this.tags = other.tags;
+        this.previewSfen = other.previewSfen;
+        this.difficulty = other.difficulty;
+        this.likes = other.likes;
+        this.completed = other.completed;
+        this.hidden = other.hidden;
     }
 
     public String getLessonId() {
@@ -113,6 +129,14 @@ public class LessonDetails implements Serializable {
         this.completed = completed;
     }
 
+    public boolean isHidden() {
+        return hidden;
+    }
+
+    public void setHidden(final boolean hidden) {
+        this.hidden = hidden;
+    }
+
     @Override
     public String toString() {
         return "LessonDetails{" +
@@ -126,6 +150,7 @@ public class LessonDetails implements Serializable {
                 ", difficulty=" + difficulty +
                 ", likes=" + likes +
                 ", completed=" + completed +
+                ", hidden=" + hidden +
                 '}';
     }
 }
