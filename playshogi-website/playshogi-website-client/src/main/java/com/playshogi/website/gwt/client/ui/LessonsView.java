@@ -173,6 +173,9 @@ public class LessonsView extends Composite {
         if (lesson.getPreviewSfen() != null && !lesson.getPreviewSfen().isEmpty()) {
             GWT.log("Showing position " + lesson.getPreviewSfen());
             boardPreview.showPosition(SfenConverter.fromSFEN(lesson.getPreviewSfen()));
+            boardPreview.setVisible(true);
+        } else {
+            boardPreview.setVisible(false);
         }
 
         if (lesson.getKifuId() != null) {
