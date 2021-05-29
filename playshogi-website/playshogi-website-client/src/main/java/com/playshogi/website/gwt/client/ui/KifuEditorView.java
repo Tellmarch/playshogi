@@ -109,7 +109,7 @@ public class KifuEditorView extends Composite {
         textArea = new TextArea();
         textArea.setSize("782px", "150px");
         textArea.setStyleName("lesson-content");
-        textArea.setEnabled(false);
+        textArea.addKeyUpHandler(keyUpEvent -> gameNavigation.getCurrentNode().setComment(textArea.getText()));
         return textArea;
     }
 
