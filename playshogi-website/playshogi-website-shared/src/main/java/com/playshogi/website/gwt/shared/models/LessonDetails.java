@@ -15,13 +15,15 @@ public class LessonDetails implements Serializable {
     private int likes;
     private boolean completed;
     private boolean hidden;
+    private int index;
 
     public LessonDetails() {
     }
 
     public LessonDetails(final String lessonId, final String kifuId, final String parentLessonId, final String title,
                          final String description, final String[] tags, final String previewSfen,
-                         final int difficulty, final int likes, final boolean completed, final boolean hidden) {
+                         final int difficulty, final int likes, final boolean completed, final boolean hidden,
+                         final int index) {
         this.lessonId = lessonId;
         this.kifuId = kifuId;
         this.parentLessonId = parentLessonId;
@@ -33,6 +35,7 @@ public class LessonDetails implements Serializable {
         this.likes = likes;
         this.completed = completed;
         this.hidden = hidden;
+        this.index = index;
     }
 
     public LessonDetails(final LessonDetails other) {
@@ -47,6 +50,7 @@ public class LessonDetails implements Serializable {
         this.likes = other.likes;
         this.completed = other.completed;
         this.hidden = other.hidden;
+        this.index = other.index;
     }
 
     public String getLessonId() {
@@ -137,6 +141,14 @@ public class LessonDetails implements Serializable {
         this.hidden = hidden;
     }
 
+    public int getIndex() {
+        return index;
+    }
+
+    public void setIndex(final int index) {
+        this.index = index;
+    }
+
     @Override
     public String toString() {
         return "LessonDetails{" +
@@ -151,6 +163,7 @@ public class LessonDetails implements Serializable {
                 ", likes=" + likes +
                 ", completed=" + completed +
                 ", hidden=" + hidden +
+                ", index=" + index +
                 '}';
     }
 }
