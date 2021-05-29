@@ -6,11 +6,15 @@ import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
+import com.playshogi.library.shogi.models.formats.sfen.SfenConverter;
+import com.playshogi.website.gwt.client.SessionInformation;
 import com.playshogi.website.gwt.client.events.tutorial.LessonsListEvent;
 import com.playshogi.website.gwt.client.util.ElementWidget;
+import com.playshogi.website.gwt.client.widget.board.BoardPreview;
 import com.playshogi.website.gwt.client.widget.kifu.ImportCollectionPanel;
 import com.playshogi.website.gwt.shared.models.LessonDetails;
 import elemental2.dom.HTMLElement;
+import jsinterop.base.Js;
 import org.dominokit.domino.ui.badges.Badge;
 import org.dominokit.domino.ui.datatable.ColumnConfig;
 import org.dominokit.domino.ui.datatable.DataTable;
@@ -27,6 +31,7 @@ import org.dominokit.domino.ui.utils.TextNode;
 import org.jboss.elemento.Elements;
 import org.jboss.elemento.HtmlContentBuilder;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.Arrays;
 
@@ -45,7 +50,8 @@ public class ManageLessonsView extends Composite {
     private EventBus eventBus;
     private final ImportCollectionPanel importCollectionPanel = new ImportCollectionPanel();
 
-    public ManageLessonsView() {
+    @Inject
+    public ManageLessonsView(final SessionInformation sessionInformation) {
         TableConfig<LessonDetails> tableConfig = new TableConfig<>();
         tableConfig
                 .addColumn(
@@ -79,7 +85,7 @@ public class ManageLessonsView extends Composite {
                                 .textAlign("right")
                                 .asHeader()
                                 .setCellRenderer(
-                                        cell -> TextNode.of(cell.getTableRow().getRecord().getLessonId() + 1 + "")))
+                                        cell -> TextNode.of(cell.getRecord().getLessonId() + 1 + "")))
                 .addColumn(
                         ColumnConfig.<LessonDetails>create("status", "Status")
                                 .styleCell(
@@ -87,7 +93,7 @@ public class ManageLessonsView extends Composite {
                                 .textAlign("center")
                                 .setCellRenderer(
                                         cell -> {
-                                            if (!cell.getTableRow().getRecord().isHidden()) {
+                                            if (!cell.getRecord().isHidden()) {
                                                 return Style.of(Icons.ALL.check_circle())
                                                         .setColor(Color.GREEN_DARKEN_3.getHex())
                                                         .element();
@@ -111,7 +117,7 @@ public class ManageLessonsView extends Composite {
                         ColumnConfig.<LessonDetails>create("title", "Title")
                                 .styleCell(
                                         element -> element.style.setProperty("vertical-align", "top"))
-                                .setCellRenderer(cell -> TextNode.of(cell.getTableRow().getRecord().getTitle()))
+                                .setCellRenderer(cell -> TextNode.of(cell.getRecord().getTitle()))
                                 .setEditableCellRenderer(
                                         cell -> {
                                             TextBox textBox =
@@ -125,7 +131,7 @@ public class ManageLessonsView extends Composite {
                         ColumnConfig.<LessonDetails>create("description", "Description")
                                 .styleCell(
                                         element -> element.style.setProperty("vertical-align", "top"))
-                                .setCellRenderer(cell -> TextNode.of(cell.getTableRow().getRecord().getDescription()))
+                                .setCellRenderer(cell -> TextNode.of(cell.getRecord().getDescription()))
                                 .setEditableCellRenderer(
                                         cell -> {
                                             TextBox textBox =
@@ -139,7 +145,7 @@ public class ManageLessonsView extends Composite {
                         ColumnConfig.<LessonDetails>create("parent", "Parent")
                                 .styleCell(
                                         element -> element.style.setProperty("vertical-align", "top"))
-                                .setCellRenderer(cell -> TextNode.of(cell.getTableRow().getRecord().getParentLessonId()))
+                                .setCellRenderer(cell -> TextNode.of(cell.getRecord().getParentLessonId()))
                                 .setEditableCellRenderer(
                                         cell -> {
                                             TextBox textBox =
@@ -153,7 +159,7 @@ public class ManageLessonsView extends Composite {
                         ColumnConfig.<LessonDetails>create("kifu", "Kifu")
                                 .styleCell(
                                         element -> element.style.setProperty("vertical-align", "top"))
-                                .setCellRenderer(cell -> TextNode.of(cell.getTableRow().getRecord().getKifuId()))
+                                .setCellRenderer(cell -> TextNode.of(cell.getRecord().getKifuId()))
                                 .setEditableCellRenderer(
                                         cell -> {
                                             TextBox textBox =
@@ -167,7 +173,7 @@ public class ManageLessonsView extends Composite {
                         ColumnConfig.<LessonDetails>create("difficulty", "Difficulty")
                                 .styleCell(
                                         element -> element.style.setProperty("vertical-align", "top"))
-                                .setCellRenderer(cell -> TextNode.of(String.valueOf(cell.getTableRow().getRecord().getDifficulty())))
+                                .setCellRenderer(cell -> TextNode.of(String.valueOf(cell.getRecord().getDifficulty())))
                                 .setEditableCellRenderer(
                                         cell -> {
                                             TextBox textBox =
@@ -181,7 +187,7 @@ public class ManageLessonsView extends Composite {
                         ColumnConfig.<LessonDetails>create("index", "Index")
                                 .styleCell(
                                         element -> element.style.setProperty("vertical-align", "top"))
-                                .setCellRenderer(cell -> TextNode.of(String.valueOf(cell.getTableRow().getRecord().getIndex())))
+                                .setCellRenderer(cell -> TextNode.of(String.valueOf(cell.getRecord().getIndex())))
                                 .setEditableCellRenderer(
                                         cell -> {
                                             TextBox textBox =
@@ -195,7 +201,17 @@ public class ManageLessonsView extends Composite {
                         ColumnConfig.<LessonDetails>create("preview", "Preview")
                                 .styleCell(
                                         element -> element.style.setProperty("vertical-align", "top"))
-                                .setCellRenderer(cell -> TextNode.of(cell.getTableRow().getRecord().getPreviewSfen()))
+                                .setCellRenderer(cell -> {
+                                    String sfen = cell.getRecord().getPreviewSfen();
+                                    if (sfen != null && !sfen.isEmpty()) {
+                                        BoardPreview boardPreview =
+                                                new BoardPreview(SfenConverter.fromSFEN(sfen), false,
+                                                        sessionInformation.getUserPreferences(), 0.5);
+                                        return Js.uncheckedCast(boardPreview.getElement());
+                                    } else {
+                                        return TextNode.empty();
+                                    }
+                                })
                                 .setEditableCellRenderer(
                                         cell -> {
                                             TextBox textBox =

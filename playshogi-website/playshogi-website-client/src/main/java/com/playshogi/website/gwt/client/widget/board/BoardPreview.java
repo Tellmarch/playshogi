@@ -21,14 +21,29 @@ public class BoardPreview extends Composite {
     private final Image ban;
 
     public BoardPreview(final ShogiPosition position, final boolean inverted, final UserPreferences userPreferences) {
+        this(position, inverted, userPreferences, 1.0);
+    }
+
+    public BoardPreview(final ShogiPosition position, final boolean inverted, final UserPreferences userPreferences,
+                        final double scale) {
         this.inverted = inverted;
         this.userPreferences = userPreferences;
         absolutePanel = new AbsolutePanel();
-        absolutePanel.setSize(9 * SQUARE_WIDTH + 2 + "px", 9 * SQUARE_HEIGHT + 2 + "px");
+        int width = 9 * SQUARE_WIDTH + 2;
+        int height = 9 * SQUARE_HEIGHT + 2;
+        absolutePanel.setSize(width + "px", height + "px");
         grid = new Image(ShogiBoard.BOARD_RESOURCES.masu_dot());
         ban = new Image(ShogiBoard.BOARD_RESOURCES.ban_kaya_a());
         showPosition(position);
-        initWidget(absolutePanel);
+        if (scale != 1.0) {
+            AbsolutePanel wrapperPanel = new AbsolutePanel();
+            absolutePanel.getElement().getStyle().setProperty("transform", "scale(" + scale + ")");
+            wrapperPanel.add(absolutePanel, (int) (-width * (1 - scale) / 2), (int) (-height * (1 - scale) / 2));
+            wrapperPanel.setSize(width * scale + "px", height * scale + "px");
+            initWidget(wrapperPanel);
+        } else {
+            initWidget(absolutePanel);
+        }
     }
 
     public void showPosition(final ShogiPosition position) {
