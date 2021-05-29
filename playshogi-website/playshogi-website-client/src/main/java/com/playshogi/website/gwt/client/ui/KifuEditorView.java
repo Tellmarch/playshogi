@@ -1,6 +1,7 @@
 package com.playshogi.website.gwt.client.ui;
 
 import com.google.gwt.core.shared.GWT;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.place.shared.PlaceController;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
@@ -18,13 +19,13 @@ import com.playshogi.website.gwt.client.events.kifu.EditModeSelectedEvent;
 import com.playshogi.website.gwt.client.events.kifu.GameInformationChangedEvent;
 import com.playshogi.website.gwt.client.events.kifu.GameRecordSaveRequestedEvent;
 import com.playshogi.website.gwt.client.events.kifu.SwitchPlayerToPlayEvent;
+import com.playshogi.website.gwt.client.mvp.AppPlaceHistoryMapper;
 import com.playshogi.website.gwt.client.place.KifuEditorPlace;
+import com.playshogi.website.gwt.client.widget.board.BoardSettingsPanel;
 import com.playshogi.website.gwt.client.widget.board.ShogiBoard;
+import com.playshogi.website.gwt.client.widget.engine.PositionEvaluationDetailsPanel;
 import com.playshogi.website.gwt.client.widget.gamenavigator.GameNavigator;
-import com.playshogi.website.gwt.client.widget.kifu.GameTreePanel;
-import com.playshogi.website.gwt.client.widget.kifu.KifuEditorLeftBarPanel;
-import com.playshogi.website.gwt.client.widget.kifu.KifuEditorPanel;
-import com.playshogi.website.gwt.client.widget.kifu.SaveKifuPanel;
+import com.playshogi.website.gwt.client.widget.kifu.*;
 import com.playshogi.website.gwt.shared.models.KifuDetails;
 
 import java.util.Optional;
@@ -32,7 +33,7 @@ import java.util.Optional;
 @Singleton
 public class KifuEditorView extends Composite {
 
-    private static final String PROBLEM_EDITOR = "pbeditor";
+    private static final String KIFU_EDITOR = "kifueditor";
 
     interface MyEventBinder extends EventBinder<KifuEditorView> {
     }
@@ -47,19 +48,27 @@ public class KifuEditorView extends Composite {
     private final TextArea textArea;
     private final KifuEditorLeftBarPanel kifuEditorLeftBarPanel;
     private final SaveKifuPanel saveKifuPanel;
+    private final BoardSettingsPanel boardSettingsPanel;
+    private final DatabasePanel databasePanel;
+    private final PositionEvaluationDetailsPanel positionEvaluationDetailsPanel;
 
     private EventBus eventBus;
     private KifuDetails.KifuType type;
 
     @Inject
-    public KifuEditorView(final PlaceController placeController, final SessionInformation sessionInformation) {
-        GWT.log("Creating problem editor view");
+    public KifuEditorView(final PlaceController placeController, final SessionInformation sessionInformation,
+                          final AppPlaceHistoryMapper appPlaceHistoryMapper) {
+        GWT.log("Creating kifu editor view");
+
+        boardSettingsPanel = new BoardSettingsPanel(sessionInformation.getUserPreferences());
+        databasePanel = new DatabasePanel(appPlaceHistoryMapper, sessionInformation.getUserPreferences());
+
         saveKifuPanel = new SaveKifuPanel(placeController);
-        shogiBoard = new ShogiBoard(PROBLEM_EDITOR, sessionInformation.getUserPreferences());
+        shogiBoard = new ShogiBoard(KIFU_EDITOR, sessionInformation.getUserPreferences());
         shogiBoard.getBoardConfiguration().setPositionEditingMode(false);
 
         gameNavigation = new GameNavigation(new ShogiRulesEngine(), new GameTree());
-        gameNavigator = new GameNavigator(PROBLEM_EDITOR, gameNavigation);
+        gameNavigator = new GameNavigator(KIFU_EDITOR, gameNavigation);
 
         kifuEditorLeftBarPanel = new KifuEditorLeftBarPanel();
         kifuEditorPanel = new KifuEditorPanel(gameNavigator);
@@ -67,30 +76,57 @@ public class KifuEditorView extends Composite {
         shogiBoard.setUpperRightPanel(kifuEditorPanel);
         shogiBoard.setLowerLeftPanel(kifuEditorLeftBarPanel);
 
+        gameTreePanel = new GameTreePanel(KIFU_EDITOR, gameNavigation, false,
+                sessionInformation.getUserPreferences());
+
+        positionEvaluationDetailsPanel = new PositionEvaluationDetailsPanel(shogiBoard,
+                sessionInformation);
+        positionEvaluationDetailsPanel.setSize("1450px", "300px");
+
+        textArea = createCommentsArea();
+
+        VerticalPanel boardAndTextPanel = new VerticalPanel();
+        boardAndTextPanel.add(shogiBoard);
+        boardAndTextPanel.add(textArea);
+
+        HorizontalPanel horizontalPanel = new HorizontalPanel();
+        horizontalPanel.add(boardAndTextPanel);
+        horizontalPanel.add(createRightTabsPanel());
 
         VerticalPanel verticalPanel = new VerticalPanel();
+        verticalPanel.add(horizontalPanel);
+        verticalPanel.add(positionEvaluationDetailsPanel);
 
-        verticalPanel.add(shogiBoard);
+        ScrollPanel scrollPanel = new ScrollPanel();
+        scrollPanel.add(verticalPanel);
+        scrollPanel.setSize("100%", "100%");
+
+        initWidget(scrollPanel);
+    }
+
+    private TextArea createCommentsArea() {
+        final TextArea textArea;
         textArea = new TextArea();
         textArea.setSize("782px", "150px");
         textArea.setStyleName("lesson-content");
-        textArea.addKeyUpHandler(keyUpEvent -> gameNavigation.getCurrentNode().setComment(textArea.getText()));
-        verticalPanel.add(textArea);
+        textArea.setEnabled(false);
+        return textArea;
+    }
 
-        HorizontalPanel horizontalPanel = new HorizontalPanel();
-
-        horizontalPanel.add(verticalPanel);
-
-        gameTreePanel = new GameTreePanel(PROBLEM_EDITOR, gameNavigation, false,
-                sessionInformation.getUserPreferences());
-
+    private TabLayoutPanel createRightTabsPanel() {
         ScrollPanel treeScrollPanel = new ScrollPanel();
         treeScrollPanel.add(gameTreePanel);
         treeScrollPanel.setSize("620px", "600px");
 
-        horizontalPanel.add(treeScrollPanel);
+        TabLayoutPanel tabsPanel = new TabLayoutPanel(1.5, Style.Unit.EM);
 
-        initWidget(horizontalPanel);
+        tabsPanel.add(treeScrollPanel, "Moves");
+        tabsPanel.add(boardSettingsPanel, "Board");
+        tabsPanel.add(databasePanel, "Database");
+
+        tabsPanel.setSize("650px", "640px");
+        tabsPanel.getElement().getStyle().setMarginTop(3, Style.Unit.PX);
+        return tabsPanel;
     }
 
     public void activate(final EventBus eventBus, final KifuEditorPlace place) {
@@ -103,6 +139,9 @@ public class KifuEditorView extends Composite {
         gameTreePanel.activate(eventBus);
         kifuEditorLeftBarPanel.activate(eventBus);
         saveKifuPanel.activate(eventBus);
+        boardSettingsPanel.activate(eventBus);
+        databasePanel.activate(eventBus);
+        positionEvaluationDetailsPanel.activate(eventBus);
         type = place.getType();
     }
 
@@ -124,6 +163,10 @@ public class KifuEditorView extends Composite {
     public void loadGameRecord(final GameRecord gameRecord) {
         eventBus.fireEvent(new GameTreeChangedEvent(gameRecord.getGameTree()));
         eventBus.fireEvent(new GameInformationChangedEvent(gameRecord.getGameInformation()));
+    }
+
+    public GameNavigator getGameNavigator() {
+        return gameNavigator;
     }
 
     @EventHandler
