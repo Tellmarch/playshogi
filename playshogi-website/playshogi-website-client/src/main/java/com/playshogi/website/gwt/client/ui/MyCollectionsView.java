@@ -26,10 +26,7 @@ import com.playshogi.website.gwt.client.events.collections.ListCollectionGamesEv
 import com.playshogi.website.gwt.client.events.collections.ListGameCollectionsEvent;
 import com.playshogi.website.gwt.client.events.collections.RemoveGameFromCollectionEvent;
 import com.playshogi.website.gwt.client.events.user.UserLoggedInEvent;
-import com.playshogi.website.gwt.client.place.GameCollectionsPlace;
-import com.playshogi.website.gwt.client.place.OpeningsPlace;
-import com.playshogi.website.gwt.client.place.ProblemsPlace;
-import com.playshogi.website.gwt.client.place.ViewKifuPlace;
+import com.playshogi.website.gwt.client.place.*;
 import com.playshogi.website.gwt.client.util.ElementWidget;
 import com.playshogi.website.gwt.client.widget.TablePanel;
 import com.playshogi.website.gwt.client.widget.kifu.CollectionPropertiesPanel;
@@ -138,15 +135,15 @@ public class MyCollectionsView extends Composite {
         };
         collectionsTable.addColumn(nameColumn, "Name");
 
-        ActionCell<GameCollectionDetails> listActionCell = new ActionCell<>("List Games",
-                gameCollectionDetails -> placeController.goTo(new GameCollectionsPlace(gameCollectionDetails.getId())));
+        ActionCell<GameCollectionDetails> listActionCell = new ActionCell<>("Open",
+                gameCollectionDetails -> placeController.goTo(new CollectionPlace(gameCollectionDetails.getId())));
 
         collectionsTable.addColumn(new Column<GameCollectionDetails, GameCollectionDetails>(listActionCell) {
             @Override
             public GameCollectionDetails getValue(final GameCollectionDetails gameCollectionDetails) {
                 return gameCollectionDetails;
             }
-        }, "List Games");
+        }, "Open Collection");
 
         if (allowEdit) {
             ActionCell<GameCollectionDetails> addGameActionCell = new ActionCell<>("Add Game",
