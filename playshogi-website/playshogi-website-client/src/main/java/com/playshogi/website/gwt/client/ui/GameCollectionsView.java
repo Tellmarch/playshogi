@@ -1,8 +1,11 @@
 package com.playshogi.website.gwt.client.ui;
 
 import com.google.gwt.cell.client.ActionCell;
+import com.google.gwt.cell.client.SafeHtmlCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.place.shared.PlaceController;
+import com.google.gwt.safehtml.shared.SafeHtml;
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.cellview.client.CellTable;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.HasKeyboardSelectionPolicy;
@@ -20,6 +23,7 @@ import com.playshogi.website.gwt.client.events.collections.DeleteGameCollectionE
 import com.playshogi.website.gwt.client.events.collections.ListCollectionGamesEvent;
 import com.playshogi.website.gwt.client.events.collections.ListGameCollectionsEvent;
 import com.playshogi.website.gwt.client.events.collections.RemoveGameFromCollectionEvent;
+import com.playshogi.website.gwt.client.mvp.AppPlaceHistoryMapper;
 import com.playshogi.website.gwt.client.place.GameCollectionsPlace;
 import com.playshogi.website.gwt.client.place.OpeningsPlace;
 import com.playshogi.website.gwt.client.place.ProblemsPlace;
@@ -42,6 +46,7 @@ public class GameCollectionsView extends Composite {
     private final MyEventBinder eventBinder = GWT.create(MyEventBinder.class);
 
     private final PlaceController placeController;
+    private final AppPlaceHistoryMapper historyMapper;
     private final CellTable<GameCollectionDetails> myCollectionsTable;
     private final CellTable<GameCollectionDetails> publicCollectionsTable;
     private final CellTable<GameDetails> kifusTable;
@@ -56,8 +61,10 @@ public class GameCollectionsView extends Composite {
     private GameCollectionDetails collectionDetails;
 
     @Inject
-    public GameCollectionsView(final PlaceController placeController, final SessionInformation sessionInformation) {
+    public GameCollectionsView(final PlaceController placeController, final SessionInformation sessionInformation,
+                               final AppPlaceHistoryMapper historyMapper) {
         this.placeController = placeController;
+        this.historyMapper = historyMapper;
         GWT.log("Creating game collections view");
         FlowPanel flowPanel = new FlowPanel();
 
@@ -214,13 +221,13 @@ public class GameCollectionsView extends Composite {
             }
         }, "Gote");
 
-        ActionCell<GameDetails> viewActionCell = new ActionCell<>("View",
-                this::viewKifu);
-
-        collectionsTable.addColumn(new Column<GameDetails, GameDetails>(viewActionCell) {
+        collectionsTable.addColumn(new Column<GameDetails, SafeHtml>(new SafeHtmlCell()) {
             @Override
-            public GameDetails getValue(final GameDetails gameDetails) {
-                return gameDetails;
+            public SafeHtml getValue(final GameDetails gameDetails) {
+                return new SafeHtmlBuilder()
+                        .appendHtmlConstant("<a href=\"#")
+                        .appendEscaped(historyMapper.getToken(new ViewKifuPlace(gameDetails.getKifuId(), 0)))
+                        .appendHtmlConstant("\">View</a>").toSafeHtml();
             }
         }, "View");
 
@@ -235,11 +242,6 @@ public class GameCollectionsView extends Composite {
         }, "Remove");
 
         return collectionsTable;
-    }
-
-    private void viewKifu(final GameDetails details) {
-        GWT.log("Going to kifu" + details.getKifuId());
-        placeController.goTo(new ViewKifuPlace(details.getKifuId(), 0));
     }
 
     public void activate(final EventBus eventBus) {

@@ -7,13 +7,18 @@ import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.playshogi.website.gwt.client.UserPreferences;
 import com.playshogi.website.gwt.client.events.kifu.ClearDecorationsEvent;
+import com.playshogi.website.gwt.client.events.kifu.FlipBoardEvent;
 import com.playshogi.website.gwt.client.events.user.ArrowModeSelectedEvent;
 import com.playshogi.website.gwt.client.events.user.NotationStyleSelectedEvent;
 import com.playshogi.website.gwt.client.events.user.PieceStyleSelectedEvent;
 import com.playshogi.website.gwt.client.util.ElementWidget;
 import org.dominokit.domino.ui.button.Button;
 import org.dominokit.domino.ui.forms.CheckBox;
+import org.dominokit.domino.ui.forms.Radio;
+import org.dominokit.domino.ui.forms.RadioGroup;
 import org.dominokit.domino.ui.forms.SwitchButton;
+
+import static org.jboss.elemento.Elements.h;
 
 public class BoardSettingsPanel extends Composite {
 
@@ -27,18 +32,44 @@ public class BoardSettingsPanel extends Composite {
 
     public BoardSettingsPanel(final UserPreferences userPreferences) {
         FlowPanel panel = new FlowPanel();
-//        panel.add(new ElementWidget(CheckBox.create("Flip Board").addChangeHandler(value -> GWT.log(String.valueOf
-//        (value))).element()));
+        panel.add(new ElementWidget(CheckBox.create("Flip Board").addChangeHandler(this::onFlipBoard).element()));
         SwitchButton pieces = SwitchButton.create("Pieces", "Traditional", "International");
         if (userPreferences.getPieceStyle() == PieceGraphics.Style.HIDETCHI) {
             pieces.check();
         }
         panel.add(new ElementWidget(pieces.addChangeHandler(this::setInternationalPieceStyle).element()));
-        SwitchButton notation = SwitchButton.create("Move Notation", "Traditional", "International");
-        if (userPreferences.getNotationStyle() == UserPreferences.NotationStyle.WESTERN_ALPHABETICAL) {
-            notation.check();
+
+        Radio<UserPreferences.NotationStyle> radio1 = Radio.create(UserPreferences.NotationStyle.WESTERN_ALPHABETICAL
+                , "International").check();
+        Radio<UserPreferences.NotationStyle> radio2 = Radio.create(UserPreferences.NotationStyle.WESTERN_NUMERICAL,
+                "International (numbers)");
+        Radio<UserPreferences.NotationStyle> radio3 = Radio.create(UserPreferences.NotationStyle.TRADITIONAL,
+                "Traditional");
+
+        RadioGroup<UserPreferences.NotationStyle> notationGroup = RadioGroup.<UserPreferences.NotationStyle>create(
+                "notation")
+                .appendChild(radio1)
+                .appendChild(radio2)
+                .appendChild(radio3)
+                .horizontal();
+
+        switch (userPreferences.getNotationStyle()) {
+            case TRADITIONAL:
+                radio3.check();
+                break;
+            case WESTERN_NUMERICAL:
+                radio2.check();
+                break;
+            case WESTERN_ALPHABETICAL:
+                radio1.check();
+                break;
+            default:
+                break;
         }
-        panel.add(new ElementWidget(notation.addChangeHandler(this::setInternationalMoveNotation).element()));
+
+        panel.add(new ElementWidget(h(5).textContent("Move notation:").element()));
+        panel.add(new ElementWidget(notationGroup.addChangeHandler(this::setInternationalMoveNotation).element()));
+
         CheckBox drawArrows =
                 CheckBox.create("Let me draw arrows").check().addChangeHandler(value -> eventBus.fireEvent(new ArrowModeSelectedEvent(value)));
         panel.add(new ElementWidget(drawArrows.element()));
@@ -48,9 +79,13 @@ public class BoardSettingsPanel extends Composite {
         initWidget(panel);
     }
 
-    private void setInternationalMoveNotation(final Boolean value) {
-        eventBus.fireEvent(new NotationStyleSelectedEvent(value ? UserPreferences.NotationStyle.WESTERN_ALPHABETICAL :
-                UserPreferences.NotationStyle.TRADITIONAL));
+    private void onFlipBoard(boolean inverted) {
+        GWT.log("Flip board: " + inverted);
+        eventBus.fireEvent(new FlipBoardEvent(inverted));
+    }
+
+    private void setInternationalMoveNotation(final UserPreferences.NotationStyle notationStyle) {
+        eventBus.fireEvent(new NotationStyleSelectedEvent(notationStyle));
     }
 
     private void setInternationalPieceStyle(final Boolean value) {

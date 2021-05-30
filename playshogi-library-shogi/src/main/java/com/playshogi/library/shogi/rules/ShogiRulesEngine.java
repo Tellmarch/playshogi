@@ -5,6 +5,7 @@ import com.playshogi.library.shogi.models.PieceType;
 import com.playshogi.library.shogi.models.Player;
 import com.playshogi.library.shogi.models.moves.*;
 import com.playshogi.library.shogi.models.position.KomadaiState;
+import com.playshogi.library.shogi.models.position.ReadOnlyShogiPosition;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.library.shogi.models.position.Square;
 import com.playshogi.library.shogi.models.shogivariant.ShogiVariant;
@@ -145,7 +146,7 @@ public class ShogiRulesEngine {
     }
 
     // what are the target squares of a piece from 'from' square
-    public List<Square> getPossibleTargetSquares(final ShogiPosition position, final Square from) {
+    public List<Square> getPossibleTargetSquares(final ReadOnlyShogiPosition position, final Square from) {
         Optional<Piece> piece = position.getPieceAt(from);
         if (piece.isPresent()) {
             return getPossibleTargetSquares(position, from, piece.get());
@@ -153,7 +154,8 @@ public class ShogiRulesEngine {
         return Collections.emptyList();
     }
 
-    private List<Square> getPossibleTargetSquares(final ShogiPosition position, final Square from, Piece piece) {
+    private List<Square> getPossibleTargetSquares(final ReadOnlyShogiPosition position, final Square from,
+                                                  Piece piece) {
         PieceMovement pieceMovement = PIECE_MOVEMENTS.get(piece.getSentePiece());
         if (piece.getOwner() == Player.BLACK) {
             return pieceMovement.getPossibleMoves(position.getShogiBoardState(), from);
@@ -166,10 +168,10 @@ public class ShogiRulesEngine {
     /**
      * Doesn't check if the move is legal
      */
-    public Optional<NormalMove> getPromotionMove(final ShogiPosition position, final NormalMove move) {
+    public Optional<NormalMove> getPromotionMove(final ReadOnlyShogiPosition position, final NormalMove move) {
         Piece promotedPiece = move.getPiece().getPromotedPiece();
         if (promotedPiece != null && canMoveWithPromotion(position, move)) {
-            return Optional.of(move.withPromotionPiece(promotedPiece));
+            return Optional.of(move.withPromotion());
         }
         return Optional.empty();
     }
@@ -177,7 +179,7 @@ public class ShogiRulesEngine {
     /**
      * Doesn't check if the move is legal
      */
-    public boolean canMoveWithPromotion(final ShogiPosition position, final NormalMove move) {
+    public boolean canMoveWithPromotion(final ReadOnlyShogiPosition position, final NormalMove move) {
         if (move.getPlayer() == Player.BLACK) {
             return (move.getFromSquare().getRow() <= shogiVariant.getSentePromotionHeight()
                     || move.getToSquare().getRow() <= shogiVariant.getSentePromotionHeight());
@@ -190,7 +192,7 @@ public class ShogiRulesEngine {
     /**
      * Doesn't check if the move is legal
      */
-    public boolean canMoveWithoutPromotion(final ShogiPosition position, final NormalMove move) {
+    public boolean canMoveWithoutPromotion(final ReadOnlyShogiPosition position, final NormalMove move) {
         if (move.getPiece().isPromoted()) {
             return true;
         }
@@ -231,7 +233,7 @@ public class ShogiRulesEngine {
     // todo validate that the piece is us, that we have piece to drop, that we
     // don't capture our piece
 
-    private boolean isNormalMoveLegalInPosition(final ShogiPosition position, final NormalMove move) {
+    private boolean isNormalMoveLegalInPosition(final ReadOnlyShogiPosition position, final NormalMove move) {
         PieceMovement pieceMovement = PIECE_MOVEMENTS.get(move.getPiece().getSentePiece());
         if (move.isBlackMoving()) {
             return pieceMovement.isMoveDxDyValid(position.getShogiBoardState(), move.getFromSquare(),
@@ -254,7 +256,7 @@ public class ShogiRulesEngine {
         return result;
     }
 
-    private boolean isPawnDropCheck(final ShogiPosition position, final DropMove move) {
+    private boolean isPawnDropCheck(final ReadOnlyShogiPosition position, final DropMove move) {
         if (move.isBlackMoving()) {
             Optional<Piece> piece = position.getPieceAt(move.getToSquare().above().orElse(move.getToSquare()));
             return piece.isPresent() && piece.get() == Piece.GOTE_KING;
@@ -264,7 +266,7 @@ public class ShogiRulesEngine {
         }
     }
 
-    private boolean isDropMoveValidInPosition(final ShogiPosition position, final DropMove move) {
+    private boolean isDropMoveValidInPosition(final ReadOnlyShogiPosition position, final DropMove move) {
         PieceMovement pieceMovement = PIECE_MOVEMENTS.get(Piece.getPiece(move.getPieceType(), Player.BLACK));
         if (move.isBlackMoving()) {
             return pieceMovement.isDropValid(position.getShogiBoardState(), move.getToSquare());
@@ -273,7 +275,7 @@ public class ShogiRulesEngine {
         }
     }
 
-    private boolean isCaptureMoveLegalInPosition(final ShogiPosition position, final CaptureMove move) {
+    private boolean isCaptureMoveLegalInPosition(final ReadOnlyShogiPosition position, final CaptureMove move) {
         Optional<Piece> capturedPiece = position.getPieceAt(move.getToSquare());
         if (capturedPiece.isPresent() && capturedPiece.get().isBlackPiece() != move.isBlackMoving()) {
             return isNormalMoveLegalInPosition(position, move);
@@ -296,7 +298,8 @@ public class ShogiRulesEngine {
         return result;
     }
 
-    public List<ShogiMove> getAllPossibleNormalAndCaptureMoves(final ShogiPosition position, final Player player) {
+    public List<ShogiMove> getAllPossibleNormalAndCaptureMoves(final ReadOnlyShogiPosition position,
+                                                               final Player player) {
         List<ShogiMove> result = new ArrayList<>();
 
 
@@ -352,14 +355,14 @@ public class ShogiRulesEngine {
     /**
      * Is the current position a check (the player whose turn it is to play has his King attacked)
      */
-    public boolean isPositionCheck(final ShogiPosition position) {
+    public boolean isPositionCheck(final ReadOnlyShogiPosition position) {
         return isPositionCheck(position, position.getPlayerToMove());
     }
 
     /**
      * In the current position, is player's king attacked?
      */
-    public boolean isPositionCheck(final ShogiPosition position, final Player player) {
+    public boolean isPositionCheck(final ReadOnlyShogiPosition position, final Player player) {
         // Find the king square and determine if the king could move like a knight,
         // would it attack an opposing knight, etc.
         for (Square square : position.getAllSquares()) {

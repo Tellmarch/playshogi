@@ -14,8 +14,15 @@ public class PieceGraphics {
     private static RyokoPieceBundle ryoko = GWT.create(RyokoPieceBundle.class);
     private static HidetchiPieceBundle hidetchi = GWT.create(HidetchiPieceBundle.class);
 
-    public static ImageResource getPieceImage(final Piece piece, final Style style) {
+    public static ImageResource getPieceImage(final Piece piece, final Style style, final boolean inverted) {
+        if (inverted) {
+            return getPieceImage(piece.opposite(), style);
+        } else {
+            return getPieceImage(piece, style);
+        }
+    }
 
+    public static ImageResource getPieceImage(final Piece piece, final Style style) {
         PieceBundle resources = style == Style.RYOKO ? ryoko : hidetchi;
 
         switch (piece) {

@@ -50,7 +50,7 @@ public class OpeningsActivity extends MyAbstractActivity {
         GWT.log("Starting openings activity");
         eventBinder.bindEventHandlers(this, eventBus);
         final ShogiPosition position = SfenConverter.fromSFEN(sfen);
-        openingsView.activate(position, gameSetId, eventBus);
+        openingsView.activate(position, eventBus);
         containerWidget.setWidget(openingsView.asWidget());
 
         kifuService.getPositionDetails(SfenConverter.toSFEN(position), gameSetId, new AsyncCallback<PositionDetails>() {
@@ -58,7 +58,7 @@ public class OpeningsActivity extends MyAbstractActivity {
             @Override
             public void onSuccess(final PositionDetails result) {
                 GWT.log("OPENINGS - GOT POSITION DETAILS " + result);
-                eventBus.fireEvent(new PositionStatisticsEvent(result, position));
+                eventBus.fireEvent(new PositionStatisticsEvent(result, position, gameSetId));
             }
 
             @Override

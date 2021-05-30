@@ -8,14 +8,19 @@ import com.google.gwt.user.client.ui.AcceptsOneWidget;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
+import com.playshogi.library.shogi.models.formats.sfen.SfenConverter;
 import com.playshogi.library.shogi.models.formats.usf.UsfFormat;
+import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.library.shogi.models.record.GameRecord;
 import com.playshogi.website.gwt.client.SessionInformation;
 import com.playshogi.website.gwt.client.events.gametree.GameTreeChangedEvent;
+import com.playshogi.website.gwt.client.events.gametree.PositionChangedEvent;
 import com.playshogi.website.gwt.client.events.kifu.*;
 import com.playshogi.website.gwt.client.place.KifuEditorPlace;
 import com.playshogi.website.gwt.client.place.PreviewKifuPlace;
 import com.playshogi.website.gwt.client.ui.KifuEditorView;
+import com.playshogi.website.gwt.shared.models.PositionDetails;
+import com.playshogi.website.gwt.shared.models.PositionEvaluationDetails;
 import com.playshogi.website.gwt.shared.services.KifuService;
 import com.playshogi.website.gwt.shared.services.KifuServiceAsync;
 
@@ -115,6 +120,47 @@ public class KifuEditorActivity extends MyAbstractActivity {
         GWT.log("problem editor Activity Handling GameRecordPreviewRequestedEvent");
         String usfString = UsfFormat.INSTANCE.write(getGameRecord());
         placeController.goTo(new PreviewKifuPlace(usfString, 0));
+    }
+
+    @EventHandler
+    public void onPositionChangedEvent(final PositionChangedEvent event) {
+        GWT.log("KifuEditorActivity handling PositionChangedEvent");
+
+        ShogiPosition position = event.getPosition();
+
+        String gameSetId = "1";
+        kifuService.getPositionDetails(SfenConverter.toSFEN(position), gameSetId, new AsyncCallback<PositionDetails>() {
+
+            @Override
+            public void onSuccess(final PositionDetails result) {
+                GWT.log("EDIT KIFU - GOT POSITION DETAILS " + result);
+                eventBus.fireEvent(new PositionStatisticsEvent(result, position, gameSetId));
+            }
+
+            @Override
+            public void onFailure(final Throwable caught) {
+                GWT.log("EDIT KIFU - ERROR GETTING POSITION STATS");
+            }
+        });
+    }
+
+    @EventHandler
+    public void onRequestPositionEvaluationEvent(final RequestPositionEvaluationEvent event) {
+        GWT.log("Edit Kifu Activity Handling RequestPositionEvaluationEvent");
+        String sfen = SfenConverter.toSFEN(view.getGameNavigator().getGameNavigation().getPosition());
+        kifuService.analysePosition(sessionInformation.getSessionId(), sfen,
+                new AsyncCallback<PositionEvaluationDetails>() {
+                    @Override
+                    public void onFailure(Throwable throwable) {
+                        GWT.log("EditKifu - ERROR GETTING POSITION EVALUATION");
+                    }
+
+                    @Override
+                    public void onSuccess(PositionEvaluationDetails result) {
+                        GWT.log("EditKifu - received position evaluation\n" + result);
+                        eventBus.fireEvent(new PositionEvaluationEvent(result));
+                    }
+                });
     }
 
     private GameRecord getGameRecord() {

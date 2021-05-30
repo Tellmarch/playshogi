@@ -2,7 +2,6 @@ package com.playshogi.website.gwt.client.ui;
 
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.dom.client.Style;
-import com.google.gwt.regexp.shared.RegExp;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -11,11 +10,13 @@ import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.website.gwt.client.SessionInformation;
 import com.playshogi.website.gwt.client.events.gametree.PositionChangedEvent;
+import com.playshogi.website.gwt.client.mvp.AppPlaceHistoryMapper;
 import com.playshogi.website.gwt.client.widget.board.BoardSettingsPanel;
 import com.playshogi.website.gwt.client.widget.board.ShogiBoard;
 import com.playshogi.website.gwt.client.widget.engine.KifuEvaluationChartPanel;
 import com.playshogi.website.gwt.client.widget.engine.PositionEvaluationDetailsPanel;
 import com.playshogi.website.gwt.client.widget.gamenavigator.GameNavigator;
+import com.playshogi.website.gwt.client.widget.kifu.DatabasePanel;
 import com.playshogi.website.gwt.client.widget.kifu.GameTreePanel;
 import com.playshogi.website.gwt.client.widget.kifu.KifuInformationPanel;
 import com.playshogi.website.gwt.client.widget.kifu.KifuNavigationPanel;
@@ -26,7 +27,6 @@ import java.util.Optional;
 public class ViewKifuView extends Composite {
 
     private static final String VIEWKIFU = "viewkifu";
-    private static final RegExp ARROW_PATTERN = RegExp.compile("ARROW,(....),.,.,.,\\((\\d*),(\\d*),(\\d*),(\\d*)\\)");
 
     interface MyEventBinder extends EventBinder<ViewKifuView> {
     }
@@ -42,9 +42,11 @@ public class ViewKifuView extends Composite {
     private final KifuEvaluationChartPanel kifuEvaluationChartPanel;
     private final TextArea textArea;
     private final BoardSettingsPanel boardSettingsPanel;
+    private final DatabasePanel databasePanel;
 
     @Inject
-    public ViewKifuView(final SessionInformation sessionInformation) {
+    public ViewKifuView(final AppPlaceHistoryMapper appPlaceHistoryMapper,
+                        final SessionInformation sessionInformation) {
         GWT.log("Creating ViewKifuView");
         this.sessionInformation = sessionInformation;
         shogiBoard = new ShogiBoard(VIEWKIFU, sessionInformation.getUserPreferences());
@@ -55,14 +57,17 @@ public class ViewKifuView extends Composite {
         shogiBoard.setUpperRightPanel(new KifuNavigationPanel(gameNavigator));
         shogiBoard.setLowerLeftPanel(kifuInformationPanel);
 
-        kifuEvaluationChartPanel = new KifuEvaluationChartPanel();
+        kifuEvaluationChartPanel = new KifuEvaluationChartPanel(sessionInformation.getUserPreferences());
 
         textArea = createCommentsArea();
 
-        gameTreePanel = new GameTreePanel(VIEWKIFU, gameNavigator.getGameNavigation(), true);
+        gameTreePanel = new GameTreePanel(VIEWKIFU, gameNavigator.getGameNavigation(), true,
+                sessionInformation.getUserPreferences());
         boardSettingsPanel = new BoardSettingsPanel(this.sessionInformation.getUserPreferences());
+        databasePanel = new DatabasePanel(appPlaceHistoryMapper, sessionInformation.getUserPreferences());
 
-        positionEvaluationDetailsPanel = new PositionEvaluationDetailsPanel(shogiBoard);
+        positionEvaluationDetailsPanel = new PositionEvaluationDetailsPanel(shogiBoard,
+                sessionInformation);
         positionEvaluationDetailsPanel.setSize("1450px", "300px");
 
         VerticalPanel boardAndTextPanel = new VerticalPanel();
@@ -103,15 +108,17 @@ public class ViewKifuView extends Composite {
         tabsPanel.add(treeScrollPanel, "Moves");
         tabsPanel.add(kifuEvaluationChartPanel, "Computer");
         tabsPanel.add(boardSettingsPanel, "Board");
+        tabsPanel.add(databasePanel, "Database");
 
         tabsPanel.setSize("650px", "640px");
         tabsPanel.getElement().getStyle().setMarginTop(3, Style.Unit.PX);
         return tabsPanel;
     }
 
-    public void activate(final EventBus eventBus, final String kifuId) {
+    public void activate(final EventBus eventBus, final String kifuId, final boolean inverted) {
         GWT.log("Activating ViewKifuView");
         eventBinder.bindEventHandlers(this, eventBus);
+        shogiBoard.getBoardConfiguration().setInverted(inverted);
         shogiBoard.activate(eventBus);
         gameNavigator.activate(eventBus);
         kifuInformationPanel.activate(eventBus);
@@ -119,6 +126,7 @@ public class ViewKifuView extends Composite {
         kifuEvaluationChartPanel.activate(eventBus, kifuId);
         gameTreePanel.activate(eventBus);
         boardSettingsPanel.activate(eventBus);
+        databasePanel.activate(eventBus);
     }
 
     public GameNavigator getGameNavigator() {

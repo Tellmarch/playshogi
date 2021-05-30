@@ -12,6 +12,7 @@ import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.library.shogi.models.PieceType;
 import com.playshogi.library.shogi.models.Player;
+import com.playshogi.library.shogi.models.formats.usf.UsfMoveConverter;
 import com.playshogi.library.shogi.models.moves.DropMove;
 import com.playshogi.library.shogi.models.moves.Move;
 import com.playshogi.library.shogi.models.moves.ShogiMove;
@@ -109,7 +110,7 @@ public class GameNavigator extends Composite implements ClickHandler {
     private void firePositionChanged(final boolean triggeredByUser) {
         GWT.log(activityId + " GameNavigator: firing position changed");
         eventBus.fireEvent(new PositionChangedEvent(gameNavigation.getPosition(),
-                gameNavigation.getBoardDecorations(), triggeredByUser));
+                gameNavigation.getBoardDecorations(), gameNavigation.getPreviousMove(), triggeredByUser));
     }
 
     public NavigatorConfiguration getNavigatorConfiguration() {
@@ -180,6 +181,22 @@ public class GameNavigator extends Composite implements ClickHandler {
             fireNodeChanged();
         }
 
+        firePositionChanged(true);
+    }
+
+    @EventHandler
+    public void onInsertVariationEvent(final InsertVariationEvent event) {
+        GWT.log(activityId + " GameNavigator: handling InsertVariationEvent");
+
+        String[] usfMoves = event.getSelectedVariation().getPrincipalVariation().trim().split(" ");
+        for (String usfMove : usfMoves) {
+            gameNavigation.addMove(UsfMoveConverter.fromUsfString(usfMove, gameNavigation.getPosition()));
+        }
+        for (int i = 0; i < usfMoves.length - 1; i++) {
+            gameNavigation.moveBack();
+        }
+
+        eventBus.fireEvent(new NewVariationPlayedEvent(false));
         firePositionChanged(true);
     }
 

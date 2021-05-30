@@ -8,7 +8,6 @@ import com.google.gwt.user.client.ui.*;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
-import com.playshogi.library.shogi.models.formats.kif.KifMoveConverter;
 import com.playshogi.library.shogi.models.formats.sfen.SfenConverter;
 import com.playshogi.library.shogi.models.moves.EditMove;
 import com.playshogi.library.shogi.models.moves.Move;
@@ -16,10 +15,12 @@ import com.playshogi.library.shogi.models.moves.ShogiMove;
 import com.playshogi.library.shogi.models.record.GameNavigation;
 import com.playshogi.library.shogi.models.record.GameTree;
 import com.playshogi.library.shogi.models.record.Node;
+import com.playshogi.website.gwt.client.UserPreferences;
 import com.playshogi.website.gwt.client.events.gametree.GameTreeChangedEvent;
 import com.playshogi.website.gwt.client.events.gametree.NewVariationPlayedEvent;
 import com.playshogi.website.gwt.client.events.gametree.NodeChangedEvent;
 import com.playshogi.website.gwt.client.events.gametree.PositionChangedEvent;
+import com.playshogi.website.gwt.client.events.user.NotationStyleSelectedEvent;
 
 import java.util.Iterator;
 import java.util.List;
@@ -34,6 +35,7 @@ public class GameTreePanel extends Composite {
     private final String activityId;
     private final GameNavigation gameNavigation;
     private final boolean readOnly;
+    private final UserPreferences userPreferences;
     private final Tree tree;
     private final PopupPanel contextMenu;
     private MenuItem promoteVariationMenu;
@@ -41,16 +43,13 @@ public class GameTreePanel extends Composite {
     private MenuItem rebaseMenu;
     private EventBus eventBus;
 
-    public GameTreePanel(final String activityId, final GameNavigation gameNavigation, final boolean readOnly) {
+    public GameTreePanel(final String activityId, final GameNavigation gameNavigation, final boolean readOnly,
+                         final UserPreferences userPreferences) {
         this.activityId = activityId;
         this.gameNavigation = gameNavigation;
         this.readOnly = readOnly;
-
-        if (readOnly) {
-            contextMenu = null;
-        } else {
-            contextMenu = createContextMenu();
-        }
+        this.userPreferences = userPreferences;
+        contextMenu = createContextMenu();
 
         FlowPanel panel = new FlowPanel();
 
@@ -61,7 +60,7 @@ public class GameTreePanel extends Composite {
                 Node node = (Node) item.getUserObject();
                 gameNavigation.moveToNode(node);
                 eventBus.fireEvent(new PositionChangedEvent(gameNavigation.getPosition(),
-                        gameNavigation.getBoardDecorations(), true));
+                        gameNavigation.getBoardDecorations(), gameNavigation.getPreviousMove(), true));
             }
         });
         panel.add(tree);
@@ -89,33 +88,35 @@ public class GameTreePanel extends Composite {
         });
         menuBar.addItem(deleteVariationMenu);
 
-        promoteVariationMenu = new MenuItem("Promote variation to main line", () -> {
-            GWT.log("Promote variation");
-            Node node = (Node) tree.getSelectedItem().getUserObject();
-            node.promoteVariation();
-            eventBus.fireEvent(new GameTreeChangedEvent(gameNavigation.getGameTree()));
-            contextMenu.hide();
-        });
-        menuBar.addItem(promoteVariationMenu);
+        if (!readOnly) {
+            promoteVariationMenu = new MenuItem("Promote variation to main line", () -> {
+                GWT.log("Promote variation");
+                Node node = (Node) tree.getSelectedItem().getUserObject();
+                node.promoteVariation();
+                eventBus.fireEvent(new GameTreeChangedEvent(gameNavigation.getGameTree()));
+                contextMenu.hide();
+            });
+            menuBar.addItem(promoteVariationMenu);
 
-        rebaseMenu = new MenuItem("Start from here", () -> {
-            GWT.log("Rebase");
-            Node node = (Node) tree.getSelectedItem().getUserObject();
-            if (!(node.getMove() instanceof EditMove)) {
-                GWT.log("Not an edit move - aborting");
-                return;
-            }
-            boolean confirm = Window.confirm("Only keep the variations starting from this position?" +
-                    " This can not be undone.");
-            if (confirm) {
-                node.setParent(null);
-                node.setParentIndex(0);
-                GameTree gameTree = new GameTree(node);
-                eventBus.fireEvent(new GameTreeChangedEvent(gameTree));
-            }
-            contextMenu.hide();
-        });
-        menuBar.addItem(rebaseMenu);
+            rebaseMenu = new MenuItem("Start from here", () -> {
+                GWT.log("Rebase");
+                Node node = (Node) tree.getSelectedItem().getUserObject();
+                if (!(node.getMove() instanceof EditMove)) {
+                    GWT.log("Not an edit move - aborting");
+                    return;
+                }
+                boolean confirm = Window.confirm("Only keep the variations starting from this position?" +
+                        " This can not be undone.");
+                if (confirm) {
+                    node.setParent(null);
+                    node.setParentIndex(0);
+                    GameTree gameTree = new GameTree(node);
+                    eventBus.fireEvent(new GameTreeChangedEvent(gameTree));
+                }
+                contextMenu.hide();
+            });
+            menuBar.addItem(rebaseMenu);
+        }
 
         contextMenu.add(menuBar);
         contextMenu.hide();
@@ -145,6 +146,13 @@ public class GameTreePanel extends Composite {
         GWT.log(activityId + " GameTreePanel: Handling NodeChangedEvent");
         updateSelection();
     }
+
+    @EventHandler
+    public void onNotationStyleSelected(final NotationStyleSelectedEvent event) {
+        GWT.log(activityId + " GameTreePanel: Handling NotationStyleSelectedEvent");
+        populateTree();
+    }
+
 
     private void updateSelection() {
         Iterator<TreeItem> iterator = tree.treeItemIterator();
@@ -196,11 +204,7 @@ public class GameTreePanel extends Composite {
     }
 
     private TreeItem createTreeItem() {
-        if (readOnly) {
-            return new TreeItem();
-        } else {
-            return new MoveTreeItem();
-        }
+        return new MoveTreeItem();
     }
 
     /**
@@ -238,7 +242,8 @@ public class GameTreePanel extends Composite {
         } else if (move instanceof EditMove) {
             item.setText("POSITION (" + SfenConverter.toSFEN(((EditMove) move).getPosition()) + ")");
         } else if (move instanceof ShogiMove) {
-            item.setText(moveCount + ". " + KifMoveConverter.toKifStringShort((ShogiMove) move));
+            item.setText(moveCount + ". " + userPreferences.getMoveNotationAccordingToPreferences((ShogiMove) move,
+                    true));
         } else {
             item.setText(moveCount + ". " + move);
         }
@@ -264,8 +269,8 @@ public class GameTreePanel extends Composite {
             tree.setSelectedItem(this);
             Node node = (Node) getUserObject();
             deleteVariationMenu.setVisible(node.getParent() != null);
-            promoteVariationMenu.setVisible(node.getParentIndex() > 0);
-            rebaseMenu.setVisible(node.getMove() instanceof EditMove);
+            if (promoteVariationMenu != null) promoteVariationMenu.setVisible(node.getParentIndex() > 0);
+            if (rebaseMenu != null) rebaseMenu.setVisible(node.getMove() instanceof EditMove);
             contextMenu.setPopupPosition(event.getNativeEvent().getClientX(), event.getNativeEvent().getClientY());
             contextMenu.show();
         }

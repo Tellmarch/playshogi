@@ -16,7 +16,7 @@ import static com.playshogi.library.shogi.models.formats.psn.PsnUtil.char2RowNum
 
 public class UsiMoveConverter {
 
-    public static ShogiMove fromPsnString(final String moveStr, final ShogiPosition position) {
+    public static ShogiMove fromUsiString(final String moveStr, final ShogiPosition position) {
         int length = moveStr.length();
 
         if (length < 4 || length > 5) {
@@ -49,11 +49,11 @@ public class UsiMoveConverter {
         }
     }
 
-    public static String fromPsnToUsfSTring(final String moveStr, final String sfen) {
-        return fromPsnToUsfSTring(moveStr, SfenConverter.extractPlayer(sfen));
+    public static String fromUsiToUsfSTring(final String moveStr, final String sfen) {
+        return fromUsiToUsfSTring(moveStr, SfenConverter.extractPlayer(sfen));
     }
 
-    public static String fromPsnToUsfSTring(final String moveStr, final Player player) {
+    public static String fromUsiToUsfSTring(final String moveStr, final Player player) {
 
         int length = moveStr.length();
 

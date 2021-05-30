@@ -3,8 +3,6 @@ package com.playshogi.library.shogi.models.moves;
 import com.playshogi.library.shogi.models.Piece;
 import com.playshogi.library.shogi.models.position.Square;
 
-import java.util.Optional;
-
 /**
  * A move which is not a drop move: moving a piece from one square to another square, with capture or not.
  */
@@ -31,8 +29,8 @@ public class NormalMove extends ShogiMove implements ToSquareMove {
         this(piece, fromSquare, toSquare, promote ? piece.getPromotedPiece() : null);
     }
 
-    public NormalMove withPromotionPiece(Piece promotionPiece) {
-        return new NormalMove(piece, fromSquare, toSquare, promotionPiece);
+    public NormalMove withPromotion() {
+        return new NormalMove(piece, fromSquare, toSquare, true);
     }
 
     public Piece getPiece() {
@@ -50,10 +48,6 @@ public class NormalMove extends ShogiMove implements ToSquareMove {
 
     public boolean isPromote() {
         return promotionPiece != null;
-    }
-
-    public Optional<Piece> getPromotionPiece() {
-        return Optional.ofNullable(promotionPiece);
     }
 
 }

@@ -1,5 +1,6 @@
 package com.playshogi.library.shogi.models.formats.psn;
 
+import com.playshogi.library.shogi.models.Piece;
 import com.playshogi.library.shogi.models.PieceType;
 
 public class PsnUtil {
@@ -24,6 +25,37 @@ public class PsnUtil {
                 return PieceType.KING;
         }
         return null;
+    }
+
+    public static char pieceTypeToChar(final PieceType x) {
+        switch (x) {
+            case PAWN:
+                return 'P';
+            case LANCE:
+                return 'L';
+            case KNIGHT:
+                return 'N';
+            case SILVER:
+                return 'S';
+            case GOLD:
+                return 'G';
+            case BISHOP:
+                return 'B';
+            case ROOK:
+                return 'R';
+            case KING:
+                return 'K';
+            default:
+                throw new IllegalStateException("Unexpected value: " + x);
+        }
+    }
+
+    public static String pieceToString(final Piece piece) {
+        if (piece.isPromoted()) {
+            return "+" + pieceTypeToChar(piece.getPieceType());
+        } else {
+            return String.valueOf(pieceTypeToChar(piece.getPieceType()));
+        }
     }
 
     public static char columnNumber2Char(final int col) {

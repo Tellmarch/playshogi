@@ -152,8 +152,4 @@ public class KifMoveConverter {
             throw new IllegalArgumentException("Unknown move type " + move);
         }
     }
-
-    public static String toKifStringShort(final ShogiMove move) {
-        return toKifStringShort(move, null);
-    }
 }

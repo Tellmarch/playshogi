@@ -38,6 +38,15 @@ public interface BoardBundle extends ClientBundle {
     @Source("com/playshogi/website/gwt/resources/Scoord_numb.png")
     ImageResource scoordNumbers();
 
+    @Source("com/playshogi/website/gwt/resources/Gcoord_e2.png")
+    ImageResource gcoordLetters();
+
+    @Source("com/playshogi/website/gwt/resources/Gcoord_kanji.png")
+    ImageResource gcoordKanji();
+
+    @Source("com/playshogi/website/gwt/resources/Gcoord_numb.png")
+    ImageResource gcoordNumbers();
+
     @Source("com/playshogi/website/gwt/resources/Shand.png")
     ImageResource shand();
 

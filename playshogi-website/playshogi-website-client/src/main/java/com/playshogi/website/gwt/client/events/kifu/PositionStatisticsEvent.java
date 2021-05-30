@@ -7,11 +7,14 @@ import com.playshogi.website.gwt.shared.models.PositionDetails;
 public class PositionStatisticsEvent extends GenericEvent {
 
     private final ShogiPosition shogiPosition;
+    private final String gameSetId;
     private final PositionDetails positionDetails;
 
-    public PositionStatisticsEvent(final PositionDetails positionDetails, final ShogiPosition shogiPosition) {
+    public PositionStatisticsEvent(final PositionDetails positionDetails, final ShogiPosition shogiPosition,
+                                   final String gameSetId) {
         this.positionDetails = positionDetails;
         this.shogiPosition = shogiPosition;
+        this.gameSetId = gameSetId;
     }
 
     public PositionDetails getPositionDetails() {
@@ -22,4 +25,7 @@ public class PositionStatisticsEvent extends GenericEvent {
         return shogiPosition;
     }
 
+    public String getGameSetId() {
+        return gameSetId;
+    }
 }

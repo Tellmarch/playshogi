@@ -25,13 +25,15 @@ public class PositionKifusPanel extends Composite {
 
     private final AppPlaceHistoryMapper historyMapper;
 
-    public PositionKifusPanel(final AppPlaceHistoryMapper historyMapper) {
+    public PositionKifusPanel(final AppPlaceHistoryMapper historyMapper, final boolean withBackground) {
         this.historyMapper = historyMapper;
         verticalPanel = new FlowPanel();
 
         verticalPanel.add(new HTML(SafeHtmlUtils.fromSafeConstant("<br>")));
 
-        verticalPanel.getElement().getStyle().setBackgroundColor("#DBCBCB");
+        if (withBackground) {
+            verticalPanel.getElement().getStyle().setBackgroundColor("#DBCBCB");
+        }
 
         initWidget(verticalPanel);
     }

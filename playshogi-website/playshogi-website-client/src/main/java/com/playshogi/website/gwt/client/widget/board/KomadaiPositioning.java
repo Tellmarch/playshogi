@@ -18,15 +18,15 @@ class KomadaiPositioning {
     /**
      * For a given number of pieces of one type (ordinal in PieceType), returns where to display them
      */
-    static Point[] getPiecesPositions(final int pieceOrdinal, final int numberOfPieces, boolean sente,
+    static Point[] getPiecesPositions(final int pieceOrdinal, final int numberOfPieces, boolean lowerKomadai,
                                       int komadaiWidth) {
 
         // Pawns occupy a full row, other pieces half of a row
         int availableSpace = pieceOrdinal == 0 ? komadaiWidth : komadaiWidth / 2;
         int horizontalSpacing = (availableSpace - SQUARE_WIDTH) / (numberOfPieces - 1);
 
-        int x = (sente ? sdispx[pieceOrdinal] : gdispx[pieceOrdinal]) * SQUARE_WIDTH;
-        int y = (sente ? sdispy[pieceOrdinal] : gdispy[pieceOrdinal]) * SQUARE_HEIGHT + KOMADAI_INSIDE_MARGIN;
+        int x = (lowerKomadai ? sdispx[pieceOrdinal] : gdispx[pieceOrdinal]) * SQUARE_WIDTH;
+        int y = (lowerKomadai ? sdispy[pieceOrdinal] : gdispy[pieceOrdinal]) * SQUARE_HEIGHT + KOMADAI_INSIDE_MARGIN;
 
         Point[] result = new Point[numberOfPieces];
         for (int i = 0; i < numberOfPieces; i++) {

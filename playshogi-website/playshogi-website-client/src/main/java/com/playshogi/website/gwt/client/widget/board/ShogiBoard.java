@@ -28,6 +28,7 @@ import com.playshogi.website.gwt.client.events.gametree.HighlightMoveEvent;
 import com.playshogi.website.gwt.client.events.gametree.MovePlayedEvent;
 import com.playshogi.website.gwt.client.events.gametree.PositionChangedEvent;
 import com.playshogi.website.gwt.client.events.kifu.ArrowDrawnEvent;
+import com.playshogi.website.gwt.client.events.kifu.FlipBoardEvent;
 import com.playshogi.website.gwt.client.events.user.ArrowModeSelectedEvent;
 import com.playshogi.website.gwt.client.events.user.NotationStyleSelectedEvent;
 import com.playshogi.website.gwt.client.events.user.PieceStyleSelectedEvent;
@@ -42,7 +43,7 @@ import static com.playshogi.website.gwt.client.widget.board.PieceWrapper.WHITE_K
 
 public class ShogiBoard extends Composite implements ClickHandler {
 
-    private static final BoardBundle BOARD_RESOURCES = GWT.create(BoardBundle.class);
+    public static final BoardBundle BOARD_RESOURCES = GWT.create(BoardBundle.class);
 
     private final UserPreferences userPreferences;
     private BoardSettingsPanel boardSettingsPanel;
@@ -65,8 +66,8 @@ public class ShogiBoard extends Composite implements ClickHandler {
     private final Image coordinates;
 
     private final List<PieceWrapper> boardPieceWrappers = new ArrayList<>();
-    private final List<PieceWrapper> senteKomadaiPieceWrappers = new ArrayList<>();
-    private final List<PieceWrapper> goteKomadaiPieceWrappers = new ArrayList<>();
+    private final List<PieceWrapper> lowerKomadaiPieceWrappers = new ArrayList<>();
+    private final List<PieceWrapper> upperKomadaiPieceWrappers = new ArrayList<>();
 
     private final PromotionPopupController promotionPopupController;
     private BoardSelectionController selectionController;
@@ -107,7 +108,8 @@ public class ShogiBoard extends Composite implements ClickHandler {
         senteKomadaiImage = new Image(BOARD_RESOURCES.shand());
         coordinates = new Image(getCoordinatesImage(userPreferences.getNotationStyle()));
 
-        layout = new BoardLayout(BOARD_RESOURCES, absolutePanel, goteKomadaiImage, senteKomadaiImage, coordinates);
+        layout = new BoardLayout(BOARD_RESOURCES, absolutePanel, goteKomadaiImage, senteKomadaiImage, coordinates,
+                boardConfiguration);
 
         decorationController = new BoardDecorationController(this, layout);
 
@@ -171,7 +173,6 @@ public class ShogiBoard extends Composite implements ClickHandler {
         });
 
         image.addClickHandler(event -> {
-            GWT.log("CLICK - " + row + " " + col);
             if (event.isControlKeyDown()) {
                 drawCircleAtSquare(getSquare(row, col));
                 return;
@@ -242,11 +243,12 @@ public class ShogiBoard extends Composite implements ClickHandler {
         if (boardSettingsPanel != null) {
             boardSettingsPanel.activate(eventBus);
         }
+        refreshCoordinates();
     }
 
     public void displayPosition() {
-        GWT.log(activityId + ": Displaying position");
-        GWT.log(position.toString());
+//        GWT.log(activityId + ": Displaying position");
+//        GWT.log(position.toString());
 
         selectionController.unselect();
         decorationController.clear();
@@ -254,11 +256,19 @@ public class ShogiBoard extends Composite implements ClickHandler {
         displayBoardPieces();
 
         if (boardConfiguration.isShowSenteKomadai()) {
-            displaySenteKomadai();
+            if (boardConfiguration.isInverted()) {
+                displayUpperKomadai();
+            } else {
+                displayLowerKomadai();
+            }
         }
 
         if (boardConfiguration.isShowGoteKomadai()) {
-            displayGoteKomadai();
+            if (boardConfiguration.isInverted()) {
+                displayLowerKomadai();
+            } else {
+                displayUpperKomadai();
+            }
         }
     }
 
@@ -274,9 +284,10 @@ public class ShogiBoard extends Composite implements ClickHandler {
             for (int col = 0, columns = position.getColumns(); col < columns; ++col) {
                 Piece piece = getPiece(row, col);
                 if (piece != null) {
-                    final Image image = new Image(PieceGraphics.getPieceImage(piece, getPieceStyle()));
+                    final Image image = new Image(PieceGraphics.getPieceImage(piece, getPieceStyle(),
+                            boardConfiguration.isInverted()));
 
-                    PieceWrapper pieceWrapper = new PieceWrapper(piece, image, row, col);
+                    PieceWrapper pieceWrapper = new PieceWrapper(piece, image, row, col, getSquare(row, col), false);
                     boardPieceWrappers.add(pieceWrapper);
 
                     setupPieceEventHandlers(pieceWrapper);
@@ -291,44 +302,50 @@ public class ShogiBoard extends Composite implements ClickHandler {
         return userPreferences.getPieceStyle();
     }
 
-    private void displaySenteKomadai() {
+    private void displayLowerKomadai() {
 
-        for (PieceWrapper wrapper : senteKomadaiPieceWrappers) {
+        for (PieceWrapper wrapper : lowerKomadaiPieceWrappers) {
             absolutePanel.remove(wrapper.getImage());
         }
 
-        senteKomadaiPieceWrappers.clear();
+        lowerKomadaiPieceWrappers.clear();
 
         PieceType[] pieceTypes = PieceType.values();
-        int[] sentePieces = position.getSenteKomadai().getPieces();
-        for (int i = 0; i < sentePieces.length; i++) {
-            Point[] piecesPositions = KomadaiPositioning.getPiecesPositions(i, sentePieces[i], true,
+        int[] pieces = boardConfiguration.isInverted() ?
+                position.getGoteKomadai().getPieces()
+                : position.getSenteKomadai().getPieces();
+        for (int i = 0; i < pieces.length; i++) {
+            Point[] piecesPositions = KomadaiPositioning.getPiecesPositions(i, pieces[i], true,
                     layout.getKomadaiWidth());
             for (Point point : piecesPositions) {
-                Piece piece = Piece.getPiece(pieceTypes[i], Player.BLACK);
-                Image image = createKomadaiPieceImage(piece, true);
+                Piece piece = Piece.getPiece(pieceTypes[i], boardConfiguration.isInverted() ? Player.WHITE :
+                        Player.BLACK);
+                Image image = createKomadaiPieceImage(piece, !boardConfiguration.isInverted());
 
                 absolutePanel.add(image, layout.getSenteKomadaiX() + point.x, layout.getSenteKomadaiY() + point.y);
             }
         }
     }
 
-    private void displayGoteKomadai() {
+    private void displayUpperKomadai() {
 
-        for (PieceWrapper wrapper : goteKomadaiPieceWrappers) {
+        for (PieceWrapper wrapper : upperKomadaiPieceWrappers) {
             absolutePanel.remove(wrapper.getImage());
         }
 
-        goteKomadaiPieceWrappers.clear();
+        upperKomadaiPieceWrappers.clear();
 
         PieceType[] pieceTypes = PieceType.values();
-        int[] gotePieces = position.getGoteKomadai().getPieces();
-        for (int i = 0; i < gotePieces.length; i++) {
-            Point[] piecesPositions = KomadaiPositioning.getPiecesPositions(i, gotePieces[i], false,
+        int[] pieces = boardConfiguration.isInverted() ?
+                position.getSenteKomadai().getPieces()
+                : position.getGoteKomadai().getPieces();
+        for (int i = 0; i < pieces.length; i++) {
+            Point[] piecesPositions = KomadaiPositioning.getPiecesPositions(i, pieces[i], false,
                     layout.getKomadaiWidth());
             for (Point point : piecesPositions) {
-                Piece piece = Piece.getPiece(pieceTypes[i], Player.WHITE);
-                Image image = createKomadaiPieceImage(piece, false);
+                Piece piece = Piece.getPiece(pieceTypes[i], boardConfiguration.isInverted() ? Player.BLACK :
+                        Player.WHITE);
+                Image image = createKomadaiPieceImage(piece, boardConfiguration.isInverted());
 
                 absolutePanel.add(image, layout.getGoteKomadaiX() + point.x, layout.getGoteKomadaiY() + point.y);
             }
@@ -336,10 +353,10 @@ public class ShogiBoard extends Composite implements ClickHandler {
     }
 
     private Image createKomadaiPieceImage(Piece piece, boolean sente) {
-        final Image image = new Image(PieceGraphics.getPieceImage(piece, getPieceStyle()));
+        final Image image = new Image(PieceGraphics.getPieceImage(piece, getPieceStyle(),
+                boardConfiguration.isInverted()));
         PieceWrapper pieceWrapper = new PieceWrapper(piece, image, sente ? BLACK_KOMADAI_ROW : WHITE_KOMADAI_ROW,
-                sente ? BLACK_KOMADAI_ROW : WHITE_KOMADAI_ROW);
-        pieceWrapper.setInKomadai(true);
+                sente ? BLACK_KOMADAI_ROW : WHITE_KOMADAI_ROW, null, true);
         boardPieceWrappers.add(pieceWrapper);
 
         setupPieceEventHandlers(pieceWrapper);
@@ -350,8 +367,16 @@ public class ShogiBoard extends Composite implements ClickHandler {
         return position.getShogiBoardState().getPieceAt(getSquare(row, col)).orElse(null);
     }
 
-    private static Square getSquare(final int row, final int col) {
-        return Square.of(((8 - col) + 1), row + 1);
+    /**
+     * @param row : index (starting from 0) of the row, from the top
+     * @param col : index (starting from 0) of the column, from the left
+     */
+    private Square getSquare(final int row, final int col) {
+        if (boardConfiguration.isInverted()) {
+            return Square.of(col + 1, 9 - row);
+        } else {
+            return Square.of(9 - col, row + 1);
+        }
     }
 
     private void setupPieceEventHandlers(final PieceWrapper pieceWrapper) {
@@ -361,15 +386,13 @@ public class ShogiBoard extends Composite implements ClickHandler {
                 mouseDownUpStartSquare = null;
                 mouseDownUpStartPieceWrapper = pieceWrapper;
             } else {
-                mouseDownUpStartSquare = getSquare(pieceWrapper.getRow(), pieceWrapper.getColumn());
+                mouseDownUpStartSquare = pieceWrapper.getSquare();
                 mouseDownUpStartPieceWrapper = null;
             }
         });
 
         pieceWrapper.getImage().addMouseUpHandler(event -> {
-            if (pieceWrapper.isInKomadai()) {
-                //TODO
-            } else {
+            if (!pieceWrapper.isInKomadai()) {
                 Square to = pieceWrapper.getSquare();
                 drawArrowToSquare(to);
             }
@@ -449,7 +472,8 @@ public class ShogiBoard extends Composite implements ClickHandler {
     }
 
     void playNormalMoveIfAllowed(NormalMove move) {
-        if (boardConfiguration.allowIllegalMoves() || shogiRulesEngine.isMoveLegalInPosition(position, move)) {
+        if (boardConfiguration.allowIllegalMoves() || shogiRulesEngine.isMoveLegalInPosition(position,
+                move)) {
             playMove(move);
         }
     }
@@ -466,12 +490,20 @@ public class ShogiBoard extends Composite implements ClickHandler {
                 if (wrapper.getRow() == BLACK_KOMADAI_ROW) { // Already in sente Komadai
                     return;
                 } else {
-                    position.getMutableGoteKomadai().removePiece(wrapper.getPiece().getPieceType());
+                    if (boardConfiguration.isInverted()) {
+                        position.getMutableSenteKomadai().removePiece(wrapper.getPiece().getPieceType());
+                    } else {
+                        position.getMutableGoteKomadai().removePiece(wrapper.getPiece().getPieceType());
+                    }
                 }
             } else {
                 position.getMutableShogiBoardState().setPieceAt(wrapper.getSquare(), null);
             }
-            position.getMutableSenteKomadai().addPiece(wrapper.getPiece().getPieceType());
+            if (boardConfiguration.isInverted()) {
+                position.getMutableGoteKomadai().addPiece(wrapper.getPiece().getPieceType());
+            } else {
+                position.getMutableSenteKomadai().addPiece(wrapper.getPiece().getPieceType());
+            }
             selectionController.unselect();
             displayPosition();
         } else if (source == goteKomadaiImage && selectionController.hasPieceSelected()
@@ -482,12 +514,20 @@ public class ShogiBoard extends Composite implements ClickHandler {
                 if (wrapper.getRow() == WHITE_KOMADAI_ROW) { // Already in gote Komadai
                     return;
                 } else {
-                    position.getMutableSenteKomadai().removePiece(wrapper.getPiece().getPieceType());
+                    if (boardConfiguration.isInverted()) {
+                        position.getMutableGoteKomadai().addPiece(wrapper.getPiece().getPieceType());
+                    } else {
+                        position.getMutableSenteKomadai().addPiece(wrapper.getPiece().getPieceType());
+                    }
                 }
             } else {
                 position.getMutableShogiBoardState().setPieceAt(wrapper.getSquare(), null);
             }
-            position.getMutableGoteKomadai().addPiece(wrapper.getPiece().getPieceType());
+            if (boardConfiguration.isInverted()) {
+                position.getMutableSenteKomadai().removePiece(wrapper.getPiece().getPieceType());
+            } else {
+                position.getMutableGoteKomadai().removePiece(wrapper.getPiece().getPieceType());
+            }
             selectionController.unselect();
             displayPosition();
         }
@@ -558,14 +598,6 @@ public class ShogiBoard extends Composite implements ClickHandler {
         return decorationController;
     }
 
-    @EventHandler
-    public void onPositionChanged(final PositionChangedEvent event) {
-        setPosition(event.getPosition());
-        if (event.getDecorations().isPresent()) {
-            Scheduler.get().scheduleDeferred(() -> drawDecorations(event.getDecorations().get()));
-        }
-    }
-
     private void drawDecorations(final BoardDecorations decorations) {
         GWT.log("Drawing decorations: " + decorations);
         for (Arrow arrow : decorations.getArrows()) {
@@ -573,9 +605,53 @@ public class ShogiBoard extends Composite implements ClickHandler {
         }
     }
 
+    private void refreshCoordinates() {
+        coordinates.setResource(getCoordinatesImage(userPreferences.getNotationStyle()));
+    }
+
+    private ImageResource getCoordinatesImage(final UserPreferences.NotationStyle style) {
+        if (boardConfiguration.isInverted()) {
+            switch (style) {
+                case TRADITIONAL:
+                    return BOARD_RESOURCES.gcoordKanji();
+                case KK_NOTATION:
+                case WESTERN_NUMERICAL:
+                case NUMERICAL_JAPANESE:
+                    return BOARD_RESOURCES.gcoordNumbers();
+                case WESTERN_ALPHABETICAL:
+                    return BOARD_RESOURCES.gcoordLetters();
+                default:
+                    throw new IllegalStateException("Unexpected value: " + style);
+            }
+        } else {
+            switch (style) {
+                case TRADITIONAL:
+                    return BOARD_RESOURCES.scoordKanji();
+                case KK_NOTATION:
+                case WESTERN_NUMERICAL:
+                case NUMERICAL_JAPANESE:
+                    return BOARD_RESOURCES.scoordNumbers();
+                case WESTERN_ALPHABETICAL:
+                    return BOARD_RESOURCES.scoordLetters();
+                default:
+                    throw new IllegalStateException("Unexpected value: " + style);
+            }
+        }
+    }
+
+    @EventHandler
+    public void onPositionChanged(final PositionChangedEvent event) {
+        GWT.log("ShogiBoard Handling PositionChangedEvent");
+        selectionController.setPreviousMove(event.getPreviousMove());
+        setPosition(event.getPosition());
+        if (event.getDecorations().isPresent()) {
+            Scheduler.get().scheduleDeferred(() -> drawDecorations(event.getDecorations().get()));
+        }
+    }
+
     @EventHandler
     public void onHighlightMove(final HighlightMoveEvent event) {
-        GWT.log("Handling HighlightMoveEvent: " + event.getMove());
+        //GWT.log("ShogiBoard Handling HighlightMoveEvent: " + event.getMove());
         selectionController.highlightMove(event.getMove());
         decorationController.highlightMove(event.getMove());
     }
@@ -587,27 +663,19 @@ public class ShogiBoard extends Composite implements ClickHandler {
 
     @EventHandler
     public void onNotationStyleSelected(final NotationStyleSelectedEvent event) {
-        coordinates.setResource(getCoordinatesImage(event.getStyle()));
-        Scheduler.get().scheduleDeferred(this::displayPosition);
-    }
-
-    private ImageResource getCoordinatesImage(final UserPreferences.NotationStyle style) {
-        switch (style) {
-            case TRADITIONAL:
-                return BOARD_RESOURCES.scoordKanji();
-            case KK_NOTATION:
-            case WESTERN_NUMERICAL:
-            case NUMERICAL_JAPANESE:
-                return BOARD_RESOURCES.scoordNumbers();
-            case WESTERN_ALPHABETICAL:
-                return BOARD_RESOURCES.scoordLetters();
-            default:
-                throw new IllegalStateException("Unexpected value: " + style);
-        }
+        refreshCoordinates();
     }
 
     @EventHandler
     public void onArrowModeSelected(final ArrowModeSelectedEvent event) {
         boardConfiguration.setAllowDrawArrows(event.isEnabled());
+    }
+
+    @EventHandler
+    public void onFlipBoard(final FlipBoardEvent event) {
+        GWT.log("ShogiBoard Handling FlipBoardEvent: " + event.isInverted());
+        boardConfiguration.setInverted(event.isInverted());
+        refreshCoordinates();
+        Scheduler.get().scheduleDeferred(this::displayPosition);
     }
 }

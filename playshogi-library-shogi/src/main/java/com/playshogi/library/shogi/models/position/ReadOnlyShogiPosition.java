@@ -34,4 +34,6 @@ public interface ReadOnlyShogiPosition {
     List<Square> getAllSquares();
 
     ShogiPosition clonePosition();
+
+    ReadOnlyShogiPosition opposite();
 }

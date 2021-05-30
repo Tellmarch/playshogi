@@ -21,9 +21,11 @@ public class BoardDecorationController {
 
     private final Canvas staticCanvas; // May be null if not supported by the browser
     private final Canvas highlightCanvas; // May be null if not supported by the browser
+    private final ShogiBoard shogiBoard;
     private final BoardLayout layout;
 
     BoardDecorationController(final ShogiBoard shogiBoard, final BoardLayout layout) {
+        this.shogiBoard = shogiBoard;
         this.layout = layout;
         staticCanvas = Canvas.createIfSupported();
         staticCanvas.addStyleName("board-canvas");
@@ -74,7 +76,6 @@ public class BoardDecorationController {
 
     private void drawArrow(final Canvas canvas, final int fromX, final int fromY, final int toX, final int toY,
                            final Color color) {
-        GWT.log("Drawing arrow");
         if (canvas == null) return;
         Context2d ctx = canvas.getContext2d();
         ctx.setStrokeStyle(color.toString());
@@ -121,12 +122,14 @@ public class BoardDecorationController {
 
     private void drawDropArrow(final Canvas canvas, final PieceType pieceType, final Player player,
                                final Square toSquare, final Color color) {
+        boolean lowerKomadai = shogiBoard.getBoardConfiguration().isInverted() ? player == Player.WHITE :
+                player == Player.BLACK;
         KomadaiPositioning.Point[] points =
-                KomadaiPositioning.getPiecesPositions(pieceType.ordinal(), 1, player == Player.BLACK,
+                KomadaiPositioning.getPiecesPositions(pieceType.ordinal(), 1, lowerKomadai,
                         layout.getKomadaiWidth());
 
-        int komadaiX = player == Player.BLACK ? layout.getSenteKomadaiX() : layout.getGoteKomadaiX();
-        int komadaiY = player == Player.BLACK ? layout.getSenteKomadaiY() : layout.getGoteKomadaiY();
+        int komadaiX = lowerKomadai ? layout.getSenteKomadaiX() : layout.getGoteKomadaiX();
+        int komadaiY = lowerKomadai ? layout.getSenteKomadaiY() : layout.getGoteKomadaiY();
 
         drawArrow(canvas, komadaiX + points[0].x + SQUARE_WIDTH / 2,
                 komadaiY + points[0].y + SQUARE_HEIGHT / 2,

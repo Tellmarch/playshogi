@@ -13,6 +13,8 @@ import com.playshogi.website.gwt.client.ui.*;
 public class AppActivityMapper implements ActivityMapper {
 
     @Inject
+    PlaceController placeController;
+    @Inject
     SessionInformation sessionInformation;
     @Inject
     MainPageView mainPageView;
@@ -57,7 +59,9 @@ public class AppActivityMapper implements ActivityMapper {
     @Inject
     ManageProblemsView manageProblemsView;
     @Inject
-    PlaceController placeController;
+    LessonsView lessonsView;
+    @Inject
+    ManageLessonsView manageLessonsView;
 
     @Override
     public Activity getActivity(final Place place) {
@@ -101,16 +105,20 @@ public class AppActivityMapper implements ActivityMapper {
             return new UserKifusActivity((UserKifusPlace) place, userKifusView, sessionInformation);
         } else if (place instanceof ManageProblemsPlace) {
             return new ManageProblemsActivity((ManageProblemsPlace) place, manageProblemsView, sessionInformation);
+        } else if (place instanceof ManageLessonsPlace) {
+            return new ManageLessonsActivity((ManageLessonsPlace) place, manageLessonsView, sessionInformation);
         } else if (place instanceof MyCollectionsPlace) {
             return new MyCollectionsActivity((MyCollectionsPlace) place, myCollectionsView, sessionInformation);
         } else if (place instanceof PublicCollectionsPlace) {
-            return new PublicCollectionsActivity((PublicCollectionsPlace) place, publicCollectionsView, sessionInformation);
+            return new PublicCollectionsActivity((PublicCollectionsPlace) place, publicCollectionsView,
+                    sessionInformation);
+        } else if (place instanceof LessonsPlace) {
+            return new LessonsActivity((LessonsPlace) place, lessonsView, sessionInformation);
         } else if (place instanceof CollectionHelpPlace) {
             return new CollectionHelpActivity(collectionHelpView);
         } else if (place instanceof CollectionPlace) {
             return new CollectionActivity((CollectionPlace) place, collectionView, sessionInformation);
         }
-
 
         return null;
     }

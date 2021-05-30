@@ -22,6 +22,7 @@ class BoardLayout {
     private final int goteKomadaiX;
     private final int goteKomadaiY;
     private final int komadaiWidth;
+    private final BoardConfiguration boardConfiguration;
 
     private final int upperRightPanelX;
     private final int upperRightPanelY;
@@ -34,8 +35,9 @@ class BoardLayout {
     private final int height;
 
     BoardLayout(final BoardBundle boardResources, final AbsolutePanel absolutePanel, final Image goteKomadaiImage,
-                final Image senteKomadaiImage, final Image coordinates) {
+                final Image senteKomadaiImage, final Image coordinates, final BoardConfiguration boardConfiguration) {
         this.absolutePanel = absolutePanel;
+        this.boardConfiguration = boardConfiguration;
 
         komadaiWidth = goteKomadaiImage.getWidth();
 
@@ -126,19 +128,33 @@ class BoardLayout {
         return komadaiWidth;
     }
 
+    /**
+     * @param row : index (starting from 0) of the row, from the top
+     */
     int getY(final int row) {
         return boardTop + BOARD_TOP_MARGIN + row * SQUARE_HEIGHT;
     }
 
+    /**
+     * @param col : index (starting from 0) of the column, from the left
+     */
     int getX(final int col) {
         return boardLeft + BOARD_LEFT_MARGIN + col * SQUARE_WIDTH;
     }
 
     int getY(final Square square) {
-        return getY(square.getRow() - 1);
+        if (boardConfiguration.isInverted()) {
+            return getY(9 - square.getRow());
+        } else {
+            return getY(square.getRow() - 1);
+        }
     }
 
     int getX(final Square square) {
-        return getX(9 - square.getColumn());
+        if (boardConfiguration.isInverted()) {
+            return getX(square.getColumn() - 1);
+        } else {
+            return getX(9 - square.getColumn());
+        }
     }
 }

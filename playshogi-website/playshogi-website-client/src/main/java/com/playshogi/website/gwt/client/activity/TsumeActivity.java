@@ -11,7 +11,6 @@ import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.library.shogi.models.Piece;
-import com.playshogi.library.shogi.models.formats.kif.KifMoveConverter;
 import com.playshogi.library.shogi.models.formats.sfen.SfenConverter;
 import com.playshogi.library.shogi.models.formats.usf.UsfFormat;
 import com.playshogi.library.shogi.models.formats.usf.UsfMoveConverter;
@@ -202,8 +201,9 @@ public class TsumeActivity extends MyAbstractActivity {
                         message = "If Gote escapes to " + toSquare + ", there is no mate.";
                     } else {
                         message =
-                                "If Gote plays the highlighted move (" + KifMoveConverter.toKifStringShort(move) + ")" +
-                                        ", there is no mate.";
+                                "If Gote plays the highlighted move (" +
+                                        sessionInformation.getUserPreferences().getMoveNotationAccordingToPreferences(move, true)
+                                        + "), there is no mate.";
                     }
                     Window.alert(message);
                     return false;
