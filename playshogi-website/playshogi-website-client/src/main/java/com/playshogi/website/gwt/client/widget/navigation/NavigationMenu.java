@@ -50,7 +50,7 @@ public class NavigationMenu extends Composite {
         menu.addSeparator();
         menu.addItem(new MenuItem("Learn", learnMenu));
         learnMenu.addItem("How to play", (Command) () -> placeController.goTo(new TutorialPlace()));
-        learnMenu.addItem("Lessons", (Command) () -> placeController.goTo(new LessonsPlace()));
+//        learnMenu.addItem("Lessons", (Command) () -> placeController.goTo(new LessonsPlace()));
         learnMenu.addItem("Links", (Command) () -> placeController.goTo(new LinksPlace()));
 
         MenuBar puzzlesMenu = new MenuBar(true);

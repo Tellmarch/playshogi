@@ -12,6 +12,7 @@ import com.playshogi.library.shogi.models.formats.usf.UsfFormat;
 import com.playshogi.library.shogi.models.record.GameRecord;
 import com.playshogi.website.gwt.client.SessionInformation;
 import com.playshogi.website.gwt.client.controller.ProblemController;
+import com.playshogi.website.gwt.client.events.collections.ListCollectionGamesEvent;
 import com.playshogi.website.gwt.client.events.gametree.GameTreeChangedEvent;
 import com.playshogi.website.gwt.client.events.kifu.GameInformationChangedEvent;
 import com.playshogi.website.gwt.client.events.puzzles.UserFinishedProblemEvent;
@@ -89,6 +90,7 @@ public class ProblemsActivity extends MyAbstractActivity {
                             games = result.getGames();
                             details = result.getDetails();
                             loadProblem();
+                            eventBus.fireEvent(new ListCollectionGamesEvent(result.getGames(), result.getDetails()));
                         }
                     });
         } else if (kifuId != null) {
