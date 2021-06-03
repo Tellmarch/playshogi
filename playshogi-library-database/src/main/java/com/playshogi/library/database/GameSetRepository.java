@@ -528,7 +528,7 @@ public class GameSetRepository {
                 int goteWins = rs.getInt("num_gote_win");
                 int newPositionId = rs.getInt("new_position_id");
 
-                LOGGER.log(Level.INFO, "Found position move: " + moveOccurences);
+//                LOGGER.log(Level.INFO, "Found position move: " + moveOccurences);
 
                 if (moveOccurences > 0) {
                     result.add(new PersistentGameSetMove(move, moveOccurences, positionId, newPositionId, gameSetId,

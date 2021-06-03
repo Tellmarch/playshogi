@@ -70,7 +70,7 @@ public class PositionRepository {
             preparedStatement.setInt(1, positionId);
             ResultSet rs = preparedStatement.executeQuery();
             if (rs.next()) {
-                LOGGER.log(Level.INFO, "Found position: " + rs.getString("code") + " with id: " + rs.getInt("id"));
+//                LOGGER.log(Level.INFO, "Found position: " + rs.getString("code") + " with id: " + rs.getInt("id"));
 
                 return rs.getString("code");
             } else {

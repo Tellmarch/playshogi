@@ -487,7 +487,8 @@ public class ShogiBoard extends Composite implements ClickHandler {
             PieceWrapper wrapper = selectionController.getSelectedPieceWrapper();
             GWT.log("Moving piece to sente komadai: " + wrapper);
             if (wrapper.isInKomadai()) {
-                if (wrapper.getRow() == BLACK_KOMADAI_ROW) { // Already in sente Komadai
+                if (wrapper.getRow() == (boardConfiguration.isInverted() ? WHITE_KOMADAI_ROW : BLACK_KOMADAI_ROW)) {
+                    // Already in sente Komadai
                     return;
                 } else {
                     if (boardConfiguration.isInverted()) {
@@ -511,22 +512,23 @@ public class ShogiBoard extends Composite implements ClickHandler {
             PieceWrapper wrapper = selectionController.getSelectedPieceWrapper();
             GWT.log("Moving piece to gote komadai: " + wrapper);
             if (wrapper.isInKomadai()) {
-                if (wrapper.getRow() == WHITE_KOMADAI_ROW) { // Already in gote Komadai
+                if (wrapper.getRow() == (boardConfiguration.isInverted() ? BLACK_KOMADAI_ROW : WHITE_KOMADAI_ROW)) {
+                    // Already in gote Komadai
                     return;
                 } else {
                     if (boardConfiguration.isInverted()) {
-                        position.getMutableGoteKomadai().addPiece(wrapper.getPiece().getPieceType());
+                        position.getMutableGoteKomadai().removePiece(wrapper.getPiece().getPieceType());
                     } else {
-                        position.getMutableSenteKomadai().addPiece(wrapper.getPiece().getPieceType());
+                        position.getMutableSenteKomadai().removePiece(wrapper.getPiece().getPieceType());
                     }
                 }
             } else {
                 position.getMutableShogiBoardState().setPieceAt(wrapper.getSquare(), null);
             }
             if (boardConfiguration.isInverted()) {
-                position.getMutableSenteKomadai().removePiece(wrapper.getPiece().getPieceType());
+                position.getMutableSenteKomadai().addPiece(wrapper.getPiece().getPieceType());
             } else {
-                position.getMutableGoteKomadai().removePiece(wrapper.getPiece().getPieceType());
+                position.getMutableGoteKomadai().addPiece(wrapper.getPiece().getPieceType());
             }
             selectionController.unselect();
             displayPosition();
