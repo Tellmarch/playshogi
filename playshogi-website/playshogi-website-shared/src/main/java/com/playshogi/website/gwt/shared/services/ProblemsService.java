@@ -27,6 +27,8 @@ public interface ProblemsService extends RemoteService {
 
     ProblemCollectionDetails[] getProblemCollections(String sessionId);
 
+    ProblemCollectionDetails[] getPublicProblemCollections(String sessionId);
+
     ProblemCollectionDetailsAndProblems getProblemCollection(String sessionId, String collectionId);
 
 }

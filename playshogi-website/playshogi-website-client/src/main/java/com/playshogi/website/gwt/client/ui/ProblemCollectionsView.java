@@ -10,14 +10,12 @@ import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.website.gwt.client.SessionInformation;
-import com.playshogi.website.gwt.client.events.collections.ListGameCollectionsEvent;
+import com.playshogi.website.gwt.client.events.collections.ListProblemCollectionsEvent;
 import com.playshogi.website.gwt.client.mvp.AppPlaceHistoryMapper;
 import com.playshogi.website.gwt.client.place.ProblemsPlace;
 import com.playshogi.website.gwt.client.util.ElementWidget;
-import com.playshogi.website.gwt.shared.models.GameCollectionDetails;
-import elemental2.dom.HTMLDivElement;
-import elemental2.dom.HTMLElement;
-import elemental2.dom.Node;
+import com.playshogi.website.gwt.shared.models.ProblemCollectionDetails;
+import elemental2.dom.*;
 import org.dominokit.domino.ui.button.Button;
 import org.dominokit.domino.ui.datatable.ColumnConfig;
 import org.dominokit.domino.ui.datatable.DataTable;
@@ -45,12 +43,12 @@ public class ProblemCollectionsView extends Composite {
     private final MyEventBinder eventBinder = GWT.create(MyEventBinder.class);
 
     private final PlaceController placeController;
-    private final LocalListDataStore<GameCollectionDetails> localListDataStore;
-    private final SimplePaginationPlugin<GameCollectionDetails> simplePaginationPlugin;
-    private final DataTable<GameCollectionDetails> table;
+    private final LocalListDataStore<ProblemCollectionDetails> localListDataStore;
+    private final SimplePaginationPlugin<ProblemCollectionDetails> simplePaginationPlugin;
+    private final DataTable<ProblemCollectionDetails> table;
 
     private EventBus eventBus;
-    private GameCollectionDetails collectionDetails;
+    private ProblemCollectionDetails collectionDetails;
 
     @Inject
     public ProblemCollectionsView(final PlaceController placeController, final SessionInformation sessionInformation,
@@ -58,7 +56,7 @@ public class ProblemCollectionsView extends Composite {
         this.placeController = placeController;
         GWT.log("Creating public collections view");
 
-        TableConfig<GameCollectionDetails> tableConfig = getTableConfig(historyMapper);
+        TableConfig<ProblemCollectionDetails> tableConfig = getTableConfig(historyMapper);
         tableConfig.addPlugin(new RecordDetailsPlugin<>(cell -> getDetails(cell.getRecord())));
         localListDataStore = new LocalListDataStore<>();
 
@@ -75,15 +73,15 @@ public class ProblemCollectionsView extends Composite {
         initWidget(scrollPanel);
     }
 
-    private HTMLElement getDetails(final GameCollectionDetails details) {
+    private HTMLElement getDetails(final ProblemCollectionDetails details) {
         return Button.createDefault(details.getDescription()).element();
     }
 
-    private TableConfig<GameCollectionDetails> getTableConfig(final AppPlaceHistoryMapper historyMapper) {
-        TableConfig<GameCollectionDetails> tableConfig = new TableConfig<>();
+    private TableConfig<ProblemCollectionDetails> getTableConfig(final AppPlaceHistoryMapper historyMapper) {
+        TableConfig<ProblemCollectionDetails> tableConfig = new TableConfig<>();
         tableConfig
                 .addColumn(
-                        ColumnConfig.<GameCollectionDetails>create("id", "#")
+                        ColumnConfig.<ProblemCollectionDetails>create("id", "#")
                                 .styleCell(
                                         element -> element.style.setProperty("vertical-align", "top"))
                                 .textAlign("right")
@@ -91,55 +89,87 @@ public class ProblemCollectionsView extends Composite {
                                 .setCellRenderer(
                                         cell -> TextNode.of(String.valueOf(cell.getTableRow().getIndex() + 1 + PAGE_SIZE * (simplePaginationPlugin.getSimplePagination().activePage() - 1)))))
                 .addColumn(
-                        ColumnConfig.<GameCollectionDetails>create("name", "Name")
+                        ColumnConfig.<ProblemCollectionDetails>create("name", "Name")
                                 .styleCell(
                                         element -> element.style.setProperty("vertical-align", "top"))
                                 .setCellRenderer(cell -> TextNode.of(cell.getRecord().getName()))
                 )
                 .addColumn(
-                        ColumnConfig.<GameCollectionDetails>create("difficulty", "Difficulty")
-                                .styleCell(
-                                        element -> element.style.setProperty("vertical-align", "top"))
-                                .setCellRenderer(cell -> getDifficulty(cell.getRecord()))
-                )
-                .addColumn(
-                        ColumnConfig.<GameCollectionDetails>create("solved", "Solved")
-                                .styleCell(
-                                        element -> element.style.setProperty("vertical-align", "top"))
-                                .setCellRenderer(cell -> TextNode.of("10 / 40"))
-                )
-                .addColumn(
-                        ColumnConfig.<GameCollectionDetails>create("besttime", "Personal Best Time")
-                                .styleCell(
-                                        element -> element.style.setProperty("vertical-align", "top"))
-                                .setCellRenderer(cell -> TextNode.of("5'42"))
-                )
-                .addColumn(
-                        ColumnConfig.<GameCollectionDetails>create("besttime", "Leaderboard")
-                                .styleCell(
-                                        element -> element.style.setProperty("vertical-align", "top"))
-                                .setCellRenderer(cell -> ol().add(li().textContent("aaa: 10"))
-                                        .add(li().textContent("bbb: 10"))
-                                        .add(li().textContent("ccc: 10")).element())
-                )
-                .addColumn(
-                        ColumnConfig.<GameCollectionDetails>create("view", "View")
+                        ColumnConfig.<ProblemCollectionDetails>create("practice", "Practice")
                                 .styleCell(
                                         element -> element.style.setProperty("vertical-align", "top"))
                                 .setCellRenderer(cell -> {
                                     String href =
                                             "#" + historyMapper.getToken(new ProblemsPlace(cell.getRecord().getId(),
                                                     0));
-                                    return Elements.a(href, "_blank").add(Button.createPrimary("Show")).element();
-                                })
-                );
+                                    return Elements.a(href, "_blank").add(Button.createPrimary("Practice")).element();
+                                }))
+                .addColumn(
+                        ColumnConfig.<ProblemCollectionDetails>create("difficulty", "Difficulty")
+                                .styleCell(
+                                        element -> element.style.setProperty("vertical-align", "top"))
+                                .setCellRenderer(cell -> getDifficulty(cell.getRecord()))
+                )
+                .addColumn(
+                        ColumnConfig.<ProblemCollectionDetails>create("solved", "Solved")
+                                .styleCell(
+                                        element -> element.style.setProperty("vertical-align", "top"))
+                                .setCellRenderer(cell -> getSolved(cell.getRecord()))
+                )
+                .addColumn(
+                        ColumnConfig.<ProblemCollectionDetails>create("besttime", "Personal Best Time")
+                                .styleCell(
+                                        element -> element.style.setProperty("vertical-align", "top"))
+                                .setCellRenderer(cell -> getPersonalBest(cell.getRecord()))
+                )
+                .addColumn(
+                        ColumnConfig.<ProblemCollectionDetails>create("leaderboard", "Leaderboard")
+                                .styleCell(
+                                        element -> element.style.setProperty("vertical-align", "top"))
+                                .setCellRenderer(cell -> getLeaderboard(cell.getRecord()))
+                )
+
+        ;
         return tableConfig;
     }
 
-    private Node getDifficulty(final GameCollectionDetails record) {
+    private Node getLeaderboard(final ProblemCollectionDetails record) {
+        if (record.getLeaderboardNames() == null || record.getLeaderboardScores() == null) {
+            return TextNode.of("-");
+        }
+        HtmlContentBuilder<HTMLOListElement> ol = ol();
+        String[] leaderboardNames = record.getLeaderboardNames();
+        for (int i = 0; i < leaderboardNames.length; i++) {
+            String leaderboardName = leaderboardNames[i];
+            String score = record.getLeaderboardScores()[i];
+            ol.add(li().textContent(leaderboardName + ": " + score));
+        }
+        return ol.element();
+    }
+
+    private Node getPersonalBest(final ProblemCollectionDetails record) {
+        if (record.getUserHighScore() == null) {
+            return TextNode.of("-");
+        }
+
+        return TextNode.of(record.getUserHighScore());
+    }
+
+    private Text getSolved(final ProblemCollectionDetails record) {
+        if (record.getNumProblems() == 0) {
+            return TextNode.of("-");
+        }
+        return TextNode.of(record.getUserSolved() + " / " + record.getNumProblems());
+    }
+
+    private Node getDifficulty(final ProblemCollectionDetails record) {
+        if (record.getDifficulty() == 0) {
+            return TextNode.of("-");
+        }
+
         HtmlContentBuilder<HTMLDivElement> difficulty = div();
         for (int i = 1; i <= 5; i++) {
-            if (i > 3) {
+            if (i > record.getDifficulty()) {
                 difficulty.add(Icons.ALL.star_border());
             } else {
                 difficulty.add(Icons.ALL.star());
@@ -155,10 +185,10 @@ public class ProblemCollectionsView extends Composite {
     }
 
     @EventHandler
-    public void onListGameCollectionsEvent(final ListGameCollectionsEvent event) {
-        GWT.log("ProblemCollectionsView: handle ListGameCollectionsEvent:\n" + event);
+    public void onListProblemCollections(final ListProblemCollectionsEvent event) {
+        GWT.log("ProblemCollectionsView: handle ListProblemCollectionsEvent:\n" + event);
 
-        GameCollectionDetails[] collections = event.getPublicCollections();
+        ProblemCollectionDetails[] collections = event.getPublicCollections();
         localListDataStore.setData(Arrays.asList(collections));
         table.load();
     }

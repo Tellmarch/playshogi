@@ -1,14 +1,8 @@
 package com.playshogi.website.gwt.server;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
-import com.playshogi.library.database.DbConnection;
-import com.playshogi.library.database.KifuRepository;
-import com.playshogi.library.database.ProblemRepository;
-import com.playshogi.library.database.UserRepository;
-import com.playshogi.library.database.models.PersistentHighScore;
-import com.playshogi.library.database.models.PersistentKifu;
-import com.playshogi.library.database.models.PersistentProblem;
-import com.playshogi.library.database.models.PersistentUserProblemStats;
+import com.playshogi.library.database.*;
+import com.playshogi.library.database.models.*;
 import com.playshogi.library.shogi.models.formats.usf.UsfFormat;
 import com.playshogi.library.shogi.models.record.KifuCollection;
 import com.playshogi.website.gwt.shared.models.*;
@@ -26,6 +20,7 @@ public class ProblemsServiceImpl extends RemoteServiceServlet implements Problem
     private final ProblemRepository problemRepository;
     private final KifuRepository kifuRepository;
     private final UserRepository userRepository;
+    private final GameSetRepository gameSetRepository;
     private final Authenticator authenticator = Authenticator.INSTANCE;
 
     private Map<String, Integer> highScores = new HashMap<>();
@@ -35,6 +30,7 @@ public class ProblemsServiceImpl extends RemoteServiceServlet implements Problem
         problemRepository = new ProblemRepository(dbConnection);
         kifuRepository = new KifuRepository(dbConnection);
         userRepository = new UserRepository(dbConnection);
+        gameSetRepository = new GameSetRepository(dbConnection);
         initHighScores();
     }
 
@@ -238,6 +234,40 @@ public class ProblemsServiceImpl extends RemoteServiceServlet implements Problem
         }
 
         return ProblemsCache.INSTANCE.getProblemsCollectionDetails();
+    }
+
+    @Override
+    public ProblemCollectionDetails[] getPublicProblemCollections(final String sessionId) {
+        LOGGER.log(Level.INFO, "getProblemCollections");
+
+        ArrayList<ProblemCollectionDetails> publicCollectionDetails = new ArrayList<>();
+
+        List<PersistentGameSet> publicGameSets = gameSetRepository.getAllPublicGameSets();
+        for (PersistentGameSet gameSet : publicGameSets) {
+            ProblemCollectionDetails details = getCollectionDetailsFromGameSet(gameSet);
+            if (details != null) {
+                publicCollectionDetails.add(details);
+            }
+        }
+
+        return publicCollectionDetails.toArray(new ProblemCollectionDetails[0]);
+    }
+
+    private ProblemCollectionDetails getCollectionDetailsFromGameSet(final PersistentGameSet gameSet) {
+        ProblemCollectionDetails details = new ProblemCollectionDetails();
+        details.setId(String.valueOf(gameSet.getId()));
+        details.setName(gameSet.getName());
+        details.setDescription(gameSet.getDescription());
+        details.setVisibility(gameSet.getVisibility().toString().toLowerCase());
+        // TODO: this is a temporary hack...
+        if (details.getName().contains("Tsume") ||
+                details.getName().contains("Castle") ||
+                details.getName().contains("Problem")) {
+            details.setType("problems");
+        } else {
+            return null;
+        }
+        return details;
     }
 
     @Override

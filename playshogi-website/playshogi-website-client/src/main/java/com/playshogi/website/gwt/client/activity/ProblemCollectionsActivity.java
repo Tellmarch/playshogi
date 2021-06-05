@@ -7,18 +7,17 @@ import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.website.gwt.client.SessionInformation;
-import com.playshogi.website.gwt.client.events.collections.ListGameCollectionsEvent;
+import com.playshogi.website.gwt.client.events.collections.ListProblemCollectionsEvent;
 import com.playshogi.website.gwt.client.events.user.UserLoggedInEvent;
 import com.playshogi.website.gwt.client.place.ProblemCollectionsPlace;
 import com.playshogi.website.gwt.client.ui.ProblemCollectionsView;
-import com.playshogi.website.gwt.shared.models.GameCollectionDetails;
-import com.playshogi.website.gwt.shared.models.GameCollectionDetailsList;
-import com.playshogi.website.gwt.shared.services.KifuService;
-import com.playshogi.website.gwt.shared.services.KifuServiceAsync;
+import com.playshogi.website.gwt.shared.models.ProblemCollectionDetails;
+import com.playshogi.website.gwt.shared.services.ProblemsService;
+import com.playshogi.website.gwt.shared.services.ProblemsServiceAsync;
 
 public class ProblemCollectionsActivity extends MyAbstractActivity {
 
-    private final KifuServiceAsync kifuService = GWT.create(KifuService.class);
+    private final ProblemsServiceAsync problemService = GWT.create(ProblemsService.class);
     private EventBus eventBus;
 
     interface MyEventBinder extends EventBinder<ProblemCollectionsActivity> {
@@ -50,22 +49,17 @@ public class ProblemCollectionsActivity extends MyAbstractActivity {
     }
 
     private void fetchData() {
-        kifuService.getGameCollections(sessionInformation.getSessionId(),
-                new AsyncCallback<GameCollectionDetailsList>() {
+        problemService.getPublicProblemCollections(sessionInformation.getSessionId(),
+                new AsyncCallback<ProblemCollectionDetails[]>() {
                     @Override
                     public void onFailure(Throwable throwable) {
                         GWT.log("ProblemCollectionsActivity: error retrieving collections list");
                     }
 
                     @Override
-                    public void onSuccess(GameCollectionDetailsList gameCollectionDetails) {
+                    public void onSuccess(ProblemCollectionDetails[] details) {
                         GWT.log("ProblemCollectionsActivity: retrieved collections list");
-                        GameCollectionDetails[] publicCollections = gameCollectionDetails.getPublicCollections();
-                        for (int i = 0; i < publicCollections.length; i++) {
-                            publicCollections[i].setRow(i + 1);
-                        }
-                        eventBus.fireEvent(new ListGameCollectionsEvent(gameCollectionDetails.getMyCollections(),
-                                publicCollections));
+                        eventBus.fireEvent(new ListProblemCollectionsEvent(details));
                     }
                 });
     }

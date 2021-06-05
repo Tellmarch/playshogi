@@ -1,6 +1,7 @@
 package com.playshogi.website.gwt.shared.models;
 
 import java.io.Serializable;
+import java.util.Arrays;
 
 public class ProblemCollectionDetails implements Serializable {
     private String id;
@@ -9,6 +10,13 @@ public class ProblemCollectionDetails implements Serializable {
     private String visibility;
     private String type;
     private int numProblems;
+
+    private int difficulty;
+    private String[] leaderboardNames;
+    private String[] leaderboardScores;
+
+    private String userHighScore;
+    private int userSolved;
 
     public ProblemCollectionDetails() {
     }
@@ -61,6 +69,46 @@ public class ProblemCollectionDetails implements Serializable {
         this.numProblems = numProblems;
     }
 
+    public int getDifficulty() {
+        return difficulty;
+    }
+
+    public void setDifficulty(final int difficulty) {
+        this.difficulty = difficulty;
+    }
+
+    public String[] getLeaderboardNames() {
+        return leaderboardNames;
+    }
+
+    public void setLeaderboardNames(final String[] leaderboardNames) {
+        this.leaderboardNames = leaderboardNames;
+    }
+
+    public String[] getLeaderboardScores() {
+        return leaderboardScores;
+    }
+
+    public void setLeaderboardScores(final String[] leaderboardScores) {
+        this.leaderboardScores = leaderboardScores;
+    }
+
+    public String getUserHighScore() {
+        return userHighScore;
+    }
+
+    public void setUserHighScore(final String userHighScore) {
+        this.userHighScore = userHighScore;
+    }
+
+    public int getUserSolved() {
+        return userSolved;
+    }
+
+    public void setUserSolved(final int userSolved) {
+        this.userSolved = userSolved;
+    }
+
     @Override
     public String toString() {
         return "ProblemCollectionDetails{" +
@@ -70,6 +118,11 @@ public class ProblemCollectionDetails implements Serializable {
                 ", visibility='" + visibility + '\'' +
                 ", type='" + type + '\'' +
                 ", numProblems=" + numProblems +
+                ", difficulty=" + difficulty +
+                ", leaderboardNames=" + Arrays.toString(leaderboardNames) +
+                ", leaderboardScores=" + Arrays.toString(leaderboardScores) +
+                ", userHighScore='" + userHighScore + '\'' +
+                ", userSolved=" + userSolved +
                 '}';
     }
 }
