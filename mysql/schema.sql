@@ -267,7 +267,20 @@ DROP TABLE IF EXISTS `playshogi`.`ps_problemset` ;
 CREATE TABLE IF NOT EXISTS `playshogi`.`ps_problemset` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(255) NOT NULL,
-  PRIMARY KEY (`id`))
+  `description` VARCHAR(5000) NOT NULL,
+  `visibility` TINYINT UNSIGNED NOT NULL DEFAULT 0,
+  `owner_user_id` INT UNSIGNED NULL,
+  `difficulty` TINYINT UNSIGNED NULL,
+  `create_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `update_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `tags` VARCHAR(1000) NULL,
+  PRIMARY KEY (`id`),
+  INDEX `fk_ps_problemset_1_idx` (`owner_user_id` ASC),
+  CONSTRAINT `fk_ps_problemset_1`
+    FOREIGN KEY (`owner_user_id`)
+    REFERENCES `playshogi`.`ps_user` (`id`)
+    ON DELETE SET NULL
+    ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 
