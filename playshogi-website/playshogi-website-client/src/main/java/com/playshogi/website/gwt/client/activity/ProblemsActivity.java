@@ -15,7 +15,9 @@ import com.playshogi.website.gwt.client.controller.ProblemController;
 import com.playshogi.website.gwt.client.events.collections.ListCollectionGamesEvent;
 import com.playshogi.website.gwt.client.events.gametree.GameTreeChangedEvent;
 import com.playshogi.website.gwt.client.events.kifu.GameInformationChangedEvent;
+import com.playshogi.website.gwt.client.events.puzzles.ProblemCollectionProgressEvent;
 import com.playshogi.website.gwt.client.events.puzzles.UserFinishedProblemEvent;
+import com.playshogi.website.gwt.client.events.puzzles.UserJumpedToProblemEvent;
 import com.playshogi.website.gwt.client.events.puzzles.UserSkippedProblemEvent;
 import com.playshogi.website.gwt.client.place.ProblemPlace;
 import com.playshogi.website.gwt.client.place.ProblemsPlace;
@@ -26,7 +28,16 @@ import com.playshogi.website.gwt.shared.models.GameDetails;
 import com.playshogi.website.gwt.shared.services.KifuService;
 import com.playshogi.website.gwt.shared.services.KifuServiceAsync;
 
+import java.util.Arrays;
+
 public class ProblemsActivity extends MyAbstractActivity {
+
+    public enum ProblemStatus {
+        CURRENT,
+        SOLVED,
+        FAILED,
+        UNSOLVED
+    }
 
     interface MyEventBinder extends EventBinder<ProblemsActivity> {
     }
@@ -46,6 +57,7 @@ public class ProblemsActivity extends MyAbstractActivity {
     private int problemIndex;
     private GameCollectionDetails details;
     private GameDetails[] games;
+    private ProblemStatus[] statuses;
 
 
     public ProblemsActivity(final ProblemsPlace place, final ProblemsView problemsView,
@@ -76,43 +88,32 @@ public class ProblemsActivity extends MyAbstractActivity {
         containerWidget.setWidget(problemsView.asWidget());
 
         if (collectionId != null && !"null".equals(collectionId)) {
-            GWT.log("Querying for collection problems");
-            kifuService.getGameSetKifuDetails(sessionInformation.getSessionId(), collectionId,
-                    new AsyncCallback<GameCollectionDetailsAndGames>() {
-                        @Override
-                        public void onFailure(Throwable throwable) {
-                            GWT.log("ProblemsActivity: error retrieving collection games");
-                        }
-
-                        @Override
-                        public void onSuccess(GameCollectionDetailsAndGames result) {
-                            GWT.log("ProblemsActivity: retrieved collection games");
-                            games = result.getGames();
-                            details = result.getDetails();
-                            loadProblem();
-                            eventBus.fireEvent(new ListCollectionGamesEvent(result.getGames(), result.getDetails()));
-                        }
-                    });
+            loadCollection();
         } else if (kifuId != null) {
             loadProblem();
         }
     }
 
-    @Override
-    public void onStop() {
-        GWT.log("Stopping tsume activity");
-        super.onStop();
-    }
+    private void loadCollection() {
+        GWT.log("Querying for collection problems");
+        kifuService.getGameSetKifuDetails(sessionInformation.getSessionId(), collectionId,
+                new AsyncCallback<GameCollectionDetailsAndGames>() {
+                    @Override
+                    public void onFailure(Throwable throwable) {
+                        GWT.log("ProblemsActivity: error retrieving collection games");
+                    }
 
-    @EventHandler
-    void onUserSkippedProblem(final UserSkippedProblemEvent event) {
-        problemIndex++;
-        loadProblem();
-    }
-
-    @EventHandler
-    void onUserFinishedProblemEvent(final UserFinishedProblemEvent event) {
-        GWT.log("Finished problem. Success: " + event.isSuccess());
+                    @Override
+                    public void onSuccess(GameCollectionDetailsAndGames result) {
+                        GWT.log("ProblemsActivity: retrieved collection games");
+                        games = result.getGames();
+                        statuses = new ProblemStatus[games.length];
+                        Arrays.fill(statuses, ProblemStatus.UNSOLVED);
+                        details = result.getDetails();
+                        loadProblem();
+                        eventBus.fireEvent(new ListCollectionGamesEvent(result.getGames(), result.getDetails()));
+                    }
+                });
     }
 
     private void loadProblem() {
@@ -142,14 +143,50 @@ public class ProblemsActivity extends MyAbstractActivity {
                         eventBus.fireEvent(new GameInformationChangedEvent(gameRecord.getGameInformation()));
                         if (collectionId != null) {
                             History.newItem("Problems:" + new ProblemsPlace.Tokenizer().getToken(getPlace()), false);
+                            if (problemIndex < statuses.length) {
+                                statuses[problemIndex] = ProblemStatus.CURRENT;
+                                eventBus.fireEvent(new ProblemCollectionProgressEvent(problemIndex, statuses));
+                            }
                         }
                     }
                 });
     }
 
-
     private ProblemsPlace getPlace() {
         return new ProblemsPlace(collectionId, problemIndex);
+    }
+
+    @Override
+    public void onStop() {
+        GWT.log("Stopping tsume activity");
+        super.onStop();
+    }
+
+    @EventHandler
+    void onUserSkippedProblem(final UserSkippedProblemEvent event) {
+        if (problemIndex < statuses.length && statuses[problemIndex] == ProblemStatus.CURRENT) {
+            statuses[problemIndex] = ProblemStatus.UNSOLVED;
+        }
+        problemIndex++;
+        loadProblem();
+    }
+
+    @EventHandler
+    void onUserFinishedProblem(final UserFinishedProblemEvent event) {
+        GWT.log("Finished problem. Success: " + event.isSuccess());
+        if (problemIndex < statuses.length) {
+            statuses[problemIndex] = event.isSuccess() ? ProblemStatus.SOLVED : ProblemStatus.FAILED;
+            eventBus.fireEvent(new ProblemCollectionProgressEvent(problemIndex, statuses));
+        }
+    }
+
+    @EventHandler
+    void onUserJumpedToProblem(final UserJumpedToProblemEvent event) {
+        if (problemIndex < statuses.length && statuses[problemIndex] == ProblemStatus.CURRENT) {
+            statuses[problemIndex] = ProblemStatus.UNSOLVED;
+        }
+        problemIndex = event.getProblemIndex();
+        loadProblem();
     }
 
 }
