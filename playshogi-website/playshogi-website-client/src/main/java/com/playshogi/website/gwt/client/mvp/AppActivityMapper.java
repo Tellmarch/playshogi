@@ -62,6 +62,8 @@ public class AppActivityMapper implements ActivityMapper {
     LessonsView lessonsView;
     @Inject
     ManageLessonsView manageLessonsView;
+    @Inject
+    ProblemCollectionsView problemCollectionsView;
 
     @Override
     public Activity getActivity(final Place place) {
@@ -118,6 +120,9 @@ public class AppActivityMapper implements ActivityMapper {
             return new CollectionHelpActivity(collectionHelpView);
         } else if (place instanceof CollectionPlace) {
             return new CollectionActivity((CollectionPlace) place, collectionView, sessionInformation);
+        } else if (place instanceof ProblemCollectionsPlace) {
+            return new ProblemCollectionsActivity((ProblemCollectionsPlace) place, problemCollectionsView,
+                    sessionInformation);
         }
 
         return null;

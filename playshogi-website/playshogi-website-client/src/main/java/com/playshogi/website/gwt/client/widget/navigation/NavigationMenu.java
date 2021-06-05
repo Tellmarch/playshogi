@@ -58,6 +58,7 @@ public class NavigationMenu extends Composite {
         menu.addItem(new MenuItem("Puzzles", puzzlesMenu));
         puzzlesMenu.addItem("TsumeShogi Problems", (Command) () -> placeController.goTo(new TsumePlace()));
         puzzlesMenu.addItem("ByoYomi Survival", (Command) () -> placeController.goTo(new ByoYomiLandingPlace()));
+        puzzlesMenu.addItem("Problem Collections", (Command) () -> placeController.goTo(new ProblemCollectionsPlace()));
 
         MenuBar practiceMenu = new MenuBar(true);
         menu.addSeparator();
