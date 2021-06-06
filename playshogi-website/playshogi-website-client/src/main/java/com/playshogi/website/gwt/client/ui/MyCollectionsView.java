@@ -8,12 +8,7 @@ import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.HasKeyboardSelectionPolicy;
 import com.google.gwt.user.cellview.client.TextColumn;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.ScrollPanel;
+import com.google.gwt.user.client.ui.*;
 import com.google.gwt.view.client.ListDataProvider;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -22,21 +17,20 @@ import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.website.gwt.client.SessionInformation;
 import com.playshogi.website.gwt.client.events.collections.DeleteGameCollectionEvent;
-import com.playshogi.website.gwt.client.events.collections.ListCollectionGamesEvent;
 import com.playshogi.website.gwt.client.events.collections.ListGameCollectionsEvent;
-import com.playshogi.website.gwt.client.events.collections.RemoveGameFromCollectionEvent;
-import com.playshogi.website.gwt.client.events.user.UserLoggedInEvent;
-import com.playshogi.website.gwt.client.place.*;
+import com.playshogi.website.gwt.client.place.CollectionPlace;
+import com.playshogi.website.gwt.client.place.OpeningsPlace;
+import com.playshogi.website.gwt.client.place.ProblemsPlace;
+import com.playshogi.website.gwt.client.place.ViewKifuPlace;
 import com.playshogi.website.gwt.client.util.ElementWidget;
 import com.playshogi.website.gwt.client.widget.TablePanel;
 import com.playshogi.website.gwt.client.widget.kifu.CollectionPropertiesPanel;
-import com.playshogi.website.gwt.client.widget.kifu.ImportCollectionPanel;
+import com.playshogi.website.gwt.client.widget.kifu.ImportCollectionPopup;
 import com.playshogi.website.gwt.client.widget.kifu.ImportKifuPanel;
 import com.playshogi.website.gwt.shared.models.GameCollectionDetails;
 import com.playshogi.website.gwt.shared.models.GameDetails;
 import org.dominokit.domino.ui.Typography.Strong;
 import org.dominokit.domino.ui.alerts.Alert;
-import org.dominokit.domino.ui.labels.Label;
 import org.jboss.elemento.Elements;
 
 import java.util.Arrays;
@@ -53,7 +47,7 @@ public class MyCollectionsView extends Composite {
     private SessionInformation sessionInformation;
     private final CellTable<GameCollectionDetails> myCollectionsTable;
     private final TablePanel myCollectionsPanel;
-    private final ImportCollectionPanel importCollectionPanel = new ImportCollectionPanel();
+    private final ImportCollectionPopup importCollectionPopup = new ImportCollectionPopup();
     private final CollectionPropertiesPanel collectionPropertiesPanel = new CollectionPropertiesPanel();
     private final ImportKifuPanel importKifuPanel = new ImportKifuPanel();
     private final ElementWidget loggedOutWarning;
@@ -96,9 +90,9 @@ public class MyCollectionsView extends Composite {
         createButton.addClickHandler(clickEvent -> sessionInformation.ifLoggedIn(collectionPropertiesPanel::showInCreateDialog));
         buttonsPanel.add(createButton);
 
-//        Button importButton = new Button("Import Collection");
-//        importButton.addClickHandler(clickEvent -> sessionInformation.ifLoggedIn(importCollectionPanel::showInDialog));
-//        buttonsPanel.add(importButton);
+        Button importButton = new Button("Import Collection");
+        importButton.addClickHandler(clickEvent -> sessionInformation.ifLoggedIn(importCollectionPopup::show));
+        buttonsPanel.add(importButton);
 
         flowPanel.add(buttonsPanel);
 
@@ -214,7 +208,7 @@ public class MyCollectionsView extends Composite {
         myCollectionsPanel.setVisible(false);
         noCollectionsWarning.setVisible(false);
         loggedOutWarning.setVisible(false);
-        importCollectionPanel.activate(eventBus);
+        importCollectionPopup.activate(eventBus);
         collectionPropertiesPanel.activate(eventBus);
         importKifuPanel.activate(eventBus);
     }

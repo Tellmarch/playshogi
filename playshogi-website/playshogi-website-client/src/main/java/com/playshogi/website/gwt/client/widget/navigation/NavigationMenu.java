@@ -70,6 +70,7 @@ public class NavigationMenu extends Composite {
         menu.addSeparator();
         menu.addItem(new MenuItem("Collections", collectionsMenu));
         collectionsMenu.addItem("Openings Explorer", (Command) () -> placeController.goTo(new OpeningsPlace()));
+        collectionsMenu.addItem("My Collections", (Command) () -> placeController.goTo(new MyCollectionsPlace()));
         collectionsMenu.addItem("Game Collections", (Command) () -> placeController.goTo(new GameCollectionsPlace()));
         collectionsMenu.addItem("My Kifus", (Command) () -> placeController.goTo(new UserKifusPlace()));
         collectionsMenu.addItem("New/Import kifu", (Command) () -> placeController.goTo(new KifuEditorPlace(null,

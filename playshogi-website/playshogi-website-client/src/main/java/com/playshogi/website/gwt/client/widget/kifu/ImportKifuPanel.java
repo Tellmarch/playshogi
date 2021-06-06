@@ -4,7 +4,6 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import com.google.web.bindery.event.shared.EventBus;
 import com.playshogi.library.shogi.models.formats.kif.KifFormat;
@@ -29,10 +28,6 @@ public class ImportKifuPanel extends Composite implements ClickHandler {
 
         verticalPanel.add(new HTML(SafeHtmlUtils.fromSafeConstant("<br/>")));
 
-//        FormPanel form = createUploadForm();
-//        verticalPanel.add(form);
-
-
         verticalPanel.add(new HTML("We support importing kifus in the following formats: KIF, PSN, USF"));
 
         verticalPanel.add(new HTML(SafeHtmlUtils.fromSafeConstant("<br/>")));
@@ -50,40 +45,6 @@ public class ImportKifuPanel extends Composite implements ClickHandler {
         verticalPanel.add(loadFromTextButton);
 
         initWidget(verticalPanel);
-    }
-
-    private FormPanel createUploadForm() {
-        FormPanel form = new FormPanel();
-        form.setAction(GWT.getModuleBaseURL() + "uploadKifu");
-        form.setEncoding(FormPanel.ENCODING_MULTIPART);
-        form.setMethod(FormPanel.METHOD_POST);
-
-        VerticalPanel panel = new VerticalPanel();
-        form.setWidget(panel);
-
-        FileUpload upload = new FileUpload();
-        upload.setName("file");
-        panel.add(upload);
-        panel.add(new Hidden("returnUsf", "true"));
-
-        panel.add(new Button("Upload", (ClickHandler) event -> form.submit()));
-
-        form.addSubmitHandler(event -> GWT.log("Submit event"));
-        form.addSubmitCompleteHandler(event -> {
-            GWT.log("Submit complete");
-            String result = event.getResults();
-            if (result.startsWith("ERROR")) {
-                Window.alert(event.getResults());
-            } else if (result.startsWith("SUCCESS:")) {
-                String usf = result.substring(8);
-                GWT.log("Kifu USF: " + usf);
-                GameRecord gameRecord = UsfFormat.INSTANCE.readSingle(usf);
-                importGameRecord(gameRecord);
-            } else {
-                GWT.log("Don't know how to handle the response: " + result);
-            }
-        });
-        return form;
     }
 
     @Override

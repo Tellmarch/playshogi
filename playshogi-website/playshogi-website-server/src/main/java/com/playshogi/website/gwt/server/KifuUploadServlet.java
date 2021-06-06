@@ -40,12 +40,21 @@ public class KifuUploadServlet extends HttpServlet {
 
         LOGGER.info("doPost {return = " + returnUsf + " - collectionId = " + collectionId + " }");
 
-        final Part filePart = request.getPart("file");
+        for (Part part : request.getParts()) {
+            String fileName = part.getSubmittedFileName();
+            if (fileName != null) {
+                LOGGER.info("Processing file " + fileName);
+                processFilePart(response, returnUsf, part);
+            }
+        }
+    }
+
+    private void processFilePart(final HttpServletResponse response, final String returnUsf, final Part filePart) throws IOException {
         InputStream inputStream = filePart.getInputStream();
 
         try (PrintWriter writer = response.getWriter()) {
             try {
-                final String fileName = getFileName(filePart);
+                final String fileName = filePart.getSubmittedFileName();
                 if (fileName == null) {
                     throw new IllegalArgumentException("Request did not include a file");
                 }
@@ -70,7 +79,7 @@ public class KifuUploadServlet extends HttpServlet {
         for (GameRecord record : records) {
             String usf = UsfFormat.INSTANCE.write(record);
             writer.println("SUCCESS:" + usf);
-            LOGGER.log(Level.INFO, "Successfully imported kifu: " + fileName + " " + usf);
+            LOGGER.log(Level.INFO, "Successfully read kifu: " + fileName + " " + usf);
         }
     }
 
@@ -115,14 +124,4 @@ public class KifuUploadServlet extends HttpServlet {
         }
         return records;
     }
-
-    private String getFileName(final Part part) {
-        for (String content : part.getHeader("content-disposition").split(";")) {
-            if (content.trim().startsWith("filename")) {
-                return content.substring(content.indexOf('=') + 1).trim().replace("\"", "");
-            }
-        }
-        return null;
-    }
-
 }

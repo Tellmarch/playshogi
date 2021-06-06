@@ -11,7 +11,6 @@ import com.playshogi.website.gwt.client.SessionInformation;
 import com.playshogi.website.gwt.client.events.tutorial.LessonsListEvent;
 import com.playshogi.website.gwt.client.util.ElementWidget;
 import com.playshogi.website.gwt.client.widget.board.BoardPreview;
-import com.playshogi.website.gwt.client.widget.kifu.ImportCollectionPanel;
 import com.playshogi.website.gwt.shared.models.LessonDetails;
 import elemental2.dom.HTMLElement;
 import jsinterop.base.Js;
@@ -48,7 +47,6 @@ public class ManageLessonsView extends Composite {
     private final MyEventBinder eventBinder = GWT.create(MyEventBinder.class);
 
     private EventBus eventBus;
-    private final ImportCollectionPanel importCollectionPanel = new ImportCollectionPanel();
 
     @Inject
     public ManageLessonsView(final SessionInformation sessionInformation) {
@@ -266,7 +264,6 @@ public class ManageLessonsView extends Composite {
     public void activate(final EventBus eventBus) {
         GWT.log("Activating ManageLessonsView");
         this.eventBus = eventBus;
-        importCollectionPanel.activate(eventBus);
         eventBinder.bindEventHandlers(this, eventBus);
     }
 
