@@ -24,6 +24,9 @@ public interface ProblemsServiceAsync {
 
     void saveProblemsCollection(String sessionId, String draftId, AsyncCallback<String> callback);
 
+    void saveProblemsCollection(String sessionId, String draftId, ProblemCollectionDetails details,
+                                AsyncCallback<String> callback);
+
     void getProblemCollections(String sessionId, AsyncCallback<ProblemCollectionDetails[]> callback);
 
     void getPublicProblemCollections(String sessionId, AsyncCallback<ProblemCollectionDetails[]> callback);

@@ -3,7 +3,9 @@ package com.playshogi.library.database.models;
 public class PersistentProblem {
 
     public enum ProblemType {
-        TSUME(1, "Tsume"), OPENING(2, "Opening Problem");
+        UNSPECIFIED(0, "Unspecified"),
+        TSUME(1, "Tsume"),
+        OPENING(2, "Opening Problem");
 
         private final int dbInt;
         private final String description;
@@ -23,6 +25,8 @@ public class PersistentProblem {
 
         public static ProblemType fromDbInt(final int dbInt) {
             switch (dbInt) {
+                case 0:
+                    return UNSPECIFIED;
                 case 1:
                     return TSUME;
                 case 2:

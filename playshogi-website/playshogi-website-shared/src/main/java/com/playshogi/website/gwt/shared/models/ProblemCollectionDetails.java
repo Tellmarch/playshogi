@@ -14,11 +14,22 @@ public class ProblemCollectionDetails implements Serializable {
     private int difficulty;
     private String[] leaderboardNames;
     private String[] leaderboardScores;
+    private String[] tags;
 
     private String userHighScore;
     private int userSolved;
 
     public ProblemCollectionDetails() {
+    }
+
+    public ProblemCollectionDetails(final String name, final String description, final String visibility,
+                                    final String type, final int difficulty, final String[] tags) {
+        this.name = name;
+        this.description = description;
+        this.visibility = visibility;
+        this.type = type;
+        this.difficulty = difficulty;
+        this.tags = tags;
     }
 
     public String getId() {
@@ -109,6 +120,14 @@ public class ProblemCollectionDetails implements Serializable {
         this.userSolved = userSolved;
     }
 
+    public String[] getTags() {
+        return tags;
+    }
+
+    public void setTags(final String[] tags) {
+        this.tags = tags;
+    }
+
     @Override
     public String toString() {
         return "ProblemCollectionDetails{" +
@@ -121,6 +140,7 @@ public class ProblemCollectionDetails implements Serializable {
                 ", difficulty=" + difficulty +
                 ", leaderboardNames=" + Arrays.toString(leaderboardNames) +
                 ", leaderboardScores=" + Arrays.toString(leaderboardScores) +
+                ", tags=" + Arrays.toString(tags) +
                 ", userHighScore='" + userHighScore + '\'' +
                 ", userSolved=" + userSolved +
                 '}';

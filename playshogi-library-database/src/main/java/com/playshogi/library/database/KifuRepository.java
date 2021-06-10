@@ -4,6 +4,7 @@ import com.playshogi.library.database.models.PersistentGame;
 import com.playshogi.library.database.models.PersistentKifu;
 import com.playshogi.library.database.models.PersistentKifu.KifuType;
 import com.playshogi.library.shogi.models.formats.usf.UsfFormat;
+import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.library.shogi.models.record.GameRecord;
 
 import java.sql.*;
@@ -138,6 +139,11 @@ public class KifuRepository {
             LOGGER.log(Level.SEVERE, "Error looking up the kifu in db", e);
             return false;
         }
+    }
+
+    public void saveKifuPosition(final int kifuId, final ShogiPosition position) {
+        int lastPositionId = new PositionRepository(dbConnection).getOrSavePosition(position);
+        saveKifuPosition(kifuId, lastPositionId);
     }
 
     public void saveKifuPosition(final int kifuId, final int positionId) {

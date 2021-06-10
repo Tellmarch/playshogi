@@ -13,6 +13,12 @@ public class GameCollectionDetails implements Serializable {
     public GameCollectionDetails() {
     }
 
+    public GameCollectionDetails(final String name, final String description, final String visibility) {
+        this.name = name;
+        this.description = description;
+        this.visibility = visibility;
+    }
+
     public String getId() {
         return id;
     }

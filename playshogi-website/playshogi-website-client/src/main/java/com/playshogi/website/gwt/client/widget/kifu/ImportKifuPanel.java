@@ -81,6 +81,7 @@ public class ImportKifuPanel extends Composite implements ClickHandler {
     }
 
     private void importGameRecord(final GameRecord gameRecord) {
+        GWT.log(UsfFormat.INSTANCE.write(gameRecord));
         eventBus.fireEvent(new ImportGameRecordEvent(gameRecord, collectionId));
         dialogBox.hide();
     }

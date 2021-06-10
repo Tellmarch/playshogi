@@ -153,7 +153,8 @@ public enum KifFormat implements GameRecordFormat {
                 case "消費時間":
                     // Time used : ignored.
                     break;
-                case "後手の持駒": {
+                case "後手の持駒":
+                case "上手の持駒":
                     // gote pieces in hand
                     if (startingPosition == null) {
                         startingPosition = new ShogiPosition();
@@ -177,16 +178,15 @@ public enum KifFormat implements GameRecordFormat {
                     lineReader.nextLine(); // +---------------------------+
 
                     break;
-                }
-                case "先手の持駒": {
+                case "先手の持駒":
+                case "下手の持駒":
                     // sente pieces in hand
                     if (startingPosition == null) {
                         startingPosition = new ShogiPosition();
                     }
-                    MutableKomadaiState komadai = startingPosition.getMutableSenteKomadai();
-                    readPiecesInHand(value, komadai);
+                    MutableKomadaiState senteKomadai = startingPosition.getMutableSenteKomadai();
+                    readPiecesInHand(value, senteKomadai);
                     break;
-                }
                 default:
                     System.out.println("WARNING : unknown field " + l + " in file " + "???" + " , ignored !");
                     break;
@@ -265,11 +265,11 @@ public enum KifFormat implements GameRecordFormat {
     }
 
     private void readPiecesInHand(final String value, final MutableKomadaiState komadai) {
-        if (value.equals("なし")) {
+        if ("なし".equals(value) || "".equals(value)) {
             // nothing in hand
             return;
         }
-        String[] piecesInHandStrings = value.split("[ 　]");
+        String[] piecesInHandStrings = value.split("[ 　]", 0);
 
         for (String pieceString : piecesInHandStrings) {
             PieceParsingResult pieceParsingResult = KifUtils.readPiece(pieceString, 0);

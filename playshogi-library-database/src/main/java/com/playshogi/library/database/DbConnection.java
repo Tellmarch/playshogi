@@ -55,8 +55,4 @@ public class DbConnection {
 
         return true;
     }
-
-    public static void main(final String[] args) {
-        new DbConnection().start();
-    }
 }

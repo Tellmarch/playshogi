@@ -6,6 +6,7 @@ import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.website.gwt.client.events.collections.ListGameCollectionsEvent;
 import com.playshogi.website.gwt.client.events.collections.ListProblemCollectionsEvent;
+import com.playshogi.website.gwt.client.events.collections.SaveDraftCollectionEvent;
 import com.playshogi.website.gwt.shared.models.GameCollectionDetails;
 import com.playshogi.website.gwt.shared.models.ProblemCollectionDetails;
 import elemental2.dom.Node;
@@ -44,20 +45,22 @@ public class ImportCollectionPopup {
 
     private final MyEventBinder eventBinder = GWT.create(MyEventBinder.class);
 
-    private final ModalDialog defaultSizeModal;
+    private final ModalDialog dialog;
     private LocalListDataStore<String> localListDataStore;
     private TabsPanel tabs;
     private Select<GameCollectionDetails> gameCollectionSelect;
     private Select<ProblemCollectionDetails> problemCollectionSelect;
     private String draftId = "new";
+    private FileUpload fileUpload;
+    private EventBus eventBus;
 
     public ImportCollectionPopup() {
-        defaultSizeModal = createModalDialog();
+        dialog = createModalDialog();
     }
 
     private ModalDialog createModalDialog() {
 
-        ModalDialog modal = ModalDialog.create("Import Kifu Collection").setAutoClose(true).large();
+        ModalDialog modal = ModalDialog.create("Import Kifu Collection").setAutoClose(false).large();
         modal.appendChild(TextNode.of("With this dialog you can import a collection of " +
                 "kifus."));
 
@@ -68,7 +71,7 @@ public class ImportCollectionPopup {
                 .setSearchable(false)
                 .selectAt(2);
 
-        FileUpload fileUpload = FileUpload.create()
+        fileUpload = FileUpload.create()
                 .setIcon(Icons.ALL.touch_app())
                 .setUrl(GWT.getModuleBaseURL() + "uploadKifu")
                 .multipleFiles()
@@ -144,8 +147,8 @@ public class ImportCollectionPopup {
 
     private Tab createNewGameCollectionTab() {
         Select<String> visibility = Select.<String>create()
-                .appendChild(SelectOption.create("Public", "Visibility: Public"))
-                .appendChild(SelectOption.create("Unlisted", "Visibility: Unlisted"))
+                .appendChild(SelectOption.create("PUBLIC", "Visibility: Public"))
+                .appendChild(SelectOption.create("UNLISTED", "Visibility: Unlisted"))
                 .setSearchable(false)
                 .selectAt(1);
         TextArea description = TextArea.create("Description").setHelperText("Less than 5000 characters");
@@ -156,7 +159,12 @@ public class ImportCollectionPopup {
                 .appendChild(title)
                 .appendChild(description)
                 .appendChild(visibility)
-                .appendChild(Button.createPrimary("Upload Kifus in new Game Collection"));
+                .appendChild(Button.createPrimary("Upload Kifus in new Game Collection").addClickListener(
+                        evt -> {
+                            eventBus.fireEvent(SaveDraftCollectionEvent.ofGames(draftId, title.getStringValue(),
+                                    description.getStringValue(), visibility.getValue()));
+                            dialog.close();
+                        }));
     }
 
     private Node createProblemCollectionsForm() {
@@ -208,7 +216,14 @@ public class ImportCollectionPopup {
                 .appendChild(difficulty)
                 .appendChild(visibility)
                 .appendChild(tags.setPlaceholder("Tags..."))
-                .appendChild(Button.createPrimary("Upload Kifus in new Problem Collection"));
+                .appendChild(Button.createPrimary("Upload Kifus in new Problem Collection").addClickListener(
+                        evt -> {
+                            GWT.log(tags.getStringValue());
+                            eventBus.fireEvent(SaveDraftCollectionEvent.ofProblems(draftId, title.getStringValue(),
+                                    description.getStringValue(), visibility.getValue(), difficulty.getValue(),
+                                    tags.getValue().toArray(new String[0])));
+                            dialog.close();
+                        }));
     }
 
     private Node createKifusTable() {
@@ -249,7 +264,7 @@ public class ImportCollectionPopup {
 
     public void show() {
         reset();
-        defaultSizeModal.open();
+        dialog.open();
     }
 
     private void reset() {
@@ -268,6 +283,7 @@ public class ImportCollectionPopup {
 }-*/;
 
     public void activate(final EventBus eventBus) {
+        this.eventBus = eventBus;
         eventBinder.bindEventHandlers(this, eventBus);
     }
 

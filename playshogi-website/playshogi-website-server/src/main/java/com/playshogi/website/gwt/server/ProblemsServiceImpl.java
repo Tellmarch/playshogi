@@ -4,6 +4,7 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.playshogi.library.database.*;
 import com.playshogi.library.database.models.*;
 import com.playshogi.library.shogi.models.formats.usf.UsfFormat;
+import com.playshogi.library.shogi.models.record.GameRecord;
 import com.playshogi.library.shogi.models.record.KifuCollection;
 import com.playshogi.website.gwt.shared.models.*;
 import com.playshogi.website.gwt.shared.services.ProblemsService;
@@ -21,6 +22,7 @@ public class ProblemsServiceImpl extends RemoteServiceServlet implements Problem
     private final KifuRepository kifuRepository;
     private final UserRepository userRepository;
     private final GameSetRepository gameSetRepository;
+    private final ProblemSetRepository problemSetRepository;
     private final Authenticator authenticator = Authenticator.INSTANCE;
 
     private Map<String, Integer> highScores = new HashMap<>();
@@ -31,6 +33,7 @@ public class ProblemsServiceImpl extends RemoteServiceServlet implements Problem
         kifuRepository = new KifuRepository(dbConnection);
         userRepository = new UserRepository(dbConnection);
         gameSetRepository = new GameSetRepository(dbConnection);
+        problemSetRepository = new ProblemSetRepository(dbConnection);
         initHighScores();
     }
 
@@ -204,6 +207,12 @@ public class ProblemsServiceImpl extends RemoteServiceServlet implements Problem
 
     @Override
     public String saveProblemsCollection(final String sessionId, final String draftId) {
+        return saveProblemsCollection(sessionId, draftId, new ProblemCollectionDetails());
+    }
+
+    @Override
+    public String saveProblemsCollection(final String sessionId, final String draftId,
+                                         final ProblemCollectionDetails details) {
         LOGGER.log(Level.INFO, "saveProblemsCollection: " + draftId);
 
         LoginResult loginResult = authenticator.checkSession(sessionId);
@@ -217,11 +226,31 @@ public class ProblemsServiceImpl extends RemoteServiceServlet implements Problem
             throw new IllegalStateException("Invalid draft connection ID");
         }
 
-        String id = UUID.randomUUID().toString();
+        String name = details.getName() != null ? details.getName() : collection.getName();
+        String description = details.getDescription() != null ? details.getDescription() : collection.getName();
+        PersistentGameSet.Visibility visibility = details.getVisibility() == null ?
+                PersistentGameSet.Visibility.UNLISTED :
+                PersistentGameSet.Visibility.valueOf(details.getVisibility().toUpperCase());
+        int userId = loginResult.getUserId();
+        int difficulty = details.getDifficulty();
+        String tags = details.getType() == null ? "" : String.join(",", details.getTags());
+
+        int id = problemSetRepository.saveProblemSet(name, description, visibility, userId, difficulty, tags);
+
+        if (id == -1) {
+            LOGGER.log(Level.INFO, "Error saving the problem set");
+            throw new IllegalStateException("Error saving the problem set");
+        }
+
+        int i = 1;
+        for (GameRecord game : collection.getKifus()) {
+            problemSetRepository.addProblemToProblemSet(game, id, "Problem #" + (i++), loginResult.getUserId(), 0,
+                    PersistentProblem.ProblemType.UNSPECIFIED, false);
+        }
 
         ProblemsCache.INSTANCE.saveProblemsCollection(collection);
 
-        return id;
+        return String.valueOf(id);
     }
 
     @Override

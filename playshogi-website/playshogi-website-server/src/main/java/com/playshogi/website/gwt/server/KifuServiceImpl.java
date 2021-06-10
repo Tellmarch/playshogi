@@ -20,7 +20,6 @@ import com.playshogi.website.gwt.shared.services.KifuService;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -445,6 +444,14 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
     public String saveGameCollection(final String sessionId, final String draftId) {
         LOGGER.log(Level.INFO, "saveGameCollection: " + draftId);
 
+        return saveGameCollection(sessionId, draftId, new GameCollectionDetails());
+    }
+
+    @Override
+    public String saveGameCollection(final String sessionId, final String draftId,
+                                     final GameCollectionDetails details) {
+        LOGGER.log(Level.INFO, "saveGameCollection: " + draftId + " " + details);
+
         LoginResult loginResult = authenticator.checkSession(sessionId);
         if (loginResult == null || !loginResult.isLoggedIn()) {
             throw new IllegalStateException("Only logged in users can save a game collection");
@@ -453,14 +460,16 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
         KifuCollection collection = CollectionUploads.INSTANCE.getCollection(draftId);
 
         if (collection == null) {
-            for (Entry<String, KifuCollection> c : CollectionUploads.INSTANCE.getCollections().entrySet()) {
-                LOGGER.log(Level.INFO, "Existing draft collection: " + c.getKey() + " " + c.getValue().getName());
-            }
-            throw new IllegalStateException("Invalid draft connection ID");
+            throw new IllegalStateException("Invalid draft collection ID");
         }
 
-        int id = gameSetRepository.saveGameSet(collection.getName(), collection.getName(),
-                PersistentGameSet.Visibility.PRIVATE, loginResult.getUserId());
+        String name = details.getName() != null ? details.getName() : collection.getName();
+        String description = details.getDescription() != null ? details.getDescription() : collection.getName();
+        PersistentGameSet.Visibility visibility = details.getVisibility() == null ?
+                PersistentGameSet.Visibility.UNLISTED :
+                PersistentGameSet.Visibility.valueOf(details.getVisibility().toUpperCase());
+
+        int id = gameSetRepository.saveGameSet(name, description, visibility, loginResult.getUserId());
 
         if (id == -1) {
             LOGGER.log(Level.INFO, "Error saving the game set");
