@@ -1,5 +1,6 @@
 package com.playshogi.library.shogi.models.record;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class KifuCollection {
@@ -8,7 +9,7 @@ public class KifuCollection {
     private final String name;
 
     public KifuCollection(final String name, final List<GameRecord> kifus) {
-        this.kifus = kifus;
+        this.kifus = new ArrayList<>(kifus);
         this.name = name;
     }
 
@@ -20,4 +21,7 @@ public class KifuCollection {
         return name;
     }
 
+    public void merge(final KifuCollection collection) {
+        kifus.addAll(collection.getKifus());
+    }
 }

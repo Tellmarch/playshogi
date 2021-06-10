@@ -18,6 +18,14 @@ public enum CollectionUploads {
         return id;
     }
 
+    public void addOrMergeCollection(final String id, final KifuCollection collection) {
+        if (collections.containsKey(id)) {
+            collections.get(id).merge(collection);
+        } else {
+            collections.put(id, collection);
+        }
+    }
+
     public KifuCollection getCollection(final String draftCollectionId) {
         return collections.get(draftCollectionId);
     }

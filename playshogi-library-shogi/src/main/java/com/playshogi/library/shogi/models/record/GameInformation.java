@@ -71,4 +71,8 @@ public class GameInformation {
                 ", opening='" + opening + '\'' +
                 '}';
     }
+
+    public String getSummaryString() {
+        return black + " vs " + white + ", " + date;
+    }
 }

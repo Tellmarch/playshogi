@@ -59,7 +59,7 @@ public class ProblemCollectionsActivity extends MyAbstractActivity {
                     @Override
                     public void onSuccess(ProblemCollectionDetails[] details) {
                         GWT.log("ProblemCollectionsActivity: retrieved collections list");
-                        eventBus.fireEvent(new ListProblemCollectionsEvent(details));
+                        eventBus.fireEvent(new ListProblemCollectionsEvent(details, null));
                     }
                 });
     }

@@ -6,12 +6,19 @@ import com.playshogi.website.gwt.shared.models.ProblemCollectionDetails;
 public class ListProblemCollectionsEvent extends GenericEvent {
 
     private final ProblemCollectionDetails[] publicCollections;
+    private final ProblemCollectionDetails[] myCollections;
 
-    public ListProblemCollectionsEvent(final ProblemCollectionDetails[] publicCollections) {
+    public ListProblemCollectionsEvent(final ProblemCollectionDetails[] publicCollections,
+                                       final ProblemCollectionDetails[] myCollections) {
         this.publicCollections = publicCollections;
+        this.myCollections = myCollections;
     }
 
     public ProblemCollectionDetails[] getPublicCollections() {
         return publicCollections;
+    }
+
+    public ProblemCollectionDetails[] getMyCollections() {
+        return myCollections;
     }
 }
