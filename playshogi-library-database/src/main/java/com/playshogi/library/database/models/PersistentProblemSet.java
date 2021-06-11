@@ -1,21 +1,27 @@
 package com.playshogi.library.database.models;
 
-public class PersistentGameSet {
+import java.util.Arrays;
+
+public class PersistentProblemSet {
 
     private final int id;
     private final String name;
     private final String description;
     private final Visibility visibility;
     private final Integer ownerId;
+    private final Integer difficulty;
+    private final String[] tags;
 
 
-    public PersistentGameSet(final int id, final String name, final String description, final Visibility visibility,
-                             final Integer ownerId) {
+    public PersistentProblemSet(final int id, final String name, final String description, final Visibility visibility,
+                                final Integer ownerId, final Integer difficulty, final String[] tags) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.visibility = visibility;
         this.ownerId = ownerId;
+        this.difficulty = difficulty;
+        this.tags = tags;
     }
 
     public int getId() {
@@ -38,14 +44,24 @@ public class PersistentGameSet {
         return visibility;
     }
 
+    public Integer getDifficulty() {
+        return difficulty;
+    }
+
+    public String[] getTags() {
+        return tags;
+    }
+
     @Override
     public String toString() {
-        return "PersistentGameSet{" +
+        return "PersistentProblemSet{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", visibility=" + visibility +
                 ", ownerId=" + ownerId +
+                ", difficulty=" + difficulty +
+                ", tags=" + Arrays.toString(tags) +
                 '}';
     }
 }

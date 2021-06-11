@@ -57,6 +57,9 @@ public class MyCollectionsActivity extends MyAbstractActivity {
     }
 
     private void fetchData() {
+        if (!sessionInformation.isLoggedIn()) {
+            return;
+        }
         kifuService.getGameCollections(sessionInformation.getSessionId(),
                 new AsyncCallback<GameCollectionDetailsList>() {
                     @Override
@@ -71,6 +74,19 @@ public class MyCollectionsActivity extends MyAbstractActivity {
                                 gameCollectionDetails.getPublicCollections()));
                     }
                 });
+        problemsService.getUserProblemCollections(sessionInformation.getSessionId(), sessionInformation.getUsername()
+                , new AsyncCallback<ProblemCollectionDetails[]>() {
+            @Override
+            public void onFailure(final Throwable throwable) {
+                GWT.log("MyCollectionsActivity: error retrieving pb collections list");
+            }
+
+            @Override
+            public void onSuccess(final ProblemCollectionDetails[] problemCollectionDetails) {
+                GWT.log("MyCollectionsActivity: retrieved pb collections list");
+                eventBus.fireEvent(new ListProblemCollectionsEvent(null, problemCollectionDetails));
+            }
+        });
     }
 
     @EventHandler

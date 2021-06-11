@@ -228,9 +228,9 @@ public class ProblemsServiceImpl extends RemoteServiceServlet implements Problem
 
         String name = details.getName() != null ? details.getName() : collection.getName();
         String description = details.getDescription() != null ? details.getDescription() : collection.getName();
-        PersistentGameSet.Visibility visibility = details.getVisibility() == null ?
-                PersistentGameSet.Visibility.UNLISTED :
-                PersistentGameSet.Visibility.valueOf(details.getVisibility().toUpperCase());
+        Visibility visibility = details.getVisibility() == null ?
+                Visibility.UNLISTED :
+                Visibility.valueOf(details.getVisibility().toUpperCase());
         int userId = loginResult.getUserId();
         int difficulty = details.getDifficulty();
         String tags = details.getType() == null ? "" : String.join(",", details.getTags());
@@ -269,33 +269,32 @@ public class ProblemsServiceImpl extends RemoteServiceServlet implements Problem
     public ProblemCollectionDetails[] getPublicProblemCollections(final String sessionId) {
         LOGGER.log(Level.INFO, "getProblemCollections");
 
-        ArrayList<ProblemCollectionDetails> publicCollectionDetails = new ArrayList<>();
+        List<PersistentProblemSet> problemSets = problemSetRepository.getAllPublicProblemSets();
 
-        List<PersistentGameSet> publicGameSets = gameSetRepository.getAllPublicGameSets();
-        for (PersistentGameSet gameSet : publicGameSets) {
-            ProblemCollectionDetails details = getCollectionDetailsFromGameSet(gameSet);
-            if (details != null) {
-                publicCollectionDetails.add(details);
-            }
-        }
-
-        return publicCollectionDetails.toArray(new ProblemCollectionDetails[0]);
+        return problemSets.stream().map(this::getProblemCollectionDetails).toArray(ProblemCollectionDetails[]::new);
     }
 
-    private ProblemCollectionDetails getCollectionDetailsFromGameSet(final PersistentGameSet gameSet) {
-        ProblemCollectionDetails details = new ProblemCollectionDetails();
-        details.setId(String.valueOf(gameSet.getId()));
-        details.setName(gameSet.getName());
-        details.setDescription(gameSet.getDescription());
-        details.setVisibility(gameSet.getVisibility().toString().toLowerCase());
-        // TODO: this is a temporary hack...
-        if (details.getName().contains("Tsume") ||
-                details.getName().contains("Castle") ||
-                details.getName().contains("Problem")) {
-            details.setType("problems");
-        } else {
-            return null;
+    @Override
+    public ProblemCollectionDetails[] getUserProblemCollections(final String sessionId, final String userName) {
+        LOGGER.log(Level.INFO, "getUserProblemCollections");
+
+        LoginResult loginResult = authenticator.checkSession(sessionId);
+        if (loginResult == null || !loginResult.isLoggedIn() || !userName.equals(loginResult.getUserName())) {
+            throw new IllegalStateException("User does not have permissions for this operation");
         }
+
+        List<PersistentProblemSet> userProblemSets = problemSetRepository.getUserProblemSets(loginResult.getUserId());
+
+        return userProblemSets.stream().map(this::getProblemCollectionDetails).toArray(ProblemCollectionDetails[]::new);
+    }
+
+    private ProblemCollectionDetails getProblemCollectionDetails(final PersistentProblemSet persistentProblemSet) {
+        ProblemCollectionDetails details = new ProblemCollectionDetails();
+        details.setName(persistentProblemSet.getName());
+        details.setDescription(persistentProblemSet.getDescription());
+        details.setId(String.valueOf(persistentProblemSet.getId()));
+        details.setVisibility(persistentProblemSet.getVisibility().name());
+        details.setTags(persistentProblemSet.getTags());
         return details;
     }
 

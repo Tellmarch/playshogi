@@ -465,9 +465,9 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
 
         String name = details.getName() != null ? details.getName() : collection.getName();
         String description = details.getDescription() != null ? details.getDescription() : collection.getName();
-        PersistentGameSet.Visibility visibility = details.getVisibility() == null ?
-                PersistentGameSet.Visibility.UNLISTED :
-                PersistentGameSet.Visibility.valueOf(details.getVisibility().toUpperCase());
+        Visibility visibility = details.getVisibility() == null ?
+                Visibility.UNLISTED :
+                Visibility.valueOf(details.getVisibility().toUpperCase());
 
         int id = gameSetRepository.saveGameSet(name, description, visibility, loginResult.getUserId());
 
@@ -494,7 +494,7 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
         }
 
         gameSetRepository.updateGameSet(Integer.parseInt(details.getId()), details.getName(), details.getDescription(),
-                PersistentGameSet.Visibility.valueOf(details.getVisibility().toUpperCase()), loginResult.getUserId());
+                Visibility.valueOf(details.getVisibility().toUpperCase()), loginResult.getUserId());
     }
 
 
@@ -508,7 +508,7 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
         }
 
         gameSetRepository.saveGameSet(details.getName(), details.getDescription(),
-                PersistentGameSet.Visibility.valueOf(details.getVisibility().toUpperCase()), loginResult.getUserId());
+                Visibility.valueOf(details.getVisibility().toUpperCase()), loginResult.getUserId());
     }
 
     @Override

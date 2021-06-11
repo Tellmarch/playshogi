@@ -1,8 +1,9 @@
 package com.playshogi.library.database;
 
-import com.playshogi.library.database.models.PersistentGameSet;
 import com.playshogi.library.database.models.PersistentKifu;
 import com.playshogi.library.database.models.PersistentProblem;
+import com.playshogi.library.database.models.PersistentProblemSet;
+import com.playshogi.library.database.models.Visibility;
 import com.playshogi.library.shogi.models.features.FeatureTag;
 import com.playshogi.library.shogi.models.moves.Move;
 import com.playshogi.library.shogi.models.moves.SpecialMove;
@@ -11,6 +12,8 @@ import com.playshogi.library.shogi.models.record.GameRecord;
 import com.playshogi.library.shogi.rules.ShogiRulesEngine;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -28,12 +31,17 @@ public class ProblemSetRepository {
             "`visibility`, `owner_user_id`, `difficulty`, `tags`) VALUES (?, ?, ?, ?, ?, ?);";
     private static final String INSERT_PROBLEMSET_PROBLEM = "INSERT INTO `playshogi`.`ps_problemsetpbs`" +
             "(`problemset_id`,`problem_id`) VALUES (?,?);";
+    private static final String SELECT_PUBLIC_PROBLEMSETS = "SELECT * FROM `playshogi`.`ps_problemset` WHERE " +
+            "visibility = 2" +
+            " LIMIT 1000";
+    private static final String SELECT_PROBLEMSETS_FOR_USER = "SELECT * FROM `playshogi`.`ps_problemset` WHERE " +
+            "owner_user_id = ? LIMIT 1000";
 
     public ProblemSetRepository(final DbConnection dbConnection) {
         this.dbConnection = dbConnection;
     }
 
-    public int saveProblemSet(final String name, final String description, final PersistentGameSet.Visibility visibility
+    public int saveProblemSet(final String name, final String description, final Visibility visibility
             , final Integer ownerId, final Integer difficulty, final String tags) {
 
         int key = -1;
@@ -135,5 +143,52 @@ public class ProblemSetRepository {
         }
     }
 
+    public List<PersistentProblemSet> getAllPublicProblemSets() {
+        List<PersistentProblemSet> result = new ArrayList<>();
+        Connection connection = dbConnection.getConnection();
+        try (PreparedStatement preparedStatement = connection.prepareStatement(SELECT_PUBLIC_PROBLEMSETS)) {
+            ResultSet rs = preparedStatement.executeQuery();
+            while (rs.next()) {
+                String name = rs.getString("name");
+                int id = rs.getInt("id");
+                String description = rs.getString("description");
+                Visibility visibility = Visibility.values()[rs.getInt("visibility"
+                )];
+                Integer ownerId = SqlUtils.getInteger(rs, "owner_user_id");
+                Integer difficulty = SqlUtils.getInteger(rs, "difficulty");
+                String tags = rs.getString("tags");
 
+                result.add(new PersistentProblemSet(id, name, description, visibility, ownerId, difficulty,
+                        tags == null ? null : tags.split(",")));
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error retrieving public problem sets in db", e);
+        }
+        return result;
+    }
+
+    public List<PersistentProblemSet> getUserProblemSets(int userId) {
+        List<PersistentProblemSet> result = new ArrayList<>();
+        Connection connection = dbConnection.getConnection();
+        try (PreparedStatement preparedStatement = connection.prepareStatement(SELECT_PROBLEMSETS_FOR_USER)) {
+            preparedStatement.setInt(1, userId);
+            ResultSet rs = preparedStatement.executeQuery();
+            while (rs.next()) {
+                String name = rs.getString("name");
+                int id = rs.getInt("id");
+                String description = rs.getString("description");
+                Visibility visibility = Visibility.values()[rs.getInt("visibility"
+                )];
+                Integer ownerId = SqlUtils.getInteger(rs, "owner_user_id");
+                Integer difficulty = SqlUtils.getInteger(rs, "difficulty");
+                String tags = rs.getString("tags");
+
+                result.add(new PersistentProblemSet(id, name, description, visibility, ownerId, difficulty,
+                        tags == null ? null : tags.split(",")));
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error retrieving problem sets for user in db", e);
+        }
+        return result;
+    }
 }

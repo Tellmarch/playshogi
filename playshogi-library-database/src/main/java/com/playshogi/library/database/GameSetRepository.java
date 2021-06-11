@@ -100,7 +100,7 @@ public class GameSetRepository {
         gameRepository = new GameRepository(dbConnection);
     }
 
-    public int saveGameSet(final String name, final String description, final PersistentGameSet.Visibility visibility
+    public int saveGameSet(final String name, final String description, final Visibility visibility
             , final Integer ownerId) {
 
         int key = -1;
@@ -130,7 +130,7 @@ public class GameSetRepository {
     }
 
     public void updateGameSet(final int id, final String name, final String description,
-                              final PersistentGameSet.Visibility visibility
+                              final Visibility visibility
             , final Integer ownerId) {
 
         int key = -1;
@@ -175,7 +175,7 @@ public class GameSetRepository {
                 LOGGER.log(Level.INFO, "Found gameset: " + rs.getString("name") + " with id: " + rs.getInt("id"));
                 String name = rs.getString("name");
                 String description = rs.getString("description");
-                PersistentGameSet.Visibility visibility = PersistentGameSet.Visibility.values()[rs.getInt("visibility"
+                Visibility visibility = Visibility.values()[rs.getInt("visibility"
                 )];
                 Integer ownerId = SqlUtils.getInteger(rs, "owner_user_id");
 
@@ -199,7 +199,7 @@ public class GameSetRepository {
                 String name = rs.getString("name");
                 int id = rs.getInt("id");
                 String description = rs.getString("description");
-                PersistentGameSet.Visibility visibility = PersistentGameSet.Visibility.values()[rs.getInt("visibility"
+                Visibility visibility = Visibility.values()[rs.getInt("visibility"
                 )];
                 Integer ownerId = SqlUtils.getInteger(rs, "owner_user_id");
 
@@ -220,7 +220,7 @@ public class GameSetRepository {
                 String name = rs.getString("name");
                 int id = rs.getInt("id");
                 String description = rs.getString("description");
-                PersistentGameSet.Visibility visibility = PersistentGameSet.Visibility.values()[rs.getInt("visibility"
+                Visibility visibility = Visibility.values()[rs.getInt("visibility"
                 )];
                 Integer ownerId = SqlUtils.getInteger(rs, "owner_user_id");
 
@@ -242,7 +242,7 @@ public class GameSetRepository {
                 String name = rs.getString("name");
                 int id = rs.getInt("id");
                 String description = rs.getString("description");
-                PersistentGameSet.Visibility visibility = PersistentGameSet.Visibility.values()[rs.getInt("visibility"
+                Visibility visibility = Visibility.values()[rs.getInt("visibility"
                 )];
                 Integer ownerId = SqlUtils.getInteger(rs, "owner_user_id");
 
