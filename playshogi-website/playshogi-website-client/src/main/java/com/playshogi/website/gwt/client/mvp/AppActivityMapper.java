@@ -53,6 +53,8 @@ public class AppActivityMapper implements ActivityMapper {
     @Inject
     ProblemsView problemsView;
     @Inject
+    ProblemView problemView;
+    @Inject
     KifuEditorView kifuEditorView;
     @Inject
     UserKifusView userKifusView;
@@ -99,7 +101,7 @@ public class AppActivityMapper implements ActivityMapper {
         } else if (place instanceof ProblemsPlace) {
             return new ProblemsActivity((ProblemsPlace) place, problemsView, sessionInformation);
         } else if (place instanceof ProblemPlace) {
-            return new ProblemsActivity((ProblemPlace) place, problemsView, sessionInformation);
+            return new ProblemActivity((ProblemPlace) place, problemView, sessionInformation);
         } else if (place instanceof KifuEditorPlace) {
             return new KifuEditorActivity((KifuEditorPlace) place, kifuEditorView, sessionInformation,
                     placeController);

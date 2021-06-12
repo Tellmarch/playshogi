@@ -19,7 +19,6 @@ import com.playshogi.website.gwt.client.events.puzzles.ProblemCollectionProgress
 import com.playshogi.website.gwt.client.events.puzzles.UserFinishedProblemEvent;
 import com.playshogi.website.gwt.client.events.puzzles.UserJumpedToProblemEvent;
 import com.playshogi.website.gwt.client.events.puzzles.UserSkippedProblemEvent;
-import com.playshogi.website.gwt.client.place.ProblemPlace;
 import com.playshogi.website.gwt.client.place.ProblemsPlace;
 import com.playshogi.website.gwt.client.ui.ProblemsView;
 import com.playshogi.website.gwt.shared.models.ProblemCollectionDetails;
@@ -53,9 +52,7 @@ public class ProblemsActivity extends MyAbstractActivity {
     private final ProblemController problemController = new ProblemController();
     private EventBus eventBus;
 
-    // Either collectionId or kifuId is present
     private final String collectionId;
-    private final String kifuId;
 
     private int problemIndex;
     private ProblemCollectionDetails details;
@@ -68,16 +65,6 @@ public class ProblemsActivity extends MyAbstractActivity {
         this.problemsView = problemsView;
         this.collectionId = place.getCollectionId();
         this.problemIndex = place.getProblemIndex();
-        this.kifuId = null;
-        this.sessionInformation = sessionInformation;
-    }
-
-    public ProblemsActivity(final ProblemPlace place, final ProblemsView problemsView,
-                            final SessionInformation sessionInformation) {
-        this.problemsView = problemsView;
-        this.collectionId = null;
-        this.problemIndex = 0;
-        this.kifuId = place.getKifuId();
         this.sessionInformation = sessionInformation;
     }
 
@@ -90,46 +77,37 @@ public class ProblemsActivity extends MyAbstractActivity {
         problemController.activate(eventBus);
         containerWidget.setWidget(problemsView.asWidget());
 
-        if (collectionId != null && !"null".equals(collectionId)) {
-            loadCollection();
-        } else if (kifuId != null) {
-            loadProblem();
-        }
+        loadCollection();
     }
 
     private void loadCollection() {
         GWT.log("Querying for collection problems");
         problemsService.getProblemCollection(sessionInformation.getSessionId(), collectionId,
                 new AsyncCallback<ProblemCollectionDetailsAndProblems>() {
-            @Override
-            public void onFailure(final Throwable throwable) {
-                GWT.log("ProblemsActivity: error retrieving collection problems");
-            }
+                    @Override
+                    public void onFailure(final Throwable throwable) {
+                        GWT.log("ProblemsActivity: error retrieving collection problems");
+                    }
 
-            @Override
-            public void onSuccess(final ProblemCollectionDetailsAndProblems result) {
-                GWT.log("ProblemsActivity: retrieved collection problems");
-                problems = result.getProblems();
-                statuses = new ProblemStatus[problems.length];
-                Arrays.fill(statuses, ProblemStatus.UNSOLVED);
-                details = result.getDetails();
-                loadProblem();
-                eventBus.fireEvent(new ListCollectionProblemsEvent(result.getProblems(), result.getDetails()));
-            }
-        });
+                    @Override
+                    public void onSuccess(final ProblemCollectionDetailsAndProblems result) {
+                        GWT.log("ProblemsActivity: retrieved collection problems");
+                        problems = result.getProblems();
+                        statuses = new ProblemStatus[problems.length];
+                        Arrays.fill(statuses, ProblemStatus.UNSOLVED);
+                        details = result.getDetails();
+                        loadProblem();
+                        eventBus.fireEvent(new ListCollectionProblemsEvent(result.getProblems(), result.getDetails()));
+                    }
+                });
     }
 
     private void loadProblem() {
-        String id;
-        if (kifuId != null) {
-            id = kifuId;
-        } else {
-            if (problemIndex >= problems.length) {
-                Window.alert("You reached the last problem in the collection!");
-                return;
-            }
-            id = problems[problemIndex].getKifuId();
+        if (problemIndex >= problems.length) {
+            Window.alert("You reached the last problem in the collection!");
+            return;
         }
+        String id = problems[problemIndex].getKifuId();
 
         kifuService.getKifuUsf(sessionInformation.getSessionId(), id,
                 new AsyncCallback<String>() {

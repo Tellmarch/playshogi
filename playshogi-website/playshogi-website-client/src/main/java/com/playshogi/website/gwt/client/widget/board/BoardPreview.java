@@ -53,7 +53,6 @@ public class BoardPreview extends Composite {
     }
 
     public void showPosition(final ShogiPosition position) {
-        GWT.log("wd count: " + absolutePanel.getWidgetCount());
         while (absolutePanel.getWidgetCount() > 0) {
             absolutePanel.remove(0);
         }
