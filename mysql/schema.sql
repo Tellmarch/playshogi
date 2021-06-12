@@ -449,6 +449,33 @@ CREATE TABLE IF NOT EXISTS `playshogi`.`ps_lessons` (
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
+
+-- -----------------------------------------------------
+-- Table `playshogi`.`ps_userpbsetstats`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `playshogi`.`ps_userpbsetstats` ;
+
+CREATE TABLE IF NOT EXISTS `playshogi`.`ps_userpbsetstats` (
+  `user_id` INT UNSIGNED NOT NULL,
+  `problemset_id` INT UNSIGNED NOT NULL,
+  `timestamp_attempted` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `time_spent_ms` INT NULL,
+  `complete` TINYINT(1) NOT NULL,
+  `solved` INT UNSIGNED NOT NULL,
+  INDEX `fk_ps_userpbsetstats_1_idx` (`user_id` ASC),
+  INDEX `fk_ps_userpbsetstats_2_idx` (`problemset_id` ASC),
+  CONSTRAINT `fk_ps_userpbsetstats_1`
+    FOREIGN KEY (`user_id`)
+    REFERENCES `playshogi`.`ps_user` (`id`)
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_ps_userpbsetstats_2`
+    FOREIGN KEY (`problemset_id`)
+    REFERENCES `playshogi`.`ps_problemset` (`id`)
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
 SET SQL_MODE = '';
 DROP USER IF EXISTS playshogi;
 SET SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
