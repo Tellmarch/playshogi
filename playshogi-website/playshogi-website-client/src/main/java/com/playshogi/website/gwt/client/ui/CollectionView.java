@@ -6,35 +6,23 @@ import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
-import com.playshogi.library.shogi.models.formats.sfen.SfenConverter;
 import com.playshogi.website.gwt.client.SessionInformation;
 import com.playshogi.website.gwt.client.events.collections.ListCollectionGamesEvent;
-import com.playshogi.website.gwt.client.events.tutorial.LessonsListEvent;
 import com.playshogi.website.gwt.client.mvp.AppPlaceHistoryMapper;
 import com.playshogi.website.gwt.client.place.ViewKifuPlace;
 import com.playshogi.website.gwt.client.util.ElementWidget;
-import com.playshogi.website.gwt.client.widget.board.BoardPreview;
-import com.playshogi.website.gwt.client.widget.kifu.ImportCollectionPanel;
 import com.playshogi.website.gwt.shared.models.GameDetails;
-import com.playshogi.website.gwt.shared.models.LessonDetails;
-import elemental2.dom.*;
-import jsinterop.base.Js;
-import org.dominokit.domino.ui.badges.Badge;
+import elemental2.dom.EventListener;
+import elemental2.dom.HTMLDivElement;
+import elemental2.dom.HTMLHeadingElement;
 import org.dominokit.domino.ui.button.Button;
 import org.dominokit.domino.ui.datatable.ColumnConfig;
 import org.dominokit.domino.ui.datatable.DataTable;
 import org.dominokit.domino.ui.datatable.TableConfig;
-import org.dominokit.domino.ui.datatable.plugins.RecordDetailsPlugin;
 import org.dominokit.domino.ui.datatable.plugins.SimplePaginationPlugin;
 import org.dominokit.domino.ui.datatable.store.LocalListDataStore;
 import org.dominokit.domino.ui.forms.CheckBox;
-import org.dominokit.domino.ui.forms.FieldStyle;
-import org.dominokit.domino.ui.forms.TextBox;
-import org.dominokit.domino.ui.icons.Icons;
 import org.dominokit.domino.ui.modals.ModalDialog;
-import org.dominokit.domino.ui.style.Color;
-import org.dominokit.domino.ui.style.ColorScheme;
-import org.dominokit.domino.ui.style.Style;
 import org.dominokit.domino.ui.style.Styles;
 import org.dominokit.domino.ui.utils.TextNode;
 import org.jboss.elemento.Elements;
@@ -144,7 +132,7 @@ public class CollectionView extends Composite {
                                 //.setCellRenderer(cell -> Elements.a(historyMapper.getToken(new ViewKifuPlace(cell.getRecord().getKifuId(), 0))).add(Button.createDefault("Show")).element())
                                 .setCellRenderer(cell -> {
                                     String href = "#" + historyMapper.getToken(new ViewKifuPlace(cell.getRecord().getKifuId(), 0));
-                                    return Elements.a(href, "_blank" ).add(Button.createPrimary("Show")).element();
+                                    return Elements.a(href).add(Button.createPrimary("Show")).element();
                                 })
                 )
                 .addColumn(

@@ -6,8 +6,9 @@ import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.event.shared.EventBus;
 import com.playshogi.website.gwt.client.events.collections.DeleteGameCollectionEvent;
 import com.playshogi.website.gwt.client.mvp.AppPlaceHistoryMapper;
-import com.playshogi.website.gwt.client.place.ProblemsPlace;
+import com.playshogi.website.gwt.client.place.CollectionPlace;
 import com.playshogi.website.gwt.client.util.ElementWidget;
+import com.playshogi.website.gwt.client.widget.kifu.CollectionPropertiesPanel;
 import com.playshogi.website.gwt.shared.models.GameCollectionDetails;
 import elemental2.dom.HTMLElement;
 import org.dominokit.domino.ui.button.Button;
@@ -35,6 +36,7 @@ public class GameCollectionsTable {
     private final SimplePaginationPlugin<GameCollectionDetails> simplePaginationPlugin;
     private final DataTable<GameCollectionDetails> table;
     private final boolean withEditOptions;
+    private final CollectionPropertiesPanel collectionPropertiesPanel = new CollectionPropertiesPanel();
     private EventBus eventBus;
 
     public GameCollectionsTable(final AppPlaceHistoryMapper historyMapper, boolean withEditOptions) {
@@ -65,7 +67,8 @@ public class GameCollectionsTable {
                 .appendChild(h(5).add("Description:"))
                 .appendChild(TextNode.of(details.getDescription())));
         if (withEditOptions) {
-            rowElement.addColumn(Column.span4().appendChild(Button.createPrimary("Edit properties")));
+            rowElement.addColumn(Column.span4().appendChild(Button.createPrimary("Edit properties")
+                    .addClickListener(evt -> collectionPropertiesPanel.showInUpdateDialog(details))));
             rowElement.addColumn(Column.span4().appendChild(Button.createDanger("Delete collection")
                     .addClickListener(evt -> confirmCollectionDeletion(details))));
         }
@@ -95,8 +98,7 @@ public class GameCollectionsTable {
                                         element -> element.style.setProperty("vertical-align", "top"))
                                 .setCellRenderer(cell -> {
                                     String href =
-                                            "#" + historyMapper.getToken(new ProblemsPlace(cell.getRecord().getId(),
-                                                    0));
+                                            "#" + historyMapper.getToken(new CollectionPlace(cell.getRecord().getId()));
                                     return Elements.a(href).add(Button.createPrimary(
                                             "Open")).element();
                                 }))
@@ -113,6 +115,7 @@ public class GameCollectionsTable {
 
     public void activate(final EventBus eventBus) {
         this.eventBus = eventBus;
+        collectionPropertiesPanel.activate(eventBus);
     }
 
     private void confirmCollectionDeletion(final GameCollectionDetails details) {

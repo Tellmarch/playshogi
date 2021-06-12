@@ -38,7 +38,6 @@ public class MyCollectionsView extends Composite {
 
     private final MyEventBinder eventBinder = GWT.create(MyEventBinder.class);
 
-    private final PlaceController placeController;
     private SessionInformation sessionInformation;
     private final ImportCollectionPopup importCollectionPopup = new ImportCollectionPopup();
     private final CollectionPropertiesPanel collectionPropertiesPanel = new CollectionPropertiesPanel();
@@ -54,7 +53,6 @@ public class MyCollectionsView extends Composite {
     public MyCollectionsView(final PlaceController placeController, final SessionInformation sessionInformation,
                              final AppPlaceHistoryMapper historyMapper) {
         GWT.log("Creating game collections view");
-        this.placeController = placeController;
         this.sessionInformation = sessionInformation;
         problemsTable = new ProblemCollectionsTable(historyMapper, true);
         gamesTable = new GameCollectionsTable(historyMapper, true);
@@ -108,7 +106,7 @@ public class MyCollectionsView extends Composite {
 
     @EventHandler
     public void onListGameCollectionsEvent(final ListGameCollectionsEvent event) {
-        GWT.log("GameCollectionsView: handle GameCollectionsEvent:\n" + event);
+        GWT.log("MyCollectionsView: handle GameCollectionsEvent:");
 
         if (event.getMyCollections() != null) {
             gamesTable.setData(Arrays.asList(event.getMyCollections()));
@@ -128,7 +126,7 @@ public class MyCollectionsView extends Composite {
 
     @EventHandler
     public void onListProblemCollections(final ListProblemCollectionsEvent event) {
-        GWT.log("ProblemCollectionsView: handle ListProblemCollectionsEvent");
+        GWT.log("MyCollectionsView: handle ListProblemCollectionsEvent");
         if (event.getMyCollections() != null) {
             problemsTable.setData(Arrays.asList(event.getMyCollections()));
         }

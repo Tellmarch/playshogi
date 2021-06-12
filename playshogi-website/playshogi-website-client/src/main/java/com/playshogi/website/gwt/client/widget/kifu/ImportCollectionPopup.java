@@ -102,9 +102,9 @@ public class ImportCollectionPopup {
                                         fileItem.remove();
                                     });
                         });
+        modal.appendChild(charsetSelect);
         modal.appendChild(fileUpload);
 
-        modal.appendChild(charsetSelect);
 
         Tab kifusTab = Tab.create("Kifus")
                 .appendChild(b().textContent("Uploaded kifus:"))

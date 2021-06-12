@@ -13,15 +13,15 @@ public class KifuCollection {
         this.name = name;
     }
 
-    public List<GameRecord> getKifus() {
-        return kifus;
+    public synchronized List<GameRecord> getKifus() {
+        return new ArrayList<>(kifus);
     }
 
     public String getName() {
         return name;
     }
 
-    public void merge(final KifuCollection collection) {
+    public synchronized void merge(final KifuCollection collection) {
         kifus.addAll(collection.getKifus());
     }
 }
