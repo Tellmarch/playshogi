@@ -120,7 +120,7 @@ public class GameCollectionsTable {
 
     private void confirmCollectionDeletion(final GameCollectionDetails details) {
         boolean confirm = Window.confirm("Are you sure you want to delete the collection " + details.getName() + "?\n" +
-                "All the games from the collection will be inaccessible. This is not revertible.");
+                "This is not revertible.");
         if (confirm) {
             GWT.log("Deleting collection: " + details);
             eventBus.fireEvent(new DeleteGameCollectionEvent(details.getId()));

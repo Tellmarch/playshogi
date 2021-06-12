@@ -224,7 +224,25 @@ public class MyCollectionsActivity extends MyAbstractActivity {
                         refresh();
                     }
                 });
+    }
 
+    @EventHandler
+    public void onDeleteProblemCollection(final DeleteProblemCollectionEvent event) {
+        GWT.log("MyCollectionsActivity Handling DeleteProblemCollectionEvent");
+        problemsService.deleteProblemCollection(sessionInformation.getSessionId(), event.getCollectionId(), true,
+                new AsyncCallback<Void>() {
+                    @Override
+                    public void onFailure(final Throwable throwable) {
+                        GWT.log("MyCollectionsActivity: error during deleteProblemCollection");
+                        Window.alert("Deletion failed - maybe you do not have permission?");
+                    }
+
+                    @Override
+                    public void onSuccess(final Void unused) {
+                        GWT.log("MyCollectionsActivity: deleteProblemCollection success");
+                        refresh();
+                    }
+                });
     }
 
     private void refresh() {

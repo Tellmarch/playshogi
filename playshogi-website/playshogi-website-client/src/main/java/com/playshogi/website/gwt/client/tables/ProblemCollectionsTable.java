@@ -1,5 +1,7 @@
 package com.playshogi.website.gwt.client.tables;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.event.shared.EventBus;
 import com.playshogi.website.gwt.client.events.collections.DeleteProblemCollectionEvent;
@@ -67,7 +69,7 @@ public class ProblemCollectionsTable {
         if (withEditOptions) {
             rowElement.addColumn(Column.span4().appendChild(Button.createPrimary("Edit properties")));
             rowElement.addColumn(Column.span4().appendChild(Button.createDanger("Delete collection")
-                    .addClickListener(evt -> eventBus.fireEvent(new DeleteProblemCollectionEvent(details.getId())))));
+                    .addClickListener(evt -> confirmCollectionDeletion(details))));
         }
         return rowElement.element();
     }
@@ -182,5 +184,16 @@ public class ProblemCollectionsTable {
 
     public void activate(final EventBus eventBus) {
         this.eventBus = eventBus;
+    }
+
+    private void confirmCollectionDeletion(final ProblemCollectionDetails details) {
+        boolean confirm = Window.confirm("Are you sure you want to delete the collection " + details.getName() + "?\n" +
+                "This is not revertible.");
+        if (confirm) {
+            GWT.log("Deleting collection: " + details);
+            eventBus.fireEvent(new DeleteProblemCollectionEvent(details.getId()));
+        } else {
+            GWT.log("Deletion cancelled: " + details);
+        }
     }
 }
