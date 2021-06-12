@@ -14,12 +14,10 @@ public class ProblemRepository {
             + "(`kifu_id`, `num_moves`, `elo`, `pb_type`)" + " VALUES ( ?, ?, ?, ?);";
     private static final String SELECT_PROBLEM = "SELECT * FROM `playshogi`.`ps_problem` WHERE id = ?";
     //TODO: improve performance if needed
-    private static final String SELECT_RANDOM_PROBLEM = "SELECT * FROM `playshogi`.`ps_problem` ORDER BY RAND() limit" +
-            " 1";
+    private static final String SELECT_RANDOM_PROBLEM = "SELECT * FROM `playshogi`.`ps_problem` WHERE pb_type = 1 " +
+            "ORDER BY RAND() limit 1";
     private static final String SELECT_RANDOM_PROBLEM_BY_NUM_MOVES = "SELECT * FROM `playshogi`.`ps_problem` WHERE " +
-            "num_moves = ? " +
-            "ORDER BY RAND() limit" +
-            " 1";
+            "pb_type = 1 AND num_moves = ? ORDER BY RAND() limit 1";
     private static final String DELETE_PROBLEM = "DELETE FROM `playshogi`.`ps_problem` WHERE id = ?";
 
     private final DbConnection dbConnection;
