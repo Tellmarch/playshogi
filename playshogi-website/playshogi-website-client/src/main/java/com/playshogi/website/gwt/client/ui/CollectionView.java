@@ -11,8 +11,12 @@ import com.playshogi.website.gwt.client.events.collections.ListCollectionGamesEv
 import com.playshogi.website.gwt.client.mvp.AppPlaceHistoryMapper;
 import com.playshogi.website.gwt.client.tables.GameTable;
 import com.playshogi.website.gwt.client.util.ElementWidget;
+import com.playshogi.website.gwt.client.widget.kifu.ImportKifuPanel;
+import com.playshogi.website.gwt.shared.models.GameCollectionDetails;
 import elemental2.dom.HTMLDivElement;
 import elemental2.dom.HTMLHeadingElement;
+import org.dominokit.domino.ui.button.Button;
+import org.dominokit.domino.ui.icons.Icons;
 import org.dominokit.domino.ui.style.Styles;
 import org.jboss.elemento.Elements;
 import org.jboss.elemento.HtmlContentBuilder;
@@ -24,16 +28,18 @@ import java.util.Arrays;
 @Singleton
 public class CollectionView extends Composite {
 
-    private final HtmlContentBuilder<HTMLHeadingElement> collectionHeading;
-    private final HtmlContentBuilder<HTMLHeadingElement> collectionDescription;
-    private final GameTable gameTable;
-
     interface MyEventBinder extends EventBinder<CollectionView> {
     }
 
     private final MyEventBinder eventBinder = GWT.create(MyEventBinder.class);
 
+    private final HtmlContentBuilder<HTMLHeadingElement> collectionHeading;
+    private final HtmlContentBuilder<HTMLHeadingElement> collectionDescription;
+    private final GameTable gameTable;
+    private final ImportKifuPanel importKifuPanel = new ImportKifuPanel();
+
     private EventBus eventBus;
+    private GameCollectionDetails collectionDetails;
 
     @Inject
     public CollectionView(final SessionInformation sessionInformation, final AppPlaceHistoryMapper historyMapper) {
@@ -41,10 +47,12 @@ public class CollectionView extends Composite {
 
         HtmlContentBuilder<HTMLDivElement> root = Elements.div();
         root.css(Styles.padding_20);
-        collectionHeading = Elements.h(2).textContent("Heading");
-        collectionDescription = Elements.h(4).textContent("DSC");
+        collectionHeading = Elements.h(2).textContent("");
+        collectionDescription = Elements.h(4).textContent("");
         root.add(collectionHeading);
         root.add(collectionDescription);
+        root.add(Button.createPrimary(Icons.ALL.add_circle()).setContent("Add Kifu to Collection")
+                .addClickListener(evt -> importKifuPanel.showInDialog(collectionDetails.getId())));
         root.add(gameTable.getTable());
 
         ScrollPanel scrollPanel = new ScrollPanel();
@@ -58,17 +66,19 @@ public class CollectionView extends Composite {
         this.eventBus = eventBus;
         eventBinder.bindEventHandlers(this, eventBus);
         gameTable.activate(eventBus);
+        importKifuPanel.activate(eventBus);
     }
 
     @EventHandler
     public void onCollectionList(final ListCollectionGamesEvent event) {
         GWT.log("CollectionView: handle ListCollectionGamesEvent");
+        collectionDetails = event.getCollectionDetails();
         //TODO add loading screen
         if (event.getDetails() != null) {
             gameTable.setData(Arrays.asList(event.getDetails()));
         }
-        collectionHeading.textContent(event.getCollectionDetails().getName());
-        collectionDescription.textContent(event.getCollectionDetails().getDescription());
+        collectionHeading.textContent(collectionDetails.getName());
+        collectionDescription.textContent(collectionDetails.getDescription());
     }
 
 }
