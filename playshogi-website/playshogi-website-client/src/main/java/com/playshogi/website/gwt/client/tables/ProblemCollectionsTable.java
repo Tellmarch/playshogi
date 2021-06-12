@@ -1,0 +1,186 @@
+package com.playshogi.website.gwt.client.tables;
+
+import com.google.gwt.user.client.ui.Widget;
+import com.google.web.bindery.event.shared.EventBus;
+import com.playshogi.website.gwt.client.events.collections.DeleteProblemCollectionEvent;
+import com.playshogi.website.gwt.client.mvp.AppPlaceHistoryMapper;
+import com.playshogi.website.gwt.client.place.ProblemsPlace;
+import com.playshogi.website.gwt.client.util.ElementWidget;
+import com.playshogi.website.gwt.shared.models.ProblemCollectionDetails;
+import elemental2.dom.*;
+import org.dominokit.domino.ui.button.Button;
+import org.dominokit.domino.ui.datatable.ColumnConfig;
+import org.dominokit.domino.ui.datatable.DataTable;
+import org.dominokit.domino.ui.datatable.TableConfig;
+import org.dominokit.domino.ui.datatable.plugins.RecordDetailsPlugin;
+import org.dominokit.domino.ui.datatable.plugins.SimplePaginationPlugin;
+import org.dominokit.domino.ui.datatable.store.LocalListDataStore;
+import org.dominokit.domino.ui.grid.Column;
+import org.dominokit.domino.ui.grid.Row;
+import org.dominokit.domino.ui.grid.Row_12;
+import org.dominokit.domino.ui.icons.Icons;
+import org.dominokit.domino.ui.utils.TextNode;
+import org.jboss.elemento.Elements;
+import org.jboss.elemento.HtmlContentBuilder;
+
+import java.util.List;
+
+import static org.jboss.elemento.Elements.*;
+
+public class ProblemCollectionsTable {
+
+    private static final int PAGE_SIZE = 15;
+
+    private final LocalListDataStore<ProblemCollectionDetails> localListDataStore;
+    private final SimplePaginationPlugin<ProblemCollectionDetails> simplePaginationPlugin;
+    private final DataTable<ProblemCollectionDetails> table;
+    private final boolean withEditOptions;
+    private EventBus eventBus;
+
+    public ProblemCollectionsTable(final AppPlaceHistoryMapper historyMapper, boolean withEditOptions) {
+        this.withEditOptions = withEditOptions;
+        TableConfig<ProblemCollectionDetails> tableConfig = getTableConfig(historyMapper);
+        tableConfig.addPlugin(new RecordDetailsPlugin<>(cell -> getDetails(cell.getRecord())));
+        localListDataStore = new LocalListDataStore<>();
+
+        simplePaginationPlugin = new SimplePaginationPlugin<>(PAGE_SIZE);
+        tableConfig.addPlugin(simplePaginationPlugin);
+        localListDataStore.setPagination(simplePaginationPlugin.getSimplePagination());
+        table = new DataTable<>(tableConfig, localListDataStore);
+        table.style().setMaxWidth("1366px");
+    }
+
+    public DataTable<ProblemCollectionDetails> getTable() {
+        return table;
+    }
+
+    public Widget getAsWidget() {
+        return new ElementWidget(table.element());
+    }
+
+    private HTMLElement getDetails(final ProblemCollectionDetails details) {
+        Row<Row_12> rowElement = Row.create();
+        rowElement.style().setMarginLeft("40px").setMarginRight("40px").setMarginTop("10px").setMarginBottom("10px");
+        rowElement.addColumn(Column.span4()
+                .appendChild(h(5).add("Description:"))
+                .appendChild(TextNode.of(details.getDescription())));
+        if (withEditOptions) {
+            rowElement.addColumn(Column.span4().appendChild(Button.createPrimary("Edit properties")));
+            rowElement.addColumn(Column.span4().appendChild(Button.createDanger("Delete collection")
+                    .addClickListener(evt -> eventBus.fireEvent(new DeleteProblemCollectionEvent(details.getId())))));
+        }
+        return rowElement.element();
+    }
+
+    private TableConfig<ProblemCollectionDetails> getTableConfig(final AppPlaceHistoryMapper historyMapper) {
+        TableConfig<ProblemCollectionDetails> tableConfig = new TableConfig<>();
+        tableConfig
+                .addColumn(
+                        ColumnConfig.<ProblemCollectionDetails>create("id", "#")
+                                .styleCell(
+                                        element -> element.style.setProperty("vertical-align", "top"))
+                                .textAlign("right")
+                                .asHeader()
+                                .setCellRenderer(
+                                        cell -> TextNode.of(String.valueOf(cell.getTableRow().getIndex() + 1 + PAGE_SIZE * (simplePaginationPlugin.getSimplePagination().activePage() - 1)))))
+                .addColumn(
+                        ColumnConfig.<ProblemCollectionDetails>create("name", "Name")
+                                .styleCell(
+                                        element -> element.style.setProperty("vertical-align", "top"))
+                                .setCellRenderer(cell -> TextNode.of(cell.getRecord().getName()))
+                )
+                .addColumn(
+                        ColumnConfig.<ProblemCollectionDetails>create("practice", "Practice")
+                                .styleCell(
+                                        element -> element.style.setProperty("vertical-align", "top"))
+                                .setCellRenderer(cell -> {
+                                    String href =
+                                            "#" + historyMapper.getToken(new ProblemsPlace(cell.getRecord().getId(),
+                                                    0));
+                                    return Elements.a(href).add(org.dominokit.domino.ui.button.Button.createPrimary(
+                                            "Practice")).element();
+                                }))
+                .addColumn(
+                        ColumnConfig.<ProblemCollectionDetails>create("difficulty", "Difficulty")
+                                .styleCell(
+                                        element -> element.style.setProperty("vertical-align", "top"))
+                                .setCellRenderer(cell -> getDifficulty(cell.getRecord()))
+                )
+                .addColumn(
+                        ColumnConfig.<ProblemCollectionDetails>create("solved", "Solved")
+                                .styleCell(
+                                        element -> element.style.setProperty("vertical-align", "top"))
+                                .setCellRenderer(cell -> getSolved(cell.getRecord()))
+                )
+                .addColumn(
+                        ColumnConfig.<ProblemCollectionDetails>create("besttime", "Personal Best Time")
+                                .styleCell(
+                                        element -> element.style.setProperty("vertical-align", "top"))
+                                .setCellRenderer(cell -> getPersonalBest(cell.getRecord()))
+                )
+                .addColumn(
+                        ColumnConfig.<ProblemCollectionDetails>create("leaderboard", "Leaderboard")
+                                .styleCell(
+                                        element -> element.style.setProperty("vertical-align", "top"))
+                                .setCellRenderer(cell -> getLeaderboard(cell.getRecord()))
+                )
+
+        ;
+        return tableConfig;
+    }
+
+
+    private Node getLeaderboard(final ProblemCollectionDetails record) {
+        if (record.getLeaderboardNames() == null || record.getLeaderboardScores() == null) {
+            return TextNode.of("-");
+        }
+        HtmlContentBuilder<HTMLOListElement> ol = ol();
+        String[] leaderboardNames = record.getLeaderboardNames();
+        for (int i = 0; i < leaderboardNames.length; i++) {
+            String leaderboardName = leaderboardNames[i];
+            String score = record.getLeaderboardScores()[i];
+            ol.add(li().textContent(leaderboardName + ": " + score));
+        }
+        return ol.element();
+    }
+
+    private Node getPersonalBest(final ProblemCollectionDetails record) {
+        if (record.getUserHighScore() == null) {
+            return TextNode.of("-");
+        }
+
+        return TextNode.of(record.getUserHighScore());
+    }
+
+    private Text getSolved(final ProblemCollectionDetails record) {
+        if (record.getNumProblems() == 0) {
+            return TextNode.of("-");
+        }
+        return TextNode.of(record.getUserSolved() + " / " + record.getNumProblems());
+    }
+
+    private Node getDifficulty(final ProblemCollectionDetails record) {
+        if (record.getDifficulty() == 0) {
+            return TextNode.of("-");
+        }
+
+        HtmlContentBuilder<HTMLDivElement> difficulty = div();
+        for (int i = 1; i <= 5; i++) {
+            if (i > record.getDifficulty()) {
+                difficulty.add(Icons.ALL.star_border());
+            } else {
+                difficulty.add(Icons.ALL.star());
+            }
+        }
+        return difficulty.element();
+    }
+
+    public void setData(final List<ProblemCollectionDetails> details) {
+        localListDataStore.setData(details);
+        table.load();
+    }
+
+    public void activate(final EventBus eventBus) {
+        this.eventBus = eventBus;
+    }
+}

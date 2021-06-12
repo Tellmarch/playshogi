@@ -35,4 +35,6 @@ public interface ProblemsService extends RemoteService {
 
     ProblemCollectionDetailsAndProblems getProblemCollection(String sessionId, String collectionId);
 
+    void deleteProblemCollection(String sessionId, String problemSetId, boolean alsoDeleteKifus);
+
 }

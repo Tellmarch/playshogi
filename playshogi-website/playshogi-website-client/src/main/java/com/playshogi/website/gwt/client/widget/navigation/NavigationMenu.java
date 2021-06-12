@@ -63,21 +63,19 @@ public class NavigationMenu extends Composite {
         MenuBar practiceMenu = new MenuBar(true);
         menu.addSeparator();
         menu.addItem(new MenuItem("Practice", practiceMenu));
+        practiceMenu.addItem("Openings Explorer", (Command) () -> placeController.goTo(new OpeningsPlace()));
         practiceMenu.addItem("Play vs Computer", (Command) () -> placeController.goTo(new PlayPlace()));
         practiceMenu.addItem("Free Board", (Command) () -> placeController.goTo(new FreeBoardPlace()));
 
         MenuBar collectionsMenu = new MenuBar(true);
         menu.addSeparator();
         menu.addItem(new MenuItem("Collections", collectionsMenu));
-        collectionsMenu.addItem("Openings Explorer", (Command) () -> placeController.goTo(new OpeningsPlace()));
+        collectionsMenu.addItem("Public Collections",
+                (Command) () -> placeController.goTo(new PublicCollectionsPlace()));
         collectionsMenu.addItem("My Collections", (Command) () -> placeController.goTo(new MyCollectionsPlace()));
-        collectionsMenu.addItem("Game Collections", (Command) () -> placeController.goTo(new GameCollectionsPlace()));
         collectionsMenu.addItem("My Kifus", (Command) () -> placeController.goTo(new UserKifusPlace()));
         collectionsMenu.addItem("New/Import kifu", (Command) () -> placeController.goTo(new KifuEditorPlace(null,
                 KifuDetails.KifuType.GAME)));
-        collectionsMenu.addItem("New/Import problem", (Command) () -> placeController.goTo(new KifuEditorPlace(null,
-                KifuDetails.KifuType.PROBLEM)));
-
 
         MenuBar aboutMenu = new MenuBar(true);
         menu.addSeparator();

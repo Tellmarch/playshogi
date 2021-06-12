@@ -36,6 +36,13 @@ public class ProblemSetRepository {
             " LIMIT 1000";
     private static final String SELECT_PROBLEMSETS_FOR_USER = "SELECT * FROM `playshogi`.`ps_problemset` WHERE " +
             "owner_user_id = ? LIMIT 1000";
+    private static final String SELECT_PROBLEMSET = "SELECT * FROM `playshogi`.`ps_problemset` WHERE id = ?";
+    private static final String SELECT_PROBLEMS_FROM_PROBLEMSET = "SELECT * FROM playshogi.ps_problemsetpbs join " +
+            "playshogi" +
+            ".ps_problem on ps_problem.id = problem_id WHERE problemset_id = ?;";
+    private static final String DELETE_PROBLEMSET = "DELETE FROM `playshogi`.`ps_problemset` WHERE id = ? AND " +
+            "owner_user_id" +
+            " = ?";
 
     public ProblemSetRepository(final DbConnection dbConnection) {
         this.dbConnection = dbConnection;
@@ -190,5 +197,73 @@ public class ProblemSetRepository {
             LOGGER.log(Level.SEVERE, "Error retrieving problem sets for user in db", e);
         }
         return result;
+    }
+
+    public PersistentProblemSet getProblemSetById(final int problemSetId) {
+        Connection connection = dbConnection.getConnection();
+        try (PreparedStatement preparedStatement = connection.prepareStatement(SELECT_PROBLEMSET)) {
+            preparedStatement.setInt(1, problemSetId);
+            ResultSet rs = preparedStatement.executeQuery();
+            if (rs.next()) {
+                String name = rs.getString("name");
+                int id = rs.getInt("id");
+                String description = rs.getString("description");
+                Visibility visibility = Visibility.values()[rs.getInt("visibility"
+                )];
+                Integer ownerId = SqlUtils.getInteger(rs, "owner_user_id");
+                Integer difficulty = SqlUtils.getInteger(rs, "difficulty");
+                String tags = rs.getString("tags");
+
+                return new PersistentProblemSet(id, name, description, visibility, ownerId, difficulty,
+                        tags == null ? null : tags.split(","));
+            } else {
+                LOGGER.log(Level.INFO, "Problem set not found in DB: " + problemSetId);
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error retrieving problem set in db", e);
+        }
+        return null;
+    }
+
+    public List<PersistentProblem> getProblemsFromProblemSet(final int problemSetId) {
+        ArrayList<PersistentProblem> problems = new ArrayList<>();
+        Connection connection = dbConnection.getConnection();
+        try (PreparedStatement preparedStatement = connection.prepareStatement(SELECT_PROBLEMS_FROM_PROBLEMSET)) {
+            preparedStatement.setInt(1, problemSetId);
+            ResultSet rs = preparedStatement.executeQuery();
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                int kifuId = rs.getInt("kifu_id");
+                int numMoves = rs.getInt("num_moves");
+                int elo = rs.getInt("elo");
+                int pbType = rs.getInt("pb_type");
+
+                problems.add(new PersistentProblem(id, kifuId, numMoves, elo,
+                        PersistentProblem.ProblemType.fromDbInt(pbType)));
+            }
+            return problems;
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error looking up the problemset problems in db", e);
+            return null;
+        }
+    }
+
+    public boolean deleteProblemsetById(final int problemSetId, final int userId) {
+        Connection connection = dbConnection.getConnection();
+        try (PreparedStatement preparedStatement = connection.prepareStatement(DELETE_PROBLEMSET)) {
+            preparedStatement.setInt(1, problemSetId);
+            preparedStatement.setInt(2, userId);
+            int rs = preparedStatement.executeUpdate();
+            if (rs == 1) {
+                LOGGER.log(Level.INFO, "Deleted problemSet: " + problemSetId);
+                return true;
+            } else {
+                LOGGER.log(Level.INFO, "Did not find problemSet: " + problemSetId);
+                return false;
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error deleting up the problemSet in db", e);
+            return false;
+        }
     }
 }

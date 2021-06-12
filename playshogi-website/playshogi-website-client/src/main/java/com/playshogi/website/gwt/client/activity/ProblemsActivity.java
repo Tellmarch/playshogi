@@ -12,7 +12,7 @@ import com.playshogi.library.shogi.models.formats.usf.UsfFormat;
 import com.playshogi.library.shogi.models.record.GameRecord;
 import com.playshogi.website.gwt.client.SessionInformation;
 import com.playshogi.website.gwt.client.controller.ProblemController;
-import com.playshogi.website.gwt.client.events.collections.ListCollectionGamesEvent;
+import com.playshogi.website.gwt.client.events.collections.ListCollectionProblemsEvent;
 import com.playshogi.website.gwt.client.events.gametree.GameTreeChangedEvent;
 import com.playshogi.website.gwt.client.events.kifu.GameInformationChangedEvent;
 import com.playshogi.website.gwt.client.events.puzzles.ProblemCollectionProgressEvent;
@@ -22,11 +22,13 @@ import com.playshogi.website.gwt.client.events.puzzles.UserSkippedProblemEvent;
 import com.playshogi.website.gwt.client.place.ProblemPlace;
 import com.playshogi.website.gwt.client.place.ProblemsPlace;
 import com.playshogi.website.gwt.client.ui.ProblemsView;
-import com.playshogi.website.gwt.shared.models.GameCollectionDetails;
-import com.playshogi.website.gwt.shared.models.GameCollectionDetailsAndGames;
-import com.playshogi.website.gwt.shared.models.GameDetails;
+import com.playshogi.website.gwt.shared.models.ProblemCollectionDetails;
+import com.playshogi.website.gwt.shared.models.ProblemCollectionDetailsAndProblems;
+import com.playshogi.website.gwt.shared.models.ProblemDetails;
 import com.playshogi.website.gwt.shared.services.KifuService;
 import com.playshogi.website.gwt.shared.services.KifuServiceAsync;
+import com.playshogi.website.gwt.shared.services.ProblemsService;
+import com.playshogi.website.gwt.shared.services.ProblemsServiceAsync;
 
 import java.util.Arrays;
 
@@ -44,6 +46,7 @@ public class ProblemsActivity extends MyAbstractActivity {
 
     private final MyEventBinder eventBinder = GWT.create(MyEventBinder.class);
 
+    private final ProblemsServiceAsync problemsService = GWT.create(ProblemsService.class);
     private final KifuServiceAsync kifuService = GWT.create(KifuService.class);
     private final ProblemsView problemsView;
     private final SessionInformation sessionInformation;
@@ -55,8 +58,8 @@ public class ProblemsActivity extends MyAbstractActivity {
     private final String kifuId;
 
     private int problemIndex;
-    private GameCollectionDetails details;
-    private GameDetails[] games;
+    private ProblemCollectionDetails details;
+    private ProblemDetails[] problems;
     private ProblemStatus[] statuses;
 
 
@@ -96,24 +99,24 @@ public class ProblemsActivity extends MyAbstractActivity {
 
     private void loadCollection() {
         GWT.log("Querying for collection problems");
-        kifuService.getGameSetKifuDetails(sessionInformation.getSessionId(), collectionId,
-                new AsyncCallback<GameCollectionDetailsAndGames>() {
-                    @Override
-                    public void onFailure(Throwable throwable) {
-                        GWT.log("ProblemsActivity: error retrieving collection games");
-                    }
+        problemsService.getProblemCollection(sessionInformation.getSessionId(), collectionId,
+                new AsyncCallback<ProblemCollectionDetailsAndProblems>() {
+            @Override
+            public void onFailure(final Throwable throwable) {
+                GWT.log("ProblemsActivity: error retrieving collection problems");
+            }
 
-                    @Override
-                    public void onSuccess(GameCollectionDetailsAndGames result) {
-                        GWT.log("ProblemsActivity: retrieved collection games");
-                        games = result.getGames();
-                        statuses = new ProblemStatus[games.length];
-                        Arrays.fill(statuses, ProblemStatus.UNSOLVED);
-                        details = result.getDetails();
-                        loadProblem();
-                        eventBus.fireEvent(new ListCollectionGamesEvent(result.getGames(), result.getDetails()));
-                    }
-                });
+            @Override
+            public void onSuccess(final ProblemCollectionDetailsAndProblems result) {
+                GWT.log("ProblemsActivity: retrieved collection problems");
+                problems = result.getProblems();
+                statuses = new ProblemStatus[problems.length];
+                Arrays.fill(statuses, ProblemStatus.UNSOLVED);
+                details = result.getDetails();
+                loadProblem();
+                eventBus.fireEvent(new ListCollectionProblemsEvent(result.getProblems(), result.getDetails()));
+            }
+        });
     }
 
     private void loadProblem() {
@@ -121,11 +124,11 @@ public class ProblemsActivity extends MyAbstractActivity {
         if (kifuId != null) {
             id = kifuId;
         } else {
-            if (problemIndex >= games.length) {
+            if (problemIndex >= problems.length) {
                 Window.alert("You reached the last problem in the collection!");
                 return;
             }
-            id = games[problemIndex].getKifuId();
+            id = problems[problemIndex].getKifuId();
         }
 
         kifuService.getKifuUsf(sessionInformation.getSessionId(), id,

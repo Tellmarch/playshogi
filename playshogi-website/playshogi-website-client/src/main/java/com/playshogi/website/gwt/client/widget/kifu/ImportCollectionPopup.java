@@ -289,7 +289,7 @@ public class ImportCollectionPopup {
 
     @EventHandler
     public void onListGameCollectionsEvent(final ListGameCollectionsEvent event) {
-        GWT.log("ImportCollectionPopup: handle GameCollectionsEvent:");
+        GWT.log("ImportCollectionPopup: handle GameCollectionsEvent");
         if (event.getMyCollections() != null) {
             gameCollectionSelect.removeAllOptions();
             for (GameCollectionDetails collection : event.getMyCollections()) {
@@ -301,7 +301,7 @@ public class ImportCollectionPopup {
 
     @EventHandler
     public void onListProblemCollectionsEvent(final ListProblemCollectionsEvent event) {
-        GWT.log("ImportCollectionPopup: handle ListProblemCollectionsEvent:");
+        GWT.log("ImportCollectionPopup: handle ListProblemCollectionsEvent");
         if (event.getMyCollections() != null) {
             problemCollectionSelect.removeAllOptions();
             for (ProblemCollectionDetails collection : event.getMyCollections()) {

@@ -123,10 +123,15 @@ public class ProblemsServiceImpl extends RemoteServiceServlet implements Problem
         return getProblemDetails(persistentProblem, usf);
     }
 
-    private ProblemDetails getProblemDetails(PersistentProblem persistentProblem, String usf) {
+
+    private ProblemDetails getProblemDetails(final PersistentProblem persistentProblem) {
+        return getProblemDetails(persistentProblem, null);
+    }
+
+    private ProblemDetails getProblemDetails(final PersistentProblem persistentProblem, final String usf) {
         ProblemDetails problemDetails = new ProblemDetails();
         problemDetails.setId("" + persistentProblem.getId());
-        problemDetails.setKifuId(persistentProblem.getKifuId());
+        problemDetails.setKifuId(String.valueOf(persistentProblem.getKifuId()));
         problemDetails.setNumMoves(persistentProblem.getNumMoves());
         problemDetails.setElo(persistentProblem.getElo());
         problemDetails.setPbType(persistentProblem.getPbType().getDescription());
@@ -302,12 +307,46 @@ public class ProblemsServiceImpl extends RemoteServiceServlet implements Problem
     public ProblemCollectionDetailsAndProblems getProblemCollection(final String sessionId, final String collectionId) {
         LOGGER.log(Level.INFO, "getProblemCollections");
 
-        LoginResult loginResult = authenticator.checkSession(sessionId);
-        if (loginResult == null || !loginResult.isLoggedIn() || !loginResult.isAdmin()) {
-            throw new IllegalStateException("Only administrators can see problems collections");
+        PersistentProblemSet gameSet = problemSetRepository.getProblemSetById(Integer.parseInt(collectionId));
+        if (gameSet == null) {
+            throw new IllegalArgumentException("Invalid problem collection ID");
         }
 
-        return ProblemsCache.INSTANCE.getProblemCollectionDetailsAndProblems(collectionId);
+        List<PersistentProblem> games = problemSetRepository.getProblemsFromProblemSet(Integer.parseInt(collectionId));
+
+        ProblemCollectionDetailsAndProblems result = new ProblemCollectionDetailsAndProblems();
+        result.setDetails(getProblemCollectionDetails(gameSet));
+        result.setProblems(games.stream().map(this::getProblemDetails).toArray(ProblemDetails[]::new));
+
+        return result;
+    }
+
+    @Override
+    public void deleteProblemCollection(final String sessionId, final String problemSetId,
+                                        final boolean alsoDeleteKifus) {
+        LOGGER.log(Level.INFO, "deleteProblemCollection: " + problemSetId + " - with problems: " + alsoDeleteKifus);
+        int setId = Integer.parseInt(problemSetId);
+
+        LoginResult loginResult = authenticator.checkSession(sessionId);
+        if (loginResult == null || !loginResult.isLoggedIn()) {
+            throw new IllegalStateException("Only logged in users can delete a problem collection");
+        }
+
+        List<PersistentProblem> problems = problemSetRepository.getProblemsFromProblemSet(setId);
+
+        if (!problemSetRepository.deleteProblemsetById(setId, loginResult.getUserId())) {
+            throw new IllegalStateException("The user does not have permission to delete the specified problem " +
+                    "collection");
+        }
+
+        for (PersistentProblem problem : problems) {
+            problemRepository.deleteProblemById(problem.getId());
+
+            if (alsoDeleteKifus) {
+                kifuRepository.deleteKifuById(problem.getKifuId(), loginResult.getUserId());
+            }
+        }
+
     }
 
     private static Map<String, Integer> sortByValueDesc(final Map<String, Integer> scores) {

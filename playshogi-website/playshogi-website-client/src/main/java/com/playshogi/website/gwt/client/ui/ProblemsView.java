@@ -13,7 +13,7 @@ import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.website.gwt.client.SessionInformation;
-import com.playshogi.website.gwt.client.events.collections.ListCollectionGamesEvent;
+import com.playshogi.website.gwt.client.events.collections.ListCollectionProblemsEvent;
 import com.playshogi.website.gwt.client.events.kifu.ClearDecorationsEvent;
 import com.playshogi.website.gwt.client.events.puzzles.ProblemCollectionProgressEvent;
 import com.playshogi.website.gwt.client.events.puzzles.UserJumpedToProblemEvent;
@@ -21,7 +21,7 @@ import com.playshogi.website.gwt.client.util.ElementWidget;
 import com.playshogi.website.gwt.client.widget.board.ShogiBoard;
 import com.playshogi.website.gwt.client.widget.gamenavigator.GameNavigator;
 import com.playshogi.website.gwt.client.widget.problems.ProblemFeedbackPanel;
-import com.playshogi.website.gwt.shared.models.GameDetails;
+import com.playshogi.website.gwt.shared.models.ProblemDetails;
 import elemental2.dom.HTMLLIElement;
 import org.dominokit.domino.ui.icons.Icons;
 import org.dominokit.domino.ui.style.Color;
@@ -45,7 +45,7 @@ public class ProblemsView extends Composite {
     private final ShogiBoard shogiBoard;
     private final GameNavigator gameNavigator;
     private final ProblemFeedbackPanel problemFeedbackPanel;
-    private final Tree<GameDetails> problemsTree;
+    private final Tree<ProblemDetails> problemsTree;
     private final PlaceController placeController;
     private final ScrollPanel scrollPanel;
     private EventBus eventBus;
@@ -105,18 +105,18 @@ public class ProblemsView extends Composite {
     }
 
     @EventHandler
-    public void onListCollectionGamesEvent(final ListCollectionGamesEvent event) {
-        GWT.log("ProblemsView: handle GameCollectionsEvent");
+    public void onListCollectionProblemsEvent(final ListCollectionProblemsEvent event) {
+        GWT.log("ProblemsView: handle ListCollectionProblemsEvent");
 
         problemsTree.setTitle(event.getCollectionDetails().getName());
 
-        for (TreeItem<GameDetails> subItem : problemsTree.getSubItems()) {
+        for (TreeItem<ProblemDetails> subItem : problemsTree.getSubItems()) {
             problemsTree.removeItem(subItem);
         }
 
-        GameDetails[] details = event.getDetails();
+        ProblemDetails[] details = event.getDetails();
         for (int i = 0; i < details.length; i++) {
-            GameDetails detail = details[i];
+            ProblemDetails detail = details[i];
             int finalI = i;
             problemsTree.appendChild(TreeItem.create("Problem " + (i + 1), detail).addClickListener(
                     evt -> eventBus.fireEvent(new UserJumpedToProblemEvent(finalI))
@@ -128,9 +128,9 @@ public class ProblemsView extends Composite {
     public void onProblemCollectionProgressEvent(final ProblemCollectionProgressEvent event) {
         GWT.log("ProblemsView: handle ProblemCollectionProgressEvent");
         GWT.log(event.toString());
-        List<TreeItem<GameDetails>> subItems = problemsTree.getSubItems();
+        List<TreeItem<ProblemDetails>> subItems = problemsTree.getSubItems();
         for (int i = 0; i < subItems.size(); i++) {
-            TreeItem<GameDetails> subItem = subItems.get(i);
+            TreeItem<ProblemDetails> subItem = subItems.get(i);
             switch (event.getStatuses()[i]) {
                 case CURRENT:
                     subItem.style().setBackgroundColor(Color.YELLOW.getHex());

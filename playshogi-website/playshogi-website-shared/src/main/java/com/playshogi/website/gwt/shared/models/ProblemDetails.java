@@ -6,7 +6,7 @@ import java.util.Arrays;
 public class ProblemDetails implements Serializable {
 
     private String id;
-    private int kifuId;
+    private String kifuId;
     private Integer numMoves;
     private int elo;
     private String pbType;
@@ -24,11 +24,11 @@ public class ProblemDetails implements Serializable {
         this.id = id;
     }
 
-    public int getKifuId() {
+    public String getKifuId() {
         return kifuId;
     }
 
-    public void setKifuId(int kifuId) {
+    public void setKifuId(String kifuId) {
         this.kifuId = kifuId;
     }
 
