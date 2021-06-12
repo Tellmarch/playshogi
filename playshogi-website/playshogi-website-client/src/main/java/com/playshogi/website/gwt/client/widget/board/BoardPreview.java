@@ -8,6 +8,8 @@ import com.playshogi.library.shogi.models.Piece;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.library.shogi.models.position.Square;
 import com.playshogi.website.gwt.client.UserPreferences;
+import elemental2.dom.Element;
+import jsinterop.base.Js;
 
 import static com.playshogi.website.gwt.client.widget.board.BoardLayout.SQUARE_HEIGHT;
 import static com.playshogi.website.gwt.client.widget.board.BoardLayout.SQUARE_WIDTH;
@@ -44,6 +46,10 @@ public class BoardPreview extends Composite {
         } else {
             initWidget(absolutePanel);
         }
+    }
+
+    public Element asElement() {
+        return Js.uncheckedCast(getElement());
     }
 
     public void showPosition(final ShogiPosition position) {

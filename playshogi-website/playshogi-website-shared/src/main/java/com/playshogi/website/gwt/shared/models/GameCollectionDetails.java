@@ -8,7 +8,6 @@ public class GameCollectionDetails implements Serializable {
     private String description;
     private String visibility;
     private String type;
-    private int row;
 
     public GameCollectionDetails() {
     }
@@ -68,13 +67,5 @@ public class GameCollectionDetails implements Serializable {
                 ", visibility='" + visibility + '\'' +
                 ", type='" + type + '\'' +
                 '}';
-    }
-
-    public int getRow() {
-        return row;
-    }
-
-    public void setRow(final int row) {
-        this.row = row;
     }
 }

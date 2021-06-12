@@ -1,32 +1,26 @@
 package com.playshogi.website.gwt.client.ui;
 
-import com.google.gwt.cell.client.ActionCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.place.shared.PlaceController;
-import com.google.gwt.user.cellview.client.CellTable;
-import com.google.gwt.user.cellview.client.Column;
-import com.google.gwt.user.cellview.client.HasKeyboardSelectionPolicy;
-import com.google.gwt.user.cellview.client.TextColumn;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.*;
-import com.google.gwt.view.client.ListDataProvider;
+import com.google.gwt.user.client.ui.Composite;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.website.gwt.client.SessionInformation;
-import com.playshogi.website.gwt.client.events.collections.DeleteGameCollectionEvent;
-import com.playshogi.website.gwt.client.events.collections.ListCollectionGamesEvent;
 import com.playshogi.website.gwt.client.events.collections.ListGameCollectionsEvent;
-import com.playshogi.website.gwt.client.events.collections.RemoveGameFromCollectionEvent;
-import com.playshogi.website.gwt.client.place.*;
-import com.playshogi.website.gwt.client.widget.TablePanel;
-import com.playshogi.website.gwt.client.widget.kifu.CollectionPropertiesPanel;
-import com.playshogi.website.gwt.client.widget.kifu.ImportCollectionPanel;
-import com.playshogi.website.gwt.client.widget.kifu.ImportKifuPanel;
-import com.playshogi.website.gwt.shared.models.GameCollectionDetails;
-import com.playshogi.website.gwt.shared.models.GameDetails;
+import com.playshogi.website.gwt.client.events.collections.ListProblemCollectionsEvent;
+import com.playshogi.website.gwt.client.mvp.AppPlaceHistoryMapper;
+import com.playshogi.website.gwt.client.tables.GameCollectionsTable;
+import com.playshogi.website.gwt.client.tables.ProblemCollectionsTable;
+import com.playshogi.website.gwt.client.util.ElementWidget;
+import elemental2.dom.HTMLDivElement;
+import org.dominokit.domino.ui.style.Styles;
+import org.dominokit.domino.ui.tabs.Tab;
+import org.dominokit.domino.ui.tabs.TabsPanel;
+import org.jboss.elemento.Elements;
+import org.jboss.elemento.HtmlContentBuilder;
 
 import java.util.Arrays;
 
@@ -38,107 +32,58 @@ public class PublicCollectionsView extends Composite {
 
     private final MyEventBinder eventBinder = GWT.create(MyEventBinder.class);
 
-    private final PlaceController placeController;
-    private final CellTable<GameCollectionDetails> publicCollectionsTable;
-    private final TablePanel publicCollectionsPanel;
+    private SessionInformation sessionInformation;
+    private final ProblemCollectionsTable problemsTable;
+    private final GameCollectionsTable gamesTable;
 
     private EventBus eventBus;
-    private GameCollectionDetails collectionDetails;
 
     @Inject
-    public PublicCollectionsView(final PlaceController placeController, final SessionInformation sessionInformation) {
-        this.placeController = placeController;
+    public PublicCollectionsView(final PlaceController placeController, final SessionInformation sessionInformation,
+                                 final AppPlaceHistoryMapper historyMapper) {
         GWT.log("Creating public collections view");
-        FlowPanel flowPanel = new FlowPanel();
+        this.sessionInformation = sessionInformation;
+        problemsTable = new ProblemCollectionsTable(historyMapper, false);
+        gamesTable = new GameCollectionsTable(historyMapper, false);
 
-        publicCollectionsTable = createGameCollectionTable(false);
-        publicCollectionsPanel = new TablePanel("Public Game Collections", publicCollectionsTable);
-        flowPanel.add(publicCollectionsPanel);
+        HtmlContentBuilder<HTMLDivElement> div = Elements.div();
+        div.css(Styles.padding_20);
 
-        ScrollPanel scrollPanel = new ScrollPanel();
-        scrollPanel.add(flowPanel);
-        scrollPanel.setSize("100%", "100%");
-        initWidget(scrollPanel);
-    }
+        div.add(Elements.h(1).textContent("Public Collections"));
 
-    private CellTable<GameCollectionDetails> createGameCollectionTable(boolean allowEdit) {
-        final CellTable<GameCollectionDetails> collectionsTable;
-        collectionsTable = new CellTable<>(20);
-        collectionsTable.setKeyboardSelectionPolicy(HasKeyboardSelectionPolicy.KeyboardSelectionPolicy.ENABLED);
+        TabsPanel tabsPanel = TabsPanel.create()
+                .appendChild(Tab.create("Game Collections").appendChild(gamesTable.getTable()))
+                .appendChild(Tab.create("Problems Collections").appendChild(problemsTable.getTable()));
 
-        TextColumn<GameCollectionDetails> idColumn = new TextColumn<GameCollectionDetails>() {
-            @Override
-            public String getValue(final GameCollectionDetails object) {
-                return String.valueOf(object.getRow());
-            }
-        };
-        collectionsTable.addColumn(idColumn, "Id");
+        div.add(tabsPanel);
+        div.style("overflow:scroll; height:100%;");
 
-        TextColumn<GameCollectionDetails> nameColumn = new TextColumn<GameCollectionDetails>() {
-            @Override
-            public String getValue(final GameCollectionDetails object) {
-                return String.valueOf(object.getName());
-            }
-        };
-        collectionsTable.addColumn(nameColumn, "Name");
-
-        TextColumn<GameCollectionDetails> dscColumn = new TextColumn<GameCollectionDetails>() {
-            @Override
-            public String getValue(final GameCollectionDetails object) {
-                return String.valueOf(object.getDescription()); //TODO set up max number of characters
-            }
-        };
-        collectionsTable.addColumn(dscColumn, "Description");
-
-        TextColumn<GameCollectionDetails> typeColumn = new TextColumn<GameCollectionDetails>() {
-            @Override
-            public String getValue(final GameCollectionDetails object) {
-                return String.valueOf(object.getType()); //TODO set up max number of characters
-            }
-        };
-        collectionsTable.addColumn(typeColumn, "Type");
-
-        ActionCell<GameCollectionDetails> listActionCell = new ActionCell<>("Open",
-                gameCollectionDetails -> placeController.goTo(new CollectionPlace(gameCollectionDetails.getId())));
-
-        collectionsTable.addColumn(new Column<GameCollectionDetails, GameCollectionDetails>(listActionCell) {
-            @Override
-            public GameCollectionDetails getValue(final GameCollectionDetails gameCollectionDetails) {
-                return gameCollectionDetails;
-            }
-        }, "Open Collection");
-
-//        ActionCell<GameCollectionDetails> exploreActionCell = new ActionCell<>("Explore",
-//                gameCollectionDetails -> {
-//                    if ("games".equals(gameCollectionDetails.getType())) {
-//                        placeController.goTo(new OpeningsPlace(OpeningsPlace.DEFAULT_SFEN,
-//                                gameCollectionDetails.getId()));
-//                    } else {
-//                        placeController.goTo(new ProblemsPlace(gameCollectionDetails.getId(), 0));
-//                    }
-//                });
-//
-//        collectionsTable.addColumn(new Column<GameCollectionDetails, GameCollectionDetails>(exploreActionCell) {
-//            @Override
-//            public GameCollectionDetails getValue(final GameCollectionDetails gameCollectionDetails) {
-//                return gameCollectionDetails;
-//            }
-//        }, "Explore");
-
-        return collectionsTable;
+        initWidget(new ElementWidget(div.element()));
     }
 
     public void activate(final EventBus eventBus) {
         GWT.log("Activating game collections view");
         this.eventBus = eventBus;
         eventBinder.bindEventHandlers(this, eventBus);
+        problemsTable.activate(eventBus);
+        gamesTable.activate(eventBus);
     }
 
     @EventHandler
     public void onListGameCollectionsEvent(final ListGameCollectionsEvent event) {
-        GWT.log("PublicCollectionsView: handle PublicCollectionsEvent:\n" + event);
+        GWT.log("PublicCollectionsView: handle GameCollectionsEvent:");
 
-        new ListDataProvider<>(Arrays.asList(event.getPublicCollections())).addDataDisplay(publicCollectionsTable);
-        publicCollectionsPanel.setVisible(true);
+        if (event.getPublicCollections() != null) {
+            gamesTable.setData(Arrays.asList(event.getPublicCollections()));
+        }
     }
+
+    @EventHandler
+    public void onListProblemCollections(final ListProblemCollectionsEvent event) {
+        GWT.log("PublicCollectionsView: handle ListProblemCollectionsEvent");
+        if (event.getPublicCollections() != null) {
+            problemsTable.setData(Arrays.asList(event.getPublicCollections()));
+        }
+    }
+
 }

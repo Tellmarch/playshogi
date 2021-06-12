@@ -23,6 +23,7 @@ import elemental2.dom.HTMLHeadingElement;
 import org.dominokit.domino.ui.Typography.Strong;
 import org.dominokit.domino.ui.alerts.Alert;
 import org.dominokit.domino.ui.button.Button;
+import org.dominokit.domino.ui.style.Styles;
 import org.dominokit.domino.ui.tabs.Tab;
 import org.dominokit.domino.ui.tabs.TabsPanel;
 import org.jboss.elemento.Elements;
@@ -52,18 +53,17 @@ public class MyCollectionsView extends Composite {
     @Inject
     public MyCollectionsView(final PlaceController placeController, final SessionInformation sessionInformation,
                              final AppPlaceHistoryMapper historyMapper) {
-        GWT.log("Creating game collections view");
+        GWT.log("Creating user collections view");
         this.sessionInformation = sessionInformation;
         problemsTable = new ProblemCollectionsTable(historyMapper, true);
         gamesTable = new GameCollectionsTable(historyMapper, true);
-
-        //TODO add margin to the left side in domino ui
 
         loggedOutWarning = Elements.h(4).textContent("You are logged out.");
         noCollectionsWarning = Elements.h(4).textContent("You have no Collections. Add some using " +
                 "the buttons!");
 
         HtmlContentBuilder<HTMLDivElement> div = Elements.div();
+        div.css(Styles.padding_20);
 
         div.add(Elements.h(1).textContent("My Collections"));
 
