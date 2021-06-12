@@ -1,7 +1,9 @@
 package com.playshogi.website.gwt.client.activity;
 
+import com.google.gwt.core.client.Duration;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.History;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
@@ -15,12 +17,10 @@ import com.playshogi.website.gwt.client.controller.ProblemController;
 import com.playshogi.website.gwt.client.events.collections.ListCollectionProblemsEvent;
 import com.playshogi.website.gwt.client.events.gametree.GameTreeChangedEvent;
 import com.playshogi.website.gwt.client.events.kifu.GameInformationChangedEvent;
-import com.playshogi.website.gwt.client.events.puzzles.ProblemCollectionProgressEvent;
-import com.playshogi.website.gwt.client.events.puzzles.UserFinishedProblemEvent;
-import com.playshogi.website.gwt.client.events.puzzles.UserJumpedToProblemEvent;
-import com.playshogi.website.gwt.client.events.puzzles.UserSkippedProblemEvent;
+import com.playshogi.website.gwt.client.events.puzzles.*;
 import com.playshogi.website.gwt.client.place.ProblemsPlace;
 import com.playshogi.website.gwt.client.ui.ProblemsView;
+import com.playshogi.website.gwt.client.util.FireAndForgetCallback;
 import com.playshogi.website.gwt.shared.models.ProblemCollectionDetails;
 import com.playshogi.website.gwt.shared.models.ProblemCollectionDetailsAndProblems;
 import com.playshogi.website.gwt.shared.models.ProblemDetails;
@@ -59,6 +59,8 @@ public class ProblemsActivity extends MyAbstractActivity {
     private ProblemDetails[] problems;
     private ProblemStatus[] statuses;
 
+    private Duration duration;
+    private Timer activityTimer;
 
     public ProblemsActivity(final ProblemsPlace place, final ProblemsView problemsView,
                             final SessionInformation sessionInformation) {
@@ -104,7 +106,6 @@ public class ProblemsActivity extends MyAbstractActivity {
 
     private void loadProblem() {
         if (problemIndex >= problems.length) {
-            Window.alert("You reached the last problem in the collection!");
             return;
         }
         String id = problems[problemIndex].getKifuId();
@@ -137,6 +138,73 @@ public class ProblemsActivity extends MyAbstractActivity {
         return new ProblemsPlace(collectionId, problemIndex);
     }
 
+    private void initTimer() {
+        duration = new Duration();
+
+        activityTimer = new Timer() {
+            @Override
+            public void run() {
+                eventBus.fireEvent(new ActivityTimerEvent(duration.elapsedMillis(), false));
+            }
+        };
+
+        activityTimer.scheduleRepeating(100);
+    }
+
+    private void stopTimer() {
+        activityTimer.cancel();
+    }
+
+    private boolean isTimerRunning() {
+        return !(activityTimer == null) && activityTimer.isRunning();
+    }
+
+    private void loadNextProblem() {
+        if (isTimerRunning()) {
+            problemIndex++;
+            if (problemIndex == statuses.length) problemIndex = 0;
+            boolean firstPass = true;
+            while (statuses[problemIndex] == ProblemStatus.SOLVED) {
+                problemIndex++;
+                if (problemIndex == statuses.length) {
+                    if (firstPass) {
+                        firstPass = false;
+                        problemIndex = 0;
+                    } else {
+                        break;
+                    }
+                }
+            }
+        } else {
+            problemIndex++;
+        }
+
+        if (problemIndex >= problems.length) {
+            if (isTimerRunning()) {
+                stopTimer();
+                int time = duration.elapsedMillis();
+                eventBus.fireEvent(new ActivityTimerEvent(time, false));
+                Window.alert("Congratulations, you have solved all the problems!");
+                saveTime(time);
+                return;
+            } else {
+                Window.alert("You reached the last problem in the collection!");
+                return;
+            }
+        }
+
+        loadProblem();
+    }
+
+    private void saveTime(final int time) {
+        String username = sessionInformation.getUsername();
+        if (username == null || "Guest".equals(username)) {
+            username = Window.prompt("What is your name?", "Guest");
+        }
+        problemsService.saveCollectionTime(sessionInformation.getSessionId(), username, collectionId,
+                time, new FireAndForgetCallback());
+    }
+
     @Override
     public void onStop() {
         GWT.log("Stopping tsume activity");
@@ -148,8 +216,7 @@ public class ProblemsActivity extends MyAbstractActivity {
         if (problemIndex < statuses.length && statuses[problemIndex] == ProblemStatus.CURRENT) {
             statuses[problemIndex] = ProblemStatus.UNSOLVED;
         }
-        problemIndex++;
-        loadProblem();
+        loadNextProblem();
     }
 
     @EventHandler
@@ -158,6 +225,9 @@ public class ProblemsActivity extends MyAbstractActivity {
         if (problemIndex < statuses.length) {
             statuses[problemIndex] = event.isSuccess() ? ProblemStatus.SOLVED : ProblemStatus.FAILED;
             eventBus.fireEvent(new ProblemCollectionProgressEvent(problemIndex, statuses));
+        }
+        if (isTimerRunning()) {
+            loadNextProblem();
         }
     }
 
@@ -168,6 +238,22 @@ public class ProblemsActivity extends MyAbstractActivity {
         }
         problemIndex = event.getProblemIndex();
         loadProblem();
+    }
+
+    @EventHandler
+    void onStartTimedRun(final StartTimedRunEvent event) {
+        GWT.log("Start timed run");
+        Arrays.fill(statuses, ProblemStatus.UNSOLVED);
+        problemIndex = 0;
+        eventBus.fireEvent(new ProblemCollectionProgressEvent(problemIndex, statuses));
+        loadProblem();
+        initTimer();
+    }
+
+    @EventHandler
+    void onStopTimedRun(final StopTimedRunEvent event) {
+        GWT.log("Stop timed run");
+        stopTimer();
     }
 
 }

@@ -211,6 +211,21 @@ public class ProblemsServiceImpl extends RemoteServiceServlet implements Problem
     }
 
     @Override
+    public void saveCollectionTime(final String sessionId, final String userName, final String collectionId,
+                                   final int timeMs) {
+        LOGGER.log(Level.INFO, "Saving collection time: " + collectionId + " - " + userName + " " + timeMs);
+
+        LoginResult loginResult = authenticator.checkSession(sessionId);
+        String name = userName;
+        if (loginResult != null && loginResult.isLoggedIn()) {
+            name = loginResult.getUserName();
+        }
+        name = name.length() > 20 ? name.substring(0, 20) : name;
+
+
+    }
+
+    @Override
     public String saveProblemsCollection(final String sessionId, final String draftId) {
         return saveProblemsCollection(sessionId, draftId, new ProblemCollectionDetails());
     }

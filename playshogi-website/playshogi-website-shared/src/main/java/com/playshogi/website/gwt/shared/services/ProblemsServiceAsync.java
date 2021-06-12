@@ -22,6 +22,9 @@ public interface ProblemsServiceAsync {
 
     void getHighScores(AsyncCallback<SurvivalHighScore[]> callback);
 
+    void saveCollectionTime(String sessionId, String userName, String collectionId, int timeMs,
+                            AsyncCallback<Void> callback);
+
     void saveProblemsCollection(String sessionId, String draftId, AsyncCallback<String> callback);
 
     void saveProblemsCollection(String sessionId, String draftId, ProblemCollectionDetails details,

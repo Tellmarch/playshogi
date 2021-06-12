@@ -3,9 +3,9 @@ package com.playshogi.website.gwt.client.ui;
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.place.shared.PlaceController;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.ScrollPanel;
+import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.web.bindery.event.shared.EventBus;
@@ -15,19 +15,24 @@ import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.website.gwt.client.SessionInformation;
 import com.playshogi.website.gwt.client.events.collections.ListCollectionProblemsEvent;
 import com.playshogi.website.gwt.client.events.kifu.ClearDecorationsEvent;
-import com.playshogi.website.gwt.client.events.puzzles.ProblemCollectionProgressEvent;
-import com.playshogi.website.gwt.client.events.puzzles.UserJumpedToProblemEvent;
+import com.playshogi.website.gwt.client.events.puzzles.*;
 import com.playshogi.website.gwt.client.util.ElementWidget;
 import com.playshogi.website.gwt.client.widget.board.ShogiBoard;
 import com.playshogi.website.gwt.client.widget.gamenavigator.GameNavigator;
 import com.playshogi.website.gwt.client.widget.problems.ProblemFeedbackPanel;
 import com.playshogi.website.gwt.shared.models.ProblemDetails;
+import elemental2.dom.HTMLDivElement;
+import elemental2.dom.HTMLElement;
 import elemental2.dom.HTMLLIElement;
+import org.dominokit.domino.ui.button.Button;
 import org.dominokit.domino.ui.icons.Icons;
 import org.dominokit.domino.ui.style.Color;
 import org.dominokit.domino.ui.themes.Theme;
 import org.dominokit.domino.ui.tree.Tree;
 import org.dominokit.domino.ui.tree.TreeItem;
+import org.dominokit.domino.ui.utils.DominoElement;
+import org.jboss.elemento.Elements;
+import org.jboss.elemento.HtmlContentBuilder;
 
 import java.util.List;
 
@@ -35,12 +40,13 @@ import java.util.List;
 public class ProblemsView extends Composite {
 
     private static final String PROBLEMS = "problems";
+    private HtmlContentBuilder<HTMLElement> timerTextSeconds;
+    private HtmlContentBuilder<HTMLElement> timerTextMs;
 
     interface MyEventBinder extends EventBinder<ProblemsView> {
     }
 
     private final MyEventBinder eventBinder = GWT.create(MyEventBinder.class);
-
 
     private final ShogiBoard shogiBoard;
     private final GameNavigator gameNavigator;
@@ -48,7 +54,11 @@ public class ProblemsView extends Composite {
     private final Tree<ProblemDetails> problemsTree;
     private final PlaceController placeController;
     private final ScrollPanel scrollPanel;
+    private HtmlContentBuilder<HTMLElement> timerText;
     private EventBus eventBus;
+    private Button startTimedRun;
+    private Button stopTimedRun;
+    private TreeItem<ProblemDetails> current;
 
     @Inject
     public ProblemsView(final SessionInformation sessionInformation, final PlaceController placeController) {
@@ -76,19 +86,52 @@ public class ProblemsView extends Composite {
         initWidget(horizontalPanel);
     }
 
-    private FlowPanel createLowerLeftPanel() {
-
-        FlowPanel panel = new FlowPanel();
-        panel.add(new ElementWidget(org.dominokit.domino.ui.button.Button.createPrimary(Icons.ALL.settings_mdi())
+    private Widget createLowerLeftPanel() {
+        HtmlContentBuilder<HTMLDivElement> div = Elements.div();
+        div.add(Button.createPrimary(Icons.ALL.settings_mdi())
                 .setBackground(Theme.DEEP_PURPLE.color()).circle()
                 .setTooltip("Settings")
-                .addClickListener(e -> shogiBoard.getBoardSettingsPanel().showInDialog()).element()));
-        panel.add(new ElementWidget(org.dominokit.domino.ui.button.Button.createPrimary(Icons.ALL.do_not_disturb_alt())
+                .addClickListener(e -> shogiBoard.getBoardSettingsPanel().showInDialog()));
+        div.add(Button.createPrimary(Icons.ALL.do_not_disturb_alt())
                 .setBackground(Theme.DEEP_PURPLE.color()).circle()
                 .addClickListener(e -> eventBus.fireEvent(new ClearDecorationsEvent()))
                 .setTooltip("Clear arrows")
-                .style().setMarginLeft("1em").element()));
-        return panel;
+                .style().setMarginLeft("1em"));
+        div.add(Elements.br());
+        startTimedRun = Button.createPrimary(Icons.ALL.timer()).setContent("Start timed " +
+                "run")
+                .addClickListener(evt -> {
+                    eventBus.fireEvent(new StartTimedRunEvent());
+                    startTimedRun.hide();
+                    stopTimedRun.show();
+                    timerText.hidden(false);
+                })
+                .style().setMarginTop("3em").setMarginBottom("3em")
+                .get();
+        stopTimedRun = Button.createDanger(Icons.ALL.timer_off()).setContent("Stop timer")
+                .addClickListener(evt -> {
+                    eventBus.fireEvent(new StopTimedRunEvent());
+                    stopTimedRun.hide();
+                    startTimedRun.show();
+                })
+                .style().setMarginTop("3em").setMarginBottom("3em")
+                .get();
+        stopTimedRun.hide();
+        div.add(startTimedRun);
+        div.add(stopTimedRun);
+        div.add(Elements.br());
+        timerText = Elements.b();
+        DominoElement.of(timerText).style()
+                .setBackgroundColor(Color.WHITE.getHex())
+                .setPadding("0.5em")
+                .setFontSize("30px");
+        timerTextSeconds = Elements.span();
+        timerTextMs = Elements.span();
+        timerText.add(timerTextSeconds.textContent("0:00"))
+                .add(timerTextMs.textContent(".00").style("font-size:20px"));
+        timerText.hidden(true);
+        div.add(timerText);
+        return new ElementWidget(div.element());
     }
 
     public ShogiPosition getCurrentPosition() {
@@ -102,6 +145,9 @@ public class ProblemsView extends Composite {
         shogiBoard.activate(eventBus);
         gameNavigator.activate(eventBus);
         problemFeedbackPanel.activate(eventBus);
+        timerText.hidden(true);
+        startTimedRun.show();
+        stopTimedRun.hide();
     }
 
     @EventHandler
@@ -127,7 +173,6 @@ public class ProblemsView extends Composite {
     @EventHandler
     public void onProblemCollectionProgressEvent(final ProblemCollectionProgressEvent event) {
         GWT.log("ProblemsView: handle ProblemCollectionProgressEvent");
-        GWT.log(event.toString());
         List<TreeItem<ProblemDetails>> subItems = problemsTree.getSubItems();
         for (int i = 0; i < subItems.size(); i++) {
             TreeItem<ProblemDetails> subItem = subItems.get(i);
@@ -135,6 +180,7 @@ public class ProblemsView extends Composite {
                 case CURRENT:
                     subItem.style().setBackgroundColor(Color.YELLOW.getHex());
                     subItem.select();
+                    current = subItem;
                     if (i < 10) {
                         scrollPanel.setVerticalScrollPosition(0);
                     } else {
@@ -153,7 +199,16 @@ public class ProblemsView extends Composite {
                     break;
             }
         }
+    }
 
+    @EventHandler
+    void onActivityTimerEvent(final ActivityTimerEvent event) {
+        int timeMs = (event.getTimems() % 1000 / 10);
+        int timeInSeconds = event.getTimems() / 1000;
+        int timeMinutes = timeInSeconds / 60;
+        int timeSeconds = timeInSeconds % 60;
+        timerTextSeconds.textContent(timeMinutes + ":" + (timeSeconds < 10 ? "0" + timeSeconds : timeSeconds));
+        timerTextMs.textContent("." + (timeMs < 10 ? "0" + timeMs : timeMs));
     }
 
 }

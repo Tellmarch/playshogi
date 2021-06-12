@@ -30,6 +30,9 @@ public class LoginServiceImpl extends RemoteServiceServlet implements LoginServi
 
     @Override
     public LoginResult register(final String username, final String password) {
+        if (username == null || username.length() > 20) {
+            throw new IllegalStateException("Invalid username: " + username);
+        }
         return authenticator.register(username, password);
     }
 
