@@ -109,6 +109,9 @@ public class GameCollectionsTable {
 
 
     public void setData(final List<GameCollectionDetails> details) {
+        if ((simplePaginationPlugin.getSimplePagination().activePage() - 1) * PAGE_SIZE >= details.size()) {
+            simplePaginationPlugin.getSimplePagination().gotoPage(1);
+        }
         localListDataStore.setData(details);
         table.load();
     }

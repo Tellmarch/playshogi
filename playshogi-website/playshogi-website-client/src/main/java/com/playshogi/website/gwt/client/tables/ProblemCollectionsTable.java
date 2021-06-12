@@ -178,6 +178,9 @@ public class ProblemCollectionsTable {
     }
 
     public void setData(final List<ProblemCollectionDetails> details) {
+        if ((simplePaginationPlugin.getSimplePagination().activePage() - 1) * PAGE_SIZE >= details.size()) {
+            simplePaginationPlugin.getSimplePagination().gotoPage(1);
+        }
         localListDataStore.setData(details);
         table.load();
     }

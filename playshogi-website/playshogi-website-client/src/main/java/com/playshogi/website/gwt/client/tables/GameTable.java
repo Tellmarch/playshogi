@@ -167,6 +167,9 @@ public class GameTable {
     }
 
     public void setData(final List<GameDetails> details) {
+        if ((simplePaginationPlugin.getSimplePagination().activePage() - 1) * PAGE_SIZE >= details.size()) {
+            simplePaginationPlugin.getSimplePagination().gotoPage(1);
+        }
         localListDataStore.setData(details);
         table.load();
     }
