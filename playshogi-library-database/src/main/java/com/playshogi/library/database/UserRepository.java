@@ -1,6 +1,7 @@
 package com.playshogi.library.database;
 
 import com.playshogi.library.database.models.PersistentHighScore;
+import com.playshogi.library.database.models.PersistentUserProblemSetStats;
 import com.playshogi.library.database.models.PersistentUserProblemStats;
 
 import java.sql.*;
@@ -20,6 +21,10 @@ public class UserRepository {
 
     private static final String INSERT_USER_PB_STATS = "INSERT INTO `playshogi`.`ps_userpbstats` "
             + "(`user_id`, `problem_id`, `time_spent_ms`, `correct`)" + " VALUES ( ?, ?, ?, ?);";
+
+    private static final String INSERT_USER_PBSET_STATS = "INSERT INTO `playshogi`.`ps_userpbsetstats` "
+            + "(`user_id`, `problemset_id`, `time_spent_ms`, `complete`, `solved`)" + " VALUES ( ?, ?, ?, ?, ?);";
+
     private static final String GET_USER_PB_STATS = "SELECT * from playshogi.ps_userpbstats WHERE  user_id = ? ORDER " +
             "BY timestamp_attempted DESC;";
 
@@ -28,6 +33,14 @@ public class UserRepository {
 
     private static final String GET_USER_HIGHSCORES = "SELECT name, max(score) as score FROM ps_highscore WHERE event" +
             " = ? GROUP BY name ORDER BY score DESC LIMIT 20;";
+
+    private static final String GET_COLLECTION_HIGHSCORES = "SELECT user_id, min(time_spent_ms) as time_spent_ms" +
+            " FROM ps_userpbsetstats" +
+            " WHERE problemset_id = ? AND complete = 1 GROUP BY user_id ORDER BY time_spent_ms ASC LIMIT 3;";
+
+    private static final String GET_COLLECTION_HIGHSCORES_WITH_NAMES = "SELECT username, min(time_spent_ms) as " +
+            "time_spent_ms FROM ps_userpbsetstats JOIN ps_user u ON (user_id = u.id) WHERE problemset_id = ? AND " +
+            "complete = 1 GROUP BY username ORDER BY time_spent_ms ASC LIMIT 3;";
 
     private final DbConnection dbConnection;
 
@@ -122,6 +135,24 @@ public class UserRepository {
         }
     }
 
+    public void insertUserPbSetStats(final PersistentUserProblemSetStats userProblemStats) {
+
+        Connection connection = dbConnection.getConnection();
+        try (PreparedStatement preparedStatement = connection.prepareStatement(INSERT_USER_PBSET_STATS)) {
+            preparedStatement.setInt(1, userProblemStats.getUserId());
+            preparedStatement.setInt(2, userProblemStats.getCollectionId());
+            preparedStatement.setInt(3, userProblemStats.getTimeSpentMs());
+            preparedStatement.setBoolean(4, userProblemStats.getComplete());
+            preparedStatement.setInt(5, userProblemStats.getSolved());
+            preparedStatement.executeUpdate();
+
+            LOGGER.log(Level.INFO, "Inserted user pbset stats");
+
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error saving the user pbset stats in db", e);
+        }
+    }
+
     public List<PersistentUserProblemStats> getUserPbStats(final int userId) {
         Connection connection = dbConnection.getConnection();
         try (PreparedStatement preparedStatement = connection.prepareStatement(GET_USER_PB_STATS)) {
@@ -183,6 +214,28 @@ public class UserRepository {
                 String name = rs.getString("name");
                 result.add(new PersistentHighScore(0, null, score, null, name, null));
 
+            }
+
+            LOGGER.log(Level.INFO, "Found high scores: " + result);
+
+            return result;
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error looking up the high scores", e);
+            return new ArrayList<>();
+        }
+    }
+
+    public List<PersistentUserProblemSetStats> getCollectionHighScores(final int collectionId) {
+        Connection connection = dbConnection.getConnection();
+        try (PreparedStatement preparedStatement = connection.prepareStatement(GET_COLLECTION_HIGHSCORES_WITH_NAMES)) {
+            preparedStatement.setInt(1, collectionId);
+            ResultSet rs = preparedStatement.executeQuery();
+            List<PersistentUserProblemSetStats> result = new ArrayList<>();
+
+            while (rs.next()) {
+                int time_spent_ms = rs.getInt("time_spent_ms");
+                String username = rs.getString("username");
+                result.add(new PersistentUserProblemSetStats(0, username, collectionId, null, time_spent_ms, true, 0));
             }
 
             LOGGER.log(Level.INFO, "Found high scores: " + result);

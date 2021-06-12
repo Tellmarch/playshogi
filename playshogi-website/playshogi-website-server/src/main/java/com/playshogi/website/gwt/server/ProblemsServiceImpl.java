@@ -211,18 +211,18 @@ public class ProblemsServiceImpl extends RemoteServiceServlet implements Problem
     }
 
     @Override
-    public void saveCollectionTime(final String sessionId, final String userName, final String collectionId,
-                                   final int timeMs) {
-        LOGGER.log(Level.INFO, "Saving collection time: " + collectionId + " - " + userName + " " + timeMs);
-
+    public void saveCollectionTime(final String sessionId, final String collectionId, final int timeMs,
+                                   final boolean complete, final int solved) {
+        LOGGER.log(Level.INFO, "Saving pb stats for the user");
         LoginResult loginResult = authenticator.checkSession(sessionId);
-        String name = userName;
         if (loginResult != null && loginResult.isLoggedIn()) {
-            name = loginResult.getUserName();
+            PersistentUserProblemSetStats userProblemStats = new PersistentUserProblemSetStats(loginResult.getUserId(),
+                    Integer.parseInt(collectionId), timeMs, complete, solved);
+            userRepository.insertUserPbSetStats(userProblemStats);
+            LOGGER.log(Level.INFO, "Saved pbset stats for the user: " + userProblemStats);
+        } else {
+            LOGGER.log(Level.INFO, "Not saving stats for guest user");
         }
-        name = name.length() > 20 ? name.substring(0, 20) : name;
-
-
     }
 
     @Override
@@ -315,6 +315,26 @@ public class ProblemsServiceImpl extends RemoteServiceServlet implements Problem
         details.setId(String.valueOf(persistentProblemSet.getId()));
         details.setVisibility(persistentProblemSet.getVisibility().name());
         details.setTags(persistentProblemSet.getTags());
+
+        List<PersistentUserProblemSetStats> highScores =
+                userRepository.getCollectionHighScores(persistentProblemSet.getId());
+
+        String[] leaderboardNames = new String[highScores.size()];
+        String[] leaderboardScores = new String[highScores.size()];
+
+        for (int i = 0; i < highScores.size(); i++) {
+            leaderboardNames[i] = highScores.get(i).getUserName();
+            Integer ms = highScores.get(i).getTimeSpentMs();
+            leaderboardScores[i] = String.format(
+                    "%d:%02d.%03d",
+                    ms / 60000,
+                    (ms / 1000) % 60,
+                    ms % 1000);
+        }
+
+        details.setLeaderboardNames(leaderboardNames);
+        details.setLeaderboardScores(leaderboardScores);
+
         return details;
     }
 

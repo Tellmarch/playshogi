@@ -21,7 +21,7 @@ public interface ProblemsService extends RemoteService {
 
     SurvivalHighScore[] getHighScores();
 
-    void saveCollectionTime(String sessionId, String userName, String collectionId, int timeMs);
+    void saveCollectionTime(String sessionId, String collectionId, int timeMs, boolean complete, int solved);
 
     ProblemStatisticsDetails[] getProblemStatisticsDetails(String sessionId);
 

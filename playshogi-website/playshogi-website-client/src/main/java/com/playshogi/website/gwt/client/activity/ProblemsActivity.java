@@ -185,7 +185,9 @@ public class ProblemsActivity extends MyAbstractActivity {
                 int time = duration.elapsedMillis();
                 eventBus.fireEvent(new ActivityTimerEvent(time, false));
                 Window.alert("Congratulations, you have solved all the problems!");
-                saveTime(time);
+                if (sessionInformation.isLoggedIn()) {
+                    saveTime(time);
+                }
                 return;
             } else {
                 Window.alert("You reached the last problem in the collection!");
@@ -197,12 +199,8 @@ public class ProblemsActivity extends MyAbstractActivity {
     }
 
     private void saveTime(final int time) {
-        String username = sessionInformation.getUsername();
-        if (username == null || "Guest".equals(username)) {
-            username = Window.prompt("What is your name?", "Guest");
-        }
-        problemsService.saveCollectionTime(sessionInformation.getSessionId(), username, collectionId,
-                time, new FireAndForgetCallback());
+        problemsService.saveCollectionTime(sessionInformation.getSessionId(), collectionId,
+                time, true, statuses.length, new FireAndForgetCallback());
     }
 
     @Override
