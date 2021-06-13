@@ -59,8 +59,9 @@ public class UserRepository {
             if (rs.next()) {
                 int userId = rs.getInt("id");
                 boolean admin = rs.getBoolean("administrator");
-                LOGGER.log(Level.INFO, "Found user: " + username + " with id: " + userId);
-                return new AuthenticationResult(AuthenticationResult.Status.LOGIN_OK, userId, username, admin);
+                String trueUsername = rs.getString("username");
+                LOGGER.log(Level.INFO, "Found user: " + trueUsername + " with id: " + userId);
+                return new AuthenticationResult(AuthenticationResult.Status.LOGIN_OK, userId, trueUsername, admin);
             } else {
                 LOGGER.log(Level.INFO, "Did not find user: " + username);
                 return new AuthenticationResult(AuthenticationResult.Status.INVALID);

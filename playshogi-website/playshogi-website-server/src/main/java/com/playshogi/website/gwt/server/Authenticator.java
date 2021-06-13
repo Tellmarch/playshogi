@@ -24,7 +24,7 @@ public enum Authenticator {
     public LoginResult login(final String username, final String password) {
         LOGGER.log(Level.INFO, "Login for user " + username);
         AuthenticationResult authenticationResult = users.authenticateUser(username, password);
-        return login(username, authenticationResult);
+        return login(authenticationResult.getUsername(), authenticationResult);
     }
 
     private LoginResult login(final String username, final AuthenticationResult authenticationResult) {
