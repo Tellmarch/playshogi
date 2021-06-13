@@ -4,26 +4,16 @@ import com.google.gwt.place.shared.Place;
 import com.google.gwt.place.shared.PlaceTokenizer;
 import com.google.gwt.place.shared.Prefix;
 
-import java.util.Optional;
-
 public class CollectionPlace extends Place {
 
     private final String collectionId;
 
-    public CollectionPlace() {
-        this(null);
-    }
-
     public CollectionPlace(final String collectionId) {
-        if (collectionId == null || "null".equals(collectionId)) {
-            this.collectionId = null;
-        } else {
-            this.collectionId = collectionId;
-        }
+        this.collectionId = collectionId;
     }
 
-    public Optional<String> getCollectionId() {
-        return Optional.ofNullable(collectionId);
+    public String getCollectionId() {
+        return collectionId;
     }
 
     @Prefix("Collection")

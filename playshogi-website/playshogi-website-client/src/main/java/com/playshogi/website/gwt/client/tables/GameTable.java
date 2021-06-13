@@ -6,6 +6,7 @@ import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.event.shared.EventBus;
 import com.playshogi.library.shogi.models.formats.sfen.SfenConverter;
 import com.playshogi.website.gwt.client.UserPreferences;
+import com.playshogi.website.gwt.client.events.collections.RemoveGameFromCollectionEvent;
 import com.playshogi.website.gwt.client.mvp.AppPlaceHistoryMapper;
 import com.playshogi.website.gwt.client.place.ViewKifuPlace;
 import com.playshogi.website.gwt.client.util.ElementWidget;
@@ -20,7 +21,6 @@ import org.dominokit.domino.ui.datatable.TableConfig;
 import org.dominokit.domino.ui.datatable.plugins.RecordDetailsPlugin;
 import org.dominokit.domino.ui.datatable.plugins.SimplePaginationPlugin;
 import org.dominokit.domino.ui.datatable.store.LocalListDataStore;
-import org.dominokit.domino.ui.forms.CheckBox;
 import org.dominokit.domino.ui.grid.Column;
 import org.dominokit.domino.ui.grid.Row;
 import org.dominokit.domino.ui.grid.Row_12;
@@ -113,26 +113,26 @@ public class GameTable {
                                     return Elements.a(href).add(Button.createPrimary("Show")).element();
                                 })
                 )
-                .addColumn(
-                        ColumnConfig.<GameDetails>create("edit", "Edit")
-                                .styleCell(
-                                        element -> element.style.setProperty("vertical-align", "top"))
-                                .setCellRenderer(cell -> Button.createPrimary("Edit").addClickListener(evt -> {
-                                    ModalDialog defaultSizeModal = createModalDialog();
-                                    defaultSizeModal.appendChild(CheckBox.create("Delete?"));
-                                    defaultSizeModal.open();
-
-                                }).element())
-                )
-
-                .addColumn(
-                        ColumnConfig.<GameDetails>create("download", "Download")
-                                .styleCell(
-                                        element -> element.style.setProperty("vertical-align", "top"))
-                                .setCellRenderer(cell -> Button.createPrimary("Download").addClickListener(evt -> {
-                                    //TODO implementation for Jean
-                                }).element())
-                );
+//                .addColumn(
+//                        ColumnConfig.<GameDetails>create("edit", "Edit")
+//                                .styleCell(
+//                                        element -> element.style.setProperty("vertical-align", "top"))
+//                                .setCellRenderer(cell -> Button.createPrimary("Edit").addClickListener(evt -> {
+//                                    ModalDialog defaultSizeModal = createModalDialog();
+//                                    defaultSizeModal.appendChild(CheckBox.create("Delete?"));
+//                                    defaultSizeModal.open();
+//
+//                                }).element())
+//                )
+//                .addColumn(
+//                        ColumnConfig.<GameDetails>create("download", "Download")
+//                                .styleCell(
+//                                        element -> element.style.setProperty("vertical-align", "top"))
+//                                .setCellRenderer(cell -> Button.createPrimary("Download").addClickListener(evt -> {
+//                                    //TODO implementation for Jean
+//                                }).element())
+//                )
+        ;
         return tableConfig;
     }
 
@@ -157,11 +157,12 @@ public class GameTable {
 
         if (withEditOptions) {
             rowElement.addColumn(Column.span4()
-                    .appendChild(Button.createDanger("Remove from collection")
-                            .addClickListener(evt -> confirmDeletion(details))
-                            .style().setMarginRight("20px"))
-                    .appendChild(Button.createDanger("Delete")
-                            .addClickListener(evt -> confirmDeletion(details))));
+                            .appendChild(Button.createDanger("Remove from collection")
+                                    .addClickListener(evt -> confirmDeletion(details))
+                                    .style().setMarginRight("20px"))
+//                    .appendChild(Button.createDanger("Delete")
+//                            .addClickListener(evt -> confirmDeletion(details)))
+            );
         }
         return rowElement.element();
     }
@@ -193,11 +194,11 @@ public class GameTable {
 
     private void confirmDeletion(final GameDetails details) {
         boolean confirm =
-                Window.confirm("Are you sure you want to delete the game " + details.getSente() + " vs "
+                Window.confirm("Are you sure you want to remove the game " + details.getSente() + " vs "
                         + details.getGote() + "?\nThis is not revertible.");
         if (confirm) {
             GWT.log("Deleting game: " + details);
-            //eventBus.fireEvent(new DeleteGameCollectionEvent(details.getId()));
+            eventBus.fireEvent(new RemoveGameFromCollectionEvent(details.getId(), null));
         } else {
             GWT.log("Deletion cancelled: " + details);
         }
