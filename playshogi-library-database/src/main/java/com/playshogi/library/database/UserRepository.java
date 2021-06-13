@@ -14,8 +14,9 @@ public class UserRepository {
 
     private static final Logger LOGGER = Logger.getLogger(UserRepository.class.getName());
 
-    private static final String FIND_SQL = "SELECT * FROM ps_user WHERE username = ?";
-    private static final String LOGIN_SQL = "SELECT * FROM ps_user WHERE username = ? AND password_hash = ? ";
+    private static final String FIND_SQL = "SELECT * FROM ps_user WHERE UPPER(username) = UPPER(?)";
+    private static final String LOGIN_SQL = "SELECT * FROM ps_user WHERE UPPER(username) = UPPER(?) AND password_hash" +
+            " = ? ";
     private static final String INSERT_USER = "INSERT INTO `playshogi`.`ps_user` "
             + "(`username`, `password_hash`)" + " VALUES ( ?, ?);";
 
