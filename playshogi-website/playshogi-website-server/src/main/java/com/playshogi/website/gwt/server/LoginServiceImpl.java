@@ -9,6 +9,8 @@ import java.util.logging.Logger;
 
 public class LoginServiceImpl extends RemoteServiceServlet implements LoginService {
 
+    public static final String USERNAME_REGEX = "^[a-zA-Z0-9_]{3,25}$";
+
     private static final Logger LOGGER = Logger.getLogger(LoginServiceImpl.class.getName());
 
     private final Authenticator authenticator = Authenticator.INSTANCE;
@@ -30,10 +32,18 @@ public class LoginServiceImpl extends RemoteServiceServlet implements LoginServi
 
     @Override
     public LoginResult register(final String username, final String password) {
-        if (username == null || username.length() > 20) {
+        if (!validateUserName(username)) {
             throw new IllegalStateException("Invalid username: " + username);
         }
         return authenticator.register(username, password);
+    }
+
+    public boolean validateUserName(final String username) {
+        if (username == null) {
+            return false;
+        }
+
+        return username.matches(USERNAME_REGEX);
     }
 
     @Override

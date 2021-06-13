@@ -15,6 +15,7 @@ import com.playshogi.website.gwt.client.events.user.UserLoggedOutEvent;
 import com.playshogi.website.gwt.shared.models.LoginResult;
 import com.playshogi.website.gwt.shared.services.LoginService;
 import com.playshogi.website.gwt.shared.services.LoginServiceAsync;
+import org.dominokit.domino.ui.notifications.Notification;
 
 import java.util.Date;
 
@@ -84,19 +85,23 @@ public class SessionInformation implements AsyncCallback<LoginResult> {
     @Override
     public void onFailure(final Throwable caught) {
         GWT.log("ERROR validating session", caught);
+        Notification.createDanger("Error trying to login/register to the server.").show();
     }
 
     @Override
     public void onSuccess(final LoginResult result) {
         GWT.log("Got session validation result: " + result);
         if (result != null) {
+            if (result.getErrorMessage() != null) {
+                Notification.createDanger(result.getErrorMessage()).show();
+            }
+
             loggedIn = result.isLoggedIn();
             admin = result.isAdmin();
             sessionId = result.getSessionId();
             username = result.getUserName();
             errorMessage = result.getErrorMessage();
             if (loggedIn) {
-
                 String sessionID = result.getSessionId();
                 final long DURATION = 1000 * 60 * 60 * 24 * 14;
                 Date expires = new Date(System.currentTimeMillis() + DURATION);

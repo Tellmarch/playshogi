@@ -37,7 +37,8 @@ public class LoginView extends Composite {
         userName = TextBox.create("User name")
                 .addLeftAddOn(Icons.ALL.person())
                 .setRequired(true)
-                .setAutoValidation(true);
+                .setAutoValidation(true)
+                .setHelperText("Only alphanumerical or underscore, 3 to 25 characters");
 
 
         HTMLDivElement element = Row.create()
