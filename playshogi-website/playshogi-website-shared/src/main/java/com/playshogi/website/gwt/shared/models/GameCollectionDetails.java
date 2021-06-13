@@ -7,7 +7,6 @@ public class GameCollectionDetails implements Serializable {
     private String name;
     private String description;
     private String visibility;
-    private String type;
 
     public GameCollectionDetails() {
     }
@@ -50,14 +49,6 @@ public class GameCollectionDetails implements Serializable {
         this.visibility = visibility;
     }
 
-    public String getType() {
-        return type;
-    }
-
-    public void setType(final String type) {
-        this.type = type;
-    }
-
     @Override
     public String toString() {
         return "GameCollectionDetails{" +
@@ -65,7 +56,6 @@ public class GameCollectionDetails implements Serializable {
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", visibility='" + visibility + '\'' +
-                ", type='" + type + '\'' +
                 '}';
     }
 }

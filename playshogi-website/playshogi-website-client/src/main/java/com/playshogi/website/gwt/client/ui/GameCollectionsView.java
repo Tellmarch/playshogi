@@ -26,7 +26,6 @@ import com.playshogi.website.gwt.client.events.collections.RemoveGameFromCollect
 import com.playshogi.website.gwt.client.mvp.AppPlaceHistoryMapper;
 import com.playshogi.website.gwt.client.place.GameCollectionsPlace;
 import com.playshogi.website.gwt.client.place.OpeningsPlace;
-import com.playshogi.website.gwt.client.place.ProblemsPlace;
 import com.playshogi.website.gwt.client.place.ViewKifuPlace;
 import com.playshogi.website.gwt.client.widget.TablePanel;
 import com.playshogi.website.gwt.client.widget.kifu.CollectionPropertiesPanel;
@@ -152,14 +151,8 @@ public class GameCollectionsView extends Composite {
         }
 
         ActionCell<GameCollectionDetails> exploreActionCell = new ActionCell<>("Explore",
-                gameCollectionDetails -> {
-                    if ("games".equals(gameCollectionDetails.getType())) {
-                        placeController.goTo(new OpeningsPlace(OpeningsPlace.DEFAULT_SFEN,
-                                gameCollectionDetails.getId()));
-                    } else {
-                        placeController.goTo(new ProblemsPlace(gameCollectionDetails.getId(), 0));
-                    }
-                });
+                gameCollectionDetails -> placeController.goTo(new OpeningsPlace(OpeningsPlace.DEFAULT_SFEN,
+                        gameCollectionDetails.getId())));
 
         collectionsTable.addColumn(new Column<GameCollectionDetails, GameCollectionDetails>(exploreActionCell) {
             @Override

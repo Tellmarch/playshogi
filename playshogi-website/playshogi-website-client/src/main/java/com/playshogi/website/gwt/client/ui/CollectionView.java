@@ -9,10 +9,12 @@ import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.website.gwt.client.SessionInformation;
 import com.playshogi.website.gwt.client.events.collections.ListCollectionGamesEvent;
 import com.playshogi.website.gwt.client.mvp.AppPlaceHistoryMapper;
+import com.playshogi.website.gwt.client.place.OpeningsPlace;
 import com.playshogi.website.gwt.client.tables.GameTable;
 import com.playshogi.website.gwt.client.util.ElementWidget;
 import com.playshogi.website.gwt.client.widget.kifu.ImportKifuPanel;
 import com.playshogi.website.gwt.shared.models.GameCollectionDetails;
+import elemental2.dom.HTMLAnchorElement;
 import elemental2.dom.HTMLDivElement;
 import elemental2.dom.HTMLHeadingElement;
 import org.dominokit.domino.ui.button.Button;
@@ -37,12 +39,15 @@ public class CollectionView extends Composite {
     private final HtmlContentBuilder<HTMLHeadingElement> collectionDescription;
     private final GameTable gameTable;
     private final ImportKifuPanel importKifuPanel = new ImportKifuPanel();
+    private final AppPlaceHistoryMapper historyMapper;
+    private final HtmlContentBuilder<HTMLAnchorElement> exploreLink;
 
     private EventBus eventBus;
     private GameCollectionDetails collectionDetails;
 
     @Inject
     public CollectionView(final SessionInformation sessionInformation, final AppPlaceHistoryMapper historyMapper) {
+        this.historyMapper = historyMapper;
         gameTable = new GameTable(historyMapper, sessionInformation.getUserPreferences(), true);
 
         HtmlContentBuilder<HTMLDivElement> root = Elements.div();
@@ -51,8 +56,14 @@ public class CollectionView extends Composite {
         collectionDescription = Elements.h(4).textContent("");
         root.add(collectionHeading);
         root.add(collectionDescription);
+
         root.add(Button.createPrimary(Icons.ALL.add_circle()).setContent("Add Kifu to Collection")
-                .addClickListener(evt -> importKifuPanel.showInDialog(collectionDetails.getId())));
+                .addClickListener(evt -> importKifuPanel.showInDialog(collectionDetails.getId()))
+                .style().setMarginRight("3em"));
+
+        exploreLink = Elements.a("#");
+        root.add(exploreLink.add(Button.createPrimary(Icons.ALL.pie_chart()).setContent("Explore Openings")));
+
         root.add(gameTable.getTable());
 
         ScrollPanel scrollPanel = new ScrollPanel();
@@ -79,6 +90,9 @@ public class CollectionView extends Composite {
         }
         collectionHeading.textContent(collectionDetails.getName());
         collectionDescription.textContent(collectionDetails.getDescription());
+        String exploreHRef = "#" + historyMapper.getToken(new OpeningsPlace(OpeningsPlace.DEFAULT_SFEN,
+                collectionDetails.getId()));
+        exploreLink.attr("href", exploreHRef);
     }
 
 }

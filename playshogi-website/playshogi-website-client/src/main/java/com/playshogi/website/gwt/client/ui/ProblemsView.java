@@ -2,6 +2,7 @@ package com.playshogi.website.gwt.client.ui;
 
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.place.shared.PlaceController;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.ScrollPanel;
@@ -52,6 +53,7 @@ public class ProblemsView extends Composite {
     private final GameNavigator gameNavigator;
     private final ProblemFeedbackPanel problemFeedbackPanel;
     private final Tree<ProblemDetails> problemsTree;
+    private final SessionInformation sessionInformation;
     private final PlaceController placeController;
     private final ScrollPanel scrollPanel;
     private HtmlContentBuilder<HTMLElement> timerText;
@@ -62,6 +64,7 @@ public class ProblemsView extends Composite {
 
     @Inject
     public ProblemsView(final SessionInformation sessionInformation, final PlaceController placeController) {
+        this.sessionInformation = sessionInformation;
         this.placeController = placeController;
         GWT.log("Creating Problems view");
         shogiBoard = new ShogiBoard(PROBLEMS, sessionInformation.getUserPreferences());
@@ -101,6 +104,9 @@ public class ProblemsView extends Composite {
         startTimedRun = Button.createPrimary(Icons.ALL.timer()).setContent("Start timed " +
                 "run")
                 .addClickListener(evt -> {
+                    if (!sessionInformation.isLoggedIn()) {
+                        Window.alert("You are not logged in - your score will not be saved.");
+                    }
                     eventBus.fireEvent(new StartTimedRunEvent());
                     startTimedRun.hide();
                     stopTimedRun.show();

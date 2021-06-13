@@ -102,7 +102,6 @@ public class GameCollectionsTable {
                                     return Elements.a(href).add(Button.createPrimary(
                                             "Open")).element();
                                 }))
-
         ;
         return tableConfig;
     }

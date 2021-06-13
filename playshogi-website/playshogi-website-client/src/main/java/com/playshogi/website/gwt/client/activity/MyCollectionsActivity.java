@@ -229,7 +229,7 @@ public class MyCollectionsActivity extends MyAbstractActivity {
     @EventHandler
     public void onDeleteProblemCollection(final DeleteProblemCollectionEvent event) {
         GWT.log("MyCollectionsActivity Handling DeleteProblemCollectionEvent");
-        problemsService.deleteProblemCollection(sessionInformation.getSessionId(), event.getCollectionId(), true,
+        problemsService.deleteProblemCollection(sessionInformation.getSessionId(), event.getCollectionId(), false,
                 new AsyncCallback<Void>() {
                     @Override
                     public void onFailure(final Throwable throwable) {
