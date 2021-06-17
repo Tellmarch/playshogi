@@ -134,7 +134,7 @@ public class MainPageView extends Composite {
         Grid grid = new Grid(1, 2);
         grid.setWidget(0, 0, new Image(resources.collectionsBackground()));
         grid.setWidget(0, 1, new Button("Collections",
-                (ClickHandler) clickEvent -> placeController.goTo(new GameCollectionsPlace())));
+                (ClickHandler) clickEvent -> placeController.goTo(new PublicCollectionsPlace())));
         panel.add(grid);
         decoratorPanel.setWidget(panel);
         panel.setWidth("400px");

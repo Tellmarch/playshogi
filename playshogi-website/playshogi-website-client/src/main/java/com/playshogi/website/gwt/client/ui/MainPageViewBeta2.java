@@ -51,7 +51,7 @@ public class MainPageViewBeta2 extends Composite {
 
     private Column getCollectionsCard() {
         return getCard("images/background/game_collection.png", "Collections", "Browse or Create collections of " +
-                "Shogi games.", "Collections", new GameCollectionsPlace());
+                "Shogi games.", "Collections", new PublicCollectionsPlace());
     }
 
     private Column getPracticeCard() {

@@ -148,7 +148,7 @@ public class MainPageViewBeta extends Composite {
 
         ElementWidget button =
                 new ElementWidget(Button.createPrimary("Collections")
-                        .addClickListener(evt -> placeController.goTo(new GameCollectionsPlace())).element());
+                        .addClickListener(evt -> placeController.goTo(new PublicCollectionsPlace())).element());
         button.getElement().getStyle().setMarginLeft(1, Style.Unit.EM);
 
         grid.setWidget(0, 1, button);

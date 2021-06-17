@@ -10,7 +10,7 @@ import com.playshogi.website.gwt.client.place.*;
         ProblemStatisticsPlace.Tokenizer.class, ByoYomiLandingPlace.Tokenizer.class,
         ByoYomiPlace.Tokenizer.class, LoginPlace.Tokenizer.class, ProblemPlace.Tokenizer.class,
         OpeningsPlace.Tokenizer.class, ViewKifuPlace.Tokenizer.class, LinksPlace.Tokenizer.class,
-        TutorialPlace.Tokenizer.class, GameCollectionsPlace.Tokenizer.class, PlayPlace.Tokenizer.class,
+        TutorialPlace.Tokenizer.class, PlayPlace.Tokenizer.class,
         ProblemsPlace.Tokenizer.class, KifuEditorPlace.Tokenizer.class, PreviewKifuPlace.Tokenizer.class,
         UserKifusPlace.Tokenizer.class, ManageProblemsPlace.Tokenizer.class, PublicCollectionsPlace.Tokenizer.class,
         MyCollectionsPlace.Tokenizer.class, CollectionHelpPlace.Tokenizer.class, CollectionPlace.Tokenizer.class,
