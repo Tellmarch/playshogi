@@ -43,13 +43,17 @@ public class ProblemSetRepository {
     private static final String DELETE_PROBLEMSET = "DELETE FROM `playshogi`.`ps_problemset` WHERE id = ? AND " +
             "owner_user_id" +
             " = ?";
+    private static final String UPDATE_PROBLEMSET = "UPDATE `playshogi`.`ps_problemset` " +
+            "SET `name` = ?, `description` = ?, `visibility` = ?, `difficulty` = ?, `tags` = ? WHERE `id` = ? AND " +
+            "`owner_user_id` = ?;";
+
 
     public ProblemSetRepository(final DbConnection dbConnection) {
         this.dbConnection = dbConnection;
     }
 
     public int saveProblemSet(final String name, final String description, final Visibility visibility
-            , final Integer ownerId, final Integer difficulty, final String tags) {
+            , final Integer ownerId, final Integer difficulty, final String[] tags) {
 
         int key = -1;
 
@@ -61,7 +65,7 @@ public class ProblemSetRepository {
             preparedStatement.setInt(3, visibility.ordinal());
             setInteger(preparedStatement, 4, ownerId);
             setInteger(preparedStatement, 5, difficulty);
-            preparedStatement.setString(6, tags);
+            preparedStatement.setString(6, tags == null ? "" : String.join(",", tags));
             preparedStatement.executeUpdate();
 
             ResultSet rs = preparedStatement.getGeneratedKeys();
@@ -264,6 +268,32 @@ public class ProblemSetRepository {
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error deleting up the problemSet in db", e);
             return false;
+        }
+    }
+
+    public void updateProblemSet(final int id, final String name, final String description,
+                                 final Visibility visibility, final Integer difficulty, final String[] tags,
+                                 final Integer ownerId) {
+        int key = -1;
+
+        Connection connection = dbConnection.getConnection();
+        try (PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_PROBLEMSET)) {
+            preparedStatement.setString(1, name);
+            preparedStatement.setString(2, description);
+            preparedStatement.setInt(3, visibility.ordinal());
+            setInteger(preparedStatement, 4, difficulty);
+            preparedStatement.setString(5, tags == null ? "" : String.join(",", tags));
+            preparedStatement.setInt(6, id);
+            setInteger(preparedStatement, 7, ownerId);
+            int res = preparedStatement.executeUpdate();
+
+            if (res == 1) {
+                LOGGER.log(Level.INFO, "Updated problemset with index " + key);
+            } else {
+                LOGGER.log(Level.SEVERE, "Could not update problemset (res = " + res + ")");
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error updating the problemset in db", e);
         }
     }
 }

@@ -130,8 +130,7 @@ public class GameSetRepository {
     }
 
     public void updateGameSet(final int id, final String name, final String description,
-                              final Visibility visibility
-            , final Integer ownerId) {
+                              final Visibility visibility, final Integer ownerId) {
 
         int key = -1;
 

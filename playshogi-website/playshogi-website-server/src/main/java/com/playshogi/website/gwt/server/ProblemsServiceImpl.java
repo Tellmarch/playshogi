@@ -253,9 +253,9 @@ public class ProblemsServiceImpl extends RemoteServiceServlet implements Problem
                 Visibility.valueOf(details.getVisibility().toUpperCase());
         int userId = loginResult.getUserId();
         int difficulty = details.getDifficulty();
-        String tags = details.getType() == null ? "" : String.join(",", details.getTags());
 
-        int id = problemSetRepository.saveProblemSet(name, description, visibility, userId, difficulty, tags);
+        int id = problemSetRepository.saveProblemSet(name, description, visibility, userId, difficulty,
+                details.getTags());
 
         if (id == -1) {
             LOGGER.log(Level.INFO, "Error saving the problem set");
@@ -315,6 +315,7 @@ public class ProblemsServiceImpl extends RemoteServiceServlet implements Problem
         details.setId(String.valueOf(persistentProblemSet.getId()));
         details.setVisibility(persistentProblemSet.getVisibility().name());
         details.setTags(persistentProblemSet.getTags());
+        details.setDifficulty(persistentProblemSet.getDifficulty());
 
         List<PersistentUserProblemSetStats> highScores =
                 userRepository.getCollectionHighScores(persistentProblemSet.getId());
@@ -382,6 +383,21 @@ public class ProblemsServiceImpl extends RemoteServiceServlet implements Problem
             }
         }
 
+    }
+
+    @Override
+    public void updateProblemCollectionDetails(final String sessionId,
+                                               final ProblemCollectionDetails details) {
+        LOGGER.log(Level.INFO, "updateProblemCollectionDetails: " + details);
+
+        LoginResult loginResult = authenticator.checkSession(sessionId);
+        if (loginResult == null || !loginResult.isLoggedIn()) {
+            throw new IllegalStateException("Only logged in users can update a problem collection");
+        }
+
+        problemSetRepository.updateProblemSet(Integer.parseInt(details.getId()), details.getName(),
+                details.getDescription(), Visibility.valueOf(details.getVisibility().toUpperCase()),
+                details.getDifficulty(), details.getTags(), loginResult.getUserId());
     }
 
     private static Map<String, Integer> sortByValueDesc(final Map<String, Integer> scores) {

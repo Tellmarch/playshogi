@@ -8,6 +8,7 @@ import com.playshogi.website.gwt.client.events.collections.DeleteProblemCollecti
 import com.playshogi.website.gwt.client.mvp.AppPlaceHistoryMapper;
 import com.playshogi.website.gwt.client.place.ProblemsPlace;
 import com.playshogi.website.gwt.client.util.ElementWidget;
+import com.playshogi.website.gwt.client.widget.collections.ProblemCollectionPropertiesForm;
 import com.playshogi.website.gwt.shared.models.ProblemCollectionDetails;
 import elemental2.dom.*;
 import org.dominokit.domino.ui.button.Button;
@@ -38,6 +39,7 @@ public class ProblemCollectionsTable {
     private final DataTable<ProblemCollectionDetails> table;
     private final boolean withEditOptions;
     private EventBus eventBus;
+    private ProblemCollectionPropertiesForm problemCollectionProperties;
 
     public ProblemCollectionsTable(final AppPlaceHistoryMapper historyMapper, boolean withEditOptions) {
         this.withEditOptions = withEditOptions;
@@ -50,6 +52,7 @@ public class ProblemCollectionsTable {
         localListDataStore.setPagination(simplePaginationPlugin.getSimplePagination());
         table = new DataTable<>(tableConfig, localListDataStore);
         table.style().setMaxWidth("1366px");
+        problemCollectionProperties = new ProblemCollectionPropertiesForm();
     }
 
     public DataTable<ProblemCollectionDetails> getTable() {
@@ -67,7 +70,8 @@ public class ProblemCollectionsTable {
                 .appendChild(h(5).add("Description:"))
                 .appendChild(TextNode.of(details.getDescription())));
         if (withEditOptions) {
-            rowElement.addColumn(Column.span4().appendChild(Button.createPrimary("Edit properties")));
+            rowElement.addColumn(Column.span4().appendChild(Button.createPrimary("Edit properties")
+                    .addClickListener(evt -> problemCollectionProperties.showInPopup(details))));
             rowElement.addColumn(Column.span4().appendChild(Button.createDanger("Delete collection")
                     .addClickListener(evt -> confirmCollectionDeletion(details))));
         }
@@ -187,6 +191,7 @@ public class ProblemCollectionsTable {
 
     public void activate(final EventBus eventBus) {
         this.eventBus = eventBus;
+        problemCollectionProperties.activate(eventBus);
     }
 
     private void confirmCollectionDeletion(final ProblemCollectionDetails details) {

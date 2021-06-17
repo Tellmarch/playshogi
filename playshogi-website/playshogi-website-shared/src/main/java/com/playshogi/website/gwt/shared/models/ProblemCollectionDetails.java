@@ -8,7 +8,6 @@ public class ProblemCollectionDetails implements Serializable {
     private String name;
     private String description;
     private String visibility;
-    private String type;
     private int numProblems;
 
     private int difficulty;
@@ -23,11 +22,10 @@ public class ProblemCollectionDetails implements Serializable {
     }
 
     public ProblemCollectionDetails(final String name, final String description, final String visibility,
-                                    final String type, final int difficulty, final String[] tags) {
+                                    final int difficulty, final String[] tags) {
         this.name = name;
         this.description = description;
         this.visibility = visibility;
-        this.type = type;
         this.difficulty = difficulty;
         this.tags = tags;
     }
@@ -62,14 +60,6 @@ public class ProblemCollectionDetails implements Serializable {
 
     public void setVisibility(final String visibility) {
         this.visibility = visibility;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(final String type) {
-        this.type = type;
     }
 
     public int getNumProblems() {
@@ -135,7 +125,6 @@ public class ProblemCollectionDetails implements Serializable {
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", visibility='" + visibility + '\'' +
-                ", type='" + type + '\'' +
                 ", numProblems=" + numProblems +
                 ", difficulty=" + difficulty +
                 ", leaderboardNames=" + Arrays.toString(leaderboardNames) +

@@ -7,6 +7,7 @@ import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.website.gwt.client.events.collections.ListGameCollectionsEvent;
 import com.playshogi.website.gwt.client.events.collections.ListProblemCollectionsEvent;
 import com.playshogi.website.gwt.client.events.collections.SaveDraftCollectionEvent;
+import com.playshogi.website.gwt.client.widget.collections.ProblemCollectionPropertiesForm;
 import com.playshogi.website.gwt.shared.models.GameCollectionDetails;
 import com.playshogi.website.gwt.shared.models.ProblemCollectionDetails;
 import elemental2.dom.Node;
@@ -25,8 +26,6 @@ import org.dominokit.domino.ui.modals.ModalDialog;
 import org.dominokit.domino.ui.notifications.Notification;
 import org.dominokit.domino.ui.tabs.Tab;
 import org.dominokit.domino.ui.tabs.TabsPanel;
-import org.dominokit.domino.ui.tag.TagsInput;
-import org.dominokit.domino.ui.tag.store.LocalTagsStore;
 import org.dominokit.domino.ui.upload.FileUpload;
 import org.dominokit.domino.ui.utils.TextNode;
 import org.jboss.elemento.Elements;
@@ -181,47 +180,14 @@ public class ImportCollectionPopup {
     }
 
     private Tab createNewProblemCollectionTab() {
-        Select<String> visibility = Select.<String>create()
-                .appendChild(SelectOption.create("Public", "Visibility: Public"))
-                .appendChild(SelectOption.create("Unlisted", "Visibility: Unlisted"))
-                .setSearchable(false)
-                .selectAt(1);
-        TextArea description = TextArea.create("Description").setHelperText("Less than 5000 characters");
-        TextBox title = TextBox.create("Title");
-        title.setValue("My New Problem Collection");
-
-        LocalTagsStore<String> tagsStore =
-                LocalTagsStore.<String>create()
-                        .addItem("Openings", "Openings")
-                        .addItem("Hisshi", "Hisshi")
-                        .addItem("Castle", "Castle")
-                        .addItem("Endgame", "Endgame")
-                        .addItem("Find the next move", "Find the next move")
-                        .addItem("For beginners", "For beginners")
-                        .addItem("Tsume", "Tsume");
-        TagsInput<String> tags = TagsInput.create("Tags", tagsStore);
-
-        Select<Integer> difficulty = Select.<Integer>create()
-                .appendChild(SelectOption.create(1, "Difficulty: Very Easy (★☆☆☆☆)"))
-                .appendChild(SelectOption.create(2, "Difficulty: Easy (★★☆☆☆)"))
-                .appendChild(SelectOption.create(3, "Difficulty: Medium (★★★☆☆)"))
-                .appendChild(SelectOption.create(4, "Difficulty: Hard (★★★★☆)"))
-                .appendChild(SelectOption.create(5, "Difficulty: Very Hard (★★★★★)"))
-                .setSearchable(false)
-                .selectAt(3);
-
+        ProblemCollectionPropertiesForm properties = new ProblemCollectionPropertiesForm();
         return Tab.create("New Problem Collection")
-                .appendChild(title)
-                .appendChild(description)
-                .appendChild(difficulty)
-                .appendChild(visibility)
-                .appendChild(tags.setPlaceholder("Tags..."))
+                .appendChild(properties.getForm())
                 .appendChild(Button.createPrimary("Upload Kifus in new Problem Collection").addClickListener(
                         evt -> {
-                            GWT.log(tags.getStringValue());
-                            eventBus.fireEvent(SaveDraftCollectionEvent.ofProblems(draftId, title.getStringValue(),
-                                    description.getStringValue(), visibility.getValue(), difficulty.getValue(),
-                                    tags.getValue().toArray(new String[0])));
+                            eventBus.fireEvent(SaveDraftCollectionEvent.ofProblems(draftId, properties.getTitle(),
+                                    properties.getDescription(), properties.getVisibility(), properties.getDifficulty(),
+                                    properties.getTags()));
                             dialog.close();
                         }));
     }

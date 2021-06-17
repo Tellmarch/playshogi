@@ -118,8 +118,7 @@ public class MyCollectionsActivity extends MyAbstractActivity {
                 break;
             case PROBLEMS:
                 ProblemCollectionDetails pcDetails = new ProblemCollectionDetails(event.getTitle(),
-                        event.getDescription(), event.getVisibility(), "Unspecificed", event.getDifficulty(),
-                        event.getTags());
+                        event.getDescription(), event.getVisibility(), event.getDifficulty(), event.getTags());
 
                 problemsService.saveProblemsCollection(sessionInformation.getSessionId(), event.getId(), pcDetails,
                         new AsyncCallback<String>() {
@@ -147,18 +146,39 @@ public class MyCollectionsActivity extends MyAbstractActivity {
                 new AsyncCallback<Void>() {
                     @Override
                     public void onFailure(final Throwable throwable) {
-                        GWT.log("MyCollectionsActivity: error during saveGameCollectionDetails");
+                        GWT.log("MyCollectionsActivity: error during updateGameCollectionDetails");
                         eventBus.fireEvent(new SaveGameCollectionDetailsResultEvent(false));
                     }
 
                     @Override
                     public void onSuccess(final Void unused) {
-                        GWT.log("MyCollectionsActivity: saveGameCollectionDetails success");
+                        GWT.log("MyCollectionsActivity: updateGameCollectionDetails success");
                         eventBus.fireEvent(new SaveGameCollectionDetailsResultEvent(true));
                         refresh();
                     }
                 });
     }
+
+    @EventHandler
+    public void onSaveProblemCollectionDetails(final SaveProblemCollectionDetailsEvent event) {
+        GWT.log("MyCollectionsActivity: Handling SaveProblemCollectionDetailsEvent: " + event.getDetails());
+        problemsService.updateProblemCollectionDetails(sessionInformation.getSessionId(), event.getDetails(),
+                new AsyncCallback<Void>() {
+                    @Override
+                    public void onFailure(final Throwable throwable) {
+                        GWT.log("MyCollectionsActivity: error during updateProblemCollectionDetails");
+                        eventBus.fireEvent(new SaveGameCollectionDetailsResultEvent(false));
+                    }
+
+                    @Override
+                    public void onSuccess(final Void unused) {
+                        GWT.log("MyCollectionsActivity: updateProblemCollectionDetails success");
+                        eventBus.fireEvent(new SaveGameCollectionDetailsResultEvent(true));
+                        refresh();
+                    }
+                });
+    }
+
 
     @EventHandler
     public void onCreateGameCollection(final CreateGameCollectionEvent event) {
