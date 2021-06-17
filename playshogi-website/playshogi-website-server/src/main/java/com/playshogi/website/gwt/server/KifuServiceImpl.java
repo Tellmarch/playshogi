@@ -433,13 +433,6 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
     }
 
     @Override
-    public String saveGameCollection(final String sessionId, final String draftId) {
-        LOGGER.log(Level.INFO, "saveGameCollection: " + draftId);
-
-        return saveGameCollection(sessionId, draftId, new GameCollectionDetails());
-    }
-
-    @Override
     public String saveGameCollection(final String sessionId, final String draftId,
                                      final GameCollectionDetails details) {
         LOGGER.log(Level.INFO, "saveGameCollection: " + draftId + " " + details);

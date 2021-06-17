@@ -8,7 +8,6 @@ import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.website.gwt.client.SessionInformation;
-import com.playshogi.website.gwt.client.events.collections.DraftCollectionUploadedEvent;
 import com.playshogi.website.gwt.client.events.collections.ListKifusEvent;
 import com.playshogi.website.gwt.client.events.collections.RequestAddKifuToCollectionEvent;
 import com.playshogi.website.gwt.client.events.kifu.RequestKifuDeletionEvent;
@@ -135,26 +134,4 @@ public class ManageProblemsActivity extends MyAbstractActivity {
                     }
                 });
     }
-
-    @EventHandler
-    public void onDraftCollectionUploaded(final DraftCollectionUploadedEvent event) {
-        GWT.log("ManageProblemsActivity: Handling DraftCollectionUploadedEvent");
-        Window.alert("Your collection is uploading - it may take a few minutes to import all games to the database. " +
-                "You can keep using the website during that time.");
-        problemsService.saveProblemsCollection(sessionInformation.getSessionId(), event.getId(),
-                new AsyncCallback<String>() {
-                    @Override
-                    public void onFailure(final Throwable throwable) {
-                        GWT.log("ManageProblemsActivity: error saving draft collection");
-                        Window.alert("Failed to upload the problems collection.");
-                    }
-
-                    @Override
-                    public void onSuccess(final String s) {
-                        GWT.log("ManageProblemsActivity: saved draft collection");
-                        refresh();
-                    }
-                });
-    }
-
 }

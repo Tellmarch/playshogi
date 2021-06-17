@@ -26,8 +26,6 @@ public interface KifuServiceAsync {
 
     void getGameCollections(String sessionId, AsyncCallback<GameCollectionDetailsList> callback);
 
-    void saveGameCollection(String sessionId, String draftId, AsyncCallback<String> callback);
-
     void saveGameCollection(String sessionId, String draftId, GameCollectionDetails gameCollectionDetails,
                             AsyncCallback<String> callback);
 
