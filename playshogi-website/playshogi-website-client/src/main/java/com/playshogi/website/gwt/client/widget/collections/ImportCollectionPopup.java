@@ -1,4 +1,4 @@
-package com.playshogi.website.gwt.client.widget.kifu;
+package com.playshogi.website.gwt.client.widget.collections;
 
 import com.google.gwt.core.client.GWT;
 import com.google.web.bindery.event.shared.EventBus;
@@ -7,7 +7,6 @@ import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.website.gwt.client.events.collections.ListGameCollectionsEvent;
 import com.playshogi.website.gwt.client.events.collections.ListProblemCollectionsEvent;
 import com.playshogi.website.gwt.client.events.collections.SaveDraftCollectionEvent;
-import com.playshogi.website.gwt.client.widget.collections.ProblemCollectionPropertiesForm;
 import com.playshogi.website.gwt.shared.models.GameCollectionDetails;
 import com.playshogi.website.gwt.shared.models.ProblemCollectionDetails;
 import elemental2.dom.Node;
@@ -19,8 +18,6 @@ import org.dominokit.domino.ui.datatable.plugins.AdvancedPaginationPlugin;
 import org.dominokit.domino.ui.datatable.store.LocalListDataStore;
 import org.dominokit.domino.ui.forms.Select;
 import org.dominokit.domino.ui.forms.SelectOption;
-import org.dominokit.domino.ui.forms.TextArea;
-import org.dominokit.domino.ui.forms.TextBox;
 import org.dominokit.domino.ui.icons.Icons;
 import org.dominokit.domino.ui.modals.ModalDialog;
 import org.dominokit.domino.ui.notifications.Notification;
@@ -154,23 +151,14 @@ public class ImportCollectionPopup {
     }
 
     private Tab createNewGameCollectionTab() {
-        Select<String> visibility = Select.<String>create()
-                .appendChild(SelectOption.create("PUBLIC", "Visibility: Public"))
-                .appendChild(SelectOption.create("UNLISTED", "Visibility: Unlisted"))
-                .setSearchable(false)
-                .selectAt(1);
-        TextArea description = TextArea.create("Description").setHelperText("Less than 5000 characters");
-        TextBox title = TextBox.create("Title");
-        title.setValue("My New Game Collection");
+        GameCollectionPropertiesForm properties = new GameCollectionPropertiesForm();
 
         return Tab.create("New Game Collection")
-                .appendChild(title)
-                .appendChild(description)
-                .appendChild(visibility)
+                .appendChild(properties.getForm())
                 .appendChild(Button.createPrimary("Upload Kifus in new Game Collection").addClickListener(
                         evt -> {
-                            eventBus.fireEvent(SaveDraftCollectionEvent.ofGames(draftId, title.getStringValue(),
-                                    description.getStringValue(), visibility.getValue()));
+                            eventBus.fireEvent(SaveDraftCollectionEvent.ofGames(draftId, properties.getTitle(),
+                                    properties.getDescription(), properties.getVisibility()));
                             dialog.close();
                         }));
     }

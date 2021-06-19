@@ -465,4 +465,18 @@ public class ProblemsServiceImpl extends RemoteServiceServlet implements Problem
 
     }
 
+    @Override
+    public void createProblemCollection(final String sessionId, final ProblemCollectionDetails details) {
+        LOGGER.log(Level.INFO, "createProblemCollection: " + details);
+
+        LoginResult loginResult = authenticator.checkSession(sessionId);
+        if (loginResult == null || !loginResult.isLoggedIn()) {
+            throw new IllegalStateException("Only logged in users can create a problem collection");
+        }
+
+        problemSetRepository.saveProblemSet(details.getName(), details.getDescription(),
+                Visibility.valueOf(details.getVisibility().toUpperCase()), loginResult.getUserId(),
+                details.getDifficulty(), details.getTags());
+
+    }
 }

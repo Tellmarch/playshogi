@@ -90,8 +90,12 @@ public class MyCollectionsActivity extends MyAbstractActivity {
     @EventHandler
     public void onSaveDraftCollection(final SaveDraftCollectionEvent event) {
         GWT.log("MyCollectionsActivity: Handling SaveDraftCollectionEvent: " + event);
-        Window.alert("Your collection is uploading - it may take a few minutes to import all kifus to the database. " +
-                "You can keep using the website during that time.");
+
+        if (event.getId() != null) {
+            Window.alert("Your collection is uploading - it may take a few minutes to import all kifus to the " +
+                    "database. " +
+                    "You can keep using the website during that time.");
+        }
 
         switch (event.getType()) {
             case KIFUS:
@@ -111,7 +115,24 @@ public class MyCollectionsActivity extends MyAbstractActivity {
                         });
                 break;
             case GAMES:
-                if (event.getCollectionId() != null) {
+                if (event.getId() == null) {
+                    GameCollectionDetails gcDetails = new GameCollectionDetails(event.getTitle(),
+                            event.getDescription(), event.getVisibility());
+                    kifuService.createGameCollection(sessionInformation.getSessionId(), gcDetails,
+                            new AsyncCallback<Void>() {
+                                @Override
+                                public void onFailure(final Throwable throwable) {
+                                    GWT.log("MyCollectionsActivity: error creating new game collection");
+                                    Window.alert("Failed to create the game collection.");
+                                }
+
+                                @Override
+                                public void onSuccess(final Void unused) {
+                                    GWT.log("MyCollectionsActivity: created new game collection");
+                                    refresh();
+                                }
+                            });
+                } else if (event.getCollectionId() != null) {
                     kifuService.addDraftToGameCollection(sessionInformation.getSessionId(), event.getId(),
                             event.getCollectionId(), new AsyncCallback<Void>() {
                                 @Override
@@ -146,7 +167,25 @@ public class MyCollectionsActivity extends MyAbstractActivity {
                 }
                 break;
             case PROBLEMS:
-                if (event.getCollectionId() != null) {
+                if (event.getId() == null) {
+                    ProblemCollectionDetails pcDetails = new ProblemCollectionDetails(event.getTitle(),
+                            event.getDescription(), event.getVisibility(), event.getDifficulty(), event.getTags());
+
+                    problemsService.createProblemCollection(sessionInformation.getSessionId(), pcDetails,
+                            new AsyncCallback<String>() {
+                                @Override
+                                public void onFailure(final Throwable throwable) {
+                                    GWT.log("MyCollectionsActivity: error creating new problem collection");
+                                    Window.alert("Failed to create the problem collection.");
+                                }
+
+                                @Override
+                                public void onSuccess(final String s) {
+                                    GWT.log("MyCollectionsActivity: created problem collection");
+                                    refresh();
+                                }
+                            });
+                } else if (event.getCollectionId() != null) {
                     problemsService.addDraftToProblemCollection(sessionInformation.getSessionId(), event.getId(),
                             event.getCollectionId(), new AsyncCallback<Void>() {
                                 @Override

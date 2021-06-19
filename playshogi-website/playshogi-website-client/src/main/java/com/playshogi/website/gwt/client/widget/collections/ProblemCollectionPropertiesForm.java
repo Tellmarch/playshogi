@@ -56,7 +56,7 @@ public class ProblemCollectionPropertiesForm {
                 .appendChild(SelectOption.create(4, "Difficulty: Hard (★★★★☆)"))
                 .appendChild(SelectOption.create(5, "Difficulty: Very Hard (★★★★★)"))
                 .setSearchable(false)
-                .selectAt(3);
+                .selectAt(2);
 
         div = Elements.div().add(title).add(description).add(difficulty).add(visibility).add(tags);
 

@@ -40,4 +40,6 @@ public interface ProblemsService extends RemoteService {
     void deleteProblemCollection(String sessionId, String problemSetId, boolean alsoDeleteKifus);
 
     void updateProblemCollectionDetails(String sessionId, ProblemCollectionDetails problemCollectionDetails);
+
+    void createProblemCollection(String sessionId, ProblemCollectionDetails details);
 }

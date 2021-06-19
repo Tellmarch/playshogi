@@ -46,4 +46,8 @@ public interface ProblemsServiceAsync {
 
     void updateProblemCollectionDetails(String sessionId, ProblemCollectionDetails problemCollectionDetails,
                                         AsyncCallback<Void> callback);
+
+    void createProblemCollection(String sessionId, ProblemCollectionDetails details,
+                                 AsyncCallback<String> stringAsyncCallback);
+
 }

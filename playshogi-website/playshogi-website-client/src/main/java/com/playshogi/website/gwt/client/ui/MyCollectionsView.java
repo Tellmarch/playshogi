@@ -15,8 +15,8 @@ import com.playshogi.website.gwt.client.mvp.AppPlaceHistoryMapper;
 import com.playshogi.website.gwt.client.tables.GameCollectionsTable;
 import com.playshogi.website.gwt.client.tables.ProblemCollectionsTable;
 import com.playshogi.website.gwt.client.util.ElementWidget;
-import com.playshogi.website.gwt.client.widget.kifu.CollectionPropertiesPanel;
-import com.playshogi.website.gwt.client.widget.kifu.ImportCollectionPopup;
+import com.playshogi.website.gwt.client.widget.collections.ImportCollectionPopup;
+import com.playshogi.website.gwt.client.widget.collections.NewCollectionPopup;
 import com.playshogi.website.gwt.client.widget.kifu.ImportKifuPanel;
 import elemental2.dom.HTMLDivElement;
 import elemental2.dom.HTMLHeadingElement;
@@ -41,7 +41,7 @@ public class MyCollectionsView extends Composite {
 
     private SessionInformation sessionInformation;
     private final ImportCollectionPopup importCollectionPopup = new ImportCollectionPopup();
-    private final CollectionPropertiesPanel collectionPropertiesPanel = new CollectionPropertiesPanel();
+    private final NewCollectionPopup newCollectionPopup = new NewCollectionPopup();
     private final ImportKifuPanel importKifuPanel = new ImportKifuPanel();
     private final HtmlContentBuilder<HTMLHeadingElement> loggedOutWarning;
     private final HtmlContentBuilder<HTMLHeadingElement> noCollectionsWarning;
@@ -75,7 +75,7 @@ public class MyCollectionsView extends Composite {
         div.add(noCollectionsWarning);
 
         div.add(Button.createPrimary("Create New Collection")
-                .addClickListener(evt -> sessionInformation.ifLoggedIn(collectionPropertiesPanel::showInCreateDialog))
+                .addClickListener(evt -> sessionInformation.ifLoggedIn(newCollectionPopup::show))
                 .style().setMarginRight("10px").setMarginBottom("20px"));
         div.add(Button.createPrimary("Import Collection")
                 .addClickListener(evt -> sessionInformation.ifLoggedIn(importCollectionPopup::show))
@@ -98,10 +98,10 @@ public class MyCollectionsView extends Composite {
         noCollectionsWarning.hidden(true);
         loggedOutWarning.hidden(true);
         importCollectionPopup.activate(eventBus);
-        collectionPropertiesPanel.activate(eventBus);
         importKifuPanel.activate(eventBus);
         problemsTable.activate(eventBus);
         gamesTable.activate(eventBus);
+        newCollectionPopup.activate(eventBus);
     }
 
     @EventHandler

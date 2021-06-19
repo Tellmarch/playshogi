@@ -19,8 +19,6 @@ import com.playshogi.website.gwt.shared.services.KifuService;
 import com.playshogi.website.gwt.shared.services.KifuServiceAsync;
 import org.dominokit.domino.ui.notifications.Notification;
 
-import java.util.Arrays;
-
 public class CollectionActivity extends MyAbstractActivity {
 
     private final KifuServiceAsync kifuService = GWT.create(KifuService.class);
@@ -66,7 +64,6 @@ public class CollectionActivity extends MyAbstractActivity {
                     @Override
                     public void onSuccess(GameCollectionDetailsAndGames result) {
                         GWT.log("CollectionActivity: retrieved collection games");
-                        GWT.log(Arrays.toString(result.getGames()));
                         eventBus.fireEvent(new ListCollectionGamesEvent(result.getGames(), result.getDetails()));
                     }
                 });
