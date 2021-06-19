@@ -2,17 +2,21 @@ package com.playshogi.website.gwt.client.tables;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.event.shared.EventBus;
-import com.playshogi.library.shogi.models.formats.sfen.SfenConverter;
+import com.playshogi.library.shogi.models.formats.usf.UsfFormat;
 import com.playshogi.website.gwt.client.UserPreferences;
 import com.playshogi.website.gwt.client.events.collections.RemoveGameFromCollectionEvent;
 import com.playshogi.website.gwt.client.mvp.AppPlaceHistoryMapper;
 import com.playshogi.website.gwt.client.place.ViewKifuPlace;
 import com.playshogi.website.gwt.client.util.ElementWidget;
-import com.playshogi.website.gwt.client.widget.board.BoardPreview;
+import com.playshogi.website.gwt.client.widget.board.GamePreview;
 import com.playshogi.website.gwt.shared.models.GameDetails;
+import com.playshogi.website.gwt.shared.services.KifuService;
+import com.playshogi.website.gwt.shared.services.KifuServiceAsync;
 import elemental2.dom.EventListener;
+import elemental2.dom.HTMLDivElement;
 import elemental2.dom.HTMLElement;
 import org.dominokit.domino.ui.button.Button;
 import org.dominokit.domino.ui.datatable.ColumnConfig;
@@ -27,6 +31,7 @@ import org.dominokit.domino.ui.grid.Row_12;
 import org.dominokit.domino.ui.modals.ModalDialog;
 import org.dominokit.domino.ui.utils.TextNode;
 import org.jboss.elemento.Elements;
+import org.jboss.elemento.HtmlContentBuilder;
 
 import java.util.List;
 
@@ -34,6 +39,9 @@ import static org.jboss.elemento.Elements.br;
 import static org.jboss.elemento.Elements.h;
 
 public class GameTable {
+
+    private final KifuServiceAsync kifuService = GWT.create(KifuService.class);
+
     private static final int PAGE_SIZE = 15;
 
     private final LocalListDataStore<GameDetails> localListDataStore;
@@ -151,9 +159,21 @@ public class GameTable {
                 .appendChild(br())
         );
 
-        BoardPreview boardPreview = new BoardPreview(SfenConverter.fromSFEN(SfenConverter.INITIAL_POSITION_SFEN),
-                false, userPreferences, 0.5);
-        rowElement.addColumn(Column.span4().appendChild(boardPreview.asElement()));
+        HtmlContentBuilder<HTMLDivElement> previewDiv = Elements.div();
+
+        kifuService.getKifuUsf(null, details.getKifuId(), new AsyncCallback<String>() {
+            @Override
+            public void onFailure(final Throwable throwable) {
+            }
+
+            @Override
+            public void onSuccess(final String usf) {
+                GamePreview gamePreview = new GamePreview(userPreferences, UsfFormat.INSTANCE.readSingle(usf), 0.5);
+                previewDiv.add(gamePreview.asElement());
+            }
+        });
+
+        rowElement.addColumn(Column.span4().appendChild(previewDiv));
 
         if (withEditOptions) {
             rowElement.addColumn(Column.span4()

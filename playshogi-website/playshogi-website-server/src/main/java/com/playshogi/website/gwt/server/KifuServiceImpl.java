@@ -189,12 +189,12 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
 
         GameCollectionDetailsAndGames result = new GameCollectionDetailsAndGames();
         result.setDetails(getCollectionDetails(gameSet));
-        result.setGames(games.stream().map(this::createKifuDetails).toArray(GameDetails[]::new));
+        result.setGames(games.stream().map(this::createGameDetails).toArray(GameDetails[]::new));
 
         return result;
     }
 
-    private GameDetails createKifuDetails(final PersistentGame game) {
+    private GameDetails createGameDetails(final PersistentGame game) {
         GameDetails gameDetails = new GameDetails();
         gameDetails.setId(String.valueOf(game.getId()));
         gameDetails.setKifuId(String.valueOf(game.getKifuId()));

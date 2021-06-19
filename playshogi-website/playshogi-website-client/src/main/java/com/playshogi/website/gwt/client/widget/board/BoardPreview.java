@@ -1,11 +1,10 @@
 package com.playshogi.website.gwt.client.widget.board;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Image;
 import com.playshogi.library.shogi.models.Piece;
-import com.playshogi.library.shogi.models.position.ShogiPosition;
+import com.playshogi.library.shogi.models.position.ReadOnlyShogiPosition;
 import com.playshogi.library.shogi.models.position.Square;
 import com.playshogi.website.gwt.client.UserPreferences;
 import elemental2.dom.Element;
@@ -22,11 +21,13 @@ public class BoardPreview extends Composite {
     private final Image grid;
     private final Image ban;
 
-    public BoardPreview(final ShogiPosition position, final boolean inverted, final UserPreferences userPreferences) {
+    public BoardPreview(final ReadOnlyShogiPosition position, final boolean inverted,
+                        final UserPreferences userPreferences) {
         this(position, inverted, userPreferences, 1.0);
     }
 
-    public BoardPreview(final ShogiPosition position, final boolean inverted, final UserPreferences userPreferences,
+    public BoardPreview(final ReadOnlyShogiPosition position, final boolean inverted,
+                        final UserPreferences userPreferences,
                         final double scale) {
         this.inverted = inverted;
         this.userPreferences = userPreferences;
@@ -52,13 +53,12 @@ public class BoardPreview extends Composite {
         return Js.uncheckedCast(getElement());
     }
 
-    public void showPosition(final ShogiPosition position) {
+    public void showPosition(final ReadOnlyShogiPosition position) {
         while (absolutePanel.getWidgetCount() > 0) {
             absolutePanel.remove(0);
         }
         absolutePanel.add(ban, 0, 0);
         absolutePanel.add(grid, -10, -10);
-        GWT.log("wd count: " + absolutePanel.getWidgetCount());
 
         for (int row = 0, rows = position.getRows(); row < rows; ++row) {
             for (int col = 0, columns = position.getColumns(); col < columns; ++col) {
