@@ -470,6 +470,59 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
     }
 
     @Override
+    public void addDraftToGameCollection(final String sessionId, final String draftId, final String collectionId) {
+        LOGGER.log(Level.INFO, "addDraftToGameCollection: " + draftId + " " + collectionId);
+
+        LoginResult loginResult = authenticator.checkSession(sessionId);
+        if (loginResult == null || !loginResult.isLoggedIn()) {
+            throw new IllegalStateException("Only logged in users can save a game collection");
+        }
+
+        KifuCollection collection = CollectionUploads.INSTANCE.getCollection(draftId);
+
+        if (collection == null) {
+            throw new IllegalStateException("Invalid draft collection ID");
+        }
+
+        PersistentGameSet gameSet = gameSetRepository.getGameSetById(Integer.parseInt(collectionId));
+
+        if (gameSet == null) {
+            throw new IllegalStateException("Invalid collection ID");
+        }
+
+        if (gameSet.getOwnerId() != loginResult.getUserId()) {
+            throw new IllegalStateException("No permission to add games to this collection");
+        }
+
+        int i = 1;
+        for (GameRecord game : collection.getKifus()) {
+            gameSetRepository.saveKifuAndGameToGameSet(game, Integer.parseInt(collectionId), 1, "Game #" + (i++),
+                    loginResult.getUserId());
+        }
+    }
+
+    @Override
+    public void saveDraftCollectionKifus(final String sessionId, final String draftId) {
+        LOGGER.log(Level.INFO, "saveDraftCollectionKifus: " + draftId);
+
+        LoginResult loginResult = authenticator.checkSession(sessionId);
+        if (loginResult == null || !loginResult.isLoggedIn()) {
+            throw new IllegalStateException("Only logged in users can save a game collection");
+        }
+
+        KifuCollection collection = CollectionUploads.INSTANCE.getCollection(draftId);
+
+        if (collection == null) {
+            throw new IllegalStateException("Invalid draft collection ID");
+        }
+
+        int i = 1;
+        for (GameRecord game : collection.getKifus()) {
+            kifuRepository.saveKifu(game, "Game #" + (i++), loginResult.getUserId(), KifuType.GAME);
+        }
+    }
+
+    @Override
     public void updateGameCollectionDetails(final String sessionId, final GameCollectionDetails details) {
         LOGGER.log(Level.INFO, "saveGameCollectionDetails: " + details);
 

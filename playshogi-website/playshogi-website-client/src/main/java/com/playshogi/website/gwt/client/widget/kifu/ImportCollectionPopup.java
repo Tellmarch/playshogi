@@ -108,7 +108,11 @@ public class ImportCollectionPopup {
         Tab kifusTab = Tab.create("Kifus")
                 .appendChild(b().textContent("Uploaded kifus:"))
                 .appendChild(createKifusTable())
-                .appendChild(Button.createPrimary("Upload Kifus only, not in a collection"));
+                .appendChild(Button.createPrimary("Upload Kifus only, not in a collection")
+                        .addClickListener(evt -> {
+                            eventBus.fireEvent(SaveDraftCollectionEvent.ofKifus(draftId));
+                            dialog.close();
+                        }));
         Tab gamesTab = Tab.create("Import as Game Collection")
                 .appendChild(b().textContent("Import all kifus as a game collection"))
                 .appendChild(createGameCollectionsForm());
@@ -141,7 +145,12 @@ public class ImportCollectionPopup {
         gameCollectionSelect = Select.create();
         return Tab.create("Add to existing Game Collection")
                 .appendChild(gameCollectionSelect)
-                .appendChild(Button.createPrimary("Upload Kifus in existing Game Collection"));
+                .appendChild(Button.createPrimary("Upload Kifus in existing Game Collection")
+                        .addClickListener(evt -> {
+                            eventBus.fireEvent(SaveDraftCollectionEvent.addToGameCollection(draftId,
+                                    gameCollectionSelect.getValue().getId()));
+                            dialog.close();
+                        }));
     }
 
     private Tab createNewGameCollectionTab() {
@@ -176,7 +185,12 @@ public class ImportCollectionPopup {
         problemCollectionSelect = Select.create();
         return Tab.create("Add to existing Problem Collection")
                 .appendChild(problemCollectionSelect)
-                .appendChild(Button.createPrimary("Upload Kifus in existing Problem Collection"));
+                .appendChild(Button.createPrimary("Upload Kifus in existing Problem Collection")
+                        .addClickListener(evt -> {
+                            eventBus.fireEvent(SaveDraftCollectionEvent.addToProblemCollection(draftId,
+                                    problemCollectionSelect.getValue().getId()));
+                            dialog.close();
+                        }));
     }
 
     private Tab createNewProblemCollectionTab() {

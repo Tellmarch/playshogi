@@ -27,6 +27,10 @@ public interface KifuService extends RemoteService {
 
     String saveGameCollection(String sessionId, String draftId, GameCollectionDetails gameCollectionDetails);
 
+    void addDraftToGameCollection(String sessionId, String draftId, String collectionId);
+
+    void saveDraftCollectionKifus(String sessionId, String draftId);
+
     void updateGameCollectionDetails(String sessionId, GameCollectionDetails gameCollectionDetails);
 
     void createGameCollection(String sessionId, GameCollectionDetails gameCollectionDetails);

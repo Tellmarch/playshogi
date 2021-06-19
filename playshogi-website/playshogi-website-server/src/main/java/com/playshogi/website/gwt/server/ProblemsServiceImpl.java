@@ -226,18 +226,13 @@ public class ProblemsServiceImpl extends RemoteServiceServlet implements Problem
     }
 
     @Override
-    public String saveProblemsCollection(final String sessionId, final String draftId) {
-        return saveProblemsCollection(sessionId, draftId, new ProblemCollectionDetails());
-    }
-
-    @Override
     public String saveProblemsCollection(final String sessionId, final String draftId,
                                          final ProblemCollectionDetails details) {
         LOGGER.log(Level.INFO, "saveProblemsCollection: " + draftId);
 
         LoginResult loginResult = authenticator.checkSession(sessionId);
-        if (loginResult == null || !loginResult.isLoggedIn() || !loginResult.isAdmin()) {
-            throw new IllegalStateException("Only administrators can save a problems collection");
+        if (loginResult == null || !loginResult.isLoggedIn()) {
+            throw new IllegalStateException("Only logged-in users can save a problems collection");
         }
 
         KifuCollection collection = CollectionUploads.INSTANCE.getCollection(draftId);
@@ -271,6 +266,38 @@ public class ProblemsServiceImpl extends RemoteServiceServlet implements Problem
         ProblemsCache.INSTANCE.saveProblemsCollection(collection);
 
         return String.valueOf(id);
+    }
+
+    @Override
+    public void addDraftToProblemCollection(final String sessionId, final String draftId, final String collectionId) {
+        LOGGER.log(Level.INFO, "addDraftToProblemCollection: " + draftId + " " + collectionId);
+
+        LoginResult loginResult = authenticator.checkSession(sessionId);
+        if (loginResult == null || !loginResult.isLoggedIn()) {
+            throw new IllegalStateException("Only logged in users can save a problems collection");
+        }
+
+        KifuCollection collection = CollectionUploads.INSTANCE.getCollection(draftId);
+
+        if (collection == null) {
+            throw new IllegalStateException("Invalid draft connection ID");
+        }
+
+        PersistentProblemSet problemSet = problemSetRepository.getProblemSetById(Integer.parseInt(collectionId));
+
+        if (problemSet == null) {
+            throw new IllegalStateException("Invalid collection ID");
+        }
+
+        if (problemSet.getOwnerId() != loginResult.getUserId()) {
+            throw new IllegalStateException("No permission to add problems to this collection");
+        }
+
+        int i = 1;
+        for (GameRecord game : collection.getKifus()) {
+            problemSetRepository.addProblemToProblemSet(game, Integer.parseInt(collectionId), "Problem #" + (i++),
+                    loginResult.getUserId(), 0, PersistentProblem.ProblemType.UNSPECIFIED, false);
+        }
     }
 
     @Override

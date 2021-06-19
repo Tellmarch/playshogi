@@ -25,10 +25,11 @@ public interface ProblemsServiceAsync {
     void saveCollectionTime(String sessionId, String collectionId, int timeMs, boolean complete, int solved,
                             AsyncCallback<Void> callback);
 
-    void saveProblemsCollection(String sessionId, String draftId, AsyncCallback<String> callback);
-
     void saveProblemsCollection(String sessionId, String draftId, ProblemCollectionDetails details,
                                 AsyncCallback<String> callback);
+
+    void addDraftToProblemCollection(String sessionId, String draftId, String collectionId,
+                                     AsyncCallback<Void> callback);
 
     void getProblemCollections(String sessionId, AsyncCallback<ProblemCollectionDetails[]> callback);
 

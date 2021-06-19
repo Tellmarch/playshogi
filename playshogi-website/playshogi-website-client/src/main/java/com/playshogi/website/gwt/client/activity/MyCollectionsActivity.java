@@ -76,17 +76,17 @@ public class MyCollectionsActivity extends MyAbstractActivity {
                 });
         problemsService.getUserProblemCollections(sessionInformation.getSessionId(), sessionInformation.getUsername()
                 , new AsyncCallback<ProblemCollectionDetails[]>() {
-            @Override
-            public void onFailure(final Throwable throwable) {
-                GWT.log("MyCollectionsActivity: error retrieving pb collections list");
-            }
+                    @Override
+                    public void onFailure(final Throwable throwable) {
+                        GWT.log("MyCollectionsActivity: error retrieving pb collections list");
+                    }
 
-            @Override
-            public void onSuccess(final ProblemCollectionDetails[] problemCollectionDetails) {
-                GWT.log("MyCollectionsActivity: retrieved pb collections list");
-                eventBus.fireEvent(new ListProblemCollectionsEvent(null, problemCollectionDetails));
-            }
-        });
+                    @Override
+                    public void onSuccess(final ProblemCollectionDetails[] problemCollectionDetails) {
+                        GWT.log("MyCollectionsActivity: retrieved pb collections list");
+                        eventBus.fireEvent(new ListProblemCollectionsEvent(null, problemCollectionDetails));
+                    }
+                });
     }
 
     @EventHandler
@@ -97,44 +97,91 @@ public class MyCollectionsActivity extends MyAbstractActivity {
 
         switch (event.getType()) {
             case KIFUS:
+                kifuService.saveDraftCollectionKifus(sessionInformation.getSessionId(), event.getId(),
+                        new AsyncCallback<Void>() {
+                            @Override
+                            public void onFailure(final Throwable throwable) {
+                                GWT.log("MyCollectionsActivity: error saving draft kifus");
+                                Window.alert("Failed to upload the kifus.");
+                            }
+
+                            @Override
+                            public void onSuccess(final Void s) {
+                                GWT.log("MyCollectionsActivity: saved draft kifus");
+                                refresh();
+                            }
+                        });
                 break;
             case GAMES:
-                GameCollectionDetails gcDetails = new GameCollectionDetails(event.getTitle(),
-                        event.getDescription(), event.getVisibility());
-                kifuService.saveGameCollection(sessionInformation.getSessionId(), event.getId(), gcDetails,
-                        new AsyncCallback<String>() {
-                            @Override
-                            public void onFailure(final Throwable throwable) {
-                                GWT.log("MyCollectionsActivity: error saving draft game collection");
-                                Window.alert("Failed to upload the game collection.");
-                            }
+                if (event.getCollectionId() != null) {
+                    kifuService.addDraftToGameCollection(sessionInformation.getSessionId(), event.getId(),
+                            event.getCollectionId(), new AsyncCallback<Void>() {
+                                @Override
+                                public void onFailure(final Throwable throwable) {
+                                    GWT.log("MyCollectionsActivity: error adding draft game collection");
+                                    Window.alert("Failed to upload the game collection.");
+                                }
 
-                            @Override
-                            public void onSuccess(final String s) {
-                                GWT.log("MyCollectionsActivity: saved draft game collection");
-                                refresh();
-                            }
-                        });
+                                @Override
+                                public void onSuccess(final Void unused) {
+                                    GWT.log("MyCollectionsActivity: added draft game collection");
+                                    refresh();
+                                }
+                            });
+                } else {
+                    GameCollectionDetails gcDetails = new GameCollectionDetails(event.getTitle(),
+                            event.getDescription(), event.getVisibility());
+                    kifuService.saveGameCollection(sessionInformation.getSessionId(), event.getId(), gcDetails,
+                            new AsyncCallback<String>() {
+                                @Override
+                                public void onFailure(final Throwable throwable) {
+                                    GWT.log("MyCollectionsActivity: error saving draft game collection");
+                                    Window.alert("Failed to upload the game collection.");
+                                }
+
+                                @Override
+                                public void onSuccess(final String s) {
+                                    GWT.log("MyCollectionsActivity: saved draft game collection");
+                                    refresh();
+                                }
+                            });
+                }
                 break;
             case PROBLEMS:
-                ProblemCollectionDetails pcDetails = new ProblemCollectionDetails(event.getTitle(),
-                        event.getDescription(), event.getVisibility(), event.getDifficulty(), event.getTags());
+                if (event.getCollectionId() != null) {
+                    problemsService.addDraftToProblemCollection(sessionInformation.getSessionId(), event.getId(),
+                            event.getCollectionId(), new AsyncCallback<Void>() {
+                                @Override
+                                public void onFailure(final Throwable throwable) {
+                                    GWT.log("MyCollectionsActivity: error adding draft problem collection");
+                                    Window.alert("Failed to upload the problem collection.");
+                                }
 
-                problemsService.saveProblemsCollection(sessionInformation.getSessionId(), event.getId(), pcDetails,
-                        new AsyncCallback<String>() {
-                            @Override
-                            public void onFailure(final Throwable throwable) {
-                                GWT.log("MyCollectionsActivity: error saving draft problem collection");
-                                Window.alert("Failed to upload the problem collection.");
-                            }
+                                @Override
+                                public void onSuccess(final Void unused) {
+                                    GWT.log("MyCollectionsActivity: added draft problem collection");
+                                    refresh();
+                                }
+                            });
+                } else {
+                    ProblemCollectionDetails pcDetails = new ProblemCollectionDetails(event.getTitle(),
+                            event.getDescription(), event.getVisibility(), event.getDifficulty(), event.getTags());
 
-                            @Override
-                            public void onSuccess(final String s) {
-                                GWT.log("MyCollectionsActivity: saved draft problem collection");
-                                refresh();
-                            }
-                        });
+                    problemsService.saveProblemsCollection(sessionInformation.getSessionId(), event.getId(), pcDetails,
+                            new AsyncCallback<String>() {
+                                @Override
+                                public void onFailure(final Throwable throwable) {
+                                    GWT.log("MyCollectionsActivity: error saving draft problem collection");
+                                    Window.alert("Failed to upload the problem collection.");
+                                }
 
+                                @Override
+                                public void onSuccess(final String s) {
+                                    GWT.log("MyCollectionsActivity: saved draft problem collection");
+                                    refresh();
+                                }
+                            });
+                }
                 break;
         }
     }
