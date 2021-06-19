@@ -1,6 +1,7 @@
 package com.playshogi.library.database;
 
 import com.playshogi.library.database.models.PersistentHighScore;
+import com.playshogi.library.database.models.PersistentUser;
 import com.playshogi.library.database.models.PersistentUserProblemSetStats;
 import com.playshogi.library.database.models.PersistentUserProblemStats;
 
@@ -28,6 +29,8 @@ public class UserRepository {
 
     private static final String GET_USER_PB_STATS = "SELECT * from playshogi.ps_userpbstats WHERE  user_id = ? ORDER " +
             "BY timestamp_attempted DESC;";
+
+    private static final String GET_USER_DETAILS = "SELECT * from playshogi.ps_user WHERE id = ?";
 
     private static final String INSERT_USER_HIGHSCORE = "INSERT INTO `playshogi`.`ps_highscore` "
             + "(`name`, `score`, `user_id`, `event`)" + " VALUES ( ?, ?, ?, ?);";
@@ -246,6 +249,25 @@ public class UserRepository {
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error looking up the high scores", e);
             return new ArrayList<>();
+        }
+    }
+
+    public PersistentUser getUserById(final int userId) {
+        Connection connection = dbConnection.getConnection();
+        try (PreparedStatement preparedStatement = connection.prepareStatement(GET_USER_DETAILS)) {
+            preparedStatement.setInt(1, userId);
+            ResultSet rs = preparedStatement.executeQuery();
+            if (rs.next()) {
+                LOGGER.log(Level.INFO, "Found user with id: " + rs.getInt("id"));
+
+                return new PersistentUser(rs.getInt("id"), rs.getString("username"), rs.getBoolean("administrator"));
+            } else {
+                LOGGER.log(Level.INFO, "Did not find user: " + userId);
+                return null;
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error looking up the user in db", e);
+            return null;
         }
     }
 }

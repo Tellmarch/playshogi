@@ -87,6 +87,9 @@ public class GameSetRepository {
             + " WHERE ps_gamesetmove.position_id = ? AND ps_gamesetmove.gameset_id = ? ORDER BY ps_gamesetmove" +
             ".num_total DESC";
 
+    private static final String SELECT_COUNT_GAMES_FROM_GAMESET = "SELECT COUNT(*) as num_games" +
+            " FROM playshogi.ps_gamesetgame WHERE gameset_id = ?;";
+
     private final DbConnection dbConnection;
 
     private final PositionRepository positionRepository;
@@ -540,6 +543,21 @@ public class GameSetRepository {
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error looking up the gameset in db", e);
             return null;
+        }
+    }
+
+    public int getGamesCountFromGameSet(final int gameSetId) {
+        Connection connection = dbConnection.getConnection();
+        try (PreparedStatement preparedStatement = connection.prepareStatement(SELECT_COUNT_GAMES_FROM_GAMESET)) {
+            preparedStatement.setInt(1, gameSetId);
+            ResultSet rs = preparedStatement.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("num_games");
+            }
+            return -1;
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error looking up the gameset games in db", e);
+            return -1;
         }
     }
 

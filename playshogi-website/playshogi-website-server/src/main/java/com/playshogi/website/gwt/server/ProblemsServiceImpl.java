@@ -343,6 +343,7 @@ public class ProblemsServiceImpl extends RemoteServiceServlet implements Problem
         details.setDifficulty(persistentProblemSet.getDifficulty());
         fillLeaderBoard(persistentProblemSet, details);
         details.setNumProblems(problemSetRepository.getProblemsCountFromProblemSet(persistentProblemSet.getId()));
+        details.setAuthor(UsersCache.INSTANCE.getUserName(persistentProblemSet.getOwnerId()));
 
         return details;
     }

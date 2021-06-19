@@ -169,6 +169,8 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
         details.setName(gameSet.getName());
         details.setDescription(gameSet.getDescription());
         details.setVisibility(gameSet.getVisibility().toString().toLowerCase());
+        details.setNumGames(gameSetRepository.getGamesCountFromGameSet(gameSet.getId()));
+        details.setAuthor(UsersCache.INSTANCE.getUserName(gameSet.getOwnerId()));
         return details;
     }
 

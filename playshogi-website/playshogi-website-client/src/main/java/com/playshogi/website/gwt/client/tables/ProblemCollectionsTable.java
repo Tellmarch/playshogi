@@ -113,6 +113,12 @@ public class ProblemCollectionsTable {
                                 .setCellRenderer(cell -> getDifficulty(cell.getRecord()))
                 )
                 .addColumn(
+                        ColumnConfig.<ProblemCollectionDetails>create("author", "Author")
+                                .styleCell(
+                                        element -> element.style.setProperty("vertical-align", "top"))
+                                .setCellRenderer(cell -> TextNode.of(cell.getRecord().getAuthor()))
+                )
+                .addColumn(
                         ColumnConfig.<ProblemCollectionDetails>create("solved", "Solved")
                                 .styleCell(
                                         element -> element.style.setProperty("vertical-align", "top"))

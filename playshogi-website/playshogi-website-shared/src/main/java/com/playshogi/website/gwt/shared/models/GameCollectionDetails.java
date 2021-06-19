@@ -7,6 +7,8 @@ public class GameCollectionDetails implements Serializable {
     private String name;
     private String description;
     private String visibility;
+    private int numGames;
+    private String author;
 
     public GameCollectionDetails() {
     }
@@ -49,6 +51,22 @@ public class GameCollectionDetails implements Serializable {
         this.visibility = visibility;
     }
 
+    public int getNumGames() {
+        return numGames;
+    }
+
+    public void setNumGames(final int numGames) {
+        this.numGames = numGames;
+    }
+
+    public String getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(final String author) {
+        this.author = author;
+    }
+
     @Override
     public String toString() {
         return "GameCollectionDetails{" +
@@ -56,6 +74,8 @@ public class GameCollectionDetails implements Serializable {
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", visibility='" + visibility + '\'' +
+                ", numGames=" + numGames +
+                ", author='" + author + '\'' +
                 '}';
     }
 }

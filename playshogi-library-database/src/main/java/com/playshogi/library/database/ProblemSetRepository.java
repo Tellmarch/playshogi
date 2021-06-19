@@ -41,8 +41,7 @@ public class ProblemSetRepository {
             "playshogi" +
             ".ps_problem on ps_problem.id = problem_id WHERE problemset_id = ?;";
     private static final String SELECT_COUNT_PROBLEMS_FROM_PROBLEMSET = "SELECT COUNT(*) as num_problems" +
-            " FROM playshogi.ps_problemsetpbs join playshogi.ps_problem" +
-            " on ps_problem.id = problem_id WHERE problemset_id = ?;";
+            " FROM playshogi.ps_problemsetpbs WHERE problemset_id = ?;";
     private static final String DELETE_PROBLEMSET = "DELETE FROM `playshogi`.`ps_problemset` WHERE id = ? AND " +
             "owner_user_id" +
             " = ?";

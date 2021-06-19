@@ -93,6 +93,18 @@ public class GameCollectionsTable {
                                 .setCellRenderer(cell -> TextNode.of(cell.getRecord().getName()))
                 )
                 .addColumn(
+                        ColumnConfig.<GameCollectionDetails>create("count", "Number of Games")
+                                .styleCell(
+                                        element -> element.style.setProperty("vertical-align", "top"))
+                                .setCellRenderer(cell -> TextNode.of(String.valueOf(cell.getRecord().getNumGames())))
+                )
+                .addColumn(
+                        ColumnConfig.<GameCollectionDetails>create("author", "Author")
+                                .styleCell(
+                                        element -> element.style.setProperty("vertical-align", "top"))
+                                .setCellRenderer(cell -> TextNode.of(cell.getRecord().getAuthor()))
+                )
+                .addColumn(
                         ColumnConfig.<GameCollectionDetails>create("open", "Open Collection")
                                 .styleCell(
                                         element -> element.style.setProperty("vertical-align", "top"))

@@ -9,6 +9,7 @@ public class ProblemCollectionDetails implements Serializable {
     private String description;
     private String visibility;
     private int numProblems;
+    private String author;
 
     private int difficulty;
     private String[] leaderboardNames;
@@ -118,6 +119,14 @@ public class ProblemCollectionDetails implements Serializable {
         this.tags = tags;
     }
 
+    public String getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(final String author) {
+        this.author = author;
+    }
+
     @Override
     public String toString() {
         return "ProblemCollectionDetails{" +
@@ -126,6 +135,7 @@ public class ProblemCollectionDetails implements Serializable {
                 ", description='" + description + '\'' +
                 ", visibility='" + visibility + '\'' +
                 ", numProblems=" + numProblems +
+                ", author='" + author + '\'' +
                 ", difficulty=" + difficulty +
                 ", leaderboardNames=" + Arrays.toString(leaderboardNames) +
                 ", leaderboardScores=" + Arrays.toString(leaderboardScores) +
