@@ -11,7 +11,11 @@ import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.website.gwt.client.events.collections.ListProblemCollectionsEvent;
 import com.playshogi.website.gwt.client.mvp.AppPlaceHistoryMapper;
 import com.playshogi.website.gwt.client.tables.ProblemCollectionsTable;
+import com.playshogi.website.gwt.client.util.ElementWidget;
 import com.playshogi.website.gwt.shared.models.ProblemCollectionDetails;
+import elemental2.dom.HTMLDivElement;
+import org.jboss.elemento.Elements;
+import org.jboss.elemento.HtmlContentBuilder;
 
 import java.util.Arrays;
 
@@ -31,8 +35,12 @@ public class ProblemCollectionsView extends Composite {
 
         problemsTable = new ProblemCollectionsTable(historyMapper, false);
 
+        HtmlContentBuilder<HTMLDivElement> div = Elements.div();
+        div.add(Elements.h(2).textContent("Public Problem Collections"));
+        div.add(problemsTable.getTable());
+
         ScrollPanel scrollPanel = new ScrollPanel();
-        scrollPanel.add(problemsTable.getAsWidget());
+        scrollPanel.add(new ElementWidget(div.element()));
         scrollPanel.setSize("100%", "100%");
         initWidget(scrollPanel);
     }
