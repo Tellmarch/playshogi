@@ -40,6 +40,9 @@ public class ProblemSetRepository {
     private static final String SELECT_PROBLEMS_FROM_PROBLEMSET = "SELECT * FROM playshogi.ps_problemsetpbs join " +
             "playshogi" +
             ".ps_problem on ps_problem.id = problem_id WHERE problemset_id = ?;";
+    private static final String SELECT_COUNT_PROBLEMS_FROM_PROBLEMSET = "SELECT COUNT(*) as num_problems" +
+            " FROM playshogi.ps_problemsetpbs join playshogi.ps_problem" +
+            " on ps_problem.id = problem_id WHERE problemset_id = ?;";
     private static final String DELETE_PROBLEMSET = "DELETE FROM `playshogi`.`ps_problemset` WHERE id = ? AND " +
             "owner_user_id" +
             " = ?";
@@ -249,6 +252,21 @@ public class ProblemSetRepository {
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error looking up the problemset problems in db", e);
             return null;
+        }
+    }
+
+    public int getProblemsCountFromProblemSet(final int problemSetId) {
+        Connection connection = dbConnection.getConnection();
+        try (PreparedStatement preparedStatement = connection.prepareStatement(SELECT_COUNT_PROBLEMS_FROM_PROBLEMSET)) {
+            preparedStatement.setInt(1, problemSetId);
+            ResultSet rs = preparedStatement.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("num_problems");
+            }
+            return -1;
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error looking up the problemset problems in db", e);
+            return -1;
         }
     }
 
