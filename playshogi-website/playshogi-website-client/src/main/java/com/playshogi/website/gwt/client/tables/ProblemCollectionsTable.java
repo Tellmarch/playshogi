@@ -37,12 +37,14 @@ public class ProblemCollectionsTable {
     private final LocalListDataStore<ProblemCollectionDetails> localListDataStore;
     private final SimplePaginationPlugin<ProblemCollectionDetails> simplePaginationPlugin;
     private final DataTable<ProblemCollectionDetails> table;
-    private final boolean withEditOptions;
+    private final boolean canEdit;
+    private final boolean isAuthor;
     private EventBus eventBus;
     private ProblemCollectionPropertiesForm problemCollectionProperties;
 
-    public ProblemCollectionsTable(final AppPlaceHistoryMapper historyMapper, boolean withEditOptions) {
-        this.withEditOptions = withEditOptions;
+    public ProblemCollectionsTable(final AppPlaceHistoryMapper historyMapper, boolean canEdit, boolean isAuthor) {
+        this.canEdit = canEdit;
+        this.isAuthor = isAuthor;
         TableConfig<ProblemCollectionDetails> tableConfig = getTableConfig(historyMapper);
         tableConfig.addPlugin(new RecordDetailsPlugin<>(cell -> getDetails(cell.getRecord())));
         localListDataStore = new LocalListDataStore<>();
@@ -69,7 +71,7 @@ public class ProblemCollectionsTable {
         rowElement.addColumn(Column.span4()
                 .appendChild(h(5).add("Description:"))
                 .appendChild(TextNode.of(details.getDescription())));
-        if (withEditOptions) {
+        if (canEdit) {
             rowElement.addColumn(Column.span4().appendChild(Button.createPrimary("Edit properties")
                     .addClickListener(evt -> problemCollectionProperties.showInPopup(details))));
             rowElement.addColumn(Column.span4().appendChild(Button.createDanger("Delete collection")
@@ -111,13 +113,24 @@ public class ProblemCollectionsTable {
                                 .styleCell(
                                         element -> element.style.setProperty("vertical-align", "top"))
                                 .setCellRenderer(cell -> getDifficulty(cell.getRecord()))
-                )
-                .addColumn(
-                        ColumnConfig.<ProblemCollectionDetails>create("author", "Author")
-                                .styleCell(
-                                        element -> element.style.setProperty("vertical-align", "top"))
-                                .setCellRenderer(cell -> TextNode.of(cell.getRecord().getAuthor()))
-                )
+                );
+        if (!isAuthor) {
+            tableConfig.addColumn(
+                    ColumnConfig.<ProblemCollectionDetails>create("author", "Author")
+                            .styleCell(
+                                    element -> element.style.setProperty("vertical-align", "top"))
+                            .setCellRenderer(cell -> TextNode.of(cell.getRecord().getAuthor()))
+            );
+        }
+        if (isAuthor || canEdit) {
+            tableConfig.addColumn(
+                    ColumnConfig.<ProblemCollectionDetails>create("visibility", "Visibility")
+                            .styleCell(
+                                    element -> element.style.setProperty("vertical-align", "top"))
+                            .setCellRenderer(cell -> TextNode.of(cell.getRecord().getVisibility()))
+            );
+        }
+        tableConfig
                 .addColumn(
                         ColumnConfig.<ProblemCollectionDetails>create("solved", "Solved")
                                 .styleCell(

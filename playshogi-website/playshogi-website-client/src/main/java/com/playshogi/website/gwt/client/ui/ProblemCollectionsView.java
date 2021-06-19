@@ -33,7 +33,7 @@ public class ProblemCollectionsView extends Composite {
     public ProblemCollectionsView(final AppPlaceHistoryMapper historyMapper) {
         GWT.log("Creating public collections view");
 
-        problemsTable = new ProblemCollectionsTable(historyMapper, false);
+        problemsTable = new ProblemCollectionsTable(historyMapper, false, false);
 
         HtmlContentBuilder<HTMLDivElement> div = Elements.div();
         div.add(Elements.h(2).textContent("Public Problem Collections"));

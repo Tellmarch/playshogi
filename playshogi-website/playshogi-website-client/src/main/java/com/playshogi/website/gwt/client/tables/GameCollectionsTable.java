@@ -35,12 +35,14 @@ public class GameCollectionsTable {
     private final LocalListDataStore<GameCollectionDetails> localListDataStore;
     private final SimplePaginationPlugin<GameCollectionDetails> simplePaginationPlugin;
     private final DataTable<GameCollectionDetails> table;
-    private final boolean withEditOptions;
+    private final boolean canEdit;
+    private final boolean isAuthor;
     private final CollectionPropertiesPanel collectionPropertiesPanel = new CollectionPropertiesPanel();
     private EventBus eventBus;
 
-    public GameCollectionsTable(final AppPlaceHistoryMapper historyMapper, boolean withEditOptions) {
-        this.withEditOptions = withEditOptions;
+    public GameCollectionsTable(final AppPlaceHistoryMapper historyMapper, boolean canEdit, boolean isAuthor) {
+        this.canEdit = canEdit;
+        this.isAuthor = isAuthor;
         TableConfig<GameCollectionDetails> tableConfig = getTableConfig(historyMapper);
         tableConfig.addPlugin(new RecordDetailsPlugin<>(cell -> getDetails(cell.getRecord())));
         localListDataStore = new LocalListDataStore<>();
@@ -66,7 +68,7 @@ public class GameCollectionsTable {
         rowElement.addColumn(Column.span4()
                 .appendChild(h(5).add("Description:"))
                 .appendChild(TextNode.of(details.getDescription())));
-        if (withEditOptions) {
+        if (canEdit) {
             rowElement.addColumn(Column.span4().appendChild(Button.createPrimary("Edit properties")
                     .addClickListener(evt -> collectionPropertiesPanel.showInUpdateDialog(details))));
             rowElement.addColumn(Column.span4().appendChild(Button.createDanger("Delete collection")
@@ -97,13 +99,24 @@ public class GameCollectionsTable {
                                 .styleCell(
                                         element -> element.style.setProperty("vertical-align", "top"))
                                 .setCellRenderer(cell -> TextNode.of(String.valueOf(cell.getRecord().getNumGames())))
-                )
-                .addColumn(
-                        ColumnConfig.<GameCollectionDetails>create("author", "Author")
-                                .styleCell(
-                                        element -> element.style.setProperty("vertical-align", "top"))
-                                .setCellRenderer(cell -> TextNode.of(cell.getRecord().getAuthor()))
-                )
+                );
+        if (!isAuthor) {
+            tableConfig.addColumn(
+                    ColumnConfig.<GameCollectionDetails>create("author", "Author")
+                            .styleCell(
+                                    element -> element.style.setProperty("vertical-align", "top"))
+                            .setCellRenderer(cell -> TextNode.of(cell.getRecord().getAuthor()))
+            );
+        }
+        if (isAuthor || canEdit) {
+            tableConfig.addColumn(
+                    ColumnConfig.<GameCollectionDetails>create("visibility", "Visibility")
+                            .styleCell(
+                                    element -> element.style.setProperty("vertical-align", "top"))
+                            .setCellRenderer(cell -> TextNode.of(cell.getRecord().getVisibility()))
+            );
+        }
+        tableConfig
                 .addColumn(
                         ColumnConfig.<GameCollectionDetails>create("open", "Open Collection")
                                 .styleCell(

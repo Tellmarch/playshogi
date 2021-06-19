@@ -43,8 +43,8 @@ public class PublicCollectionsView extends Composite {
                                  final AppPlaceHistoryMapper historyMapper) {
         GWT.log("Creating public collections view");
         this.sessionInformation = sessionInformation;
-        problemsTable = new ProblemCollectionsTable(historyMapper, false);
-        gamesTable = new GameCollectionsTable(historyMapper, false);
+        problemsTable = new ProblemCollectionsTable(historyMapper, false, false);
+        gamesTable = new GameCollectionsTable(historyMapper, false, false);
 
         HtmlContentBuilder<HTMLDivElement> div = Elements.div();
         div.css(Styles.padding_20);

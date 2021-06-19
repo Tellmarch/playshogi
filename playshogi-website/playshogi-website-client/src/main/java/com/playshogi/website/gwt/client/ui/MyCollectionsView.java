@@ -55,8 +55,8 @@ public class MyCollectionsView extends Composite {
                              final AppPlaceHistoryMapper historyMapper) {
         GWT.log("Creating user collections view");
         this.sessionInformation = sessionInformation;
-        problemsTable = new ProblemCollectionsTable(historyMapper, true);
-        gamesTable = new GameCollectionsTable(historyMapper, true);
+        problemsTable = new ProblemCollectionsTable(historyMapper, true, true);
+        gamesTable = new GameCollectionsTable(historyMapper, true, true);
 
         loggedOutWarning = Elements.h(4).textContent("You are logged out.");
         noCollectionsWarning = Elements.h(4).textContent("You have no Collections. Add some using " +
