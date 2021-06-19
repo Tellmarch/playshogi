@@ -19,7 +19,8 @@ import org.dominokit.domino.ui.datatable.store.LocalListDataStore;
 import org.dominokit.domino.ui.forms.Select;
 import org.dominokit.domino.ui.forms.SelectOption;
 import org.dominokit.domino.ui.icons.Icons;
-import org.dominokit.domino.ui.modals.ModalDialog;
+import org.dominokit.domino.ui.modals.IsModalDialog;
+import org.dominokit.domino.ui.modals.Window;
 import org.dominokit.domino.ui.notifications.Notification;
 import org.dominokit.domino.ui.tabs.Tab;
 import org.dominokit.domino.ui.tabs.TabsPanel;
@@ -41,7 +42,7 @@ public class ImportCollectionPopup {
 
     private final MyEventBinder eventBinder = GWT.create(MyEventBinder.class);
 
-    private final ModalDialog dialog;
+    private final Window dialog;
     private LocalListDataStore<String> localListDataStore;
     private TabsPanel tabs;
     private Select<GameCollectionDetails> gameCollectionSelect;
@@ -54,9 +55,9 @@ public class ImportCollectionPopup {
         dialog = createModalDialog();
     }
 
-    private ModalDialog createModalDialog() {
+    private Window createModalDialog() {
 
-        ModalDialog modal = ModalDialog.create("Import Kifu Collection").setAutoClose(false).large();
+        Window modal = new Window("Import Kifu Collection").setSize(IsModalDialog.ModalSize.LARGE);
         modal.appendChild(TextNode.of("With this dialog you can import a collection of " +
                 "kifus."));
 
@@ -128,6 +129,7 @@ public class ImportCollectionPopup {
         Button closeButton = Button.create("CANCEL").linkify();
         closeButton.addClickListener(evt -> modal.close());
         modal.appendFooterChild(closeButton);
+//        modal.getBodyElement().style().setOverFlow("scroll").setHeight("100%");
         return modal;
 
     }
