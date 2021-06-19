@@ -42,6 +42,9 @@ public class UserRepository {
             " FROM ps_userpbsetstats" +
             " WHERE problemset_id = ? AND complete = 1 GROUP BY user_id ORDER BY time_spent_ms ASC LIMIT 3;";
 
+    private static final String GET_COLLECTION_USER_HIGHSCORE = "SELECT * FROM ps_userpbsetstats" +
+            " WHERE problemset_id = ? AND user_id = ? AND complete = 1 ORDER BY time_spent_ms ASC LIMIT 1;";
+
     private static final String GET_COLLECTION_HIGHSCORES_WITH_NAMES = "SELECT username, min(time_spent_ms) as " +
             "time_spent_ms FROM ps_userpbsetstats JOIN ps_user u ON (user_id = u.id) WHERE problemset_id = ? AND " +
             "complete = 1 GROUP BY username ORDER BY time_spent_ms ASC LIMIT 3;";
@@ -263,6 +266,26 @@ public class UserRepository {
                 return new PersistentUser(rs.getInt("id"), rs.getString("username"), rs.getBoolean("administrator"));
             } else {
                 LOGGER.log(Level.INFO, "Did not find user: " + userId);
+                return null;
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error looking up the user in db", e);
+            return null;
+        }
+    }
+
+    public PersistentUserProblemSetStats getCollectionHighScoreForUser(final int collectionId, final int userId) {
+        Connection connection = dbConnection.getConnection();
+        try (PreparedStatement preparedStatement = connection.prepareStatement(GET_COLLECTION_USER_HIGHSCORE)) {
+            preparedStatement.setInt(1, collectionId);
+            preparedStatement.setInt(2, userId);
+            ResultSet rs = preparedStatement.executeQuery();
+            if (rs.next()) {
+                int time_spent_ms = rs.getInt("time_spent_ms");
+                int solved = rs.getInt("solved");
+                return new PersistentUserProblemSetStats(userId, null, collectionId, null, time_spent_ms, true, solved);
+            } else {
+                LOGGER.log(Level.INFO, "Did not find score for user: " + userId);
                 return null;
             }
         } catch (SQLException e) {

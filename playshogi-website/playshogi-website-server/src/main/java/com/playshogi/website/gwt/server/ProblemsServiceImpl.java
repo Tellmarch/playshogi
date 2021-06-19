@@ -316,7 +316,13 @@ public class ProblemsServiceImpl extends RemoteServiceServlet implements Problem
 
         List<PersistentProblemSet> problemSets = problemSetRepository.getAllPublicProblemSets();
 
-        return problemSets.stream().map(this::getProblemCollectionDetails).toArray(ProblemCollectionDetails[]::new);
+        LoginResult loginResult = authenticator.checkSession(sessionId);
+        Integer userId = loginResult != null && loginResult.isLoggedIn() ? loginResult.getUserId() : null;
+
+        return problemSets.stream()
+                .map((PersistentProblemSet persistentProblemSet) ->
+                        getProblemCollectionDetails(persistentProblemSet, userId))
+                .toArray(ProblemCollectionDetails[]::new);
     }
 
     @Override
@@ -330,10 +336,14 @@ public class ProblemsServiceImpl extends RemoteServiceServlet implements Problem
 
         List<PersistentProblemSet> userProblemSets = problemSetRepository.getUserProblemSets(loginResult.getUserId());
 
-        return userProblemSets.stream().map(this::getProblemCollectionDetails).toArray(ProblemCollectionDetails[]::new);
+        return userProblemSets.stream()
+                .map((PersistentProblemSet persistentProblemSet) ->
+                        getProblemCollectionDetails(persistentProblemSet, loginResult.getUserId()))
+                .toArray(ProblemCollectionDetails[]::new);
     }
 
-    private ProblemCollectionDetails getProblemCollectionDetails(final PersistentProblemSet persistentProblemSet) {
+    private ProblemCollectionDetails getProblemCollectionDetails(final PersistentProblemSet persistentProblemSet,
+                                                                 final Integer userId) {
         ProblemCollectionDetails details = new ProblemCollectionDetails();
         details.setName(persistentProblemSet.getName());
         details.setDescription(persistentProblemSet.getDescription());
@@ -341,15 +351,14 @@ public class ProblemsServiceImpl extends RemoteServiceServlet implements Problem
         details.setVisibility(persistentProblemSet.getVisibility().name());
         details.setTags(persistentProblemSet.getTags());
         details.setDifficulty(persistentProblemSet.getDifficulty());
-        fillLeaderBoard(persistentProblemSet, details);
+        fillLeaderBoard(persistentProblemSet, details, userId);
         details.setNumProblems(problemSetRepository.getProblemsCountFromProblemSet(persistentProblemSet.getId()));
         details.setAuthor(UsersCache.INSTANCE.getUserName(persistentProblemSet.getOwnerId()));
-
         return details;
     }
 
     private void fillLeaderBoard(final PersistentProblemSet persistentProblemSet,
-                                 final ProblemCollectionDetails details) {
+                                 final ProblemCollectionDetails details, final Integer userId) {
         List<PersistentUserProblemSetStats> highScores =
                 userRepository.getCollectionHighScores(persistentProblemSet.getId());
 
@@ -359,15 +368,28 @@ public class ProblemsServiceImpl extends RemoteServiceServlet implements Problem
         for (int i = 0; i < highScores.size(); i++) {
             leaderboardNames[i] = highScores.get(i).getUserName();
             Integer ms = highScores.get(i).getTimeSpentMs();
-            leaderboardScores[i] = String.format(
-                    "%d:%02d.%03d",
-                    ms / 60000,
-                    (ms / 1000) % 60,
-                    ms % 1000);
+            leaderboardScores[i] = formatSpeedrunTime(ms);
         }
 
         details.setLeaderboardNames(leaderboardNames);
         details.setLeaderboardScores(leaderboardScores);
+
+        if (userId != null) {
+            PersistentUserProblemSetStats score =
+                    userRepository.getCollectionHighScoreForUser(persistentProblemSet.getId(), userId);
+            if (score != null) {
+                details.setUserHighScore(formatSpeedrunTime(score.getTimeSpentMs()));
+                details.setUserSolved(score.getSolved());
+            }
+        }
+    }
+
+    private String formatSpeedrunTime(final Integer ms) {
+        return String.format(
+                "%d:%02d.%03d",
+                ms / 60000,
+                (ms / 1000) % 60,
+                ms % 1000);
     }
 
     @Override
@@ -382,7 +404,11 @@ public class ProblemsServiceImpl extends RemoteServiceServlet implements Problem
         List<PersistentProblem> games = problemSetRepository.getProblemsFromProblemSet(Integer.parseInt(collectionId));
 
         ProblemCollectionDetailsAndProblems result = new ProblemCollectionDetailsAndProblems();
-        result.setDetails(getProblemCollectionDetails(gameSet));
+
+        LoginResult loginResult = authenticator.checkSession(sessionId);
+        Integer userId = loginResult != null && loginResult.isLoggedIn() ? loginResult.getUserId() : null;
+
+        result.setDetails(getProblemCollectionDetails(gameSet, userId));
         result.setProblems(games.stream().map(this::getProblemDetails).toArray(ProblemDetails[]::new));
 
         return result;
