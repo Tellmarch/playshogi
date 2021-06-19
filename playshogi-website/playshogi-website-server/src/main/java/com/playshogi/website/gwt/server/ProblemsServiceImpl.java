@@ -263,8 +263,6 @@ public class ProblemsServiceImpl extends RemoteServiceServlet implements Problem
                     PersistentProblem.ProblemType.UNSPECIFIED, false);
         }
 
-        ProblemsCache.INSTANCE.saveProblemsCollection(collection);
-
         return String.valueOf(id);
     }
 
@@ -309,7 +307,7 @@ public class ProblemsServiceImpl extends RemoteServiceServlet implements Problem
             throw new IllegalStateException("Only administrators can see problems collections");
         }
 
-        return ProblemsCache.INSTANCE.getProblemsCollectionDetails();
+        throw new IllegalStateException("Not implemented yet");
     }
 
     @Override
@@ -343,7 +341,13 @@ public class ProblemsServiceImpl extends RemoteServiceServlet implements Problem
         details.setVisibility(persistentProblemSet.getVisibility().name());
         details.setTags(persistentProblemSet.getTags());
         details.setDifficulty(persistentProblemSet.getDifficulty());
+        fillLeaderBoard(persistentProblemSet, details);
 
+        return details;
+    }
+
+    private void fillLeaderBoard(final PersistentProblemSet persistentProblemSet,
+                                 final ProblemCollectionDetails details) {
         List<PersistentUserProblemSetStats> highScores =
                 userRepository.getCollectionHighScores(persistentProblemSet.getId());
 
@@ -362,8 +366,6 @@ public class ProblemsServiceImpl extends RemoteServiceServlet implements Problem
 
         details.setLeaderboardNames(leaderboardNames);
         details.setLeaderboardScores(leaderboardScores);
-
-        return details;
     }
 
     @Override
