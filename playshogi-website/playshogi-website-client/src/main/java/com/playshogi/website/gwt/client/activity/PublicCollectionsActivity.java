@@ -10,7 +10,7 @@ import com.playshogi.website.gwt.client.events.collections.ListGameCollectionsEv
 import com.playshogi.website.gwt.client.events.collections.ListProblemCollectionsEvent;
 import com.playshogi.website.gwt.client.place.PublicCollectionsPlace;
 import com.playshogi.website.gwt.client.ui.PublicCollectionsView;
-import com.playshogi.website.gwt.shared.models.GameCollectionDetailsList;
+import com.playshogi.website.gwt.shared.models.GameCollectionDetails;
 import com.playshogi.website.gwt.shared.models.ProblemCollectionDetails;
 import com.playshogi.website.gwt.shared.services.KifuService;
 import com.playshogi.website.gwt.shared.services.KifuServiceAsync;
@@ -51,18 +51,18 @@ public class PublicCollectionsActivity extends MyAbstractActivity {
     }
 
     private void fetchData() {
-        kifuService.getGameCollections(sessionInformation.getSessionId(),
-                new AsyncCallback<GameCollectionDetailsList>() {
+        kifuService.getPublicGameCollections(sessionInformation.getSessionId(),
+                new AsyncCallback<GameCollectionDetails[]>() {
                     @Override
                     public void onFailure(Throwable throwable) {
                         GWT.log("PublicCollectionsActivity: error retrieving game collections list");
                     }
 
                     @Override
-                    public void onSuccess(GameCollectionDetailsList gameCollectionDetails) {
+                    public void onSuccess(GameCollectionDetails[] gameCollectionDetails) {
                         GWT.log("PublicCollectionsActivity: retrieved game collections list");
                         eventBus.fireEvent(new ListGameCollectionsEvent(null,
-                                gameCollectionDetails.getPublicCollections()));
+                                gameCollectionDetails));
                     }
                 });
         problemsService.getPublicProblemCollections(sessionInformation.getSessionId(),

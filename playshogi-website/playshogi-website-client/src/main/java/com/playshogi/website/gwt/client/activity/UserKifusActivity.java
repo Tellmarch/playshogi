@@ -15,7 +15,7 @@ import com.playshogi.website.gwt.client.events.kifu.RequestKifuDeletionEvent;
 import com.playshogi.website.gwt.client.events.user.UserLoggedInEvent;
 import com.playshogi.website.gwt.client.place.UserKifusPlace;
 import com.playshogi.website.gwt.client.ui.UserKifusView;
-import com.playshogi.website.gwt.shared.models.GameCollectionDetailsList;
+import com.playshogi.website.gwt.shared.models.GameCollectionDetails;
 import com.playshogi.website.gwt.shared.models.KifuDetails;
 import com.playshogi.website.gwt.shared.services.KifuService;
 import com.playshogi.website.gwt.shared.services.KifuServiceAsync;
@@ -70,18 +70,17 @@ public class UserKifusActivity extends MyAbstractActivity {
                     }
                 });
 
-        kifuService.getGameCollections(sessionInformation.getSessionId(),
-                new AsyncCallback<GameCollectionDetailsList>() {
+        kifuService.getUserGameCollections(sessionInformation.getSessionId(), sessionInformation.getUsername(),
+                new AsyncCallback<GameCollectionDetails[]>() {
                     @Override
                     public void onFailure(Throwable throwable) {
-                        GWT.log("GameCollectionsActivity: error retrieving collections list");
+                        GWT.log("MyCollectionsActivity: error retrieving collections list");
                     }
 
                     @Override
-                    public void onSuccess(GameCollectionDetailsList gameCollectionDetails) {
-                        GWT.log("GameCollectionsActivity: retrieved collections list");
-                        eventBus.fireEvent(new ListGameCollectionsEvent(gameCollectionDetails.getMyCollections(),
-                                gameCollectionDetails.getPublicCollections()));
+                    public void onSuccess(GameCollectionDetails[] gameCollectionDetails) {
+                        GWT.log("MyCollectionsActivity: retrieved collections list");
+                        eventBus.fireEvent(new ListGameCollectionsEvent(gameCollectionDetails, null));
                     }
                 });
     }

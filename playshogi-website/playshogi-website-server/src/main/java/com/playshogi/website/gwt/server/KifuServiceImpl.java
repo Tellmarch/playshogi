@@ -18,7 +18,6 @@ import com.playshogi.website.gwt.shared.models.*;
 import com.playshogi.website.gwt.shared.services.KifuService;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -142,30 +141,26 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
     }
 
     @Override
-    public GameCollectionDetailsList getGameCollections(final String sessionId) {
+    public GameCollectionDetails[] getPublicGameCollections(final String sessionId) {
+        LOGGER.log(Level.INFO, "getPublicGameCollections");
 
-        ArrayList<GameCollectionDetails> publicCollectionDetails = new ArrayList<>();
+        List<PersistentGameSet> problemSets = gameSetRepository.getAllPublicGameSets();
 
-        List<PersistentGameSet> publicGameSets = gameSetRepository.getAllPublicGameSets();
-        for (PersistentGameSet gameSet : publicGameSets) {
-            publicCollectionDetails.add(getCollectionDetails(gameSet));
-        }
+        return problemSets.stream().map(this::getCollectionDetails).toArray(GameCollectionDetails[]::new);
+    }
 
-        ArrayList<GameCollectionDetails> userCollectionDetails = new ArrayList<>();
+    @Override
+    public GameCollectionDetails[] getUserGameCollections(final String sessionId, final String userName) {
+        LOGGER.log(Level.INFO, "getUserGameCollections");
 
         LoginResult loginResult = authenticator.checkSession(sessionId);
-        if (loginResult != null && loginResult.isLoggedIn()) {
-            List<PersistentGameSet> userGameSets = gameSetRepository.getGameSetsForUser(loginResult.getUserId());
-            for (PersistentGameSet gameSet : userGameSets) {
-                userCollectionDetails.add(getCollectionDetails(gameSet));
-            }
+        if (loginResult == null || !loginResult.isLoggedIn() || !userName.equals(loginResult.getUserName())) {
+            throw new IllegalStateException("User does not have permissions for this operation");
         }
 
-        GameCollectionDetailsList result = new GameCollectionDetailsList();
-        result.setPublicCollections(publicCollectionDetails.toArray(new GameCollectionDetails[0]));
-        result.setMyCollections(userCollectionDetails.toArray(new GameCollectionDetails[0]));
+        List<PersistentGameSet> userProblemSets = gameSetRepository.getGameSetsForUser(loginResult.getUserId());
 
-        return result;
+        return userProblemSets.stream().map(this::getCollectionDetails).toArray(GameCollectionDetails[]::new);
     }
 
     private GameCollectionDetails getCollectionDetails(final PersistentGameSet gameSet) {

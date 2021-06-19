@@ -228,8 +228,7 @@ public class UserKifusView extends Composite {
 
     @EventHandler
     public void onListGameCollectionsEvent(final ListGameCollectionsEvent event) {
-        GWT.log("GameCollectionsView: handle GameCollectionsEvent:\n" + event);
-
+        GWT.log("GameCollectionsView: handle GameCollectionsEvent");
         myCollections = event.getMyCollections();
     }
 
