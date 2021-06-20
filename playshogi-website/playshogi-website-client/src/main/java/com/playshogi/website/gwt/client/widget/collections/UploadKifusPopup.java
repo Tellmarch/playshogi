@@ -33,16 +33,21 @@ import java.util.List;
 
 import static org.jboss.elemento.Elements.b;
 
-public class ImportCollectionPopup {
+public class UploadKifusPopup {
 
     private static final int PAGE_SIZE = 10;
 
-    interface MyEventBinder extends EventBinder<ImportCollectionPopup> {
+    interface MyEventBinder extends EventBinder<UploadKifusPopup> {
     }
 
     private final MyEventBinder eventBinder = GWT.create(MyEventBinder.class);
 
     private final Window dialog;
+    private final boolean enableKifuUpload;
+    private final boolean enableNewGameCollection;
+    private final boolean enableAddToGameCollection;
+    private final boolean enableNewProblemCollection;
+    private final boolean enableAddToProblemCollection;
     private LocalListDataStore<String> localListDataStore;
     private TabsPanel tabs;
     private Select<GameCollectionDetails> gameCollectionSelect;
@@ -51,13 +56,24 @@ public class ImportCollectionPopup {
     private FileUpload fileUpload;
     private EventBus eventBus;
 
-    public ImportCollectionPopup() {
+    public UploadKifusPopup() {
+        this(true, true, true, true, true);
+    }
+
+    public UploadKifusPopup(final boolean enableKifuUpload, final boolean enableNewGameCollection,
+                            final boolean enableAddToGameCollection, final boolean enableNewProblemCollection,
+                            final boolean enableAddToProblemCollection) {
+        this.enableKifuUpload = enableKifuUpload;
+        this.enableNewGameCollection = enableNewGameCollection;
+        this.enableAddToGameCollection = enableAddToGameCollection;
+        this.enableNewProblemCollection = enableNewProblemCollection;
+        this.enableAddToProblemCollection = enableAddToProblemCollection;
         dialog = createModalDialog();
     }
 
     private Window createModalDialog() {
 
-        Window modal = new Window("Import Kifu Collection").setSize(IsModalDialog.ModalSize.LARGE);
+        Window modal = new Window("Upload Kifu(s)").setSize(IsModalDialog.ModalSize.LARGE);
         modal.appendChild(TextNode.of("With this dialog you can import a collection of " +
                 "kifus."));
 
@@ -105,12 +121,16 @@ public class ImportCollectionPopup {
 
         Tab kifusTab = Tab.create("Kifus")
                 .appendChild(b().textContent("Uploaded kifus:"))
-                .appendChild(createKifusTable())
-                .appendChild(Button.createPrimary("Upload Kifus only, not in a collection")
-                        .addClickListener(evt -> {
-                            eventBus.fireEvent(SaveDraftCollectionEvent.ofKifus(draftId));
-                            dialog.close();
-                        }));
+                .appendChild(createKifusTable());
+
+        if (enableKifuUpload) {
+            kifusTab.appendChild(Button.createPrimary("Upload Kifus only, not in a collection")
+                    .addClickListener(evt -> {
+                        eventBus.fireEvent(SaveDraftCollectionEvent.ofKifus(draftId));
+                        dialog.close();
+                    }));
+        }
+
         Tab gamesTab = Tab.create("Import as Game Collection")
                 .appendChild(b().textContent("Import all kifus as a game collection"))
                 .appendChild(createGameCollectionsForm());
@@ -119,10 +139,17 @@ public class ImportCollectionPopup {
                 .appendChild(createProblemCollectionsForm());
 
         tabs = TabsPanel.create()
-                .appendChild(kifusTab)
-                .appendChild(gamesTab)
-                .appendChild(problemsTab)
-                .hide();
+                .appendChild(kifusTab);
+
+        if (enableNewGameCollection || enableAddToGameCollection) {
+            tabs.appendChild(gamesTab);
+        }
+
+        if (enableNewProblemCollection || enableAddToProblemCollection) {
+            tabs.appendChild(problemsTab);
+        }
+
+        tabs.hide();
 
         modal.appendChild(tabs);
 
@@ -137,7 +164,14 @@ public class ImportCollectionPopup {
     private Node createGameCollectionsForm() {
         Tab newTab = createNewGameCollectionTab();
         Tab existingTab = createExistingGameCollectionTab();
-        return TabsPanel.create().appendChild(newTab).appendChild(existingTab).element();
+        TabsPanel tabsPanel = TabsPanel.create();
+        if (enableNewGameCollection) {
+            tabsPanel.appendChild(newTab);
+        }
+        if (enableAddToGameCollection) {
+            tabsPanel.appendChild(existingTab);
+        }
+        return tabsPanel.element();
     }
 
     private Tab createExistingGameCollectionTab() {
@@ -168,7 +202,14 @@ public class ImportCollectionPopup {
     private Node createProblemCollectionsForm() {
         Tab newTab = createNewProblemCollectionTab();
         Tab existingTab = createExistingProblemCollectionTab();
-        return TabsPanel.create().appendChild(newTab).appendChild(existingTab).element();
+        TabsPanel tabsPanel = TabsPanel.create();
+        if (enableNewProblemCollection) {
+            tabsPanel.appendChild(newTab);
+        }
+        if (enableAddToProblemCollection) {
+            tabsPanel.appendChild(existingTab);
+        }
+        return tabsPanel.element();
     }
 
     private Tab createExistingProblemCollectionTab() {
@@ -255,6 +296,13 @@ public class ImportCollectionPopup {
     public void activate(final EventBus eventBus) {
         this.eventBus = eventBus;
         eventBinder.bindEventHandlers(this, eventBus);
+    }
+
+    public void setSelectedGameCollection(final GameCollectionDetails collection) {
+        gameCollectionSelect.removeAllOptions();
+        gameCollectionSelect.appendChild(SelectOption.create(collection, collection.getId(),
+                collection.getName()));
+        gameCollectionSelect.selectAt(0);
     }
 
     @EventHandler

@@ -15,14 +15,15 @@ import com.playshogi.website.gwt.client.mvp.AppPlaceHistoryMapper;
 import com.playshogi.website.gwt.client.tables.GameCollectionsTable;
 import com.playshogi.website.gwt.client.tables.ProblemCollectionsTable;
 import com.playshogi.website.gwt.client.util.ElementWidget;
-import com.playshogi.website.gwt.client.widget.collections.ImportCollectionPopup;
 import com.playshogi.website.gwt.client.widget.collections.NewCollectionPopup;
+import com.playshogi.website.gwt.client.widget.collections.UploadKifusPopup;
 import com.playshogi.website.gwt.client.widget.kifu.ImportKifuPanel;
 import elemental2.dom.HTMLDivElement;
 import elemental2.dom.HTMLHeadingElement;
 import org.dominokit.domino.ui.Typography.Strong;
 import org.dominokit.domino.ui.alerts.Alert;
 import org.dominokit.domino.ui.button.Button;
+import org.dominokit.domino.ui.icons.Icons;
 import org.dominokit.domino.ui.style.Styles;
 import org.dominokit.domino.ui.tabs.Tab;
 import org.dominokit.domino.ui.tabs.TabsPanel;
@@ -40,7 +41,7 @@ public class MyCollectionsView extends Composite {
     private final MyEventBinder eventBinder = GWT.create(MyEventBinder.class);
 
     private SessionInformation sessionInformation;
-    private final ImportCollectionPopup importCollectionPopup = new ImportCollectionPopup();
+    private final UploadKifusPopup uploadKifusPopup = new UploadKifusPopup();
     private final NewCollectionPopup newCollectionPopup = new NewCollectionPopup();
     private final ImportKifuPanel importKifuPanel = new ImportKifuPanel();
     private final HtmlContentBuilder<HTMLHeadingElement> loggedOutWarning;
@@ -74,11 +75,11 @@ public class MyCollectionsView extends Composite {
         div.add(loggedOutWarning);
         div.add(noCollectionsWarning);
 
-        div.add(Button.createPrimary("Create New Collection")
+        div.add(Button.createPrimary(Icons.ALL.add_circle()).setContent("Create New Collection")
                 .addClickListener(evt -> sessionInformation.ifLoggedIn(newCollectionPopup::show))
                 .style().setMarginRight("10px").setMarginBottom("20px"));
-        div.add(Button.createPrimary("Import Collection")
-                .addClickListener(evt -> sessionInformation.ifLoggedIn(importCollectionPopup::show))
+        div.add(Button.createPrimary(Icons.ALL.file_upload()).setContent("Upload Kifu(s)")
+                .addClickListener(evt -> sessionInformation.ifLoggedIn(uploadKifusPopup::show))
                 .style().setMarginRight("10px").setMarginBottom("20px"));
 
         TabsPanel tabsPanel = TabsPanel.create()
@@ -97,7 +98,7 @@ public class MyCollectionsView extends Composite {
         eventBinder.bindEventHandlers(this, eventBus);
         noCollectionsWarning.hidden(true);
         loggedOutWarning.hidden(true);
-        importCollectionPopup.activate(eventBus);
+        uploadKifusPopup.activate(eventBus);
         importKifuPanel.activate(eventBus);
         problemsTable.activate(eventBus);
         gamesTable.activate(eventBus);

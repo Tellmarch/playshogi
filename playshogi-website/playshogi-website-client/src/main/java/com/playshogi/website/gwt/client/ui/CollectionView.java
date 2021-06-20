@@ -12,6 +12,7 @@ import com.playshogi.website.gwt.client.mvp.AppPlaceHistoryMapper;
 import com.playshogi.website.gwt.client.place.OpeningsPlace;
 import com.playshogi.website.gwt.client.tables.GameTable;
 import com.playshogi.website.gwt.client.util.ElementWidget;
+import com.playshogi.website.gwt.client.widget.collections.UploadKifusPopup;
 import com.playshogi.website.gwt.client.widget.kifu.ImportKifuPanel;
 import com.playshogi.website.gwt.shared.models.GameCollectionDetails;
 import elemental2.dom.HTMLAnchorElement;
@@ -39,10 +40,12 @@ public class CollectionView extends Composite {
     private final HtmlContentBuilder<HTMLHeadingElement> collectionDescription;
     private final GameTable gameTable;
     private final ImportKifuPanel importKifuPanel = new ImportKifuPanel();
+    private final UploadKifusPopup uploadKifusPopup = new UploadKifusPopup(false, false, true, false, false);
     private final SessionInformation sessionInformation;
     private final AppPlaceHistoryMapper historyMapper;
     private final HtmlContentBuilder<HTMLAnchorElement> exploreLink;
     private final Button addKifuButton;
+    private final Button uploadKifuButton;
 
     private EventBus eventBus;
     private GameCollectionDetails collectionDetails;
@@ -65,6 +68,14 @@ public class CollectionView extends Composite {
                 .addClickListener(evt -> importKifuPanel.showInDialog(collectionDetails.getId()))
                 .style().setMarginRight("3em"));
 
+        uploadKifuButton = Button.createPrimary(Icons.ALL.file_upload()).setContent("Upload Kifu(s)");
+        root.add(uploadKifuButton
+                .addClickListener(evt -> {
+                    uploadKifusPopup.setSelectedGameCollection(collectionDetails);
+                    uploadKifusPopup.show();
+                })
+                .style().setMarginRight("3em"));
+
         exploreLink = Elements.a("#");
         root.add(exploreLink.add(Button.createPrimary(Icons.ALL.pie_chart()).setContent("Explore Openings")));
 
@@ -82,6 +93,7 @@ public class CollectionView extends Composite {
         eventBinder.bindEventHandlers(this, eventBus);
         gameTable.activate(eventBus);
         importKifuPanel.activate(eventBus);
+        uploadKifusPopup.activate(eventBus);
     }
 
     @EventHandler
