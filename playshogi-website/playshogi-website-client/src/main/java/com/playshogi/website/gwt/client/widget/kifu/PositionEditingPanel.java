@@ -33,13 +33,15 @@ public class PositionEditingPanel extends Composite {
     private final Button toPlayButton;
     private final Button importPositionButton;
     private final ListBox presets;
+    private final SwitchButton switchButton;
     private EventBus eventBus;
 
     public PositionEditingPanel() {
 
         FlowPanel flowPanel = new FlowPanel();
 
-        flowPanel.add(new ElementWidget(SwitchButton.create()
+        switchButton = SwitchButton.create();
+        flowPanel.add(new ElementWidget(switchButton
                 .setOffTitle("Play").setOnTitle("Edit").setColor(Theme.DEEP_PURPLE.color())
                 .addChangeHandler(b -> {
                     eventBus.fireEvent(new EditModeSelectedEvent(b));
@@ -116,6 +118,12 @@ public class PositionEditingPanel extends Composite {
         this.eventBus = eventBus;
         eventBinder.bindEventHandlers(this, eventBus);
         importPositionPanel.activate(eventBus);
+    }
+
+    public void resetToProblemMode() {
+        eventBus.fireEvent(new EditModeSelectedEvent(true));
+        setEditingButtonsEnabled(true);
+        switchButton.check();
     }
 
     @EventHandler

@@ -1,5 +1,6 @@
 package com.playshogi.website.gwt.client.ui;
 
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.place.shared.PlaceController;
@@ -11,6 +12,7 @@ import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.library.shogi.models.moves.EditMove;
 import com.playshogi.library.shogi.models.record.*;
+import com.playshogi.library.shogi.models.shogivariant.ShogiInitialPositionFactory;
 import com.playshogi.library.shogi.rules.ShogiRulesEngine;
 import com.playshogi.website.gwt.client.SessionInformation;
 import com.playshogi.website.gwt.client.events.gametree.GameTreeChangedEvent;
@@ -34,6 +36,7 @@ import java.util.Optional;
 public class KifuEditorView extends Composite {
 
     private static final String KIFU_EDITOR = "kifueditor";
+    private KifuEditorPlace place;
 
     interface MyEventBinder extends EventBinder<KifuEditorView> {
     }
@@ -53,7 +56,6 @@ public class KifuEditorView extends Composite {
     private final PositionEvaluationDetailsPanel positionEvaluationDetailsPanel;
 
     private EventBus eventBus;
-    private KifuDetails.KifuType type;
 
     @Inject
     public KifuEditorView(final PlaceController placeController, final SessionInformation sessionInformation,
@@ -131,6 +133,7 @@ public class KifuEditorView extends Composite {
 
     public void activate(final EventBus eventBus, final KifuEditorPlace place) {
         GWT.log("Activating problem editor view");
+        this.place = place;
         this.eventBus = eventBus;
         eventBinder.bindEventHandlers(this, eventBus);
         shogiBoard.activate(eventBus);
@@ -142,7 +145,32 @@ public class KifuEditorView extends Composite {
         boardSettingsPanel.activate(eventBus);
         databasePanel.activate(eventBus);
         positionEvaluationDetailsPanel.activate(eventBus);
-        type = place.getType();
+        reset();
+    }
+
+    private void reset() {
+        if (place.getCollectionId() != null) {
+            if (place.getType() == KifuDetails.KifuType.PROBLEM) {
+                resetForNewProblem();
+            } else {
+                resetForNewKifu();
+            }
+        }
+    }
+
+    private void resetForNewProblem() {
+        Scheduler.get().scheduleDeferred(() -> {
+                    loadGameRecord(new GameRecord());
+                    kifuEditorLeftBarPanel.resetToProblemMode();
+                    eventBus.fireEvent(new PositionChangedEvent(ShogiInitialPositionFactory.createEmptyTsumePosition(false), true));
+                }
+        );
+    }
+
+    private void resetForNewKifu() {
+        Scheduler.get().scheduleDeferred(() ->
+                loadGameRecord(new GameRecord())
+        );
     }
 
     public GameNavigation getGameNavigation() {
@@ -214,7 +242,7 @@ public class KifuEditorView extends Composite {
     @EventHandler
     public void onGameRecordSaveRequested(final GameRecordSaveRequestedEvent event) {
         GWT.log("problem editor Activity Handling GameRecordSaveRequestedEvent");
-        saveKifuPanel.showInSaveDialog(getGameRecord(), type);
+        saveKifuPanel.showInSaveDialog(getGameRecord(), place.getType());
     }
 
 }

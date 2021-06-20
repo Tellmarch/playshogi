@@ -106,8 +106,8 @@ public class ProblemCollectionsTable {
                                     String href =
                                             "#" + historyMapper.getToken(new ProblemsPlace(cell.getRecord().getId(),
                                                     0));
-                                    return Elements.a(href).add(org.dominokit.domino.ui.button.Button.createPrimary(
-                                            "Practice")).element();
+                                    return Elements.a(href).add(Button.createSuccess(Icons.ALL.timer()).setContent(
+                                            "Practice / Speedrun")).element();
                                 }))
                 .addColumn(
                         ColumnConfig.<ProblemCollectionDetails>create("difficulty", "Difficulty")

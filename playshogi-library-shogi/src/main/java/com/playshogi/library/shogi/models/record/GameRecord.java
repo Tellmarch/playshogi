@@ -7,6 +7,10 @@ public class GameRecord {
     private final GameTree gameTree;
     private final GameResult gameResult;
 
+    public GameRecord() {
+        this(new GameInformation(), new GameTree(), null);
+    }
+
     public GameRecord(final GameInformation gameInformation, final GameTree gameTree, final GameResult gameResult) {
         this.gameInformation = gameInformation;
         this.gameTree = gameTree;

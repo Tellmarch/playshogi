@@ -88,7 +88,7 @@ public class GameCollectionView extends Composite {
                 .style().setMarginRight("3em"));
 
         exploreLink = Elements.a("#");
-        root.add(exploreLink.add(Button.createPrimary(Icons.ALL.pie_chart()).setContent("Explore Openings")));
+        root.add(exploreLink.add(Button.createSuccess(Icons.ALL.pie_chart()).setContent("Explore Openings")));
 
         root.add(gameTable.getTable());
 
