@@ -148,7 +148,7 @@ public class UserKifusView extends Composite {
 
     private void editKifu(final KifuDetails details) {
         GWT.log("Going to edit kifu" + details.getId());
-        placeController.goTo(new KifuEditorPlace(details.getId(), details.getType()));
+        placeController.goTo(new KifuEditorPlace(details.getId(), details.getType(), null));
     }
 
     public void activate(final EventBus eventBus) {

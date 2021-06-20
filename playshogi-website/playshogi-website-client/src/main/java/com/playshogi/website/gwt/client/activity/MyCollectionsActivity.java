@@ -7,10 +7,8 @@ import com.google.gwt.user.client.ui.AcceptsOneWidget;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
-import com.playshogi.library.shogi.models.formats.usf.UsfFormat;
 import com.playshogi.website.gwt.client.SessionInformation;
 import com.playshogi.website.gwt.client.events.collections.*;
-import com.playshogi.website.gwt.client.events.kifu.ImportGameRecordEvent;
 import com.playshogi.website.gwt.client.events.user.UserLoggedInEvent;
 import com.playshogi.website.gwt.client.place.MyCollectionsPlace;
 import com.playshogi.website.gwt.client.ui.MyCollectionsView;
@@ -285,31 +283,9 @@ public class MyCollectionsActivity extends MyAbstractActivity {
     }
 
     @EventHandler
-    public void onImportGameRecord(final ImportGameRecordEvent event) {
-        GWT.log("MyCollectionsActivity Handling ImportGameRecordEvent");
-
-        kifuService.saveGameAndAddToCollection(sessionInformation.getSessionId(),
-                UsfFormat.INSTANCE.write(event.getGameRecord()),
-                event.getCollectionId(), new AsyncCallback<Void>() {
-                    @Override
-                    public void onFailure(final Throwable throwable) {
-                        GWT.log("MyCollectionsActivity: error during saveKifu");
-                    }
-
-                    @Override
-                    public void onSuccess(final Void unused) {
-                        GWT.log("MyCollectionsActivity: saveKifu success");
-                        refresh();
-                    }
-                });
-
-    }
-
-    @EventHandler
     public void onUserLoggedIn(final UserLoggedInEvent event) {
         refresh();
     }
-
 
     @EventHandler
     public void onDeleteGameCollection(final DeleteGameCollectionEvent event) {

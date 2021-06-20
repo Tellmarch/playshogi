@@ -17,7 +17,6 @@ import com.playshogi.website.gwt.client.tables.ProblemCollectionsTable;
 import com.playshogi.website.gwt.client.util.ElementWidget;
 import com.playshogi.website.gwt.client.widget.collections.NewCollectionPopup;
 import com.playshogi.website.gwt.client.widget.collections.UploadKifusPopup;
-import com.playshogi.website.gwt.client.widget.kifu.ImportKifuPanel;
 import elemental2.dom.HTMLDivElement;
 import elemental2.dom.HTMLHeadingElement;
 import org.dominokit.domino.ui.Typography.Strong;
@@ -43,7 +42,6 @@ public class MyCollectionsView extends Composite {
     private SessionInformation sessionInformation;
     private final UploadKifusPopup uploadKifusPopup = new UploadKifusPopup();
     private final NewCollectionPopup newCollectionPopup = new NewCollectionPopup();
-    private final ImportKifuPanel importKifuPanel = new ImportKifuPanel();
     private final HtmlContentBuilder<HTMLHeadingElement> loggedOutWarning;
     private final HtmlContentBuilder<HTMLHeadingElement> noCollectionsWarning;
     private final ProblemCollectionsTable problemsTable;
@@ -99,7 +97,6 @@ public class MyCollectionsView extends Composite {
         noCollectionsWarning.hidden(true);
         loggedOutWarning.hidden(true);
         uploadKifusPopup.activate(eventBus);
-        importKifuPanel.activate(eventBus);
         problemsTable.activate(eventBus);
         gamesTable.activate(eventBus);
         newCollectionPopup.activate(eventBus);

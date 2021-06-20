@@ -1,6 +1,7 @@
 package com.playshogi.website.gwt.client.ui;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.place.shared.PlaceController;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.web.bindery.event.shared.EventBus;
@@ -9,12 +10,14 @@ import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.website.gwt.client.SessionInformation;
 import com.playshogi.website.gwt.client.events.collections.ListCollectionGamesEvent;
 import com.playshogi.website.gwt.client.mvp.AppPlaceHistoryMapper;
+import com.playshogi.website.gwt.client.place.KifuEditorPlace;
 import com.playshogi.website.gwt.client.place.OpeningsPlace;
 import com.playshogi.website.gwt.client.tables.GameTable;
 import com.playshogi.website.gwt.client.util.ElementWidget;
 import com.playshogi.website.gwt.client.widget.collections.UploadKifusPopup;
 import com.playshogi.website.gwt.client.widget.kifu.ImportKifuPanel;
 import com.playshogi.website.gwt.shared.models.GameCollectionDetails;
+import com.playshogi.website.gwt.shared.models.KifuDetails;
 import elemental2.dom.HTMLAnchorElement;
 import elemental2.dom.HTMLDivElement;
 import elemental2.dom.HTMLHeadingElement;
@@ -44,6 +47,7 @@ public class CollectionView extends Composite {
     private final SessionInformation sessionInformation;
     private final AppPlaceHistoryMapper historyMapper;
     private final HtmlContentBuilder<HTMLAnchorElement> exploreLink;
+    private final Button newKifuButton;
     private final Button addKifuButton;
     private final Button uploadKifuButton;
 
@@ -51,7 +55,8 @@ public class CollectionView extends Composite {
     private GameCollectionDetails collectionDetails;
 
     @Inject
-    public CollectionView(final SessionInformation sessionInformation, final AppPlaceHistoryMapper historyMapper) {
+    public CollectionView(final SessionInformation sessionInformation, final AppPlaceHistoryMapper historyMapper,
+                          final PlaceController placeController) {
         this.sessionInformation = sessionInformation;
         this.historyMapper = historyMapper;
         gameTable = new GameTable(historyMapper, sessionInformation.getUserPreferences(), false);
@@ -63,7 +68,13 @@ public class CollectionView extends Composite {
         root.add(collectionHeading);
         root.add(collectionDescription);
 
-        addKifuButton = Button.createPrimary(Icons.ALL.add_circle()).setContent("Add Kifu to Collection");
+        newKifuButton = Button.createPrimary(Icons.ALL.add_circle()).setContent("New Kifu");
+        root.add(newKifuButton
+                .addClickListener(evt -> placeController.goTo(new KifuEditorPlace(null, KifuDetails.KifuType.GAME,
+                        collectionDetails.getId())))
+                .style().setMarginRight("3em"));
+
+        addKifuButton = Button.createPrimary(Icons.ALL.content_paste()).setContent("Add Kifu from Clipboard");
         root.add(addKifuButton
                 .addClickListener(evt -> importKifuPanel.showInDialog(collectionDetails.getId()))
                 .style().setMarginRight("3em"));
@@ -112,9 +123,13 @@ public class CollectionView extends Composite {
         exploreLink.attr("href", exploreHRef);
 
         if (isAuthor) {
+            newKifuButton.show();
             addKifuButton.show();
+            uploadKifuButton.show();
         } else {
+            newKifuButton.hide();
             addKifuButton.hide();
+            uploadKifuButton.hide();
         }
     }
 

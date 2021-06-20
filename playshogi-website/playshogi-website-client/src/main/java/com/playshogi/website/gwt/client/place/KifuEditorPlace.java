@@ -9,14 +9,16 @@ public class KifuEditorPlace extends Place {
 
     private final String kifuId;
     private final KifuType type;
+    private final String collectionId;
 
     public KifuEditorPlace() {
-        this(null, null);
+        this(null, null, null);
     }
 
-    public KifuEditorPlace(final String kifuId, final KifuType type) {
+    public KifuEditorPlace(final String kifuId, final KifuType type, final String collectionId) {
         this.kifuId = kifuId;
         this.type = type;
+        this.collectionId = collectionId;
     }
 
     public String getKifuId() {
@@ -27,20 +29,28 @@ public class KifuEditorPlace extends Place {
         return type;
     }
 
+    public String getCollectionId() {
+        return collectionId;
+    }
+
     @Prefix("KifuEditor")
     public static class Tokenizer implements PlaceTokenizer<KifuEditorPlace> {
 
         @Override
         public String getToken(final KifuEditorPlace place) {
-            return place.kifuId + ":" + place.getType();
+            return place.kifuId + ":" + place.getType() + ":" + place.getCollectionId();
         }
 
         @Override
         public KifuEditorPlace getPlace(final String token) {
             String[] split = token.split(":");
+            if (split.length < 3) {
+                return new KifuEditorPlace();
+            }
             String kifuId = "null".equals(split[0]) ? null : split[0];
             KifuType kifuType = "null".equals(split[1]) ? null : KifuType.valueOf(split[1]);
-            return new KifuEditorPlace(kifuId, kifuType);
+            String collectionId = "null".equals(split[2]) ? null : split[2];
+            return new KifuEditorPlace(kifuId, kifuType, collectionId);
         }
 
     }

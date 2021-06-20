@@ -13,11 +13,11 @@ import com.playshogi.library.shogi.models.record.GameInformation;
 import com.playshogi.library.shogi.models.record.GameRecord;
 import com.playshogi.website.gwt.client.events.kifu.SaveKifuEvent;
 import com.playshogi.website.gwt.client.events.kifu.SaveKifuResultEvent;
+import com.playshogi.website.gwt.client.place.CollectionPlace;
 import com.playshogi.website.gwt.client.place.UserKifusPlace;
 import com.playshogi.website.gwt.shared.models.KifuDetails;
 
 public class SaveKifuPanel extends Composite {
-
 
     interface MyEventBinder extends EventBinder<SaveKifuPanel> {
     }
@@ -33,6 +33,8 @@ public class SaveKifuPanel extends Composite {
     private DialogBox saveDialogBox;
     private EventBus eventBus;
     private GameRecord gameRecord;
+    private String collectionId;
+
 
     public SaveKifuPanel(final PlaceController placeController) {
         this.placeController = placeController;
@@ -59,7 +61,8 @@ public class SaveKifuPanel extends Composite {
         initWidget(panel);
     }
 
-    public void activate(final EventBus eventBus) {
+    public void activate(final EventBus eventBus, final String collectionId) {
+        this.collectionId = collectionId;
         GWT.log("Activating SaveKifuPanel");
         this.eventBus = eventBus;
         eventBinder.bindEventHandlers(this, eventBus);
@@ -150,7 +153,11 @@ public class SaveKifuPanel extends Composite {
         if (event.isSuccess()) {
             Window.alert("Kifu saved!");
             if (saveDialogBox != null) saveDialogBox.hide();
-            placeController.goTo(new UserKifusPlace());
+            if (collectionId != null) {
+                placeController.goTo(new CollectionPlace(collectionId));
+            } else {
+                placeController.goTo(new UserKifusPlace());
+            }
         } else {
             Window.alert("Error saving the kifu");
             if (saveDialogBox != null) saveDialogBox.hide();

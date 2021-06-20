@@ -89,22 +89,43 @@ public class KifuEditorActivity extends MyAbstractActivity {
     public void onSaveKifu(final SaveKifuEvent event) {
         GWT.log("problem editor Activity Handling SaveKifuEvent");
         GWT.log(event.toString());
-        sessionInformation.ifLoggedIn(() ->
-                kifuService.saveKifu(sessionInformation.getSessionId(), event.getKifuUsf(), event.getName(),
-                        event.getKifuType(), new AsyncCallback<String>() {
+        sessionInformation.ifLoggedIn(() -> doSaveKifu(event));
+    }
 
-                            @Override
-                            public void onSuccess(final String result) {
-                                GWT.log("Kifu saved successfully: " + result);
-                                eventBus.fireEvent(new SaveKifuResultEvent(true, result));
-                            }
+    private void doSaveKifu(final SaveKifuEvent event) {
+        if (place.getCollectionId() != null) {
+            kifuService.saveGameAndAddToCollection(sessionInformation.getSessionId(), event.getKifuUsf(),
+                    place.getCollectionId(), new AsyncCallback<Void>() {
 
-                            @Override
-                            public void onFailure(final Throwable caught) {
-                                GWT.log("Error while saving Kifu: ", caught);
-                                eventBus.fireEvent(new SaveKifuResultEvent(false, null));
-                    }
-                }));
+                        @Override
+                        public void onSuccess(final Void result) {
+                            GWT.log("Kifu saved successfully: " + result);
+                            eventBus.fireEvent(new SaveKifuResultEvent(true, null));
+                        }
+
+                        @Override
+                        public void onFailure(final Throwable caught) {
+                            GWT.log("Error while saving Kifu: ", caught);
+                            eventBus.fireEvent(new SaveKifuResultEvent(false, null));
+                        }
+                    });
+        } else {
+            kifuService.saveKifu(sessionInformation.getSessionId(), event.getKifuUsf(), event.getName(),
+                    event.getKifuType(), new AsyncCallback<String>() {
+
+                        @Override
+                        public void onSuccess(final String result) {
+                            GWT.log("Kifu saved successfully: " + result);
+                            eventBus.fireEvent(new SaveKifuResultEvent(true, result));
+                        }
+
+                        @Override
+                        public void onFailure(final Throwable caught) {
+                            GWT.log("Error while saving Kifu: ", caught);
+                            eventBus.fireEvent(new SaveKifuResultEvent(false, null));
+                        }
+                    });
+        }
     }
 
     @EventHandler

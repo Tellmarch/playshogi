@@ -138,7 +138,7 @@ public class KifuEditorView extends Composite {
         kifuEditorPanel.activate(eventBus, place);
         gameTreePanel.activate(eventBus);
         kifuEditorLeftBarPanel.activate(eventBus);
-        saveKifuPanel.activate(eventBus);
+        saveKifuPanel.activate(eventBus, place.getCollectionId());
         boardSettingsPanel.activate(eventBus);
         databasePanel.activate(eventBus);
         positionEvaluationDetailsPanel.activate(eventBus);

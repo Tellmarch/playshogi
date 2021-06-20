@@ -10,9 +10,7 @@ import com.playshogi.library.shogi.models.formats.kif.KifFormat;
 import com.playshogi.library.shogi.models.formats.sfen.SfenConverter;
 import com.playshogi.library.shogi.models.formats.uss.UssConverter;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
-import com.playshogi.library.shogi.models.record.GameRecord;
 import com.playshogi.website.gwt.client.events.gametree.PositionChangedEvent;
-import com.playshogi.website.gwt.client.events.kifu.ImportGameRecordEvent;
 
 public class ImportPositionPanel extends Composite implements ClickHandler {
 
@@ -147,11 +145,6 @@ public class ImportPositionPanel extends Composite implements ClickHandler {
             GWT.log("Firing position changed event...");
             eventBus.fireEvent(new PositionChangedEvent(position, true));
         }
-        dialogBox.hide();
-    }
-
-    private void importGameRecord(final GameRecord gameRecord) {
-        eventBus.fireEvent(new ImportGameRecordEvent(gameRecord, collectionId));
         dialogBox.hide();
     }
 
