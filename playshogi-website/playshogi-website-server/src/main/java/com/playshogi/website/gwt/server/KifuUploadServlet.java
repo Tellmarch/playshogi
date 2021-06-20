@@ -8,6 +8,7 @@ import com.playshogi.library.shogi.models.formats.psn.PsnFormat;
 import com.playshogi.library.shogi.models.formats.usf.UsfFormat;
 import com.playshogi.library.shogi.models.record.GameRecord;
 import com.playshogi.library.shogi.models.record.KifuCollection;
+import com.playshogi.library.shogi.models.shogivariant.ShogiInitialPositionFactory;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -106,10 +107,24 @@ public class KifuUploadServlet extends HttpServlet {
         writer.println("COLLECTION:" + actualId);
         if (returnDetails) {
             KifuCollection collection = CollectionUploads.INSTANCE.getCollection(actualId);
-            for (GameRecord kifus : collection.getKifus()) {
-                writer.println("KIFU:" + kifus.getGameInformation().getSummaryString());
+            for (GameRecord kifu : collection.getKifus()) {
+                writer.println("KIFU:" + getSummary(kifu));
             }
 
+        }
+    }
+
+    private String getSummary(final GameRecord kifu) {
+        int numMoves = kifu.getGameTree().getMainVariationLength();
+        if (kifu.getInitialPosition() == ShogiInitialPositionFactory.READ_ONLY_INITIAL_POSITION) {
+            return kifu.getGameInformation().getSummaryString() + " (" + numMoves + " moves)";
+        } else {
+            if (Strings.isNullOrEmpty(kifu.getGameInformation().getBlack()) &&
+                    Strings.isNullOrEmpty(kifu.getGameInformation().getWhite())) {
+                return "From position - " + numMoves + " moves";
+            } else {
+                return kifu.getGameInformation().getSummaryString() + " (" + numMoves + " moves)";
+            }
         }
     }
 

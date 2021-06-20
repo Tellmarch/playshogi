@@ -399,6 +399,7 @@ public class GameSetRepository {
     private static Pattern DATE_PATTERN_4 = Pattern.compile("^\\d{2}/\\d{2}/\\d{4}.*");
 
     public static Date parseDate(final String date) {
+        if (date == null) return null;
 
         if (DATE_PATTERN_1.matcher(date).matches()) {
             try {
@@ -420,7 +421,7 @@ public class GameSetRepository {
                 return new SimpleDateFormat("dd/MM/yyyy").parse(date);
             } catch (Exception ignored) {
             }
-        } else if (date.charAt(6) == ',') {
+        } else if (date.length() > 7 && date.charAt(6) == ',') {
             try {
                 return new SimpleDateFormat("MMM dd, yyyy").parse(date);
             } catch (Exception ignored) {
