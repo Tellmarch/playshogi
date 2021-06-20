@@ -21,6 +21,9 @@
             <li><a href="https://www.shogidojo.net/eng/" target="_blank">Shogi club 24</a>: Online shogi server, with
                 basic English support. The interface is old (Java applet), a lot of strong players.
             </li>
+            <li><a href="https://lishogi.org/" target="_blank">lishogi</a>: A brand new shogi server, derived from the
+                popular lichess. Very nice interface, not many players yet, but growing.
+            </li>
             <li><a href="https://shogiwars.heroz.jp/?locale=en" target="_blank">HEROZ Shogi Wars</a>: Newer shogi
                 server, with basic English support. Fast and crazy games, easy to find opponents. You can only play 3
                 games per day for free. Recommended on mobile.
