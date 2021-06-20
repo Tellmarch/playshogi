@@ -96,7 +96,6 @@ public class ProblemSetRepository {
                                        final int authorId, final int elo, final PersistentProblem.ProblemType pbType,
                                        final boolean extractFeatureTags) {
         KifuRepository kifuRepository = new KifuRepository(dbConnection);
-        ProblemRepository problemRepository = new ProblemRepository(dbConnection);
 
         int kifuId = kifuRepository.saveKifu(gameRecord, problemName, authorId, PersistentKifu.KifuType.PROBLEM);
 
@@ -118,13 +117,9 @@ public class ProblemSetRepository {
             kifuRepository.saveKifuPosition(kifuId, gameNavigation.getPosition());
         }
 
-        int problemId = problemRepository.saveProblem(kifuId, numMoves, elo, pbType);
+        Integer problemId = addKifuToProblemSet(problemSetId, elo, pbType, kifuId, numMoves);
 
-        if (problemId == -1) {
-            return;
-        }
-
-        addProblemSetProblemRecord(problemSetId, problemId);
+        if (problemId == null) return;
 
         if (extractFeatureTags) {
             for (FeatureTag tag : FeatureTag.values()) {
@@ -138,6 +133,37 @@ public class ProblemSetRepository {
                 }
             }
         }
+    }
+
+    public void addKifuToProblemSet(final int problemSetId, final int elo,
+                                    final PersistentProblem.ProblemType pbType,
+                                    final int kifuId) {
+        KifuRepository kifuRepository = new KifuRepository(dbConnection);
+        PersistentKifu kifuById = kifuRepository.getKifuById(kifuId);
+
+        if (kifuById == null) {
+            return;
+        }
+
+        int numMoves = kifuById.getKifu().getGameTree().getMainVariationLength();
+
+
+        addKifuToProblemSet(problemSetId, elo, pbType, kifuId, numMoves);
+    }
+
+    private Integer addKifuToProblemSet(final int problemSetId, final int elo,
+                                        final PersistentProblem.ProblemType pbType,
+                                        final int kifuId, final int numMoves) {
+        ProblemRepository problemRepository = new ProblemRepository(dbConnection);
+
+        int problemId = problemRepository.saveProblem(kifuId, numMoves, elo, pbType);
+
+        if (problemId == -1) {
+            return null;
+        }
+
+        addProblemSetProblemRecord(problemSetId, problemId);
+        return problemId;
     }
 
     public void addProblemSetProblemRecord(final int problemSetId, final int problemId) {

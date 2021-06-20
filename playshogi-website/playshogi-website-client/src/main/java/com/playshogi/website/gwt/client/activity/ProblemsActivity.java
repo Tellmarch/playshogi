@@ -207,6 +207,14 @@ public class ProblemsActivity extends MyAbstractActivity {
     public void onStop() {
         GWT.log("Stopping tsume activity");
         super.onStop();
+        stopTimers();
+    }
+
+    private void stopTimers() {
+        if (activityTimer != null) {
+            activityTimer.cancel();
+            activityTimer = null;
+        }
     }
 
     @EventHandler

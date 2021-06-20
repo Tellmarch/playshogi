@@ -9,7 +9,6 @@ import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.website.gwt.client.SessionInformation;
 import com.playshogi.website.gwt.client.events.collections.ListKifusEvent;
-import com.playshogi.website.gwt.client.events.collections.RequestAddKifuToCollectionEvent;
 import com.playshogi.website.gwt.client.events.kifu.RequestKifuDeletionEvent;
 import com.playshogi.website.gwt.client.events.user.UserLoggedInEvent;
 import com.playshogi.website.gwt.client.place.ManageProblemsPlace;
@@ -115,23 +114,5 @@ public class ManageProblemsActivity extends MyAbstractActivity {
                 refresh();
             }
         });
-    }
-
-    @EventHandler
-    public void onRequestAddKifuToCollection(final RequestAddKifuToCollectionEvent event) {
-        kifuService.addExistingKifuToCollection(sessionInformation.getSessionId(), event.getKifuId(),
-                event.getCollectionId(), new AsyncCallback<Void>() {
-                    @Override
-                    public void onFailure(final Throwable throwable) {
-                        GWT.log("onRequestAddKifuToCollection: error adding kifu to collection");
-                        Window.alert("Error: Could not add the kifu to the collection.");
-                    }
-
-                    @Override
-                    public void onSuccess(final Void unused) {
-                        GWT.log("onRequestAddKifuToCollection: added kifu to collection");
-                        Window.alert("Kifu successfully added to collection.");
-                    }
-                });
     }
 }

@@ -530,4 +530,28 @@ public class ProblemsServiceImpl extends RemoteServiceServlet implements Problem
         problemSetRepository.deleteProblemFromProblemSet(Integer.parseInt(problemId), problemSet.getId(),
                 loginResult.getUserId());
     }
+
+    @Override
+    public void addExistingKifuToProblemCollection(final String sessionId, final String kifuId,
+                                                   final String collectionId) {
+        LOGGER.log(Level.INFO, "addExistingKifuToProblemCollection: " + kifuId);
+
+        LoginResult loginResult = authenticator.checkSession(sessionId);
+        if (loginResult == null || !loginResult.isLoggedIn()) {
+            throw new IllegalStateException("Only logged in users can add a problem to a collection");
+        }
+
+        PersistentProblemSet problemSet = problemSetRepository.getProblemSetById(Integer.parseInt(collectionId));
+
+        if (problemSet == null) {
+            throw new IllegalStateException("Invalid collection ID");
+        }
+
+        if (problemSet.getOwnerId() != loginResult.getUserId()) {
+            throw new IllegalStateException("No permission to add problems to this collection");
+        }
+
+        problemSetRepository.addKifuToProblemSet(problemSet.getId(), 0, PersistentProblem.ProblemType.UNSPECIFIED,
+                Integer.parseInt(kifuId));
+    }
 }

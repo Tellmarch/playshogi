@@ -54,4 +54,7 @@ public interface ProblemsServiceAsync {
 
     void removeProblemFromCollection(String sessionId, String problemId, String collectionId,
                                      AsyncCallback<Void> callback);
+
+    void addExistingKifuToProblemCollection(String sessionId, String kifuId, String collectionId,
+                                            AsyncCallback<Void> callback);
 }

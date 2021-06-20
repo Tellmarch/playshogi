@@ -10,6 +10,7 @@ import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.website.gwt.client.SessionInformation;
 import com.playshogi.website.gwt.client.events.collections.ListGameCollectionsEvent;
 import com.playshogi.website.gwt.client.events.collections.ListKifusEvent;
+import com.playshogi.website.gwt.client.events.collections.ListProblemCollectionsEvent;
 import com.playshogi.website.gwt.client.events.collections.RequestAddKifuToCollectionEvent;
 import com.playshogi.website.gwt.client.events.kifu.RequestKifuDeletionEvent;
 import com.playshogi.website.gwt.client.events.user.UserLoggedInEvent;
@@ -17,12 +18,17 @@ import com.playshogi.website.gwt.client.place.UserKifusPlace;
 import com.playshogi.website.gwt.client.ui.UserKifusView;
 import com.playshogi.website.gwt.shared.models.GameCollectionDetails;
 import com.playshogi.website.gwt.shared.models.KifuDetails;
+import com.playshogi.website.gwt.shared.models.ProblemCollectionDetails;
 import com.playshogi.website.gwt.shared.services.KifuService;
 import com.playshogi.website.gwt.shared.services.KifuServiceAsync;
+import com.playshogi.website.gwt.shared.services.ProblemsService;
+import com.playshogi.website.gwt.shared.services.ProblemsServiceAsync;
 
 public class UserKifusActivity extends MyAbstractActivity {
 
     private final KifuServiceAsync kifuService = GWT.create(KifuService.class);
+    private final ProblemsServiceAsync problemService = GWT.create(ProblemsService.class);
+
     private EventBus eventBus;
 
     interface MyEventBinder extends EventBinder<UserKifusActivity> {
@@ -83,6 +89,20 @@ public class UserKifusActivity extends MyAbstractActivity {
                         eventBus.fireEvent(new ListGameCollectionsEvent(gameCollectionDetails, null));
                     }
                 });
+
+        problemService.getUserProblemCollections(sessionInformation.getSessionId(), sessionInformation.getUsername(),
+                new AsyncCallback<ProblemCollectionDetails[]>() {
+                    @Override
+                    public void onFailure(Throwable throwable) {
+                        GWT.log("MyCollectionsActivity: error retrieving collections list");
+                    }
+
+                    @Override
+                    public void onSuccess(ProblemCollectionDetails[] collectionDetails) {
+                        GWT.log("MyCollectionsActivity: retrieved collections list");
+                        eventBus.fireEvent(new ListProblemCollectionsEvent(null, collectionDetails));
+                    }
+                });
     }
 
     private void refresh() {
@@ -113,8 +133,7 @@ public class UserKifusActivity extends MyAbstractActivity {
 
     @EventHandler
     public void onRequestAddKifuToCollection(final RequestAddKifuToCollectionEvent event) {
-        kifuService.addExistingKifuToCollection(sessionInformation.getSessionId(), event.getKifuId(),
-                event.getCollectionId(), new AsyncCallback<Void>() {
+        AsyncCallback<Void> callback = new AsyncCallback<Void>() {
             @Override
             public void onFailure(final Throwable throwable) {
                 GWT.log("onRequestAddKifuToCollection: error adding kifu to collection");
@@ -126,7 +145,14 @@ public class UserKifusActivity extends MyAbstractActivity {
                 GWT.log("onRequestAddKifuToCollection: added kifu to collection");
                 Window.alert("Kifu successfully added to collection.");
             }
-        });
+        };
+        if (event.getType() == KifuDetails.KifuType.PROBLEM) {
+            problemService.addExistingKifuToProblemCollection(sessionInformation.getSessionId(), event.getKifuId(),
+                    event.getCollectionId(), callback);
+        } else {
+            kifuService.addExistingKifuToCollection(sessionInformation.getSessionId(), event.getKifuId(),
+                    event.getCollectionId(), callback);
+        }
     }
 
 }

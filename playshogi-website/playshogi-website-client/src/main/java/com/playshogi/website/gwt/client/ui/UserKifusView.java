@@ -19,6 +19,7 @@ import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.website.gwt.client.SessionInformation;
 import com.playshogi.website.gwt.client.events.collections.ListGameCollectionsEvent;
 import com.playshogi.website.gwt.client.events.collections.ListKifusEvent;
+import com.playshogi.website.gwt.client.events.collections.ListProblemCollectionsEvent;
 import com.playshogi.website.gwt.client.events.collections.RequestAddKifuToCollectionEvent;
 import com.playshogi.website.gwt.client.events.kifu.RequestKifuDeletionEvent;
 import com.playshogi.website.gwt.client.place.KifuEditorPlace;
@@ -27,12 +28,12 @@ import com.playshogi.website.gwt.client.place.ViewKifuPlace;
 import com.playshogi.website.gwt.client.widget.TablePanel;
 import com.playshogi.website.gwt.shared.models.GameCollectionDetails;
 import com.playshogi.website.gwt.shared.models.KifuDetails;
+import com.playshogi.website.gwt.shared.models.ProblemCollectionDetails;
 
 import java.util.Arrays;
 
 @Singleton
 public class UserKifusView extends Composite {
-
 
     interface MyEventBinder extends EventBinder<UserKifusView> {
     }
@@ -42,7 +43,8 @@ public class UserKifusView extends Composite {
     private final PlaceController placeController;
     private final CellTable<KifuDetails> kifusTable;
 
-    private GameCollectionDetails[] myCollections;
+    private GameCollectionDetails[] myGameCollections;
+    private ProblemCollectionDetails[] myProblemCollections;
     private EventBus eventBus;
 
     @Inject
@@ -185,7 +187,7 @@ public class UserKifusView extends Composite {
         dialogBox.setWidget(dialogContents);
 
 
-        ListBox listBox = createCollectionsDropdown();
+        ListBox listBox = createCollectionsDropdown(details.getType());
         dialogContents.add(listBox);
         dialogContents.setCellHorizontalAlignment(this, HasHorizontalAlignment.ALIGN_CENTER);
 
@@ -206,13 +208,20 @@ public class UserKifusView extends Composite {
 
     private void addKifuToCollection(final KifuDetails details, final String selectedValue) {
         GWT.log("Add Kifu " + details.getId() + " to Collection: " + selectedValue);
-        eventBus.fireEvent(new RequestAddKifuToCollectionEvent(details.getId(), selectedValue));
+        eventBus.fireEvent(new RequestAddKifuToCollectionEvent(details.getId(), selectedValue, details.getType()));
     }
 
-    private ListBox createCollectionsDropdown() {
+    private ListBox createCollectionsDropdown(final KifuDetails.KifuType type) {
         ListBox list = new ListBox();
-        for (GameCollectionDetails collection : myCollections) {
-            list.addItem(collection.getName(), collection.getId());
+        if (type == KifuDetails.KifuType.PROBLEM) {
+            for (ProblemCollectionDetails collection : myProblemCollections) {
+                list.addItem(collection.getName(), collection.getId());
+            }
+
+        } else {
+            for (GameCollectionDetails collection : myGameCollections) {
+                list.addItem(collection.getName(), collection.getId());
+            }
         }
 
         list.setVisibleItemCount(1);
@@ -228,8 +237,14 @@ public class UserKifusView extends Composite {
 
     @EventHandler
     public void onListGameCollectionsEvent(final ListGameCollectionsEvent event) {
-        GWT.log("GameCollectionsView: handle GameCollectionsEvent");
-        myCollections = event.getMyCollections();
+        GWT.log("GameCollectionsView: handle ListGameCollectionsEvent");
+        myGameCollections = event.getMyCollections();
+    }
+
+    @EventHandler
+    public void onListProblemCollectionsEvent(final ListProblemCollectionsEvent event) {
+        GWT.log("GameCollectionsView: handle ListProblemCollectionsEvent");
+        myProblemCollections = event.getMyCollections();
     }
 
 }
