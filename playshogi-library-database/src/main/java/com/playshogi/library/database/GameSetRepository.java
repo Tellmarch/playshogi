@@ -17,6 +17,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 import static com.playshogi.library.database.SqlUtils.setInteger;
 
@@ -392,13 +393,41 @@ public class GameSetRepository {
         return true;
     }
 
-    private Date parseDate(final String date) {
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd");
-        try {
-            return simpleDateFormat.parse(date);
-        } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Couldn't parse date: " + date);
+    private static Pattern DATE_PATTERN_1 = Pattern.compile("^\\d{4}/\\d{2}/\\d{2}.*");
+    private static Pattern DATE_PATTERN_2 = Pattern.compile("^\\d{4}-\\d{2}-\\d{2}.*");
+    private static Pattern DATE_PATTERN_3 = Pattern.compile("^\\d{8}.*");
+    private static Pattern DATE_PATTERN_4 = Pattern.compile("^\\d{2}/\\d{2}/\\d{4}.*");
+
+    public static Date parseDate(final String date) {
+
+        if (DATE_PATTERN_1.matcher(date).matches()) {
+            try {
+                return new SimpleDateFormat("yyyy/MM/dd").parse(date);
+            } catch (Exception ignored) {
+            }
+        } else if (DATE_PATTERN_2.matcher(date).matches()) {
+            try {
+                return new SimpleDateFormat("yyyy-MM-dd").parse(date);
+            } catch (Exception ignored) {
+            }
+        } else if (DATE_PATTERN_3.matcher(date).matches()) {
+            try {
+                return new SimpleDateFormat("yyyyMMdd").parse(date);
+            } catch (Exception ignored) {
+            }
+        } else if (DATE_PATTERN_4.matcher(date).matches()) {
+            try {
+                return new SimpleDateFormat("dd/MM/yyyy").parse(date);
+            } catch (Exception ignored) {
+            }
+        } else if (date.charAt(6) == ',') {
+            try {
+                return new SimpleDateFormat("MMM dd, yyyy").parse(date);
+            } catch (Exception ignored) {
+            }
         }
+
+        LOGGER.log(Level.SEVERE, "Couldn't parse date: " + date);
 
         return null;
     }
