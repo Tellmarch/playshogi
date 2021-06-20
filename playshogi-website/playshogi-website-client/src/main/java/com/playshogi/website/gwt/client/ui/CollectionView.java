@@ -39,16 +39,19 @@ public class CollectionView extends Composite {
     private final HtmlContentBuilder<HTMLHeadingElement> collectionDescription;
     private final GameTable gameTable;
     private final ImportKifuPanel importKifuPanel = new ImportKifuPanel();
+    private final SessionInformation sessionInformation;
     private final AppPlaceHistoryMapper historyMapper;
     private final HtmlContentBuilder<HTMLAnchorElement> exploreLink;
+    private final Button addKifuButton;
 
     private EventBus eventBus;
     private GameCollectionDetails collectionDetails;
 
     @Inject
     public CollectionView(final SessionInformation sessionInformation, final AppPlaceHistoryMapper historyMapper) {
+        this.sessionInformation = sessionInformation;
         this.historyMapper = historyMapper;
-        gameTable = new GameTable(historyMapper, sessionInformation.getUserPreferences(), true);
+        gameTable = new GameTable(historyMapper, sessionInformation.getUserPreferences(), false);
 
         HtmlContentBuilder<HTMLDivElement> root = Elements.div();
         root.css(Styles.padding_20);
@@ -57,7 +60,8 @@ public class CollectionView extends Composite {
         root.add(collectionHeading);
         root.add(collectionDescription);
 
-        root.add(Button.createPrimary(Icons.ALL.add_circle()).setContent("Add Kifu to Collection")
+        addKifuButton = Button.createPrimary(Icons.ALL.add_circle()).setContent("Add Kifu to Collection");
+        root.add(addKifuButton
                 .addClickListener(evt -> importKifuPanel.showInDialog(collectionDetails.getId()))
                 .style().setMarginRight("3em"));
 
@@ -84,15 +88,22 @@ public class CollectionView extends Composite {
     public void onCollectionList(final ListCollectionGamesEvent event) {
         GWT.log("CollectionView: handle ListCollectionGamesEvent");
         collectionDetails = event.getCollectionDetails();
+        boolean isAuthor = sessionInformation.getUsername().equals(collectionDetails.getAuthor());
         //TODO add loading screen
         if (event.getDetails() != null) {
-            gameTable.setData(Arrays.asList(event.getDetails()));
+            gameTable.setData(Arrays.asList(event.getDetails()), isAuthor);
         }
         collectionHeading.textContent(collectionDetails.getName());
         collectionDescription.textContent(collectionDetails.getDescription());
         String exploreHRef = "#" + historyMapper.getToken(new OpeningsPlace(OpeningsPlace.DEFAULT_SFEN,
                 collectionDetails.getId()));
         exploreLink.attr("href", exploreHRef);
+
+        if (isAuthor) {
+            addKifuButton.show();
+        } else {
+            addKifuButton.hide();
+        }
     }
 
 }

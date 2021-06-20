@@ -50,6 +50,7 @@ public class GameTable {
     private final UserPreferences userPreferences;
     private final boolean withEditOptions;
     private EventBus eventBus;
+    private boolean isAuthor;
 
     public GameTable(final AppPlaceHistoryMapper historyMapper, final UserPreferences userPreferences,
                      final boolean withEditOptions) {
@@ -175,7 +176,7 @@ public class GameTable {
 
         rowElement.addColumn(Column.span4().appendChild(previewDiv));
 
-        if (withEditOptions) {
+        if (withEditOptions || isAuthor) {
             rowElement.addColumn(Column.span4()
                             .appendChild(Button.createDanger("Remove from collection")
                                     .addClickListener(evt -> confirmDeletion(details))
@@ -187,7 +188,8 @@ public class GameTable {
         return rowElement.element();
     }
 
-    public void setData(final List<GameDetails> details) {
+    public void setData(final List<GameDetails> details, final boolean isAuthor) {
+        this.isAuthor = isAuthor;
         if ((simplePaginationPlugin.getSimplePagination().activePage() - 1) * PAGE_SIZE >= details.size()) {
             simplePaginationPlugin.getSimplePagination().gotoPage(1);
         }
