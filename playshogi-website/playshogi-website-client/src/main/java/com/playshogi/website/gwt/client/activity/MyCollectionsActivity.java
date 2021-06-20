@@ -307,6 +307,25 @@ public class MyCollectionsActivity extends MyAbstractActivity {
     }
 
     @EventHandler
+    public void onConvertGameCollection(final ConvertGameCollectionEvent event) {
+        GWT.log("MyCollectionsActivity Handling ConvertGameCollectionEvent");
+        problemsService.convertGameCollection(sessionInformation.getSessionId(), event.getCollectionId(),
+                new AsyncCallback<Void>() {
+                    @Override
+                    public void onFailure(final Throwable throwable) {
+                        GWT.log("MyCollectionsActivity: error during convertGameCollection");
+                        Window.alert("Conversion failed - maybe you do not have permission?");
+                    }
+
+                    @Override
+                    public void onSuccess(final Void unused) {
+                        GWT.log("MyCollectionsActivity: convertGameCollection success");
+                        refresh();
+                    }
+                });
+    }
+
+    @EventHandler
     public void onDeleteProblemCollection(final DeleteProblemCollectionEvent event) {
         GWT.log("MyCollectionsActivity Handling DeleteProblemCollectionEvent");
         problemsService.deleteProblemCollection(sessionInformation.getSessionId(), event.getCollectionId(), false,

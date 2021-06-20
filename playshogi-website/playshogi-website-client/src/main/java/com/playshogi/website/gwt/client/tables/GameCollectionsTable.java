@@ -4,6 +4,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.event.shared.EventBus;
+import com.playshogi.website.gwt.client.events.collections.ConvertGameCollectionEvent;
 import com.playshogi.website.gwt.client.events.collections.DeleteGameCollectionEvent;
 import com.playshogi.website.gwt.client.mvp.AppPlaceHistoryMapper;
 import com.playshogi.website.gwt.client.place.GameCollectionPlace;
@@ -72,7 +73,9 @@ public class GameCollectionsTable {
             rowElement.addColumn(Column.span4().appendChild(Button.createPrimary("Edit properties")
                     .addClickListener(evt -> collectionPropertiesPanel.showInUpdateDialog(details))));
             rowElement.addColumn(Column.span4().appendChild(Button.createDanger("Delete collection")
-                    .addClickListener(evt -> confirmCollectionDeletion(details))));
+                    .addClickListener(evt -> confirmCollectionDeletion(details)).style().setMarginRight("1em"))
+                    .appendChild(Button.createDanger("Convert to Problem Collection")
+                            .addClickListener(evt -> confirmCollectionConversion(details))));
         }
         return rowElement.element();
     }
@@ -152,6 +155,13 @@ public class GameCollectionsTable {
             eventBus.fireEvent(new DeleteGameCollectionEvent(details.getId()));
         } else {
             GWT.log("Deletion cancelled: " + details);
+        }
+    }
+
+    private void confirmCollectionConversion(final GameCollectionDetails details) {
+        boolean confirm = Window.confirm("Are you sure you want to convert the collection " + details.getName() + "?");
+        if (confirm) {
+            eventBus.fireEvent(new ConvertGameCollectionEvent(details.getId()));
         }
     }
 }

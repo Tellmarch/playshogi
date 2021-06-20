@@ -23,9 +23,10 @@ public class ProblemsServiceImpl extends RemoteServiceServlet implements Problem
     private final UserRepository userRepository;
     private final GameSetRepository gameSetRepository;
     private final ProblemSetRepository problemSetRepository;
+    private final GameRepository gameRepository;
     private final Authenticator authenticator = Authenticator.INSTANCE;
 
-    private Map<String, Integer> highScores = new HashMap<>();
+    private final Map<String, Integer> highScores = new HashMap<>();
 
     public ProblemsServiceImpl() {
         DbConnection dbConnection = new DbConnection();
@@ -34,6 +35,7 @@ public class ProblemsServiceImpl extends RemoteServiceServlet implements Problem
         userRepository = new UserRepository(dbConnection);
         gameSetRepository = new GameSetRepository(dbConnection);
         problemSetRepository = new ProblemSetRepository(dbConnection);
+        gameRepository = new GameRepository(dbConnection);
         initHighScores();
     }
 
@@ -553,5 +555,37 @@ public class ProblemsServiceImpl extends RemoteServiceServlet implements Problem
 
         problemSetRepository.addKifuToProblemSet(problemSet.getId(), 0, PersistentProblem.ProblemType.UNSPECIFIED,
                 Integer.parseInt(kifuId));
+    }
+
+    @Override
+    public void convertGameCollection(final String sessionId, final String gameCollectionId) {
+        LOGGER.log(Level.INFO, "convertGameCollection: " + gameCollectionId);
+
+        LoginResult loginResult = authenticator.checkSession(sessionId);
+        if (loginResult == null || !loginResult.isLoggedIn()) {
+            throw new IllegalStateException("Only logged in users can add a problem to a collection");
+        }
+
+        PersistentGameSet gameSet = gameSetRepository.getGameSetById(Integer.parseInt(gameCollectionId));
+
+        if (gameSet == null) {
+            throw new IllegalStateException("Invalid collection ID");
+        }
+
+        if (gameSet.getOwnerId() != loginResult.getUserId()) {
+            throw new IllegalStateException("No permission to convert this collection");
+        }
+
+        List<PersistentGame> games = gameRepository.getGamesFromGameSet(Integer.parseInt(gameCollectionId));
+
+        int problemSetId = problemSetRepository.saveProblemSet(gameSet.getName(), gameSet.getDescription(),
+                gameSet.getVisibility(), loginResult.getUserId(),
+                3, new String[0]);
+
+        for (PersistentGame game : games) {
+            problemSetRepository.addKifuToProblemSet(problemSetId, 0, PersistentProblem.ProblemType.UNSPECIFIED,
+                    game.getKifuId());
+        }
+
     }
 }

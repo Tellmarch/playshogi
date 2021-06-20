@@ -57,4 +57,6 @@ public interface ProblemsServiceAsync {
 
     void addExistingKifuToProblemCollection(String sessionId, String kifuId, String collectionId,
                                             AsyncCallback<Void> callback);
+
+    void convertGameCollection(String sessionId, String collectionId, AsyncCallback<Void> callback);
 }
