@@ -6,7 +6,7 @@ import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.event.shared.EventBus;
 import com.playshogi.website.gwt.client.events.collections.DeleteGameCollectionEvent;
 import com.playshogi.website.gwt.client.mvp.AppPlaceHistoryMapper;
-import com.playshogi.website.gwt.client.place.CollectionPlace;
+import com.playshogi.website.gwt.client.place.GameCollectionPlace;
 import com.playshogi.website.gwt.client.util.ElementWidget;
 import com.playshogi.website.gwt.client.widget.kifu.CollectionPropertiesPanel;
 import com.playshogi.website.gwt.shared.models.GameCollectionDetails;
@@ -123,11 +123,10 @@ public class GameCollectionsTable {
                                         element -> element.style.setProperty("vertical-align", "top"))
                                 .setCellRenderer(cell -> {
                                     String href =
-                                            "#" + historyMapper.getToken(new CollectionPlace(cell.getRecord().getId()));
+                                            "#" + historyMapper.getToken(new GameCollectionPlace(cell.getRecord().getId()));
                                     return Elements.a(href).add(Button.createPrimary(
                                             "Open")).element();
-                                }))
-        ;
+                                }));
         return tableConfig;
     }
 

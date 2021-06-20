@@ -305,6 +305,13 @@ public class UploadKifusPopup {
         gameCollectionSelect.selectAt(0);
     }
 
+    public void setSelectedProblemCollection(final ProblemCollectionDetails collection) {
+        problemCollectionSelect.removeAllOptions();
+        problemCollectionSelect.appendChild(SelectOption.create(collection, collection.getId(),
+                collection.getName()));
+        problemCollectionSelect.selectAt(0);
+    }
+
     @EventHandler
     public void onListGameCollectionsEvent(final ListGameCollectionsEvent event) {
         GWT.log("ImportCollectionPopup: handle GameCollectionsEvent");

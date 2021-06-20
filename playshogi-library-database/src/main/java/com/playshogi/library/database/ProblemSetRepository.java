@@ -49,9 +49,16 @@ public class ProblemSetRepository {
             "SET `name` = ?, `description` = ?, `visibility` = ?, `difficulty` = ?, `tags` = ? WHERE `id` = ? AND " +
             "`owner_user_id` = ?;";
 
+    private static final String DELETE_PROBLEMSET_PROBLEM = "DELETE ps_problemsetpbs FROM playshogi.ps_problemsetpbs " +
+            "JOIN " +
+            "playshogi.ps_problemset on id=problemset_id WHERE problemset_id = ? and problem_id=? and owner_user_id " +
+            "=?;";
+
+    private final ProblemRepository problemRepository;
 
     public ProblemSetRepository(final DbConnection dbConnection) {
         this.dbConnection = dbConnection;
+        problemRepository = new ProblemRepository(dbConnection);
     }
 
     public int saveProblemSet(final String name, final String description, final Visibility visibility
@@ -311,6 +318,38 @@ public class ProblemSetRepository {
             }
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error updating the problemset in db", e);
+        }
+    }
+
+
+    public boolean deleteProblemFromProblemSet(final int problemId, final int problemSetId, final int userId) {
+        boolean result = deleteFromProblemSetTable(problemId, problemSetId, userId);
+
+        if (!result) { // No permission
+            return false;
+        }
+
+        problemRepository.deleteProblemById(problemId);
+        return true;
+    }
+
+    private boolean deleteFromProblemSetTable(final int problemId, final int problemSetId, final int userId) {
+        Connection connection = dbConnection.getConnection();
+        try (PreparedStatement preparedStatement = connection.prepareStatement(DELETE_PROBLEMSET_PROBLEM)) {
+            preparedStatement.setInt(1, problemSetId);
+            preparedStatement.setInt(2, problemId);
+            preparedStatement.setInt(3, userId);
+            int rs = preparedStatement.executeUpdate();
+            if (rs == 1) {
+                LOGGER.log(Level.INFO, "Deleted problem from problemset: " + problemId + " " + problemSetId);
+                return true;
+            } else {
+                LOGGER.log(Level.INFO, "Could not delete problem: " + problemId + " " + problemSetId);
+                return false;
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error deleting up the problem from problemset in db", e);
+            return false;
         }
     }
 }

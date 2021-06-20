@@ -6,6 +6,7 @@ import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.event.shared.EventBus;
 import com.playshogi.website.gwt.client.events.collections.DeleteProblemCollectionEvent;
 import com.playshogi.website.gwt.client.mvp.AppPlaceHistoryMapper;
+import com.playshogi.website.gwt.client.place.ProblemCollectionPlace;
 import com.playshogi.website.gwt.client.place.ProblemsPlace;
 import com.playshogi.website.gwt.client.util.ElementWidget;
 import com.playshogi.website.gwt.client.widget.collections.ProblemCollectionPropertiesForm;
@@ -148,9 +149,20 @@ public class ProblemCollectionsTable {
                                 .styleCell(
                                         element -> element.style.setProperty("vertical-align", "top"))
                                 .setCellRenderer(cell -> getLeaderboard(cell.getRecord()))
-                )
-
-        ;
+                );
+        if (isAuthor) {
+            tableConfig
+                    .addColumn(
+                            ColumnConfig.<ProblemCollectionDetails>create("open", "Open Collection")
+                                    .styleCell(
+                                            element -> element.style.setProperty("vertical-align", "top"))
+                                    .setCellRenderer(cell -> {
+                                        String href =
+                                                "#" + historyMapper.getToken(new ProblemCollectionPlace(cell.getRecord().getId()));
+                                        return Elements.a(href).add(Button.createPrimary(
+                                                "Open")).element();
+                                    }));
+        }
         return tableConfig;
     }
 

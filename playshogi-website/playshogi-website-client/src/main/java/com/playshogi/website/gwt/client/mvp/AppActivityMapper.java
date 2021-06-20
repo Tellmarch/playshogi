@@ -37,7 +37,9 @@ public class AppActivityMapper implements ActivityMapper {
     @Inject
     MyCollectionsView myCollectionsView;
     @Inject
-    CollectionView collectionView;
+    GameCollectionView gameCollectionView;
+    @Inject
+    ProblemCollectionView problemCollectionView;
     @Inject
     CollectionHelpView collectionHelpView;
     @Inject
@@ -116,8 +118,11 @@ public class AppActivityMapper implements ActivityMapper {
             return new LessonsActivity((LessonsPlace) place, lessonsView, sessionInformation);
         } else if (place instanceof CollectionHelpPlace) {
             return new CollectionHelpActivity(collectionHelpView);
-        } else if (place instanceof CollectionPlace) {
-            return new CollectionActivity((CollectionPlace) place, collectionView, sessionInformation);
+        } else if (place instanceof GameCollectionPlace) {
+            return new GameCollectionActivity((GameCollectionPlace) place, gameCollectionView, sessionInformation);
+        } else if (place instanceof ProblemCollectionPlace) {
+            return new ProblemCollectionActivity((ProblemCollectionPlace) place, problemCollectionView,
+                    sessionInformation);
         } else if (place instanceof ProblemCollectionsPlace) {
             return new ProblemCollectionsActivity((ProblemCollectionsPlace) place, problemCollectionsView,
                     sessionInformation);

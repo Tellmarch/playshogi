@@ -479,4 +479,55 @@ public class ProblemsServiceImpl extends RemoteServiceServlet implements Problem
                 details.getDifficulty(), details.getTags());
 
     }
+
+    @Override
+    public void saveProblemAndAddToCollection(final String sessionId, final String usf, final String collectionId) {
+        LOGGER.log(Level.INFO, "saveProblemAndAddToCollection: " + usf);
+
+        LoginResult loginResult = authenticator.checkSession(sessionId);
+        if (loginResult == null || !loginResult.isLoggedIn()) {
+            throw new IllegalStateException("Only logged in users can add a problem to a collection");
+        }
+
+        PersistentProblemSet problemSet = problemSetRepository.getProblemSetById(Integer.parseInt(collectionId));
+
+        if (problemSet == null) {
+            throw new IllegalStateException("Invalid collection ID");
+        }
+
+        if (problemSet.getOwnerId() != loginResult.getUserId()) {
+            throw new IllegalStateException("No permission to add problems to this collection");
+        }
+
+        List<GameRecord> gameRecords = UsfFormat.INSTANCE.read(usf);
+        int i = 1;
+        for (GameRecord gameRecord : gameRecords) {
+            problemSetRepository.addProblemToProblemSet(gameRecord, problemSet.getId(), "Problem #" + (i++),
+                    loginResult.getUserId(),
+                    0, PersistentProblem.ProblemType.UNSPECIFIED, false);
+        }
+    }
+
+    @Override
+    public void removeProblemFromCollection(final String sessionId, final String problemId, final String collectionId) {
+        LOGGER.log(Level.INFO, "removeProblemFromCollection: " + problemId);
+
+        LoginResult loginResult = authenticator.checkSession(sessionId);
+        if (loginResult == null || !loginResult.isLoggedIn()) {
+            throw new IllegalStateException("Only logged in users can add a problem to a collection");
+        }
+
+        PersistentProblemSet problemSet = problemSetRepository.getProblemSetById(Integer.parseInt(collectionId));
+
+        if (problemSet == null) {
+            throw new IllegalStateException("Invalid collection ID");
+        }
+
+        if (problemSet.getOwnerId() != loginResult.getUserId()) {
+            throw new IllegalStateException("No permission to remove problems to this collection");
+        }
+
+        problemSetRepository.deleteProblemFromProblemSet(Integer.parseInt(problemId), problemSet.getId(),
+                loginResult.getUserId());
+    }
 }

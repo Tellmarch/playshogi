@@ -7,8 +7,8 @@ import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.website.gwt.client.events.collections.CreateGameCollectionEvent;
+import com.playshogi.website.gwt.client.events.collections.SaveCollectionDetailsResultEvent;
 import com.playshogi.website.gwt.client.events.collections.SaveGameCollectionDetailsEvent;
-import com.playshogi.website.gwt.client.events.collections.SaveGameCollectionDetailsResultEvent;
 import com.playshogi.website.gwt.shared.models.GameCollectionDetails;
 import org.dominokit.domino.ui.notifications.Notification;
 
@@ -183,7 +183,7 @@ public class CollectionPropertiesPanel extends Composite {
     }
 
     @EventHandler
-    public void onSaveGameCollectionDetailsResult(final SaveGameCollectionDetailsResultEvent event) {
+    public void onSaveGameCollectionDetailsResult(final SaveCollectionDetailsResultEvent event) {
         GWT.log("GameCollectionsActivity: Handling SaveGameCollectionDetailsResultEvent: " + event.isSuccess());
         if (event.isSuccess()) {
             Notification.createSuccess("Game Collection saved!").show();

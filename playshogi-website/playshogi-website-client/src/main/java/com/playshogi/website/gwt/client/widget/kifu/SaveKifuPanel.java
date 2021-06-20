@@ -3,7 +3,6 @@ package com.playshogi.website.gwt.client.widget.kifu;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.place.shared.PlaceController;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
@@ -13,9 +12,12 @@ import com.playshogi.library.shogi.models.record.GameInformation;
 import com.playshogi.library.shogi.models.record.GameRecord;
 import com.playshogi.website.gwt.client.events.kifu.SaveKifuEvent;
 import com.playshogi.website.gwt.client.events.kifu.SaveKifuResultEvent;
-import com.playshogi.website.gwt.client.place.CollectionPlace;
+import com.playshogi.website.gwt.client.place.GameCollectionPlace;
+import com.playshogi.website.gwt.client.place.KifuEditorPlace;
+import com.playshogi.website.gwt.client.place.ProblemCollectionPlace;
 import com.playshogi.website.gwt.client.place.UserKifusPlace;
 import com.playshogi.website.gwt.shared.models.KifuDetails;
+import org.dominokit.domino.ui.notifications.Notification;
 
 public class SaveKifuPanel extends Composite {
 
@@ -33,8 +35,7 @@ public class SaveKifuPanel extends Composite {
     private DialogBox saveDialogBox;
     private EventBus eventBus;
     private GameRecord gameRecord;
-    private String collectionId;
-
+    private KifuEditorPlace place;
 
     public SaveKifuPanel(final PlaceController placeController) {
         this.placeController = placeController;
@@ -61,8 +62,8 @@ public class SaveKifuPanel extends Composite {
         initWidget(panel);
     }
 
-    public void activate(final EventBus eventBus, final String collectionId) {
-        this.collectionId = collectionId;
+    public void activate(final EventBus eventBus, final KifuEditorPlace place) {
+        this.place = place;
         GWT.log("Activating SaveKifuPanel");
         this.eventBus = eventBus;
         eventBinder.bindEventHandlers(this, eventBus);
@@ -151,15 +152,19 @@ public class SaveKifuPanel extends Composite {
     public void onSaveKifuResultEvent(final SaveKifuResultEvent event) {
         GWT.log("SaveKifuPanel: Handling SaveKifuResultEvent: " + event.isSuccess() + " - " + event.getKifuId());
         if (event.isSuccess()) {
-            Window.alert("Kifu saved!");
+            Notification.createSuccess("Kifu saved!").show();
             if (saveDialogBox != null) saveDialogBox.hide();
-            if (collectionId != null) {
-                placeController.goTo(new CollectionPlace(collectionId));
+            if (place.getCollectionId() != null) {
+                if (place.getType() == KifuDetails.KifuType.GAME) {
+                    placeController.goTo(new GameCollectionPlace(place.getCollectionId()));
+                } else if (place.getType() == KifuDetails.KifuType.PROBLEM) {
+                    placeController.goTo(new ProblemCollectionPlace(place.getCollectionId()));
+                }
             } else {
                 placeController.goTo(new UserKifusPlace());
             }
         } else {
-            Window.alert("Error saving the kifu");
+            Notification.createDanger("Error saving the kifu").show();
             if (saveDialogBox != null) saveDialogBox.hide();
         }
     }

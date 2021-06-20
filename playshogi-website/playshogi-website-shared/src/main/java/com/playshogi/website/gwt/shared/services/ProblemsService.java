@@ -42,4 +42,8 @@ public interface ProblemsService extends RemoteService {
     void updateProblemCollectionDetails(String sessionId, ProblemCollectionDetails problemCollectionDetails);
 
     void createProblemCollection(String sessionId, ProblemCollectionDetails details);
+
+    void saveProblemAndAddToCollection(String sessionId, String usf, String collectionId);
+
+    void removeProblemFromCollection(String sessionId, String problemId, String collectionId);
 }

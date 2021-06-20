@@ -229,13 +229,13 @@ public class MyCollectionsActivity extends MyAbstractActivity {
                     @Override
                     public void onFailure(final Throwable throwable) {
                         GWT.log("MyCollectionsActivity: error during updateGameCollectionDetails");
-                        eventBus.fireEvent(new SaveGameCollectionDetailsResultEvent(false));
+                        eventBus.fireEvent(new SaveCollectionDetailsResultEvent(false));
                     }
 
                     @Override
                     public void onSuccess(final Void unused) {
                         GWT.log("MyCollectionsActivity: updateGameCollectionDetails success");
-                        eventBus.fireEvent(new SaveGameCollectionDetailsResultEvent(true));
+                        eventBus.fireEvent(new SaveCollectionDetailsResultEvent(true));
                         refresh();
                     }
                 });
@@ -249,13 +249,13 @@ public class MyCollectionsActivity extends MyAbstractActivity {
                     @Override
                     public void onFailure(final Throwable throwable) {
                         GWT.log("MyCollectionsActivity: error during updateProblemCollectionDetails");
-                        eventBus.fireEvent(new SaveGameCollectionDetailsResultEvent(false));
+                        eventBus.fireEvent(new SaveCollectionDetailsResultEvent(false));
                     }
 
                     @Override
                     public void onSuccess(final Void unused) {
                         GWT.log("MyCollectionsActivity: updateProblemCollectionDetails success");
-                        eventBus.fireEvent(new SaveGameCollectionDetailsResultEvent(true));
+                        eventBus.fireEvent(new SaveCollectionDetailsResultEvent(true));
                         refresh();
                     }
                 });
@@ -270,13 +270,13 @@ public class MyCollectionsActivity extends MyAbstractActivity {
                     @Override
                     public void onFailure(final Throwable throwable) {
                         GWT.log("MyCollectionsActivity: error during createGameCollection");
-                        eventBus.fireEvent(new SaveGameCollectionDetailsResultEvent(false));
+                        eventBus.fireEvent(new SaveCollectionDetailsResultEvent(false));
                     }
 
                     @Override
                     public void onSuccess(final Void unused) {
                         GWT.log("MyCollectionsActivity: createGameCollection success");
-                        eventBus.fireEvent(new SaveGameCollectionDetailsResultEvent(true));
+                        eventBus.fireEvent(new SaveCollectionDetailsResultEvent(true));
                         refresh();
                     }
                 });

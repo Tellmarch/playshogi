@@ -50,4 +50,8 @@ public interface ProblemsServiceAsync {
     void createProblemCollection(String sessionId, ProblemCollectionDetails details,
                                  AsyncCallback<String> stringAsyncCallback);
 
+    void saveProblemAndAddToCollection(String sessionId, String usf, String collectionId, AsyncCallback<Void> callback);
+
+    void removeProblemFromCollection(String sessionId, String problemId, String collectionId,
+                                     AsyncCallback<Void> callback);
 }

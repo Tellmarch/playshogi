@@ -8,16 +8,16 @@ import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.website.gwt.client.SessionInformation;
-import com.playshogi.website.gwt.client.events.collections.ListCollectionGamesEvent;
+import com.playshogi.website.gwt.client.events.collections.ListCollectionProblemsEvent;
 import com.playshogi.website.gwt.client.mvp.AppPlaceHistoryMapper;
 import com.playshogi.website.gwt.client.place.KifuEditorPlace;
-import com.playshogi.website.gwt.client.place.OpeningsPlace;
-import com.playshogi.website.gwt.client.tables.GameTable;
+import com.playshogi.website.gwt.client.place.ProblemsPlace;
+import com.playshogi.website.gwt.client.tables.ProblemTable;
 import com.playshogi.website.gwt.client.util.ElementWidget;
 import com.playshogi.website.gwt.client.widget.collections.UploadKifusPopup;
 import com.playshogi.website.gwt.client.widget.kifu.ImportKifuPanel;
-import com.playshogi.website.gwt.shared.models.GameCollectionDetails;
 import com.playshogi.website.gwt.shared.models.KifuDetails;
+import com.playshogi.website.gwt.shared.models.ProblemCollectionDetails;
 import elemental2.dom.HTMLAnchorElement;
 import elemental2.dom.HTMLDivElement;
 import elemental2.dom.HTMLHeadingElement;
@@ -32,34 +32,34 @@ import javax.inject.Singleton;
 import java.util.Arrays;
 
 @Singleton
-public class CollectionView extends Composite {
+public class ProblemCollectionView extends Composite {
 
-    interface MyEventBinder extends EventBinder<CollectionView> {
+    interface MyEventBinder extends EventBinder<ProblemCollectionView> {
     }
 
     private final MyEventBinder eventBinder = GWT.create(MyEventBinder.class);
 
     private final HtmlContentBuilder<HTMLHeadingElement> collectionHeading;
     private final HtmlContentBuilder<HTMLHeadingElement> collectionDescription;
-    private final GameTable gameTable;
+    private final ProblemTable problemTable;
     private final ImportKifuPanel importKifuPanel = new ImportKifuPanel();
-    private final UploadKifusPopup uploadKifusPopup = new UploadKifusPopup(false, false, true, false, false);
+    private final UploadKifusPopup uploadKifusPopup = new UploadKifusPopup(false, false, false, false, true);
     private final SessionInformation sessionInformation;
     private final AppPlaceHistoryMapper historyMapper;
-    private final HtmlContentBuilder<HTMLAnchorElement> exploreLink;
     private final Button newKifuButton;
     private final Button addKifuButton;
     private final Button uploadKifuButton;
+    private final HtmlContentBuilder<HTMLAnchorElement> exploreLink;
 
     private EventBus eventBus;
-    private GameCollectionDetails collectionDetails;
+    private ProblemCollectionDetails collectionDetails;
 
     @Inject
-    public CollectionView(final SessionInformation sessionInformation, final AppPlaceHistoryMapper historyMapper,
-                          final PlaceController placeController) {
+    public ProblemCollectionView(final SessionInformation sessionInformation, final AppPlaceHistoryMapper historyMapper,
+                                 final PlaceController placeController) {
         this.sessionInformation = sessionInformation;
         this.historyMapper = historyMapper;
-        gameTable = new GameTable(historyMapper, sessionInformation.getUserPreferences(), false);
+        problemTable = new ProblemTable(historyMapper, sessionInformation.getUserPreferences(), false);
 
         HtmlContentBuilder<HTMLDivElement> root = Elements.div();
         root.css(Styles.padding_20);
@@ -68,29 +68,29 @@ public class CollectionView extends Composite {
         root.add(collectionHeading);
         root.add(collectionDescription);
 
-        newKifuButton = Button.createPrimary(Icons.ALL.add_circle()).setContent("New Kifu");
+        newKifuButton = Button.createPrimary(Icons.ALL.add_circle()).setContent("New Problem");
         root.add(newKifuButton
-                .addClickListener(evt -> placeController.goTo(new KifuEditorPlace(null, KifuDetails.KifuType.GAME,
+                .addClickListener(evt -> placeController.goTo(new KifuEditorPlace(null, KifuDetails.KifuType.PROBLEM,
                         collectionDetails.getId())))
                 .style().setMarginRight("3em"));
 
-        addKifuButton = Button.createPrimary(Icons.ALL.content_paste()).setContent("Add Kifu from Clipboard");
+        addKifuButton = Button.createPrimary(Icons.ALL.content_paste()).setContent("Add Problem from Clipboard");
         root.add(addKifuButton
                 .addClickListener(evt -> importKifuPanel.showInDialog(collectionDetails.getId()))
                 .style().setMarginRight("3em"));
 
-        uploadKifuButton = Button.createPrimary(Icons.ALL.file_upload()).setContent("Upload Kifu(s)");
+        uploadKifuButton = Button.createPrimary(Icons.ALL.file_upload()).setContent("Upload Problem(s)");
         root.add(uploadKifuButton
                 .addClickListener(evt -> {
-                    uploadKifusPopup.setSelectedGameCollection(collectionDetails);
+                    uploadKifusPopup.setSelectedProblemCollection(collectionDetails);
                     uploadKifusPopup.show();
                 })
                 .style().setMarginRight("3em"));
 
         exploreLink = Elements.a("#");
-        root.add(exploreLink.add(Button.createPrimary(Icons.ALL.pie_chart()).setContent("Explore Openings")));
+        root.add(exploreLink.add(Button.createSuccess(Icons.ALL.timer()).setContent("Practice / Speedrun")));
 
-        root.add(gameTable.getTable());
+        root.add(problemTable.getTable());
 
         ScrollPanel scrollPanel = new ScrollPanel();
         scrollPanel.add(new ElementWidget(root.element()));
@@ -102,24 +102,23 @@ public class CollectionView extends Composite {
         GWT.log("Activating CollectionView");
         this.eventBus = eventBus;
         eventBinder.bindEventHandlers(this, eventBus);
-        gameTable.activate(eventBus);
+        problemTable.activate(eventBus);
         importKifuPanel.activate(eventBus);
         uploadKifusPopup.activate(eventBus);
     }
 
     @EventHandler
-    public void onCollectionList(final ListCollectionGamesEvent event) {
-        GWT.log("CollectionView: handle ListCollectionGamesEvent");
+    public void onCollectionList(final ListCollectionProblemsEvent event) {
+        GWT.log("CollectionView: handle ListCollectionProblemsEvent");
         collectionDetails = event.getCollectionDetails();
         boolean isAuthor = sessionInformation.getUsername().equals(collectionDetails.getAuthor());
-        //TODO add loading screen
         if (event.getDetails() != null) {
-            gameTable.setData(Arrays.asList(event.getDetails()), isAuthor);
+            problemTable.setData(Arrays.asList(event.getDetails()), isAuthor);
         }
         collectionHeading.textContent(collectionDetails.getName());
         collectionDescription.textContent(collectionDetails.getDescription());
-        String exploreHRef = "#" + historyMapper.getToken(new OpeningsPlace(OpeningsPlace.DEFAULT_SFEN,
-                collectionDetails.getId()));
+
+        String exploreHRef = "#" + historyMapper.getToken(new ProblemsPlace(collectionDetails.getId(), 0));
         exploreLink.attr("href", exploreHRef);
 
         if (isAuthor) {
