@@ -10,6 +10,7 @@ import com.playshogi.website.gwt.client.place.ProblemCollectionPlace;
 import com.playshogi.website.gwt.client.place.ProblemsPlace;
 import com.playshogi.website.gwt.client.util.ElementWidget;
 import com.playshogi.website.gwt.client.widget.collections.ProblemCollectionPropertiesForm;
+import com.playshogi.website.gwt.client.widget.problems.TagsElement;
 import com.playshogi.website.gwt.shared.models.ProblemCollectionDetails;
 import elemental2.dom.*;
 import org.dominokit.domino.ui.button.Button;
@@ -69,9 +70,12 @@ public class ProblemCollectionsTable {
     private HTMLElement getDetails(final ProblemCollectionDetails details) {
         Row<Row_12> rowElement = Row.create();
         rowElement.style().setMarginLeft("40px").setMarginRight("40px").setMarginTop("10px").setMarginBottom("10px");
+
         rowElement.addColumn(Column.span4()
+                .appendChild(new TagsElement(details.getTags()).asElement())
                 .appendChild(h(5).add("Description:"))
-                .appendChild(TextNode.of(details.getDescription())));
+                .appendChild(TextNode.of(details.getDescription()))
+        );
         if (canEdit) {
             rowElement.addColumn(Column.span4().appendChild(Button.createPrimary("Edit properties")
                     .addClickListener(evt -> problemCollectionProperties.showInPopup(details))));

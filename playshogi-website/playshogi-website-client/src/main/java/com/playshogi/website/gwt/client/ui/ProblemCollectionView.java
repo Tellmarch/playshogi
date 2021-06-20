@@ -16,6 +16,7 @@ import com.playshogi.website.gwt.client.tables.ProblemTable;
 import com.playshogi.website.gwt.client.util.ElementWidget;
 import com.playshogi.website.gwt.client.widget.collections.UploadKifusPopup;
 import com.playshogi.website.gwt.client.widget.kifu.ImportKifuPanel;
+import com.playshogi.website.gwt.client.widget.problems.TagsElement;
 import com.playshogi.website.gwt.shared.models.KifuDetails;
 import com.playshogi.website.gwt.shared.models.ProblemCollectionDetails;
 import elemental2.dom.HTMLAnchorElement;
@@ -33,6 +34,8 @@ import java.util.Arrays;
 
 @Singleton
 public class ProblemCollectionView extends Composite {
+
+    private final TagsElement tagsElement;
 
     interface MyEventBinder extends EventBinder<ProblemCollectionView> {
     }
@@ -63,8 +66,11 @@ public class ProblemCollectionView extends Composite {
 
         HtmlContentBuilder<HTMLDivElement> root = Elements.div();
         root.css(Styles.padding_20);
+
+        tagsElement = new TagsElement(new String[0]);
         collectionHeading = Elements.h(2).textContent("");
         collectionDescription = Elements.h(4).textContent("");
+        root.add(tagsElement.asElement());
         root.add(collectionHeading);
         root.add(collectionDescription);
 
@@ -115,6 +121,7 @@ public class ProblemCollectionView extends Composite {
         if (event.getDetails() != null) {
             problemTable.setData(Arrays.asList(event.getDetails()), isAuthor);
         }
+        tagsElement.setTags(collectionDetails.getTags());
         collectionHeading.textContent(collectionDetails.getName());
         collectionDescription.textContent(collectionDetails.getDescription());
 
