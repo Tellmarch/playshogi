@@ -655,4 +655,19 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
 
         };
     }
+
+    @Override
+    public void updateKifuUsf(final String sessionId, final String kifuId, final String kifuUsf) {
+        LOGGER.log(Level.INFO, "updateKifuUsf: " + kifuId + "\n" + kifuUsf);
+
+        LoginResult loginResult = authenticator.checkSession(sessionId);
+        if (loginResult == null || !loginResult.isLoggedIn()) {
+            throw new IllegalStateException("Only logged in users can save a kifu");
+        }
+
+        GameRecord gameRecord = UsfFormat.INSTANCE.readSingle(kifuUsf);
+        if (!kifuRepository.updateKifu(Integer.parseInt(kifuId), loginResult.getUserId(), gameRecord)) {
+            throw new IllegalArgumentException("Could not update the kifu.");
+        }
+    }
 }

@@ -37,6 +37,8 @@ public class KifuRepository {
     private static final String SELECT_USER_KIFUS = "SELECT id, name, author_id, create_time, update_time, type_id " +
             "FROM ps_kifu WHERE author_id = ? ORDER BY update_time DESC LIMIT 1000;";
 
+    private static final String UPDATE_KIFU = "UPDATE ps_kifu SET usf = ? WHERE id = ? AND author_id = ?";
+
     private final DbConnection dbConnection;
 
     public KifuRepository(final DbConnection dbConnection) {
@@ -226,4 +228,23 @@ public class KifuRepository {
         }
     }
 
+    public boolean updateKifu(final int kifuId, final int userId, final GameRecord gameRecord) {
+        Connection connection = dbConnection.getConnection();
+        try (PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_KIFU)) {
+            preparedStatement.setString(1, UsfFormat.INSTANCE.write(gameRecord));
+            preparedStatement.setInt(2, kifuId);
+            preparedStatement.setInt(3, userId);
+            int rs = preparedStatement.executeUpdate();
+            if (rs == 1) {
+                LOGGER.log(Level.INFO, "updated kifu: " + kifuId);
+                return true;
+            } else {
+                LOGGER.log(Level.INFO, "Did not find kifu: " + kifuId + " for user " + userId);
+                return false;
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error updating the kifu in db", e);
+            return false;
+        }
+    }
 }

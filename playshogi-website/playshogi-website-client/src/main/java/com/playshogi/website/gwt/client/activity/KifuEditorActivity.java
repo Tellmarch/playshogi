@@ -97,20 +97,25 @@ public class KifuEditorActivity extends MyAbstractActivity {
     }
 
     private void doSaveKifu(final SaveKifuEvent event) {
-        if (place.getCollectionId() != null) {
-            AsyncCallback<Void> callback = new AsyncCallback<Void>() {
-                @Override
-                public void onSuccess(final Void result) {
-                    GWT.log("Kifu saved successfully: " + result);
-                    eventBus.fireEvent(new SaveKifuResultEvent(true, null));
-                }
+        AsyncCallback<Void> callback = new AsyncCallback<Void>() {
+            @Override
+            public void onSuccess(final Void result) {
+                GWT.log("Kifu saved successfully: " + result);
+                eventBus.fireEvent(new SaveKifuResultEvent(true, null));
+            }
 
-                @Override
-                public void onFailure(final Throwable caught) {
-                    GWT.log("Error while saving Kifu: ", caught);
-                    eventBus.fireEvent(new SaveKifuResultEvent(false, null));
-                }
-            };
+            @Override
+            public void onFailure(final Throwable caught) {
+                GWT.log("Error while saving Kifu: ", caught);
+                eventBus.fireEvent(new SaveKifuResultEvent(false, null));
+            }
+        };
+
+        if (place.getKifuId() != null && place.getType() == KifuDetails.KifuType.PROBLEM) {
+            kifuService.updateKifuUsf(sessionInformation.getSessionId(), place.getKifuId(), event.getKifuUsf(),
+                    callback);
+        } else if (place.getCollectionId() != null) {
+
             if (place.getType() == KifuDetails.KifuType.PROBLEM) {
                 problemService.saveProblemAndAddToCollection(sessionInformation.getSessionId(), event.getKifuUsf(),
                         place.getCollectionId(), callback);
