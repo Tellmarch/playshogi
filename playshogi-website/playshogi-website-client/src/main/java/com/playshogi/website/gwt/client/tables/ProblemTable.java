@@ -9,9 +9,12 @@ import com.playshogi.library.shogi.models.formats.usf.UsfFormat;
 import com.playshogi.website.gwt.client.UserPreferences;
 import com.playshogi.website.gwt.client.events.collections.RemoveProblemFromCollectionEvent;
 import com.playshogi.website.gwt.client.mvp.AppPlaceHistoryMapper;
+import com.playshogi.website.gwt.client.place.KifuEditorPlace;
 import com.playshogi.website.gwt.client.place.ProblemPlace;
 import com.playshogi.website.gwt.client.util.ElementWidget;
 import com.playshogi.website.gwt.client.widget.board.BoardPreview;
+import com.playshogi.website.gwt.shared.models.KifuDetails;
+import com.playshogi.website.gwt.shared.models.ProblemCollectionDetails;
 import com.playshogi.website.gwt.shared.models.ProblemDetails;
 import com.playshogi.website.gwt.shared.services.KifuService;
 import com.playshogi.website.gwt.shared.services.KifuServiceAsync;
@@ -28,6 +31,7 @@ import org.dominokit.domino.ui.datatable.store.LocalListDataStore;
 import org.dominokit.domino.ui.grid.Column;
 import org.dominokit.domino.ui.grid.Row;
 import org.dominokit.domino.ui.grid.Row_12;
+import org.dominokit.domino.ui.icons.Icons;
 import org.dominokit.domino.ui.style.ColorScheme;
 import org.dominokit.domino.ui.utils.TextNode;
 import org.jboss.elemento.Elements;
@@ -51,6 +55,7 @@ public class ProblemTable {
     private final boolean withEditOptions;
     private EventBus eventBus;
     private boolean isAuthor;
+    private ProblemCollectionDetails collectionDetails;
 
     public ProblemTable(final AppPlaceHistoryMapper historyMapper, final UserPreferences userPreferences,
                         final boolean withEditOptions) {
@@ -121,20 +126,23 @@ public class ProblemTable {
                                 .setCellRenderer(cell -> {
                                     String href =
                                             "#" + historyMapper.getToken(new ProblemPlace(cell.getRecord().getKifuId()));
-                                    return Elements.a(href).add(Button.createPrimary("Show")).element();
+                                    return Elements.a(href).add(Button.createPrimary(Icons.ALL.play_circle_filled()).setContent("Show")).element();
                                 })
                 )
-//                .addColumn(
-//                        ColumnConfig.<ProblemDetails>create("edit", "Edit")
-//                                .styleCell(
-//                                        element -> element.style.setProperty("vertical-align", "top"))
-//                                .setCellRenderer(cell -> Button.createPrimary("Edit").addClickListener(evt -> {
-//                                    ModalDialog defaultSizeModal = createModalDialog();
-//                                    defaultSizeModal.appendChild(CheckBox.create("Delete?"));
-//                                    defaultSizeModal.open();
-//
-//                                }).element())
-//                )
+                .addColumn(
+                        ColumnConfig.<ProblemDetails>create("edit", "Edit")
+                                .styleCell(
+                                        element -> element.style.setProperty("vertical-align", "top"))
+                                .setCellRenderer(cell -> {
+                                    String href =
+                                            "#" + historyMapper.getToken(
+                                                    new KifuEditorPlace(cell.getRecord().getKifuId(),
+                                                            KifuDetails.KifuType.PROBLEM,
+                                                            collectionDetails.getId()));
+                                    return Elements.a(href).add(Button.createPrimary(Icons.ALL.edit()).setContent(
+                                            "Edit")).element();
+                                })
+                )
 //                .addColumn(
 //                        ColumnConfig.<ProblemDetails>create("download", "Download")
 //                                .styleCell(
@@ -175,7 +183,8 @@ public class ProblemTable {
 
         if (withEditOptions || isAuthor) {
             rowElement.addColumn(Column.span4()
-                            .appendChild(Button.createDanger("Remove from collection")
+                            .appendChild(Button.createDanger(Icons.ALL.delete_forever()).setContent("Remove from " +
+                                    "collection")
                                     .addClickListener(evt -> confirmDeletion(details))
                                     .style().setMarginRight("20px"))
 //                    .appendChild(Button.createDanger("Delete")
@@ -185,8 +194,10 @@ public class ProblemTable {
         return rowElement.element();
     }
 
-    public void setData(final List<ProblemDetails> details, final boolean isAuthor) {
+    public void setData(final List<ProblemDetails> details, final boolean isAuthor,
+                        final ProblemCollectionDetails collectionDetails) {
         this.isAuthor = isAuthor;
+        this.collectionDetails = collectionDetails;
         if ((simplePaginationPlugin.getSimplePagination().activePage() - 1) * PAGE_SIZE >= details.size()) {
             simplePaginationPlugin.getSimplePagination().gotoPage(1);
         }

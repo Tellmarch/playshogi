@@ -28,6 +28,7 @@ import org.dominokit.domino.ui.datatable.store.LocalListDataStore;
 import org.dominokit.domino.ui.grid.Column;
 import org.dominokit.domino.ui.grid.Row;
 import org.dominokit.domino.ui.grid.Row_12;
+import org.dominokit.domino.ui.icons.Icons;
 import org.dominokit.domino.ui.modals.ModalDialog;
 import org.dominokit.domino.ui.utils.TextNode;
 import org.jboss.elemento.Elements;
@@ -178,7 +179,8 @@ public class GameTable {
 
         if (withEditOptions || isAuthor) {
             rowElement.addColumn(Column.span4()
-                            .appendChild(Button.createDanger("Remove from collection")
+                            .appendChild(Button.createDanger(Icons.ALL.delete_forever())
+                                    .setContent("Remove from collection")
                                     .addClickListener(evt -> confirmDeletion(details))
                                     .style().setMarginRight("20px"))
 //                    .appendChild(Button.createDanger("Delete")

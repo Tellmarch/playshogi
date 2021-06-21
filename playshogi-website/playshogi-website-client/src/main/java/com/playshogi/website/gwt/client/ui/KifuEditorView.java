@@ -149,7 +149,7 @@ public class KifuEditorView extends Composite {
     }
 
     private void reset() {
-        if (place.getCollectionId() != null) {
+        if (place.getCollectionId() != null && place.getKifuId() == null) {
             if (place.getType() == KifuDetails.KifuType.PROBLEM) {
                 resetForNewProblem();
             } else {

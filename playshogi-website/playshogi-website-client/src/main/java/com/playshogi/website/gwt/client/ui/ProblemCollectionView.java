@@ -119,7 +119,7 @@ public class ProblemCollectionView extends Composite {
         collectionDetails = event.getCollectionDetails();
         boolean isAuthor = sessionInformation.getUsername().equals(collectionDetails.getAuthor());
         if (event.getDetails() != null) {
-            problemTable.setData(Arrays.asList(event.getDetails()), isAuthor);
+            problemTable.setData(Arrays.asList(event.getDetails()), isAuthor, collectionDetails);
         }
         tagsElement.setTags(collectionDetails.getTags());
         collectionHeading.textContent(collectionDetails.getName());

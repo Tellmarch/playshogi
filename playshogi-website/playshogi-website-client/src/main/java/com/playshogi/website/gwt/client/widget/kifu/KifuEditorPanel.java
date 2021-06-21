@@ -48,10 +48,10 @@ public class KifuEditorPanel extends Composite implements ClickHandler {
         verticalPanel.add(new HTML("<br/>"));
 
         exportButton = new Button("Export kifu", this);
-        verticalPanel.add(exportButton);
+//        verticalPanel.add(exportButton);
 
         previewButton = new Button("Preview kifu", this);
-        verticalPanel.add(previewButton);
+//        verticalPanel.add(previewButton);
 
 
         initWidget(verticalPanel);

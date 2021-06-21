@@ -22,6 +22,7 @@ import org.dominokit.domino.ui.datatable.store.LocalListDataStore;
 import org.dominokit.domino.ui.grid.Column;
 import org.dominokit.domino.ui.grid.Row;
 import org.dominokit.domino.ui.grid.Row_12;
+import org.dominokit.domino.ui.icons.Icons;
 import org.dominokit.domino.ui.utils.TextNode;
 import org.jboss.elemento.Elements;
 
@@ -72,7 +73,7 @@ public class GameCollectionsTable {
         if (canEdit) {
             rowElement.addColumn(Column.span4().appendChild(Button.createPrimary("Edit properties")
                     .addClickListener(evt -> collectionPropertiesPanel.showInUpdateDialog(details))));
-            rowElement.addColumn(Column.span4().appendChild(Button.createDanger("Delete collection")
+            rowElement.addColumn(Column.span4().appendChild(Button.createDanger(Icons.ALL.delete_forever()).setContent("Delete collection")
                     .addClickListener(evt -> confirmCollectionDeletion(details)).style().setMarginRight("1em"))
                     .appendChild(Button.createDanger("Convert to Problem Collection")
                             .addClickListener(evt -> confirmCollectionConversion(details))));

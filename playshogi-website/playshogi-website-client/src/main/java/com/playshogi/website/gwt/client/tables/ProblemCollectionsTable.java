@@ -79,7 +79,8 @@ public class ProblemCollectionsTable {
         if (canEdit) {
             rowElement.addColumn(Column.span4().appendChild(Button.createPrimary("Edit properties")
                     .addClickListener(evt -> problemCollectionProperties.showInPopup(details))));
-            rowElement.addColumn(Column.span4().appendChild(Button.createDanger("Delete collection")
+            rowElement.addColumn(Column.span4().appendChild(Button.createDanger(Icons.ALL.delete_forever())
+                    .setContent("Delete collection")
                     .addClickListener(evt -> confirmCollectionDeletion(details))));
         }
         return rowElement.element();
