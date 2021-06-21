@@ -59,4 +59,7 @@ public interface ProblemsServiceAsync {
                                             AsyncCallback<Void> callback);
 
     void convertGameCollection(String sessionId, String collectionId, AsyncCallback<Void> callback);
+
+    void createCollectionsByDifficulty(String sessionId, AsyncCallback<Void> callback);
+
 }

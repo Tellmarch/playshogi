@@ -1,26 +1,18 @@
 package com.playshogi.website.gwt.client.activity;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.website.gwt.client.SessionInformation;
-import com.playshogi.website.gwt.client.events.collections.ListKifusEvent;
-import com.playshogi.website.gwt.client.events.kifu.RequestKifuDeletionEvent;
 import com.playshogi.website.gwt.client.events.user.UserLoggedInEvent;
 import com.playshogi.website.gwt.client.place.ManageProblemsPlace;
 import com.playshogi.website.gwt.client.ui.ManageProblemsView;
-import com.playshogi.website.gwt.shared.models.KifuDetails;
-import com.playshogi.website.gwt.shared.models.ProblemCollectionDetails;
 import com.playshogi.website.gwt.shared.services.KifuService;
 import com.playshogi.website.gwt.shared.services.KifuServiceAsync;
 import com.playshogi.website.gwt.shared.services.ProblemsService;
 import com.playshogi.website.gwt.shared.services.ProblemsServiceAsync;
-
-import java.util.Arrays;
 
 public class ManageProblemsActivity extends MyAbstractActivity {
 
@@ -60,34 +52,6 @@ public class ManageProblemsActivity extends MyAbstractActivity {
     }
 
     private void fetchData() {
-        kifuService.getUserKifus(sessionInformation.getSessionId(), sessionInformation.getUsername(),
-                new AsyncCallback<KifuDetails[]>() {
-                    @Override
-                    public void onFailure(final Throwable throwable) {
-                        GWT.log("ManageProblemsActivity: error retrieving kifus list");
-                    }
-
-                    @Override
-                    public void onSuccess(final KifuDetails[] kifuDetails) {
-                        GWT.log("ManageProblemsActivity: retrieved kifus list");
-                        eventBus.fireEvent(new ListKifusEvent(kifuDetails));
-                    }
-                });
-
-        problemsService.getProblemCollections(sessionInformation.getSessionId(),
-                new AsyncCallback<ProblemCollectionDetails[]>() {
-                    @Override
-                    public void onFailure(Throwable throwable) {
-                        GWT.log("ManageProblemsActivity: error retrieving collections list");
-                    }
-
-                    @Override
-                    public void onSuccess(ProblemCollectionDetails[] problemCollectionDetails) {
-                        GWT.log("ManageProblemsActivity: retrieved collections list: " + Arrays.toString(problemCollectionDetails));
-//                        eventBus.fireEvent(new ListGameCollectionsEvent(gameCollectionDetails.getMyCollections(),
-//                                gameCollectionDetails.getPublicCollections()));
-                    }
-                });
     }
 
     private void refresh() {
@@ -99,20 +63,4 @@ public class ManageProblemsActivity extends MyAbstractActivity {
         refresh();
     }
 
-    @EventHandler
-    public void onRequestKifuDeletionEvent(final RequestKifuDeletionEvent event) {
-        kifuService.deleteKifu(sessionInformation.getSessionId(), event.getKifuId(), new AsyncCallback<Void>() {
-            @Override
-            public void onFailure(final Throwable throwable) {
-                GWT.log("UserKifusActivity: error deleting kifu");
-                Window.alert("Could not delete the Kifu - It should be removed from any collection first");
-            }
-
-            @Override
-            public void onSuccess(final Void unused) {
-                GWT.log("UserKifusActivity: successfully deleted kifu");
-                refresh();
-            }
-        });
-    }
 }

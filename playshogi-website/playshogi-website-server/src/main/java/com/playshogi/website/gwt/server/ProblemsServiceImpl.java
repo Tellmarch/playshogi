@@ -588,4 +588,17 @@ public class ProblemsServiceImpl extends RemoteServiceServlet implements Problem
         }
 
     }
+
+    @Override
+    public void createCollectionsByDifficulty(final String sessionId) {
+        LOGGER.log(Level.INFO, "createCollectionsByDifficulty");
+
+        LoginResult loginResult = authenticator.checkSession(sessionId);
+        if (loginResult == null || !loginResult.isLoggedIn() || !loginResult.isAdmin()) {
+            throw new IllegalStateException("Only administrators can do this operation");
+        }
+
+        problemSetRepository.createCollectionsByDifficulty(loginResult.getUserId(), 3);
+
+    }
 }

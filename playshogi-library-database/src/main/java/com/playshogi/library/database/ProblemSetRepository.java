@@ -13,7 +13,9 @@ import com.playshogi.library.shogi.rules.ShogiRulesEngine;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -53,6 +55,13 @@ public class ProblemSetRepository {
             "JOIN " +
             "playshogi.ps_problemset on id=problemset_id WHERE problemset_id = ? and problem_id=? and owner_user_id " +
             "=?;";
+
+    private static final String COMPUTE_PROBLEM_DIFFICULTY = "select problem_id, kifu_id, success_rate, attempts, " +
+            "NTILE(5) over w as difficulty\n" +
+            "FROM (select problem_id, kifu_id, num_moves, pb_type, sum(correct)/count(*) as success_rate, count(*) as" +
+            " attempts from ps_userpbstats JOIN ps_problem ON (problem_id = id) group by 1,2,3, 4) as t \n" +
+            "WHERE num_moves = ? and attempts > 5 and pb_type = 1 WINDOW w AS (ORDER BY success_rate DESC, attempts " +
+            "DESC);";
 
     private final ProblemRepository problemRepository;
 
@@ -376,6 +385,38 @@ public class ProblemSetRepository {
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error deleting up the problem from problemset in db", e);
             return false;
+        }
+    }
+
+    public void createCollectionsByDifficulty(final int userId, int numMoves) {
+        Map<Integer, List<Integer>> byDifficulty = new HashMap<>();
+        for (int i = 1; i <= 5; i++) {
+            byDifficulty.put(i, new ArrayList<>());
+        }
+        Connection connection = dbConnection.getConnection();
+        try (PreparedStatement preparedStatement = connection.prepareStatement(COMPUTE_PROBLEM_DIFFICULTY)) {
+            preparedStatement.setInt(1, numMoves);
+            ResultSet rs = preparedStatement.executeQuery();
+            while (rs.next()) {
+                int kifuId = rs.getInt("kifu_id");
+                int difficulty = rs.getInt("difficulty");
+
+                byDifficulty.get(difficulty).add(kifuId);
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error in createCollectionsByDifficulty", e);
+        }
+
+        System.out.println(byDifficulty);
+
+        for (int i = 1; i <= 5; i++) {
+            int problemSet = saveProblemSet("Tsume in " + numMoves + ": " + i + "/5", "", Visibility.UNLISTED, userId
+                    , i,
+                    new String[]{"Tsume"});
+            List<Integer> kifus = byDifficulty.get(i);
+            for (Integer kifuId : kifus) {
+                addKifuToProblemSet(problemSet, 0, PersistentProblem.ProblemType.UNSPECIFIED, kifuId, numMoves);
+            }
         }
     }
 }

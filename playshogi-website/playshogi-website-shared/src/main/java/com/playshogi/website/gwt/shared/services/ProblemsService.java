@@ -50,4 +50,6 @@ public interface ProblemsService extends RemoteService {
     void addExistingKifuToProblemCollection(String sessionId, String kifuId, String collectionId);
 
     void convertGameCollection(String sessionId, String gameCollectionId);
+
+    void createCollectionsByDifficulty(String sessionId);
 }
