@@ -41,7 +41,7 @@ public class FreeBoardView extends Composite {
 //                .addClickListener(e -> GWT.log("Share"))
 //                .setTooltip("Share")
 //                .style().setMarginLeft("1em").element()));
-        panel.add(new ElementWidget(Button.createPrimary(Icons.ALL.do_not_disturb_alt())
+        panel.add(new ElementWidget(Button.createPrimary(Icons.ALL.eraser_mdi())
                 .setBackground(Theme.DEEP_PURPLE.color()).circle()
                 .addClickListener(e -> eventBus.fireEvent(new ClearDecorationsEvent()))
                 .setTooltip("Clear arrows")

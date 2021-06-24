@@ -95,7 +95,7 @@ public class ProblemsView extends Composite {
                 .setBackground(Theme.DEEP_PURPLE.color()).circle()
                 .setTooltip("Settings")
                 .addClickListener(e -> shogiBoard.getBoardSettingsPanel().showInDialog()));
-        div.add(Button.createPrimary(Icons.ALL.do_not_disturb_alt())
+        div.add(Button.createPrimary(Icons.ALL.eraser_mdi())
                 .setBackground(Theme.DEEP_PURPLE.color()).circle()
                 .addClickListener(e -> eventBus.fireEvent(new ClearDecorationsEvent()))
                 .setTooltip("Clear arrows")

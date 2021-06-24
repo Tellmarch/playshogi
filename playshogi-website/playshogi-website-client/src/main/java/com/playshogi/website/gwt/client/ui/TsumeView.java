@@ -68,7 +68,7 @@ public class TsumeView extends Composite {
                 .setBackground(Theme.DEEP_PURPLE.color()).circle()
                 .setTooltip("Settings")
                 .addClickListener(e -> shogiBoard.getBoardSettingsPanel().showInDialog()).element()));
-        panel.add(new ElementWidget(org.dominokit.domino.ui.button.Button.createPrimary(Icons.ALL.do_not_disturb_alt())
+        panel.add(new ElementWidget(org.dominokit.domino.ui.button.Button.createPrimary(Icons.ALL.eraser_mdi())
                 .setBackground(Theme.DEEP_PURPLE.color()).circle()
                 .addClickListener(e -> eventBus.fireEvent(new ClearDecorationsEvent()))
                 .setTooltip("Clear arrows")
