@@ -11,6 +11,7 @@ public class LessonDetails implements Serializable {
     private String description;
     private String[] tags;
     private String previewSfen;
+    private String author;
     private int difficulty;
     private int likes;
     private boolean completed;
@@ -22,7 +23,8 @@ public class LessonDetails implements Serializable {
 
     public LessonDetails(final String lessonId, final String kifuId, final String parentLessonId, final String title,
                          final String description, final String[] tags, final String previewSfen,
-                         final int difficulty, final int likes, final boolean completed, final boolean hidden,
+                         final String author, final int difficulty, final int likes, final boolean completed,
+                         final boolean hidden,
                          final int index) {
         this.lessonId = lessonId;
         this.kifuId = kifuId;
@@ -31,6 +33,7 @@ public class LessonDetails implements Serializable {
         this.description = description;
         this.tags = tags;
         this.previewSfen = previewSfen;
+        this.author = author;
         this.difficulty = difficulty;
         this.likes = likes;
         this.completed = completed;
@@ -46,6 +49,7 @@ public class LessonDetails implements Serializable {
         this.description = other.description;
         this.tags = other.tags;
         this.previewSfen = other.previewSfen;
+        this.author = other.author;
         this.difficulty = other.difficulty;
         this.likes = other.likes;
         this.completed = other.completed;
@@ -149,6 +153,14 @@ public class LessonDetails implements Serializable {
         this.index = index;
     }
 
+    public String getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(final String author) {
+        this.author = author;
+    }
+
     @Override
     public String toString() {
         return "LessonDetails{" +
@@ -159,6 +171,7 @@ public class LessonDetails implements Serializable {
                 ", description='" + description + '\'' +
                 ", tags=" + Arrays.toString(tags) +
                 ", previewSfen='" + previewSfen + '\'' +
+                ", author='" + author + '\'' +
                 ", difficulty=" + difficulty +
                 ", likes=" + likes +
                 ", completed=" + completed +

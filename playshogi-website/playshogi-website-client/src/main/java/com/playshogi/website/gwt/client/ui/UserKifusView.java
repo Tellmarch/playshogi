@@ -35,7 +35,6 @@ public class UserKifusView extends Composite {
         this.placeController = placeController;
         GWT.log("Creating UserKifusView");
 
-
         kifuTable = new KifuTable(historyMapper, sessionInformation.getUserPreferences());
 
         HtmlContentBuilder<HTMLDivElement> div = Elements.div();
@@ -55,6 +54,4 @@ public class UserKifusView extends Composite {
         eventBinder.bindEventHandlers(this, eventBus);
         kifuTable.activate(eventBus);
     }
-
-
 }
