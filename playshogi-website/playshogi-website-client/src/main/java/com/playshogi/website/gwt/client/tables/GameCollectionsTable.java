@@ -18,7 +18,9 @@ import org.dominokit.domino.ui.datatable.DataTable;
 import org.dominokit.domino.ui.datatable.TableConfig;
 import org.dominokit.domino.ui.datatable.plugins.RecordDetailsPlugin;
 import org.dominokit.domino.ui.datatable.plugins.SimplePaginationPlugin;
+import org.dominokit.domino.ui.datatable.plugins.SortPlugin;
 import org.dominokit.domino.ui.datatable.store.LocalListDataStore;
+import org.dominokit.domino.ui.datatable.store.RecordsSorter;
 import org.dominokit.domino.ui.grid.Column;
 import org.dominokit.domino.ui.grid.Row;
 import org.dominokit.domino.ui.grid.Row_12;
@@ -26,8 +28,10 @@ import org.dominokit.domino.ui.icons.Icons;
 import org.dominokit.domino.ui.utils.TextNode;
 import org.jboss.elemento.Elements;
 
+import java.util.Comparator;
 import java.util.List;
 
+import static org.dominokit.domino.ui.datatable.plugins.SortDirection.ASC;
 import static org.jboss.elemento.Elements.h;
 
 public class GameCollectionsTable {
@@ -47,11 +51,13 @@ public class GameCollectionsTable {
         this.isAuthor = isAuthor;
         TableConfig<GameCollectionDetails> tableConfig = getTableConfig(historyMapper);
         tableConfig.addPlugin(new RecordDetailsPlugin<>(cell -> getDetails(cell.getRecord())));
+        tableConfig.addPlugin(new SortPlugin<>());
         localListDataStore = new LocalListDataStore<>();
 
         simplePaginationPlugin = new SimplePaginationPlugin<>(PAGE_SIZE);
         tableConfig.addPlugin(simplePaginationPlugin);
         localListDataStore.setPagination(simplePaginationPlugin.getSimplePagination());
+        localListDataStore.setRecordsSorter(getRecordsSorter());
         table = new DataTable<>(tableConfig, localListDataStore);
         table.style().setMaxWidth("1366px");
     }
@@ -97,12 +103,14 @@ public class GameCollectionsTable {
                                 .styleCell(
                                         element -> element.style.setProperty("vertical-align", "top"))
                                 .setCellRenderer(cell -> TextNode.of(cell.getRecord().getName()))
+                                .setSortable(true)
                 )
                 .addColumn(
-                        ColumnConfig.<GameCollectionDetails>create("count", "Number of Games")
+                        ColumnConfig.<GameCollectionDetails>create("numGames", "Number of Games")
                                 .styleCell(
                                         element -> element.style.setProperty("vertical-align", "top"))
                                 .setCellRenderer(cell -> TextNode.of(String.valueOf(cell.getRecord().getNumGames())))
+                                .setSortable(true)
                 );
         if (!isAuthor) {
             tableConfig.addColumn(
@@ -110,6 +118,7 @@ public class GameCollectionsTable {
                             .styleCell(
                                     element -> element.style.setProperty("vertical-align", "top"))
                             .setCellRenderer(cell -> TextNode.of(cell.getRecord().getAuthor()))
+                            .setSortable(true)
             );
         }
         if (isAuthor || canEdit) {
@@ -118,6 +127,7 @@ public class GameCollectionsTable {
                             .styleCell(
                                     element -> element.style.setProperty("vertical-align", "top"))
                             .setCellRenderer(cell -> TextNode.of(cell.getRecord().getVisibility()))
+                            .setSortable(true)
             );
         }
         tableConfig
@@ -134,6 +144,21 @@ public class GameCollectionsTable {
         return tableConfig;
     }
 
+    private RecordsSorter<GameCollectionDetails> getRecordsSorter() {
+        return (sortBy, sortDirection) -> {
+            Comparator<GameCollectionDetails> comparator = (o1, o2) -> 0;
+            if ("numGames".equals(sortBy)) {
+                comparator = Comparator.comparingInt(GameCollectionDetails::getNumGames);
+            } else if ("name".equals(sortBy)) {
+                comparator = Comparator.comparing(GameCollectionDetails::getName);
+            } else if ("visibility".equals(sortBy)) {
+                comparator = Comparator.comparing(GameCollectionDetails::getVisibility);
+            } else if ("author".equals(sortBy)) {
+                comparator = Comparator.comparing(GameCollectionDetails::getAuthor);
+            }
+            return sortDirection == ASC ? comparator : comparator.reversed();
+        };
+    }
 
     public void setData(final List<GameCollectionDetails> details) {
         if ((simplePaginationPlugin.getSimplePagination().activePage() - 1) * PAGE_SIZE >= details.size()) {

@@ -19,7 +19,9 @@ import org.dominokit.domino.ui.datatable.DataTable;
 import org.dominokit.domino.ui.datatable.TableConfig;
 import org.dominokit.domino.ui.datatable.plugins.RecordDetailsPlugin;
 import org.dominokit.domino.ui.datatable.plugins.SimplePaginationPlugin;
+import org.dominokit.domino.ui.datatable.plugins.SortPlugin;
 import org.dominokit.domino.ui.datatable.store.LocalListDataStore;
+import org.dominokit.domino.ui.datatable.store.RecordsSorter;
 import org.dominokit.domino.ui.grid.Column;
 import org.dominokit.domino.ui.grid.Row;
 import org.dominokit.domino.ui.grid.Row_12;
@@ -28,8 +30,10 @@ import org.dominokit.domino.ui.utils.TextNode;
 import org.jboss.elemento.Elements;
 import org.jboss.elemento.HtmlContentBuilder;
 
+import java.util.Comparator;
 import java.util.List;
 
+import static org.dominokit.domino.ui.datatable.plugins.SortDirection.ASC;
 import static org.jboss.elemento.Elements.*;
 
 public class ProblemCollectionsTable {
@@ -49,11 +53,13 @@ public class ProblemCollectionsTable {
         this.isAuthor = isAuthor;
         TableConfig<ProblemCollectionDetails> tableConfig = getTableConfig(historyMapper);
         tableConfig.addPlugin(new RecordDetailsPlugin<>(cell -> getDetails(cell.getRecord())));
+        tableConfig.addPlugin(new SortPlugin<>());
         localListDataStore = new LocalListDataStore<>();
 
         simplePaginationPlugin = new SimplePaginationPlugin<>(PAGE_SIZE);
         tableConfig.addPlugin(simplePaginationPlugin);
         localListDataStore.setPagination(simplePaginationPlugin.getSimplePagination());
+        localListDataStore.setRecordsSorter(getRecordsSorter());
         table = new DataTable<>(tableConfig, localListDataStore);
         table.style().setMaxWidth("1366px");
         problemCollectionProperties = new ProblemCollectionPropertiesForm();
@@ -102,6 +108,7 @@ public class ProblemCollectionsTable {
                                 .styleCell(
                                         element -> element.style.setProperty("vertical-align", "top"))
                                 .setCellRenderer(cell -> TextNode.of(cell.getRecord().getName()))
+                                .setSortable(true)
                 )
                 .addColumn(
                         ColumnConfig.<ProblemCollectionDetails>create("practice", "Practice")
@@ -119,6 +126,7 @@ public class ProblemCollectionsTable {
                                 .styleCell(
                                         element -> element.style.setProperty("vertical-align", "top"))
                                 .setCellRenderer(cell -> getDifficulty(cell.getRecord()))
+                                .setSortable(true)
                 );
         if (!isAuthor) {
             tableConfig.addColumn(
@@ -126,6 +134,7 @@ public class ProblemCollectionsTable {
                             .styleCell(
                                     element -> element.style.setProperty("vertical-align", "top"))
                             .setCellRenderer(cell -> TextNode.of(cell.getRecord().getAuthor()))
+                            .setSortable(true)
             );
         }
         if (isAuthor || canEdit) {
@@ -148,6 +157,7 @@ public class ProblemCollectionsTable {
                                 .styleCell(
                                         element -> element.style.setProperty("vertical-align", "top"))
                                 .setCellRenderer(cell -> getPersonalBest(cell.getRecord()))
+                                .setSortable(true)
                 )
                 .addColumn(
                         ColumnConfig.<ProblemCollectionDetails>create("leaderboard", "Leaderboard")
@@ -171,6 +181,23 @@ public class ProblemCollectionsTable {
         return tableConfig;
     }
 
+    private RecordsSorter<ProblemCollectionDetails> getRecordsSorter() {
+        return (sortBy, sortDirection) -> {
+            Comparator<ProblemCollectionDetails> comparator = (o1, o2) -> 0;
+            if ("difficulty".equals(sortBy)) {
+                comparator = Comparator.comparingInt(ProblemCollectionDetails::getDifficulty);
+            } else if ("name".equals(sortBy)) {
+                comparator = Comparator.comparing(ProblemCollectionDetails::getName);
+            } else if ("author".equals(sortBy)) {
+                comparator = Comparator.comparing(ProblemCollectionDetails::getAuthor);
+            } else if ("besttime".equals(sortBy)) {
+                comparator =
+                        Comparator.comparing(ProblemCollectionDetails::getUserHighScore,
+                                Comparator.nullsFirst(Comparator.naturalOrder()));
+            }
+            return sortDirection == ASC ? comparator : comparator.reversed();
+        };
+    }
 
     private Node getLeaderboard(final ProblemCollectionDetails record) {
         if (record.getLeaderboardNames() == null || record.getLeaderboardScores() == null) {

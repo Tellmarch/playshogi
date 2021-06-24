@@ -598,7 +598,7 @@ public class ProblemsServiceImpl extends RemoteServiceServlet implements Problem
             throw new IllegalStateException("Only administrators can do this operation");
         }
 
-        problemSetRepository.createCollectionsByDifficulty(loginResult.getUserId(), 3);
+        problemSetRepository.createCollectionsByDifficulty(loginResult.getUserId(), 5);
 
     }
 }
