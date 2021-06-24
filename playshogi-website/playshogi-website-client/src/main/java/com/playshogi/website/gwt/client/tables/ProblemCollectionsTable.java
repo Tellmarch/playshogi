@@ -2,13 +2,11 @@ package com.playshogi.website.gwt.client.tables;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.event.shared.EventBus;
 import com.playshogi.website.gwt.client.events.collections.DeleteProblemCollectionEvent;
 import com.playshogi.website.gwt.client.mvp.AppPlaceHistoryMapper;
 import com.playshogi.website.gwt.client.place.ProblemCollectionPlace;
 import com.playshogi.website.gwt.client.place.ProblemsPlace;
-import com.playshogi.website.gwt.client.util.ElementWidget;
 import com.playshogi.website.gwt.client.widget.collections.ProblemCollectionPropertiesForm;
 import com.playshogi.website.gwt.client.widget.problems.TagsElement;
 import com.playshogi.website.gwt.shared.models.ProblemCollectionDetails;
@@ -47,7 +45,8 @@ public class ProblemCollectionsTable {
     private final boolean canEdit;
     private final boolean isAuthor;
     private EventBus eventBus;
-    private ProblemCollectionPropertiesForm problemCollectionProperties;
+    private final ProblemCollectionPropertiesForm problemCollectionProperties;
+    private CustomSearchTableAction<ProblemCollectionDetails> customSearchTableAction;
 
     public ProblemCollectionsTable(final AppPlaceHistoryMapper historyMapper, boolean canEdit, boolean isAuthor) {
         this.canEdit = canEdit;
@@ -70,6 +69,10 @@ public class ProblemCollectionsTable {
         problemCollectionProperties = new ProblemCollectionPropertiesForm();
     }
 
+    public DataTable<ProblemCollectionDetails> getTable() {
+        return table;
+    }
+
     private void addFilterPlugin(final TableConfig<ProblemCollectionDetails> tableConfig) {
         ColumnHeaderFilterPlugin<ProblemCollectionDetails> filterPlugin = ColumnHeaderFilterPlugin.create();
         filterPlugin.addHeaderFilter("author", TextHeaderFilter.create());
@@ -89,10 +92,11 @@ public class ProblemCollectionsTable {
 
         filterPlugin.getFiltersRowElement().toggleDisplay(false);
 
+        customSearchTableAction = new CustomSearchTableAction<>();
         tableConfig.addPlugin(
                 new HeaderBarPlugin<ProblemCollectionDetails>("")
                         .addActionElement(new HeaderBarPlugin.ClearSearch<>())
-                        .addActionElement(new HeaderBarPlugin.SearchTableAction<>())
+                        .addActionElement(customSearchTableAction)
                         .addActionElement(
                                 dataTable ->
                                         Icons.ALL.filter_menu_mdi().size18().setTooltip("Filters...")
@@ -103,14 +107,6 @@ public class ProblemCollectionsTable {
                                                                         .getFiltersRowElement()
                                                                         .toggleDisplay())
                                                 .element()));
-    }
-
-    public DataTable<ProblemCollectionDetails> getTable() {
-        return table;
-    }
-
-    public Widget getAsWidget() {
-        return new ElementWidget(table.element());
     }
 
     private HTMLElement getDetails(final ProblemCollectionDetails details) {
@@ -294,6 +290,7 @@ public class ProblemCollectionsTable {
         }
         localListDataStore.setData(details);
         table.load();
+        customSearchTableAction.doSearch();
     }
 
     public void activate(final EventBus eventBus) {
@@ -310,5 +307,9 @@ public class ProblemCollectionsTable {
         } else {
             GWT.log("Deletion cancelled: " + details);
         }
+    }
+
+    public void addSearch(final String search) {
+        customSearchTableAction.setSearch(search);
     }
 }

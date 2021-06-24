@@ -8,6 +8,7 @@ import com.google.inject.Singleton;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
+import com.playshogi.website.gwt.client.events.collections.AddSearchEvent;
 import com.playshogi.website.gwt.client.events.collections.ListProblemCollectionsEvent;
 import com.playshogi.website.gwt.client.mvp.AppPlaceHistoryMapper;
 import com.playshogi.website.gwt.client.tables.ProblemCollectionsTable;
@@ -60,5 +61,12 @@ public class ProblemCollectionsView extends Composite {
         if (collections != null) {
             problemsTable.setData(Arrays.asList(collections));
         }
+    }
+
+    @EventHandler
+    public void onAddSearch(final AddSearchEvent event) {
+        GWT.log("ProblemCollectionsView: handle onAddSearch:\n" + event);
+
+        problemsTable.addSearch(event.getSearch());
     }
 }

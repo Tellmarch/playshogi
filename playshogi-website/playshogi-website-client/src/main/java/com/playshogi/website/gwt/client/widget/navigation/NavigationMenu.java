@@ -51,6 +51,8 @@ public class NavigationMenu extends Composite {
         menu.addItem(new MenuItem("Learn", learnMenu));
         learnMenu.addItem("How to play", (Command) () -> placeController.goTo(new TutorialPlace()));
 //        learnMenu.addItem("Lessons", (Command) () -> placeController.goTo(new LessonsPlace()));
+        learnMenu.addItem("Beginner puzzles", (Command) () -> placeController.goTo(new ProblemCollectionsPlace(
+                "Beginners")));
         learnMenu.addItem("Links", (Command) () -> placeController.goTo(new LinksPlace()));
 
         MenuBar puzzlesMenu = new MenuBar(true);
@@ -72,7 +74,8 @@ public class NavigationMenu extends Composite {
         menu.addItem(new MenuItem("Collections", collectionsMenu));
         collectionsMenu.addItem("Public Collections",
                 (Command) () -> placeController.goTo(new PublicCollectionsPlace()));
-        //collectionsMenu.addItem("Tournament Collections", (Command) () -> placeController.goTo((new TournamentPlace()))); TODO new item on menu
+        //collectionsMenu.addItem("Tournament Collections", (Command) () -> placeController.goTo((new TournamentPlace
+        // ()))); TODO new item on menu
         collectionsMenu.addItem("My Collections", (Command) () -> placeController.goTo(new MyCollectionsPlace()));
         collectionsMenu.addItem("My Kifus", (Command) () -> placeController.goTo(new UserKifusPlace()));
         collectionsMenu.addItem("New/Import kifu", (Command) () -> placeController.goTo(new KifuEditorPlace(null,

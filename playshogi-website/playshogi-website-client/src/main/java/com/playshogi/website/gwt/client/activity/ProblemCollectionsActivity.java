@@ -1,12 +1,14 @@
 package com.playshogi.website.gwt.client.activity;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.website.gwt.client.SessionInformation;
+import com.playshogi.website.gwt.client.events.collections.AddSearchEvent;
 import com.playshogi.website.gwt.client.events.collections.ListProblemCollectionsEvent;
 import com.playshogi.website.gwt.client.events.user.UserLoggedInEvent;
 import com.playshogi.website.gwt.client.place.ProblemCollectionsPlace;
@@ -46,6 +48,10 @@ public class ProblemCollectionsActivity extends MyAbstractActivity {
         fetchData();
 
         containerWidget.setWidget(view.asWidget());
+
+        if (place.getSearch() != null && !"null".equals(place.getSearch())) {
+            Scheduler.get().scheduleDeferred(() -> eventBus.fireEvent(new AddSearchEvent(place.getSearch())));
+        }
     }
 
     private void fetchData() {

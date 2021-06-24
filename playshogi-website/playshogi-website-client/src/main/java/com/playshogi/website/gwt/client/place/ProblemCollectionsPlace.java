@@ -6,7 +6,18 @@ import com.google.gwt.place.shared.Prefix;
 
 public class ProblemCollectionsPlace extends Place {
 
+    private final String search;
+
     public ProblemCollectionsPlace() {
+        this(null);
+    }
+
+    public ProblemCollectionsPlace(final String search) {
+        this.search = search;
+    }
+
+    public String getSearch() {
+        return search;
     }
 
     @Prefix("ProblemCollections")
@@ -14,12 +25,12 @@ public class ProblemCollectionsPlace extends Place {
 
         @Override
         public String getToken(final ProblemCollectionsPlace place) {
-            return null;
+            return place.getSearch();
         }
 
         @Override
         public ProblemCollectionsPlace getPlace(final String token) {
-            return new ProblemCollectionsPlace();
+            return new ProblemCollectionsPlace(token);
         }
 
     }
