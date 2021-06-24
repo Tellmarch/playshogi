@@ -15,7 +15,6 @@ import com.playshogi.website.gwt.client.widget.board.GamePreview;
 import com.playshogi.website.gwt.shared.models.GameDetails;
 import com.playshogi.website.gwt.shared.services.KifuService;
 import com.playshogi.website.gwt.shared.services.KifuServiceAsync;
-import elemental2.dom.EventListener;
 import elemental2.dom.HTMLDivElement;
 import elemental2.dom.HTMLElement;
 import org.dominokit.domino.ui.button.Button;
@@ -31,7 +30,6 @@ import org.dominokit.domino.ui.grid.Column;
 import org.dominokit.domino.ui.grid.Row;
 import org.dominokit.domino.ui.grid.Row_12;
 import org.dominokit.domino.ui.icons.Icons;
-import org.dominokit.domino.ui.modals.ModalDialog;
 import org.dominokit.domino.ui.utils.TextNode;
 import org.jboss.elemento.Elements;
 import org.jboss.elemento.HtmlContentBuilder;
@@ -127,8 +125,6 @@ public class GameTable {
                         ColumnConfig.<GameDetails>create("view", "View")
                                 .styleCell(
                                         element -> element.style.setProperty("vertical-align", "top"))
-                                //.setCellRenderer(cell -> Elements.a(historyMapper.getToken(new ViewKifuPlace(cell
-                                // .getRecord().getKifuId(), 0))).add(Button.createDefault("Show")).element())
                                 .setCellRenderer(cell -> {
                                     String href =
                                             "#" + historyMapper.getToken(new ViewKifuPlace(cell.getRecord().getKifuId(), 0));
@@ -238,19 +234,6 @@ public class GameTable {
 
     public void activate(final EventBus eventBus) {
         this.eventBus = eventBus;
-    }
-
-    private ModalDialog createModalDialog() {
-        ModalDialog modal = ModalDialog.create("Kifu Edit").setAutoClose(true);
-        modal.appendChild(TextNode.of("SAMPLE_CONTENT"));
-        Button closeButton = Button.create("CLOSE").linkify();
-        Button saveButton = Button.create("SAVE").linkify();
-        EventListener closeModalListener = evt -> modal.close();
-        closeButton.addClickListener(closeModalListener);
-        saveButton.addClickListener(closeModalListener);
-        modal.appendFooterChild(saveButton);
-        modal.appendFooterChild(closeButton);
-        return modal;
     }
 
     private void confirmDeletion(final GameDetails details) {

@@ -35,7 +35,7 @@ public class KifuRepository {
     private static final String DELETE_KIFU = "DELETE FROM ps_kifu WHERE id = ? AND author_id = ?";
 
     private static final String SELECT_USER_KIFUS = "SELECT id, name, author_id, create_time, update_time, type_id " +
-            "FROM ps_kifu WHERE author_id = ? ORDER BY update_time DESC LIMIT 1000;";
+            "FROM ps_kifu WHERE author_id = ? ORDER BY update_time DESC LIMIT 10000;";
 
     private static final String UPDATE_KIFU = "UPDATE ps_kifu SET usf = ? WHERE id = ? AND author_id = ?";
 
