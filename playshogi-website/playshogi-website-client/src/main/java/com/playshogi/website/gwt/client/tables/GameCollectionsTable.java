@@ -150,11 +150,15 @@ public class GameCollectionsTable {
             if ("numGames".equals(sortBy)) {
                 comparator = Comparator.comparingInt(GameCollectionDetails::getNumGames);
             } else if ("name".equals(sortBy)) {
-                comparator = Comparator.comparing(GameCollectionDetails::getName);
+                comparator =
+                        Comparator.comparing(GameCollectionDetails::getName,
+                                Comparator.nullsFirst(String.CASE_INSENSITIVE_ORDER));
             } else if ("visibility".equals(sortBy)) {
                 comparator = Comparator.comparing(GameCollectionDetails::getVisibility);
             } else if ("author".equals(sortBy)) {
-                comparator = Comparator.comparing(GameCollectionDetails::getAuthor);
+                comparator =
+                        Comparator.comparing(GameCollectionDetails::getAuthor,
+                                Comparator.nullsFirst(String.CASE_INSENSITIVE_ORDER));
             }
             return sortDirection == ASC ? comparator : comparator.reversed();
         };

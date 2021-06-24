@@ -17,11 +17,12 @@ import org.dominokit.domino.ui.button.Button;
 import org.dominokit.domino.ui.datatable.ColumnConfig;
 import org.dominokit.domino.ui.datatable.DataTable;
 import org.dominokit.domino.ui.datatable.TableConfig;
-import org.dominokit.domino.ui.datatable.plugins.RecordDetailsPlugin;
-import org.dominokit.domino.ui.datatable.plugins.SimplePaginationPlugin;
-import org.dominokit.domino.ui.datatable.plugins.SortPlugin;
+import org.dominokit.domino.ui.datatable.plugins.*;
+import org.dominokit.domino.ui.datatable.plugins.filter.header.SelectHeaderFilter;
+import org.dominokit.domino.ui.datatable.plugins.filter.header.TextHeaderFilter;
 import org.dominokit.domino.ui.datatable.store.LocalListDataStore;
 import org.dominokit.domino.ui.datatable.store.RecordsSorter;
+import org.dominokit.domino.ui.forms.SelectOption;
 import org.dominokit.domino.ui.grid.Column;
 import org.dominokit.domino.ui.grid.Row;
 import org.dominokit.domino.ui.grid.Row_12;
@@ -54,15 +55,54 @@ public class ProblemCollectionsTable {
         TableConfig<ProblemCollectionDetails> tableConfig = getTableConfig(historyMapper);
         tableConfig.addPlugin(new RecordDetailsPlugin<>(cell -> getDetails(cell.getRecord())));
         tableConfig.addPlugin(new SortPlugin<>());
+        addFilterPlugin(tableConfig);
+
         localListDataStore = new LocalListDataStore<>();
 
         simplePaginationPlugin = new SimplePaginationPlugin<>(PAGE_SIZE);
         tableConfig.addPlugin(simplePaginationPlugin);
         localListDataStore.setPagination(simplePaginationPlugin.getSimplePagination());
         localListDataStore.setRecordsSorter(getRecordsSorter());
+        localListDataStore.setSearchFilter(new ProblemCollectionSearchFilter());
+
         table = new DataTable<>(tableConfig, localListDataStore);
         table.style().setMaxWidth("1366px");
         problemCollectionProperties = new ProblemCollectionPropertiesForm();
+    }
+
+    private void addFilterPlugin(final TableConfig<ProblemCollectionDetails> tableConfig) {
+        ColumnHeaderFilterPlugin<ProblemCollectionDetails> filterPlugin = ColumnHeaderFilterPlugin.create();
+        filterPlugin.addHeaderFilter("author", TextHeaderFilter.create());
+        filterPlugin.addHeaderFilter("name", TextHeaderFilter.create());
+        SelectHeaderFilter<ProblemCollectionDetails> difficultyFilter = SelectHeaderFilter.create();
+        difficultyFilter.appendChild(SelectOption.create("1", "★☆☆☆☆"));
+        difficultyFilter.appendChild(SelectOption.create("2", "★★☆☆☆"));
+        difficultyFilter.appendChild(SelectOption.create("3", "★★★☆☆"));
+        difficultyFilter.appendChild(SelectOption.create("4", "★★★★☆"));
+        difficultyFilter.appendChild(SelectOption.create("5", "★★★★★"));
+        filterPlugin.addHeaderFilter("difficulty", difficultyFilter);
+        SelectHeaderFilter<ProblemCollectionDetails> visibilityFilter = SelectHeaderFilter.create();
+        visibilityFilter.appendChild(SelectOption.create("public", "Public"));
+        visibilityFilter.appendChild(SelectOption.create("unlisted", "Unlisted"));
+        filterPlugin.addHeaderFilter("visibility", visibilityFilter);
+        tableConfig.addPlugin(filterPlugin);
+
+        filterPlugin.getFiltersRowElement().toggleDisplay(false);
+
+        tableConfig.addPlugin(
+                new HeaderBarPlugin<ProblemCollectionDetails>("")
+                        .addActionElement(new HeaderBarPlugin.ClearSearch<>())
+                        .addActionElement(new HeaderBarPlugin.SearchTableAction<>())
+                        .addActionElement(
+                                dataTable ->
+                                        Icons.ALL.filter_menu_mdi().size18().setTooltip("Filters...")
+                                                .clickable()
+                                                .addClickListener(
+                                                        evt ->
+                                                                filterPlugin
+                                                                        .getFiltersRowElement()
+                                                                        .toggleDisplay())
+                                                .element()));
     }
 
     public DataTable<ProblemCollectionDetails> getTable() {
@@ -187,9 +227,13 @@ public class ProblemCollectionsTable {
             if ("difficulty".equals(sortBy)) {
                 comparator = Comparator.comparingInt(ProblemCollectionDetails::getDifficulty);
             } else if ("name".equals(sortBy)) {
-                comparator = Comparator.comparing(ProblemCollectionDetails::getName);
+                comparator =
+                        Comparator.comparing(ProblemCollectionDetails::getName,
+                                Comparator.nullsFirst(String.CASE_INSENSITIVE_ORDER));
             } else if ("author".equals(sortBy)) {
-                comparator = Comparator.comparing(ProblemCollectionDetails::getAuthor);
+                comparator =
+                        Comparator.comparing(ProblemCollectionDetails::getAuthor,
+                                Comparator.nullsFirst(String.CASE_INSENSITIVE_ORDER));
             } else if ("besttime".equals(sortBy)) {
                 comparator =
                         Comparator.comparing(ProblemCollectionDetails::getUserHighScore,
