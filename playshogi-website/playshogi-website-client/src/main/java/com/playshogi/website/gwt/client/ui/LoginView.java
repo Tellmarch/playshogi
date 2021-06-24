@@ -6,6 +6,7 @@ import com.google.inject.Singleton;
 import com.playshogi.website.gwt.client.SessionInformation;
 import com.playshogi.website.gwt.client.util.ElementWidget;
 import elemental2.dom.HTMLDivElement;
+import jsinterop.base.Js;
 import org.dominokit.domino.ui.button.Button;
 import org.dominokit.domino.ui.cards.Card;
 import org.dominokit.domino.ui.forms.TextBox;
@@ -14,8 +15,10 @@ import org.dominokit.domino.ui.grid.Row;
 import org.dominokit.domino.ui.icons.Icons;
 import org.dominokit.domino.ui.style.Color;
 import org.dominokit.domino.ui.style.Styles;
+import org.dominokit.domino.ui.utils.ElementUtil;
 import org.gwtproject.safehtml.shared.SafeHtmlBuilder;
 import org.jboss.elemento.Elements;
+import org.jboss.elemento.EventType;
 
 import static org.jboss.elemento.Elements.div;
 
@@ -33,12 +36,26 @@ public class LoginView extends Composite {
         password = TextBox.password("Password")
                 .addLeftAddOn(Icons.ALL.security())
                 .setRequired(true)
-                .setAutoValidation(true);
+                .setAutoValidation(true)
+                .addEventListener(
+                        EventType.keypress.getName(),
+                        evt -> {
+                            if (ElementUtil.isEnterKey(Js.uncheckedCast(evt))) {
+                                login();
+                            }
+                        });
         userName = TextBox.create("User name")
                 .addLeftAddOn(Icons.ALL.person())
                 .setRequired(true)
                 .setAutoValidation(true)
-                .setHelperText("Only alphanumerical or underscore, 3 to 25 characters");
+                .setHelperText("Only alphanumerical or underscore, 3 to 25 characters")
+                .addEventListener(
+                        EventType.keypress.getName(),
+                        evt -> {
+                            if (ElementUtil.isEnterKey(Js.uncheckedCast(evt))) {
+                                login();
+                            }
+                        });
 
 
         HTMLDivElement element = Row.create()
