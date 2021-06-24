@@ -63,6 +63,8 @@ public class AppActivityMapper implements ActivityMapper {
     @Inject
     LessonsView lessonsView;
     @Inject
+    TournamentView tournamentView;
+    @Inject
     ManageLessonsView manageLessonsView;
     @Inject
     ProblemCollectionsView problemCollectionsView;
@@ -116,6 +118,8 @@ public class AppActivityMapper implements ActivityMapper {
                     sessionInformation);
         } else if (place instanceof LessonsPlace) {
             return new LessonsActivity((LessonsPlace) place, lessonsView, sessionInformation);
+        } else if (place instanceof TournamentPlace) {
+            return new TournamentActivity((TournamentPlace) place, tournamentView, sessionInformation);
         } else if (place instanceof CollectionHelpPlace) {
             return new CollectionHelpActivity(collectionHelpView);
         } else if (place instanceof GameCollectionPlace) {
