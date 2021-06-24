@@ -6,12 +6,14 @@ import com.google.gwt.user.client.ui.AcceptsOneWidget;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.playshogi.website.gwt.client.SessionInformation;
+import com.playshogi.website.gwt.client.events.collections.TournamentDetailsEvent;
 import com.playshogi.website.gwt.client.events.tutorial.LessonsListEvent;
 import com.playshogi.website.gwt.client.place.LessonsPlace;
 import com.playshogi.website.gwt.client.place.TournamentPlace;
 import com.playshogi.website.gwt.client.ui.LessonsView;
 import com.playshogi.website.gwt.client.ui.TournamentView;
 import com.playshogi.website.gwt.shared.models.LessonDetails;
+import com.playshogi.website.gwt.shared.models.TournamentDetails;
 import com.playshogi.website.gwt.shared.services.KifuService;
 import com.playshogi.website.gwt.shared.services.KifuServiceAsync;
 
@@ -44,16 +46,16 @@ public class TournamentActivity extends MyAbstractActivity {
         tournamentView.activate(eventBus);
         containerWidget.setWidget(tournamentView.asWidget());
 
-        kifuService.getAllLessons(sessionInformation.getSessionId(), new AsyncCallback<LessonDetails[]>() {
+        kifuService.getTournament(sessionInformation.getSessionId(), "TTSeries", new AsyncCallback<TournamentDetails>() {
             @Override
             public void onFailure(final Throwable throwable) {
                 GWT.log("TournamentActivity - RPC failure: getAllTournaments " + throwable);
             }
 
             @Override
-            public void onSuccess(final LessonDetails[] lessonDetails) {
+            public void onSuccess(final TournamentDetails tournamentDetails) {
                 GWT.log("TournamentActivity - RPC success: getAllTournaments");
-                eventBus.fireEvent(new LessonsListEvent(lessonDetails));
+                eventBus.fireEvent(new TournamentDetailsEvent(tournamentDetails));
             }
         });
     }

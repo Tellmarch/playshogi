@@ -1,8 +1,9 @@
 package com.playshogi.website.gwt.shared.models;
 
+import java.io.Serializable;
 import java.util.Arrays;
 
-public class TournamentSeasonDetails {
+public class TournamentSeasonDetails implements Serializable {
     private String title;
     private TournamentCategoryDetails[] categories;
 

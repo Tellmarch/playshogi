@@ -670,4 +670,15 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
             throw new IllegalArgumentException("Could not update the kifu.");
         }
     }
+
+    @Override
+    public TournamentDetails getTournament(final String sessionID, final String tournamentID) {
+        LOGGER.log(Level.INFO, "gettournament: " + tournamentID);
+        TournamentDetails tournamentDetails = new TournamentDetails();
+        tournamentDetails.setTitle("Tourney To Series");
+        tournamentDetails.setDescription("The best shogi tournament on Earth");
+        tournamentDetails.setOrganizer("Shogi Harbour");
+        //tournamentDetails.setSeasons(new TournamentSeasonDetails[]);
+        return tournamentDetails;
+    }
 }
