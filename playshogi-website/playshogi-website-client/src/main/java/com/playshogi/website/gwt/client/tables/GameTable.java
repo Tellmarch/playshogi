@@ -24,7 +24,9 @@ import org.dominokit.domino.ui.datatable.DataTable;
 import org.dominokit.domino.ui.datatable.TableConfig;
 import org.dominokit.domino.ui.datatable.plugins.RecordDetailsPlugin;
 import org.dominokit.domino.ui.datatable.plugins.SimplePaginationPlugin;
+import org.dominokit.domino.ui.datatable.plugins.SortPlugin;
 import org.dominokit.domino.ui.datatable.store.LocalListDataStore;
+import org.dominokit.domino.ui.datatable.store.RecordsSorter;
 import org.dominokit.domino.ui.grid.Column;
 import org.dominokit.domino.ui.grid.Row;
 import org.dominokit.domino.ui.grid.Row_12;
@@ -34,8 +36,10 @@ import org.dominokit.domino.ui.utils.TextNode;
 import org.jboss.elemento.Elements;
 import org.jboss.elemento.HtmlContentBuilder;
 
+import java.util.Comparator;
 import java.util.List;
 
+import static org.dominokit.domino.ui.datatable.plugins.SortDirection.ASC;
 import static org.jboss.elemento.Elements.br;
 import static org.jboss.elemento.Elements.h;
 
@@ -60,11 +64,15 @@ public class GameTable {
 
         TableConfig<GameDetails> tableConfig = getTableConfig(historyMapper);
         tableConfig.addPlugin(new RecordDetailsPlugin<>(cell -> getDetails(cell.getRecord())));
+        tableConfig.addPlugin(new SortPlugin<>());
+
         localListDataStore = new LocalListDataStore<>();
 
         simplePaginationPlugin = new SimplePaginationPlugin<>(PAGE_SIZE);
         tableConfig.addPlugin(simplePaginationPlugin);
         localListDataStore.setPagination(simplePaginationPlugin.getSimplePagination());
+        localListDataStore.setRecordsSorter(getRecordsSorter());
+
         table = new DataTable<>(tableConfig, localListDataStore);
     }
 
@@ -92,24 +100,28 @@ public class GameTable {
                                 .styleCell(
                                         element -> element.style.setProperty("vertical-align", "top"))
                                 .setCellRenderer(cell -> TextNode.of(cell.getRecord().getSente()))
+                                .setSortable(true)
                 )
                 .addColumn(
                         ColumnConfig.<GameDetails>create("gote", "Gote")
                                 .styleCell(
                                         element -> element.style.setProperty("vertical-align", "top"))
                                 .setCellRenderer(cell -> TextNode.of(cell.getRecord().getGote()))
+                                .setSortable(true)
                 )
                 .addColumn(
                         ColumnConfig.<GameDetails>create("date", "Date")
                                 .styleCell(
                                         element -> element.style.setProperty("vertical-align", "top"))
                                 .setCellRenderer(cell -> TextNode.of(cell.getRecord().getDate()))
+                                .setSortable(true)
                 )
                 .addColumn(
                         ColumnConfig.<GameDetails>create("venue", "Venue")
                                 .styleCell(
                                         element -> element.style.setProperty("vertical-align", "top"))
                                 .setCellRenderer(cell -> TextNode.of(cell.getRecord().getVenue()))
+                                .setSortable(true)
                 )
                 .addColumn(
                         ColumnConfig.<GameDetails>create("view", "View")
@@ -144,6 +156,31 @@ public class GameTable {
 //                )
         ;
         return tableConfig;
+    }
+
+    private RecordsSorter<GameDetails> getRecordsSorter() {
+        return (sortBy, sortDirection) -> {
+            Comparator<GameDetails> comparator = (o1, o2) -> 0;
+            if ("sente".equals(sortBy)) {
+                comparator =
+                        Comparator.comparing(GameDetails::getSente,
+                                Comparator.nullsFirst(String.CASE_INSENSITIVE_ORDER));
+            } else if ("gote".equals(sortBy)) {
+                comparator =
+                        Comparator.comparing(GameDetails::getGote,
+                                Comparator.nullsFirst(String.CASE_INSENSITIVE_ORDER));
+            } else if ("venue".equals(sortBy)) {
+                comparator =
+                        Comparator.comparing(GameDetails::getVenue,
+                                Comparator.nullsFirst(String.CASE_INSENSITIVE_ORDER));
+            } else if ("date".equals(sortBy)) {
+                GWT.log(sortDirection.toString());
+                comparator =
+                        Comparator.comparing(GameDetails::getDate,
+                                Comparator.nullsFirst(String.CASE_INSENSITIVE_ORDER));
+            }
+            return sortDirection == ASC ? comparator : comparator.reversed();
+        };
     }
 
     private HTMLElement getDetails(final GameDetails details) {
