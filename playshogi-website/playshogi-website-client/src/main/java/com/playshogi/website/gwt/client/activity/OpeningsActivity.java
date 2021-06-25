@@ -1,6 +1,7 @@
 package com.playshogi.website.gwt.client.activity;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.place.shared.PlaceController;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
@@ -66,7 +67,8 @@ public class OpeningsActivity extends MyAbstractActivity {
                 GWT.log("OPENINGS - ERROR GETTING POSITION STATS");
             }
         });
-
+        Scheduler.get().scheduleDeferred(() -> eventBus.fireEvent(
+                new PositionChangedEvent(position, false)));
     }
 
     @Override

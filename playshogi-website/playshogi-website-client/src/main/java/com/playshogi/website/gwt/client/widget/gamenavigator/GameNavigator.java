@@ -8,26 +8,18 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
-import com.google.web.bindery.event.shared.binder.EventHandler;
-import com.playshogi.library.shogi.models.PieceType;
-import com.playshogi.library.shogi.models.Player;
-import com.playshogi.library.shogi.models.formats.usf.UsfMoveConverter;
-import com.playshogi.library.shogi.models.moves.DropMove;
-import com.playshogi.library.shogi.models.moves.Move;
-import com.playshogi.library.shogi.models.moves.ShogiMove;
-import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.library.shogi.models.record.GameNavigation;
 import com.playshogi.library.shogi.models.record.GameTree;
-import com.playshogi.library.shogi.models.shogivariant.Handicap;
-import com.playshogi.library.shogi.models.shogivariant.ShogiInitialPositionFactory;
 import com.playshogi.library.shogi.rules.ShogiRulesEngine;
-import com.playshogi.website.gwt.client.events.gametree.*;
-import com.playshogi.website.gwt.client.events.kifu.ArrowDrawnEvent;
-import com.playshogi.website.gwt.client.events.kifu.ClearDecorationsEvent;
-
-import java.util.Objects;
+import com.playshogi.website.gwt.client.controller.NavigationController;
+import com.playshogi.website.gwt.client.events.gametree.NavigateBackEvent;
+import com.playshogi.website.gwt.client.events.gametree.NavigateForwardEvent;
+import com.playshogi.website.gwt.client.events.gametree.NavigateToEndEvent;
+import com.playshogi.website.gwt.client.events.gametree.NavigateToStartEvent;
 
 public class GameNavigator extends Composite implements ClickHandler {
+
+    private NavigationController navigationController;
 
     interface MyEventBinder extends EventBinder<GameNavigator> {
     }
@@ -38,12 +30,8 @@ public class GameNavigator extends Composite implements ClickHandler {
     private final Button previousButton;
     private final Button nextButton;
     private final Button lastButton;
-    private final GameNavigation gameNavigation;
-    private final ShogiRulesEngine shogiRulesEngine = new ShogiRulesEngine();
 
     private EventBus eventBus;
-
-    private final NavigatorConfiguration navigatorConfiguration;
 
     private final String activityId;
 
@@ -59,9 +47,9 @@ public class GameNavigator extends Composite implements ClickHandler {
                           final GameNavigation gameNavigation) {
         GWT.log(activityId + ": Creating game navigator");
 
+        navigationController = new NavigationController(activityId, navigatorConfiguration, gameNavigation);
+
         this.activityId = activityId;
-        this.navigatorConfiguration = navigatorConfiguration;
-        this.gameNavigation = gameNavigation;
 
         firstButton = new Button("<<");
         previousButton = new Button("<");
@@ -86,127 +74,30 @@ public class GameNavigator extends Composite implements ClickHandler {
         GWT.log(activityId + ": Activating Game Navigator");
         this.eventBus = eventBus;
         eventBinder.bindEventHandlers(this, this.eventBus);
-    }
-
-    public void reset(final Handicap handicap) {
-        reset(ShogiInitialPositionFactory.createInitialPosition(handicap));
-    }
-
-    public void reset(final ShogiPosition position) {
-        gameNavigation.setGameTree(new GameTree(position), 0);
-
-        firePositionChanged(false);
-    }
-
-    private void fireNodeChanged() {
-        eventBus.fireEvent(new NodeChangedEvent());
-    }
-
-    private void firePositionChanged(final boolean triggeredByUser) {
-        GWT.log(activityId + " GameNavigator: firing position changed");
-        eventBus.fireEvent(new PositionChangedEvent(gameNavigation.getPosition(),
-                gameNavigation.getBoardDecorations(), gameNavigation.getPreviousMove(), triggeredByUser));
-    }
-
-    public NavigatorConfiguration getNavigatorConfiguration() {
-        return navigatorConfiguration;
-    }
-
-    public GameNavigation getGameNavigation() {
-        return gameNavigation;
-    }
-
-    public void addMove(final Move move, final boolean fromUser) {
-        gameNavigation.addMove(move, true);
-        firePositionChanged(fromUser);
-        eventBus.fireEvent(new NewVariationPlayedEvent(false));
+        navigationController.activate(eventBus);
     }
 
     @Override
     public void onClick(final ClickEvent event) {
         Object source = event.getSource();
         if (source == firstButton) {
-            gameNavigation.moveToStart();
-            eventBus.fireEvent(new UserNavigatedBackEvent());
+            eventBus.fireEvent(new NavigateToStartEvent());
         } else if (source == nextButton) {
-            gameNavigation.moveForward();
+            eventBus.fireEvent(new NavigateForwardEvent());
         } else if (source == previousButton) {
-            gameNavigation.moveBack();
-            eventBus.fireEvent(new UserNavigatedBackEvent());
+            eventBus.fireEvent(new NavigateBackEvent());
         } else if (source == lastButton) {
-            gameNavigation.moveToEndOfVariation();
+            eventBus.fireEvent(new NavigateToEndEvent());
         }
-        firePositionChanged(true);
-        fireNodeChanged();
     }
 
-    @EventHandler
-    public void onGameTreeChanged(final GameTreeChangedEvent gameTreeChangedEvent) {
-        GWT.log(activityId + " GameNavigator: Handling game tree changed event - move " + gameTreeChangedEvent.getGoToMove());
-        gameNavigation.setGameTree(gameTreeChangedEvent.getGameTree(), gameTreeChangedEvent.getGoToMove());
-
-        firePositionChanged(false);
+    public NavigatorConfiguration getNavigatorConfiguration() {
+        return navigationController.getNavigatorConfiguration();
     }
 
-    @EventHandler
-    public void onMovePlayed(final MovePlayedEvent movePlayedEvent) {
-        GWT.log(activityId + " GameNavigator: Handling move played event");
-        ShogiMove move = movePlayedEvent.getMove();
-        GWT.log("Move played: " + move.toString());
-        boolean existingMove = gameNavigation.hasMoveInCurrentPosition(move);
-        boolean mainMove = Objects.equals(gameNavigation.getMainVariationMove(), move);
-
-        gameNavigation.addMove(move, true);
-        if (!existingMove) {
-            GWT.log("New variation");
-            boolean positionCheckmate = shogiRulesEngine.isPositionCheckmate(gameNavigation.getPosition());
-            if (move instanceof DropMove) {
-                DropMove dropMove = (DropMove) move;
-                if (dropMove.getPieceType() == PieceType.PAWN) {
-                    positionCheckmate = false;
-                }
-            }
-            GWT.log("Checkmate: " + positionCheckmate);
-            eventBus.fireEvent(new NewVariationPlayedEvent(positionCheckmate));
-        } else if (gameNavigation.isEndOfVariation()) {
-            eventBus.fireEvent(new EndOfVariationReachedEvent(mainMove));
-            fireNodeChanged();
-        } else if (gameNavigation.getPosition().getPlayerToMove() == Player.WHITE && navigatorConfiguration.isProblemMode()) {
-            gameNavigation.moveForward();
-            fireNodeChanged();
-        }
-
-        firePositionChanged(true);
+    public GameNavigation getGameNavigation() {
+        return navigationController.getGameNavigation();
     }
 
-    @EventHandler
-    public void onInsertVariationEvent(final InsertVariationEvent event) {
-        GWT.log(activityId + " GameNavigator: handling InsertVariationEvent");
-
-        String[] usfMoves = event.getSelectedVariation().getPrincipalVariation().trim().split(" ");
-        for (String usfMove : usfMoves) {
-            gameNavigation.addMove(UsfMoveConverter.fromUsfString(usfMove, gameNavigation.getPosition()), true);
-        }
-        for (int i = 0; i < usfMoves.length - 1; i++) {
-            gameNavigation.moveBack();
-        }
-
-        eventBus.fireEvent(new NewVariationPlayedEvent(false));
-        firePositionChanged(true);
-    }
-
-    @EventHandler
-    public void onClearDecorations(final ClearDecorationsEvent event) {
-        GWT.log(activityId + " GameNavigator: Handling ClearDecorationsEvent");
-        gameNavigation.getCurrentNode().setObjects(null);
-
-        firePositionChanged(true);
-    }
-
-    @EventHandler
-    public void onArrowDrawnEvent(final ArrowDrawnEvent event) {
-        GWT.log(activityId + " GameNavigator: Handling ArrowDrawnEvent");
-        gameNavigation.getCurrentNode().addArrow(event.getArrow());
-    }
 
 }

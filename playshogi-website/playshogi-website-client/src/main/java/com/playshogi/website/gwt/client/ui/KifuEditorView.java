@@ -15,6 +15,7 @@ import com.playshogi.library.shogi.models.record.*;
 import com.playshogi.library.shogi.models.shogivariant.ShogiInitialPositionFactory;
 import com.playshogi.library.shogi.rules.ShogiRulesEngine;
 import com.playshogi.website.gwt.client.SessionInformation;
+import com.playshogi.website.gwt.client.events.gametree.EditMovePlayedEvent;
 import com.playshogi.website.gwt.client.events.gametree.GameTreeChangedEvent;
 import com.playshogi.website.gwt.client.events.gametree.PositionChangedEvent;
 import com.playshogi.website.gwt.client.events.kifu.EditModeSelectedEvent;
@@ -213,7 +214,7 @@ public class KifuEditorView extends Composite {
                 currentNode.setMove(new EditMove(shogiBoard.getPosition()));
             } else {
                 // In all other cases, we insert a new Edit move
-                gameNavigator.addMove(new EditMove(shogiBoard.getPosition()), true);
+                eventBus.fireEvent(new EditMovePlayedEvent(new EditMove(shogiBoard.getPosition())));
             }
         }
         // To reset selection/handlers
