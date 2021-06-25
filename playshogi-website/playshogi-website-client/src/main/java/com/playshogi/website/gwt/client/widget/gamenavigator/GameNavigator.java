@@ -1,7 +1,6 @@
 package com.playshogi.website.gwt.client.widget.gamenavigator;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Button;
@@ -87,10 +86,6 @@ public class GameNavigator extends Composite implements ClickHandler {
         GWT.log(activityId + ": Activating Game Navigator");
         this.eventBus = eventBus;
         eventBinder.bindEventHandlers(this, this.eventBus);
-        Scheduler.get().scheduleDeferred(() -> {
-            GWT.log(activityId + ": Game Navigator deferred execution");
-            firePositionChanged(false);
-        });
     }
 
     public void reset(final Handicap handicap) {
