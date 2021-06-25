@@ -213,7 +213,7 @@ public class ViewKifuActivity extends MyAbstractActivity {
 
             @Override
             public void onSuccess(final PositionDetails result) {
-                GWT.log("VIEW KIFU - GOT POSITION DETAILS " + result);
+                GWT.log("VIEW KIFU - GOT POSITION DETAILS ");
                 eventBus.fireEvent(new PositionStatisticsEvent(result, position, gameSetId));
             }
 

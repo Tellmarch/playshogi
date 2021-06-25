@@ -72,7 +72,7 @@ public class PositionStatisticsPanel extends Composite {
     }
 
     private void refreshInformation() {
-        GWT.log("Displaying position details: " + positionDetails);
+        GWT.log("Displaying position details");
         verticalPanel.clear();
 
         if (positionDetails != null) {
@@ -116,8 +116,6 @@ public class PositionStatisticsPanel extends Composite {
 
                 // grid.setHTML(i + 1, 0, moveDetails.getMove());
                 grid.setHTML(i + 1, 1, String.valueOf(moveDetails.getMoveOcurrences()));
-
-                GWT.log(moveDetails.toString());
 
                 int senteMoveRate = (moveDetails.getSente_wins() * 1000) / moveDetails.getNewPositionOccurences();
                 int goteMoveRate = (moveDetails.getGote_wins() * 1000) / moveDetails.getNewPositionOccurences();

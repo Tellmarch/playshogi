@@ -58,9 +58,11 @@ public class GameTreePanel extends Composite {
             TreeItem item = selectionEvent.getSelectedItem();
             if (item.getUserObject() instanceof Node) {
                 Node node = (Node) item.getUserObject();
-                gameNavigation.moveToNode(node);
-                eventBus.fireEvent(new PositionChangedEvent(gameNavigation.getPosition(),
-                        gameNavigation.getBoardDecorations(), gameNavigation.getPreviousMove(), true));
+                if (gameNavigation.getCurrentNode() != node) {
+                    gameNavigation.moveToNode(node);
+                    eventBus.fireEvent(new PositionChangedEvent(gameNavigation.getPosition(),
+                            gameNavigation.getBoardDecorations(), gameNavigation.getPreviousMove(), true));
+                }
             }
         });
         panel.add(tree);
@@ -228,6 +230,7 @@ public class GameTreePanel extends Composite {
             for (int i = 1; i < children.size(); i++) {
                 Node variationNode = children.get(i);
                 TreeItem variationItem = createTreeItem();
+                variationItem.setText("Variation #" + i);
                 populateMainVariationAndBranches(variationItem, variationNode, moveCount);
                 item.addItem(variationItem);
             }

@@ -52,7 +52,7 @@ public class PositionKifusPanel extends Composite {
     }
 
     private void refreshInformation() {
-        GWT.log("Displaying position kifus: " + positionDetails);
+        GWT.log("Displaying position kifus");
         verticalPanel.clear();
 
         verticalPanel.add(new HTML("<br/>Sample games from this position:<br/>"));
