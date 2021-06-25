@@ -62,7 +62,8 @@ public class ViewKifuView extends Composite {
         textArea = createCommentsArea();
 
         gameTreePanel = new GameTreePanel(VIEWKIFU, gameNavigator.getGameNavigation(), true,
-                sessionInformation.getUserPreferences());
+                sessionInformation.getUserPreferences(), true, true);
+
         boardSettingsPanel = new BoardSettingsPanel(this.sessionInformation.getUserPreferences());
         databasePanel = new DatabasePanel(appPlaceHistoryMapper, sessionInformation.getUserPreferences());
 

@@ -21,6 +21,7 @@ import com.playshogi.website.gwt.client.events.gametree.NewVariationPlayedEvent;
 import com.playshogi.website.gwt.client.events.gametree.NodeChangedEvent;
 import com.playshogi.website.gwt.client.events.gametree.PositionChangedEvent;
 import com.playshogi.website.gwt.client.events.user.NotationStyleSelectedEvent;
+import org.dominokit.domino.ui.style.Color;
 
 import java.util.Iterator;
 import java.util.List;
@@ -36,6 +37,8 @@ public class GameTreePanel extends Composite {
     private final GameNavigation gameNavigation;
     private final boolean readOnly;
     private final UserPreferences userPreferences;
+    private final boolean colorVisitedNodes;
+    private final boolean colorNewNodes;
     private final Tree tree;
     private final PopupPanel contextMenu;
     private MenuItem promoteVariationMenu;
@@ -44,11 +47,14 @@ public class GameTreePanel extends Composite {
     private EventBus eventBus;
 
     public GameTreePanel(final String activityId, final GameNavigation gameNavigation, final boolean readOnly,
-                         final UserPreferences userPreferences) {
+                         final UserPreferences userPreferences, final boolean colorVisitedNodes,
+                         final boolean colorNewNodes) {
         this.activityId = activityId;
         this.gameNavigation = gameNavigation;
         this.readOnly = readOnly;
         this.userPreferences = userPreferences;
+        this.colorVisitedNodes = colorVisitedNodes;
+        this.colorNewNodes = colorNewNodes;
         contextMenu = createContextMenu();
 
         FlowPanel panel = new FlowPanel();
@@ -63,14 +69,18 @@ public class GameTreePanel extends Composite {
         tree.addSelectionHandler(selectionEvent -> {
             TreeItem item = selectionEvent.getSelectedItem();
             Node node = null;
+            TreeItem additionalItem = null;
 
             if (item.getUserObject() instanceof Node) {
                 node = (Node) item.getUserObject();
             } else if (item.getChildCount() > 0 && item.getChild(0).getUserObject() instanceof Node) {
+                additionalItem = item.getChild(0);
                 node = (Node) item.getChild(0).getUserObject();
             }
             if (node != null && gameNavigation.getCurrentNode() != node) {
                 gameNavigation.moveToNode(node);
+                colorNode(item, node);
+                if (additionalItem != null) colorNode(additionalItem, node);
                 eventBus.fireEvent(new PositionChangedEvent(gameNavigation.getPosition(),
                         gameNavigation.getBoardDecorations(), gameNavigation.getPreviousMove(), true));
             }
@@ -173,6 +183,7 @@ public class GameTreePanel extends Composite {
             if (item.getUserObject() == gameNavigation.getCurrentNode()) {
                 tree.setSelectedItem(item, false);
                 item.getElement().scrollIntoView();
+                colorNode(item, gameNavigation.getCurrentNode());
             }
         }
     }
@@ -242,6 +253,7 @@ public class GameTreePanel extends Composite {
                 Node variationNode = children.get(i);
                 TreeItem variationItem = createTreeItem();
                 variationItem.setText("Variation #" + i);
+                colorNode(variationItem, variationNode);
                 populateMainVariationAndBranches(variationItem, variationNode, moveCount);
                 item.addItem(variationItem);
             }
@@ -260,6 +272,23 @@ public class GameTreePanel extends Composite {
                     true));
         } else {
             item.setText(moveCount + ". " + move);
+        }
+        colorNode(item, node);
+        if (node.getComment().isPresent()) {
+            item.setHTML(item.getText() + "&nbsp;<i class=\"mdi mdi-comment-text-outline mdi-18px\"></i>");
+        }
+    }
+
+    private void colorNode(final TreeItem item, final Node node) {
+        if (colorNewNodes && node.isNew()) {
+            item.getElement().getStyle().setBackgroundColor(Color.YELLOW_LIGHTEN_3.getHex());
+        } else if (colorVisitedNodes && node.isVisited()) {
+            item.getElement().getStyle().setBackgroundColor(Color.LIGHT_GREEN_LIGHTEN_3.getHex());
+        } else {
+            item.getElement().getStyle().setBackgroundColor(Color.WHITE.getHex());
+        }
+        if (item.getParentItem() != null && item.getParentItem().getUserObject() == null) {
+            colorNode(item.getParentItem(), node);
         }
     }
 

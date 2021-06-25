@@ -55,7 +55,7 @@ public class TutorialView extends Composite {
         verticalPanel.add(shogiBoard);
 
         commentHTML = new HTML();
-        commentHTML.setSize("782px", "150px");
+        commentHTML.setSize("782px", "200px");
         commentHTML.setStyleName("lesson-content");
         verticalPanel.add(commentHTML);
 

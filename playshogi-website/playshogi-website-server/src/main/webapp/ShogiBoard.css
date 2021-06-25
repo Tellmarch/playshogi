@@ -74,12 +74,10 @@
 }
 
 .lesson-content {
-    font-size: 12pt;
-    color: #00008F;
-    font-weight: bold;
-    background-color: #d7dde8;
+    font-size: 13pt;
+    background-color: #e8eaee;
     margin-top: 5px;
-    margin-left: 5px;
+    margin-left: 10px;
 }
 
 .table-title {

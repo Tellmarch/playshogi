@@ -122,7 +122,7 @@ public class GameNavigator extends Composite implements ClickHandler {
     }
 
     public void addMove(final Move move, final boolean fromUser) {
-        gameNavigation.addMove(move);
+        gameNavigation.addMove(move, true);
         firePositionChanged(fromUser);
         eventBus.fireEvent(new NewVariationPlayedEvent(false));
     }
@@ -161,7 +161,7 @@ public class GameNavigator extends Composite implements ClickHandler {
         boolean existingMove = gameNavigation.hasMoveInCurrentPosition(move);
         boolean mainMove = Objects.equals(gameNavigation.getMainVariationMove(), move);
 
-        gameNavigation.addMove(move);
+        gameNavigation.addMove(move, true);
         if (!existingMove) {
             GWT.log("New variation");
             boolean positionCheckmate = shogiRulesEngine.isPositionCheckmate(gameNavigation.getPosition());
@@ -190,7 +190,7 @@ public class GameNavigator extends Composite implements ClickHandler {
 
         String[] usfMoves = event.getSelectedVariation().getPrincipalVariation().trim().split(" ");
         for (String usfMove : usfMoves) {
-            gameNavigation.addMove(UsfMoveConverter.fromUsfString(usfMove, gameNavigation.getPosition()));
+            gameNavigation.addMove(UsfMoveConverter.fromUsfString(usfMove, gameNavigation.getPosition()), true);
         }
         for (int i = 0; i < usfMoves.length - 1; i++) {
             gameNavigation.moveBack();

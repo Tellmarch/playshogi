@@ -29,6 +29,7 @@ public class GameNavigation {
         this.gameTree = gameTree;
         this.currentNode = gameTree.getRootNode();
         this.position = gameTree.getInitialPosition().clonePosition();
+        currentNode.setVisited(true);
     }
 
     public ShogiPosition getPosition() {
@@ -72,6 +73,7 @@ public class GameNavigation {
                 gameRulesEngine.undoMoveInPosition(position, (ShogiMove) move);
             }
             currentNode = currentNode.getParent();
+            currentNode.setVisited(true);
         }
     }
 
@@ -88,9 +90,14 @@ public class GameNavigation {
     }
 
     public void moveForward() {
+        moveForward(true);
+    }
+
+    private void moveForward(final boolean markVisited) {
         if (canMoveForward()) {
             currentNode = currentNode.getChildren().get(0);
             playMove(currentNode.getMove());
+            if (markVisited) currentNode.setVisited(true);
         }
     }
 
@@ -126,21 +133,28 @@ public class GameNavigation {
     public void moveToStart() {
         position = gameTree.getInitialPosition().clonePosition();
         currentNode = gameTree.getRootNode();
+        currentNode.setVisited(true);
     }
 
     public void moveToEndOfVariation() {
         while (canMoveForward()) {
-            moveForward();
+            moveForward(false);
         }
+        currentNode.setVisited(true);
     }
 
     public void moveToNode(final Node node) {
+        moveToNode(node, true);
+    }
+
+    private void moveToNode(final Node node, final boolean markVisited) {
         if (node.getParent() == null) {
             moveToStart();
         } else {
-            moveToNode(node.getParent());
+            moveToNode(node.getParent(), false);
             currentNode = node;
             playMove(node.getMove());
+            if (markVisited) currentNode.setVisited(true);
         }
     }
 
@@ -149,13 +163,24 @@ public class GameNavigation {
     }
 
     public void addMove(final Move move) {
+        addMove(move, false);
+    }
+
+    public void addMove(final Move move, final boolean fromUser) {
         Node childNode = currentNode.getChildWithMove(move);
         if (childNode == null) {
             Node newNode = new Node(move);
+            if (fromUser) {
+                newNode.setNew(true);
+                newNode.setVisited(true);
+            }
             currentNode.addChild(newNode);
             currentNode = newNode;
         } else {
             currentNode = childNode;
+            if (fromUser) {
+                currentNode.setVisited(true);
+            }
         }
         playMove(move);
     }
@@ -170,8 +195,9 @@ public class GameNavigation {
         this.position = gameTree.getInitialPosition().clonePosition();
 
         for (int i = 0; i < goToMove; i++) {
-            moveForward();
+            moveForward(false);
         }
+        currentNode.setVisited(true);
     }
 
     public BoardDecorations getBoardDecorations() {

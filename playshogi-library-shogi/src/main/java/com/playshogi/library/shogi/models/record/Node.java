@@ -23,6 +23,9 @@ public class Node {
     private String objects = null;
     private String additionalTags = null;
 
+    private boolean visited = false;
+    private boolean isNew = false;
+
     public Node(final Move move) {
         this.move = move;
     }
@@ -155,6 +158,22 @@ public class Node {
         }
     }
 
+    public boolean isVisited() {
+        return visited;
+    }
+
+    public boolean isNew() {
+        return isNew;
+    }
+
+    public void setVisited(final boolean visited) {
+        this.visited = visited;
+    }
+
+    public void setNew(final boolean aNew) {
+        isNew = aNew;
+    }
+
     @Override
     public String toString() {
         return "Node{" +
@@ -166,6 +185,8 @@ public class Node {
                 ", evaluation=" + evaluation +
                 ", objects='" + objects + '\'' +
                 ", additionalTags='" + additionalTags + '\'' +
+                ", visited ='" + visited + '\'' +
+                ", new ='" + isNew + '\'' +
                 '}';
     }
 }
