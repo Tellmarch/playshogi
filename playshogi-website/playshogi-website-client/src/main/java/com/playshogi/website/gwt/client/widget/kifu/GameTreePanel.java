@@ -53,16 +53,26 @@ public class GameTreePanel extends Composite {
 
         FlowPanel panel = new FlowPanel();
 
-        tree = new Tree();
+        tree = new Tree() {
+            @Override
+            public void setFocus(boolean focus) {
+                // Don't do anything (https://github.com/gwtproject/gwt/issues/9475)
+            }
+        };
+        tree.setScrollOnSelectEnabled(true);
         tree.addSelectionHandler(selectionEvent -> {
             TreeItem item = selectionEvent.getSelectedItem();
+            Node node = null;
+
             if (item.getUserObject() instanceof Node) {
-                Node node = (Node) item.getUserObject();
-                if (gameNavigation.getCurrentNode() != node) {
-                    gameNavigation.moveToNode(node);
-                    eventBus.fireEvent(new PositionChangedEvent(gameNavigation.getPosition(),
-                            gameNavigation.getBoardDecorations(), gameNavigation.getPreviousMove(), true));
-                }
+                node = (Node) item.getUserObject();
+            } else if (item.getChildCount() > 0 && item.getChild(0).getUserObject() instanceof Node) {
+                node = (Node) item.getChild(0).getUserObject();
+            }
+            if (node != null && gameNavigation.getCurrentNode() != node) {
+                gameNavigation.moveToNode(node);
+                eventBus.fireEvent(new PositionChangedEvent(gameNavigation.getPosition(),
+                        gameNavigation.getBoardDecorations(), gameNavigation.getPreviousMove(), true));
             }
         });
         panel.add(tree);
@@ -162,6 +172,7 @@ public class GameTreePanel extends Composite {
             TreeItem item = iterator.next();
             if (item.getUserObject() == gameNavigation.getCurrentNode()) {
                 tree.setSelectedItem(item, false);
+                item.getElement().scrollIntoView();
             }
         }
     }
