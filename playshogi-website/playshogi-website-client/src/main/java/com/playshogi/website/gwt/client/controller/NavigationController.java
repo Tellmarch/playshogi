@@ -30,26 +30,23 @@ public class NavigationController {
 
     private final String activityId;
     private final NavigatorConfiguration navigatorConfiguration;
-    private final GameNavigation gameNavigation;
+    private final GameNavigation gameNavigation = new GameNavigation(new ShogiRulesEngine(), new GameTree());
     private final ShogiRulesEngine shogiRulesEngine = new ShogiRulesEngine();
 
     private EventBus eventBus;
 
     public NavigationController(final String activityId) {
-        this(activityId, new NavigatorConfiguration(), new GameNavigation(new ShogiRulesEngine(), new GameTree()));
+        this(activityId, new NavigatorConfiguration());
     }
 
     public NavigationController(final String activityId, final boolean problemMode) {
-        this(activityId, new NavigatorConfiguration(problemMode), new GameNavigation(new ShogiRulesEngine(),
-                new GameTree()));
+        this(activityId, new NavigatorConfiguration(problemMode));
     }
 
-    public NavigationController(final String activityId, final NavigatorConfiguration navigatorConfiguration,
-                                final GameNavigation gameNavigation) {
+    private NavigationController(final String activityId, final NavigatorConfiguration navigatorConfiguration) {
         GWT.log(activityId + ": Creating NavigationController");
         this.activityId = activityId;
         this.navigatorConfiguration = navigatorConfiguration;
-        this.gameNavigation = gameNavigation;
     }
 
     public void activate(final EventBus eventBus) {
@@ -66,10 +63,6 @@ public class NavigationController {
         GWT.log(activityId + " GameNavigator: firing position changed");
         eventBus.fireEvent(new PositionChangedEvent(gameNavigation.getPosition(),
                 gameNavigation.getBoardDecorations(), gameNavigation.getPreviousMove(), triggeredByUser));
-    }
-
-    public NavigatorConfiguration getNavigatorConfiguration() {
-        return navigatorConfiguration;
     }
 
     public GameNavigation getGameNavigation() {
