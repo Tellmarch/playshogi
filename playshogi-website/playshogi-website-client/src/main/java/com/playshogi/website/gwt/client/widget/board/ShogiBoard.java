@@ -129,6 +129,8 @@ public class ShogiBoard extends Composite implements ClickHandler {
         DecoratorPanel absolutePanelWrapper = new DecoratorPanel();
         absolutePanelWrapper.setWidget(absolutePanel);
 
+        displayPosition();
+
         initWidget(absolutePanelWrapper);
     }
 

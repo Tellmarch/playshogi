@@ -115,7 +115,7 @@ public class ViewKifuActivity extends MyAbstractActivity {
     @EventHandler
     public void onRequestPositionEvaluationEvent(final RequestPositionEvaluationEvent event) {
         GWT.log("View Kifu Activity Handling RequestPositionEvaluationEvent");
-        String sfen = SfenConverter.toSFEN(viewKifuView.getGameNavigator().getGameNavigation().getPosition());
+        String sfen = SfenConverter.toSFEN(viewKifuView.getNavigationController().getPosition());
         kifuService.analysePosition(sessionInformation.getSessionId(), sfen,
                 new AsyncCallback<PositionEvaluationDetails>() {
                     @Override
@@ -134,8 +134,7 @@ public class ViewKifuActivity extends MyAbstractActivity {
     @EventHandler
     public void onRequestKifuEvaluationEvent(final RequestKifuEvaluationEvent event) {
         GWT.log("View Kifu Activity Handling RequestKifuEvaluationEvent");
-        String usf = UsfFormat.INSTANCE.write(viewKifuView.getGameNavigator().getGameNavigation().getGameTree());
-
+        String usf = UsfFormat.INSTANCE.write(viewKifuView.getNavigationController().getGameNavigation().getGameTree());
 
         kifuService.requestKifuAnalysis(sessionInformation.getSessionId(), usf,
                 new AsyncCallback<AnalysisRequestStatus>() {

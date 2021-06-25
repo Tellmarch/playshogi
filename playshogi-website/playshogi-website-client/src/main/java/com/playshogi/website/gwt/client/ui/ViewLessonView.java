@@ -9,6 +9,7 @@ import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.website.gwt.client.SessionInformation;
+import com.playshogi.website.gwt.client.controller.NavigationController;
 import com.playshogi.website.gwt.client.events.gametree.PositionChangedEvent;
 import com.playshogi.website.gwt.client.mvp.AppPlaceHistoryMapper;
 import com.playshogi.website.gwt.client.widget.board.BoardSettingsPanel;
@@ -39,6 +40,8 @@ public class ViewLessonView extends Composite {
     private final TextArea textArea;
     private final BoardSettingsPanel boardSettingsPanel;
     private final DatabasePanel databasePanel;
+    private final NavigationController navigationController;
+
 
     @Inject
     public ViewLessonView(final AppPlaceHistoryMapper appPlaceHistoryMapper,
@@ -46,13 +49,14 @@ public class ViewLessonView extends Composite {
         GWT.log("Creating ViewLessonView");
         this.sessionInformation = sessionInformation;
         shogiBoard = new ShogiBoard(VIEWLESSON, sessionInformation.getUserPreferences());
+        navigationController = new NavigationController(VIEWLESSON);
         gameNavigator = new GameNavigator(VIEWLESSON);
 
         shogiBoard.setUpperRightPanel(new KifuNavigationPanel(gameNavigator));
 
         textArea = createCommentsArea();
 
-        gameTreePanel = new GameTreePanel(VIEWLESSON, gameNavigator.getGameNavigation(), true,
+        gameTreePanel = new GameTreePanel(VIEWLESSON, navigationController.getGameNavigation(), true,
                 sessionInformation.getUserPreferences(), true, true);
 
         boardSettingsPanel = new BoardSettingsPanel(this.sessionInformation.getUserPreferences());
@@ -116,17 +120,18 @@ public class ViewLessonView extends Composite {
         gameTreePanel.activate(eventBus);
         boardSettingsPanel.activate(eventBus);
         databasePanel.activate(eventBus);
+        navigationController.activate(eventBus);
     }
 
-    public GameNavigator getGameNavigator() {
-        return gameNavigator;
+    public NavigationController getNavigationController() {
+        return navigationController;
     }
 
     @EventHandler
     public void onPositionChanged(final PositionChangedEvent event) {
         GWT.log("ViewKifuView: handle PositionChangedEvent");
 
-        Optional<String> comment = gameNavigator.getGameNavigation().getCurrentComment();
+        Optional<String> comment = navigationController.getGameNavigation().getCurrentComment();
         if (comment.isPresent()) {
             textArea.setText(comment.get());
         } else {

@@ -17,6 +17,7 @@ import com.playshogi.library.shogi.models.record.GameTree;
 import com.playshogi.library.shogi.models.shogivariant.Handicap;
 import com.playshogi.library.shogi.models.shogivariant.ShogiInitialPositionFactory;
 import com.playshogi.website.gwt.client.SessionInformation;
+import com.playshogi.website.gwt.client.controller.NavigationController;
 import com.playshogi.website.gwt.client.events.gametree.GameTreeChangedEvent;
 import com.playshogi.website.gwt.client.i18n.PlayMessages;
 import com.playshogi.website.gwt.client.widget.board.BoardButtons;
@@ -31,12 +32,14 @@ public class PlayView extends Composite {
     private final GameNavigator gameNavigator;
 
     private final PlayMessages messages = GWT.create(PlayMessages.class);
+    private final NavigationController navigationController;
     private EventBus eventBus;
 
     @Inject
     public PlayView(final SessionInformation sessionInformation) {
         GWT.log("Creating Play view");
         shogiBoard = new ShogiBoard(PLAY, sessionInformation.getUserPreferences());
+        navigationController = new NavigationController(PLAY);
         gameNavigator = new GameNavigator(PLAY);
         shogiBoard.setUpperRightPanel(null);
         shogiBoard.setLowerLeftPanel(createLowerLeftPanel());
@@ -97,13 +100,10 @@ public class PlayView extends Composite {
         this.eventBus = eventBus;
         shogiBoard.activate(eventBus);
         gameNavigator.activate(eventBus);
-    }
-
-    public GameNavigator getGameNavigator() {
-        return gameNavigator;
+        navigationController.activate(eventBus);
     }
 
     public ShogiPosition getPosition() {
-        return gameNavigator.getGameNavigation().getPosition();
+        return navigationController.getGameNavigation().getPosition();
     }
 }

@@ -8,18 +8,12 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
-import com.playshogi.library.shogi.models.record.GameNavigation;
-import com.playshogi.library.shogi.models.record.GameTree;
-import com.playshogi.library.shogi.rules.ShogiRulesEngine;
-import com.playshogi.website.gwt.client.controller.NavigationController;
 import com.playshogi.website.gwt.client.events.gametree.NavigateBackEvent;
 import com.playshogi.website.gwt.client.events.gametree.NavigateForwardEvent;
 import com.playshogi.website.gwt.client.events.gametree.NavigateToEndEvent;
 import com.playshogi.website.gwt.client.events.gametree.NavigateToStartEvent;
 
 public class GameNavigator extends Composite implements ClickHandler {
-
-    private NavigationController navigationController;
 
     interface MyEventBinder extends EventBinder<GameNavigator> {
     }
@@ -36,18 +30,7 @@ public class GameNavigator extends Composite implements ClickHandler {
     private final String activityId;
 
     public GameNavigator(final String activityId) {
-        this(activityId, new NavigatorConfiguration(), new GameNavigation(new ShogiRulesEngine(), new GameTree()));
-    }
-
-    public GameNavigator(final String activityId, final GameNavigation gameNavigation) {
-        this(activityId, new NavigatorConfiguration(), gameNavigation);
-    }
-
-    private GameNavigator(final String activityId, final NavigatorConfiguration navigatorConfiguration,
-                          final GameNavigation gameNavigation) {
         GWT.log(activityId + ": Creating game navigator");
-
-        navigationController = new NavigationController(activityId, navigatorConfiguration, gameNavigation);
 
         this.activityId = activityId;
 
@@ -74,7 +57,6 @@ public class GameNavigator extends Composite implements ClickHandler {
         GWT.log(activityId + ": Activating Game Navigator");
         this.eventBus = eventBus;
         eventBinder.bindEventHandlers(this, this.eventBus);
-        navigationController.activate(eventBus);
     }
 
     @Override
@@ -90,14 +72,4 @@ public class GameNavigator extends Composite implements ClickHandler {
             eventBus.fireEvent(new NavigateToEndEvent());
         }
     }
-
-    public NavigatorConfiguration getNavigatorConfiguration() {
-        return navigationController.getNavigatorConfiguration();
-    }
-
-    public GameNavigation getGameNavigation() {
-        return navigationController.getGameNavigation();
-    }
-
-
 }

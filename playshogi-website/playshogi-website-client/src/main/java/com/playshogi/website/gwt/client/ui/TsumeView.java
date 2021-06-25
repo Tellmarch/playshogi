@@ -9,6 +9,7 @@ import com.google.inject.Singleton;
 import com.google.web.bindery.event.shared.EventBus;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.website.gwt.client.SessionInformation;
+import com.playshogi.website.gwt.client.controller.NavigationController;
 import com.playshogi.website.gwt.client.util.ElementWidget;
 import com.playshogi.website.gwt.client.widget.board.BoardButtons;
 import com.playshogi.website.gwt.client.widget.board.ShogiBoard;
@@ -36,12 +37,13 @@ public class TsumeView extends Composite {
     private final GameNavigator gameNavigator;
     private final ProblemFeedbackPanel problemFeedbackPanel;
     private final ProblemOptionsPanel2 problemOptionsPanel;
-    private EventBus eventBus;
+    private final NavigationController navigationController;
 
     @Inject
     public TsumeView(final SessionInformation sessionInformation) {
         GWT.log("Creating tsume view");
         shogiBoard = new ShogiBoard(TSUME, sessionInformation.getUserPreferences());
+        navigationController = new NavigationController(TSUME, true);
         gameNavigator = new GameNavigator(TSUME);
         problemFeedbackPanel = new ProblemFeedbackPanel(gameNavigator, true);
 
@@ -50,8 +52,6 @@ public class TsumeView extends Composite {
         shogiBoard.setLowerLeftPanel(createLowerLeftPanel());
 
         shogiBoard.getBoardConfiguration().setPlayWhiteMoves(false);
-
-        gameNavigator.getNavigatorConfiguration().setProblemMode(true);
 
         HorizontalPanel panel = new HorizontalPanel();
         panel.add(shogiBoard);
@@ -119,11 +119,11 @@ public class TsumeView extends Composite {
 
     public void activate(final EventBus eventBus) {
         GWT.log("Activating tsume view");
-        this.eventBus = eventBus;
         shogiBoard.activate(eventBus);
         gameNavigator.activate(eventBus);
         problemFeedbackPanel.activate(eventBus);
         problemOptionsPanel.activate(eventBus);
+        navigationController.activate(eventBus);
     }
 
 }

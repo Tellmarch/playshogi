@@ -181,7 +181,7 @@ public class KifuEditorActivity extends MyAbstractActivity {
     @EventHandler
     public void onRequestPositionEvaluationEvent(final RequestPositionEvaluationEvent event) {
         GWT.log("Edit Kifu Activity Handling RequestPositionEvaluationEvent");
-        String sfen = SfenConverter.toSFEN(view.getGameNavigator().getGameNavigation().getPosition());
+        String sfen = SfenConverter.toSFEN(view.getNavigationController().getPosition());
         kifuService.analysePosition(sessionInformation.getSessionId(), sfen,
                 new AsyncCallback<PositionEvaluationDetails>() {
                     @Override

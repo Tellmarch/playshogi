@@ -7,6 +7,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.web.bindery.event.shared.EventBus;
 import com.playshogi.website.gwt.client.SessionInformation;
+import com.playshogi.website.gwt.client.controller.NavigationController;
 import com.playshogi.website.gwt.client.util.ElementWidget;
 import com.playshogi.website.gwt.client.widget.board.BoardButtons;
 import com.playshogi.website.gwt.client.widget.board.ShogiBoard;
@@ -20,12 +21,14 @@ public class FreeBoardView extends Composite {
     private static final String FREEBOARD = "freeboard";
     private final ShogiBoard shogiBoard;
     private final GameNavigator gameNavigator;
+    private final NavigationController navigationController;
     private EventBus eventBus;
 
     @Inject
     public FreeBoardView(final SessionInformation sessionInformation) {
         GWT.log("Creating free board view");
         shogiBoard = new ShogiBoard(FREEBOARD, sessionInformation.getUserPreferences());
+        navigationController = new NavigationController(FREEBOARD);
         gameNavigator = new GameNavigator(FREEBOARD);
         shogiBoard.setUpperRightPanel(null);
 
@@ -46,6 +49,7 @@ public class FreeBoardView extends Composite {
         this.eventBus = eventBus;
         shogiBoard.activate(eventBus);
         gameNavigator.activate(eventBus);
+        navigationController.activate(eventBus);
     }
 
 }

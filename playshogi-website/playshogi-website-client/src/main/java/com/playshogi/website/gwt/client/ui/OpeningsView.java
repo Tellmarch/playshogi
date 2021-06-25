@@ -8,6 +8,7 @@ import com.google.web.bindery.event.shared.EventBus;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.library.shogi.models.record.GameTree;
 import com.playshogi.website.gwt.client.SessionInformation;
+import com.playshogi.website.gwt.client.controller.NavigationController;
 import com.playshogi.website.gwt.client.mvp.AppPlaceHistoryMapper;
 import com.playshogi.website.gwt.client.widget.board.ShogiBoard;
 import com.playshogi.website.gwt.client.widget.gamenavigator.GameNavigator;
@@ -22,11 +23,13 @@ public class OpeningsView extends Composite {
     private final GameNavigator gameNavigator;
     private final PositionStatisticsPanel positionStatisticsPanel;
     private final PositionKifusPanel positionKifusPanel;
+    private final NavigationController navigationController;
 
     @Inject
     public OpeningsView(final AppPlaceHistoryMapper historyMapper, final SessionInformation sessionInformation) {
         GWT.log("Creating openings view");
         shogiBoard = new ShogiBoard(OPENINGS, sessionInformation.getUserPreferences());
+        navigationController = new NavigationController(OPENINGS);
         gameNavigator = new GameNavigator(OPENINGS);
 
         positionStatisticsPanel = new PositionStatisticsPanel(historyMapper, sessionInformation.getUserPreferences(),
@@ -42,10 +45,11 @@ public class OpeningsView extends Composite {
     public void activate(final ShogiPosition position, final EventBus eventBus) {
         GWT.log("Activating openings view");
         shogiBoard.activate(eventBus);
-        gameNavigator.getGameNavigation().setGameTree(new GameTree(position), 0);
+        navigationController.getGameNavigation().setGameTree(new GameTree(position), 0);
         gameNavigator.activate(eventBus);
         positionStatisticsPanel.activate(eventBus);
         positionKifusPanel.activate(eventBus);
+        navigationController.activate(eventBus);
     }
 
 }

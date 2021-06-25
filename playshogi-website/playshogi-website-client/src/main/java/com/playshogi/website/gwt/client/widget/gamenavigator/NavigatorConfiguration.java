@@ -7,6 +7,10 @@ public class NavigatorConfiguration {
     public NavigatorConfiguration() {
     }
 
+    public NavigatorConfiguration(final boolean problemMode) {
+        this.problemMode = problemMode;
+    }
+
     public boolean isProblemMode() {
         return problemMode;
     }

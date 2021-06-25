@@ -8,6 +8,7 @@ import com.google.inject.Singleton;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.playshogi.website.gwt.client.SessionInformation;
+import com.playshogi.website.gwt.client.controller.NavigationController;
 import com.playshogi.website.gwt.client.widget.board.BoardButtons;
 import com.playshogi.website.gwt.client.widget.board.ShogiBoard;
 import com.playshogi.website.gwt.client.widget.gamenavigator.GameNavigator;
@@ -23,23 +24,22 @@ public class ProblemView extends Composite {
 
     private final MyEventBinder eventBinder = GWT.create(MyEventBinder.class);
 
-
     private final ShogiBoard shogiBoard;
     private final GameNavigator gameNavigator;
     private final ProblemFeedbackPanel problemFeedbackPanel;
-    private EventBus eventBus;
+    private final NavigationController navigationController;
 
     @Inject
     public ProblemView(final SessionInformation sessionInformation) {
         GWT.log("Creating Problem view");
         shogiBoard = new ShogiBoard(PROBLEMS, sessionInformation.getUserPreferences());
+        navigationController = new NavigationController(PROBLEMS, true);
         gameNavigator = new GameNavigator(PROBLEMS);
         problemFeedbackPanel = new ProblemFeedbackPanel(gameNavigator, false);
 
         shogiBoard.setUpperRightPanel(problemFeedbackPanel);
         shogiBoard.setLowerLeftPanel(createLowerLeftPanel());
         shogiBoard.getBoardConfiguration().setPlayWhiteMoves(false);
-        gameNavigator.getNavigatorConfiguration().setProblemMode(true);
 
         initWidget(shogiBoard);
     }
@@ -54,11 +54,11 @@ public class ProblemView extends Composite {
 
     public void activate(final EventBus eventBus) {
         GWT.log("Activating ProblemsView");
-        this.eventBus = eventBus;
         eventBinder.bindEventHandlers(this, eventBus);
         shogiBoard.activate(eventBus);
         gameNavigator.activate(eventBus);
         problemFeedbackPanel.activate(eventBus);
+        navigationController.activate(eventBus);
     }
 
 }

@@ -13,8 +13,8 @@ import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.library.shogi.models.moves.EditMove;
 import com.playshogi.library.shogi.models.record.*;
 import com.playshogi.library.shogi.models.shogivariant.ShogiInitialPositionFactory;
-import com.playshogi.library.shogi.rules.ShogiRulesEngine;
 import com.playshogi.website.gwt.client.SessionInformation;
+import com.playshogi.website.gwt.client.controller.NavigationController;
 import com.playshogi.website.gwt.client.events.gametree.EditMovePlayedEvent;
 import com.playshogi.website.gwt.client.events.gametree.GameTreeChangedEvent;
 import com.playshogi.website.gwt.client.events.gametree.PositionChangedEvent;
@@ -37,6 +37,7 @@ import java.util.Optional;
 public class KifuEditorView extends Composite {
 
     private static final String KIFU_EDITOR = "kifueditor";
+    private final NavigationController navigationController;
     private KifuEditorPlace place;
 
     interface MyEventBinder extends EventBinder<KifuEditorView> {
@@ -70,8 +71,10 @@ public class KifuEditorView extends Composite {
         shogiBoard = new ShogiBoard(KIFU_EDITOR, sessionInformation.getUserPreferences());
         shogiBoard.getBoardConfiguration().setPositionEditingMode(false);
 
-        gameNavigation = new GameNavigation(new ShogiRulesEngine(), new GameTree());
-        gameNavigator = new GameNavigator(KIFU_EDITOR, gameNavigation);
+        navigationController = new NavigationController(KIFU_EDITOR);
+
+        gameNavigation = navigationController.getGameNavigation();
+        gameNavigator = new GameNavigator(KIFU_EDITOR);
 
         kifuEditorLeftBarPanel = new KifuEditorLeftBarPanel();
         kifuEditorPanel = new KifuEditorPanel(gameNavigator);
@@ -146,6 +149,7 @@ public class KifuEditorView extends Composite {
         boardSettingsPanel.activate(eventBus);
         databasePanel.activate(eventBus);
         positionEvaluationDetailsPanel.activate(eventBus);
+        navigationController.activate(eventBus);
         reset();
     }
 
@@ -194,8 +198,8 @@ public class KifuEditorView extends Composite {
         eventBus.fireEvent(new GameInformationChangedEvent(gameRecord.getGameInformation()));
     }
 
-    public GameNavigator getGameNavigator() {
-        return gameNavigator;
+    public NavigationController getNavigationController() {
+        return navigationController;
     }
 
     @EventHandler

@@ -14,6 +14,7 @@ import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.website.gwt.client.SessionInformation;
+import com.playshogi.website.gwt.client.controller.NavigationController;
 import com.playshogi.website.gwt.client.events.collections.ListCollectionProblemsEvent;
 import com.playshogi.website.gwt.client.events.puzzles.*;
 import com.playshogi.website.gwt.client.util.ElementWidget;
@@ -40,8 +41,6 @@ import java.util.List;
 public class ProblemsView extends Composite {
 
     private static final String PROBLEMS = "problems";
-    private HtmlContentBuilder<HTMLElement> timerTextSeconds;
-    private HtmlContentBuilder<HTMLElement> timerTextMs;
 
     interface MyEventBinder extends EventBinder<ProblemsView> {
     }
@@ -55,11 +54,14 @@ public class ProblemsView extends Composite {
     private final SessionInformation sessionInformation;
     private final PlaceController placeController;
     private final ScrollPanel scrollPanel;
+    private final NavigationController navigationController;
     private HtmlContentBuilder<HTMLElement> timerText;
     private EventBus eventBus;
     private Button startTimedRun;
     private Button stopTimedRun;
     private TreeItem<ProblemDetails> current;
+    private HtmlContentBuilder<HTMLElement> timerTextSeconds;
+    private HtmlContentBuilder<HTMLElement> timerTextMs;
 
     @Inject
     public ProblemsView(final SessionInformation sessionInformation, final PlaceController placeController) {
@@ -67,14 +69,13 @@ public class ProblemsView extends Composite {
         this.placeController = placeController;
         GWT.log("Creating Problems view");
         shogiBoard = new ShogiBoard(PROBLEMS, sessionInformation.getUserPreferences());
+        navigationController = new NavigationController(PROBLEMS, true);
         gameNavigator = new GameNavigator(PROBLEMS);
         problemFeedbackPanel = new ProblemFeedbackPanel(gameNavigator, false);
 
         shogiBoard.setUpperRightPanel(problemFeedbackPanel);
         shogiBoard.setLowerLeftPanel(createLowerLeftPanel());
         shogiBoard.getBoardConfiguration().setPlayWhiteMoves(false);
-        gameNavigator.getNavigatorConfiguration().setProblemMode(true);
-
 
         problemsTree = Tree.create("Problems", null);
 
@@ -143,6 +144,7 @@ public class ProblemsView extends Composite {
         shogiBoard.activate(eventBus);
         gameNavigator.activate(eventBus);
         problemFeedbackPanel.activate(eventBus);
+        navigationController.activate(eventBus);
         timerText.hidden(true);
         startTimedRun.show();
         stopTimedRun.hide();

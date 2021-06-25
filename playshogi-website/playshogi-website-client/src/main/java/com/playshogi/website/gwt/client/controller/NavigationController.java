@@ -9,7 +9,9 @@ import com.playshogi.library.shogi.models.Player;
 import com.playshogi.library.shogi.models.formats.usf.UsfMoveConverter;
 import com.playshogi.library.shogi.models.moves.DropMove;
 import com.playshogi.library.shogi.models.moves.ShogiMove;
+import com.playshogi.library.shogi.models.position.ReadOnlyShogiPosition;
 import com.playshogi.library.shogi.models.record.GameNavigation;
+import com.playshogi.library.shogi.models.record.GameTree;
 import com.playshogi.library.shogi.rules.ShogiRulesEngine;
 import com.playshogi.website.gwt.client.events.gametree.*;
 import com.playshogi.website.gwt.client.events.kifu.ArrowDrawnEvent;
@@ -32,6 +34,15 @@ public class NavigationController {
     private final ShogiRulesEngine shogiRulesEngine = new ShogiRulesEngine();
 
     private EventBus eventBus;
+
+    public NavigationController(final String activityId) {
+        this(activityId, new NavigatorConfiguration(), new GameNavigation(new ShogiRulesEngine(), new GameTree()));
+    }
+
+    public NavigationController(final String activityId, final boolean problemMode) {
+        this(activityId, new NavigatorConfiguration(problemMode), new GameNavigation(new ShogiRulesEngine(),
+                new GameTree()));
+    }
 
     public NavigationController(final String activityId, final NavigatorConfiguration navigatorConfiguration,
                                 final GameNavigation gameNavigation) {
@@ -63,6 +74,10 @@ public class NavigationController {
 
     public GameNavigation getGameNavigation() {
         return gameNavigation;
+    }
+
+    public ReadOnlyShogiPosition getPosition() {
+        return gameNavigation.getPosition();
     }
 
     @EventHandler
