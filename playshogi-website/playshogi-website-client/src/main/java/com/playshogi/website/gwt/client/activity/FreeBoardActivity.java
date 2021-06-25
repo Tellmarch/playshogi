@@ -1,9 +1,12 @@
 package com.playshogi.website.gwt.client.activity;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
+import com.playshogi.library.shogi.models.shogivariant.ShogiInitialPositionFactory;
+import com.playshogi.website.gwt.client.events.gametree.PositionChangedEvent;
 import com.playshogi.website.gwt.client.place.FreeBoardPlace;
 import com.playshogi.website.gwt.client.ui.FreeBoardView;
 
@@ -28,6 +31,8 @@ public class FreeBoardActivity extends MyAbstractActivity {
         eventBinder.bindEventHandlers(this, eventBus);
         freeBoardView.activate(eventBus);
         containerWidget.setWidget(freeBoardView.asWidget());
+        Scheduler.get().scheduleDeferred(() -> eventBus.fireEvent(
+                new PositionChangedEvent(ShogiInitialPositionFactory.createInitialPosition(), false)));
     }
 
     @Override

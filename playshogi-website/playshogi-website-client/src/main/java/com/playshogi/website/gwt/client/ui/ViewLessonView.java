@@ -13,22 +13,20 @@ import com.playshogi.website.gwt.client.events.gametree.PositionChangedEvent;
 import com.playshogi.website.gwt.client.mvp.AppPlaceHistoryMapper;
 import com.playshogi.website.gwt.client.widget.board.BoardSettingsPanel;
 import com.playshogi.website.gwt.client.widget.board.ShogiBoard;
-import com.playshogi.website.gwt.client.widget.engine.KifuEvaluationChartPanel;
 import com.playshogi.website.gwt.client.widget.engine.PositionEvaluationDetailsPanel;
 import com.playshogi.website.gwt.client.widget.gamenavigator.GameNavigator;
 import com.playshogi.website.gwt.client.widget.kifu.DatabasePanel;
 import com.playshogi.website.gwt.client.widget.kifu.GameTreePanel;
-import com.playshogi.website.gwt.client.widget.kifu.KifuInformationPanel;
 import com.playshogi.website.gwt.client.widget.kifu.KifuNavigationPanel;
 
 import java.util.Optional;
 
 @Singleton
-public class ViewKifuView extends Composite {
+public class ViewLessonView extends Composite {
 
-    private static final String VIEWKIFU = "viewkifu";
+    private static final String VIEWLESSON = "viewlesson";
 
-    interface MyEventBinder extends EventBinder<ViewKifuView> {
+    interface MyEventBinder extends EventBinder<ViewLessonView> {
     }
 
     private final MyEventBinder eventBinder = GWT.create(MyEventBinder.class);
@@ -36,33 +34,26 @@ public class ViewKifuView extends Composite {
     private final SessionInformation sessionInformation;
     private final ShogiBoard shogiBoard;
     private final GameNavigator gameNavigator;
-    private final KifuInformationPanel kifuInformationPanel;
     private final GameTreePanel gameTreePanel;
     private final PositionEvaluationDetailsPanel positionEvaluationDetailsPanel;
-    private final KifuEvaluationChartPanel kifuEvaluationChartPanel;
     private final TextArea textArea;
     private final BoardSettingsPanel boardSettingsPanel;
     private final DatabasePanel databasePanel;
 
     @Inject
-    public ViewKifuView(final AppPlaceHistoryMapper appPlaceHistoryMapper,
-                        final SessionInformation sessionInformation) {
-        GWT.log("Creating ViewKifuView");
+    public ViewLessonView(final AppPlaceHistoryMapper appPlaceHistoryMapper,
+                          final SessionInformation sessionInformation) {
+        GWT.log("Creating ViewLessonView");
         this.sessionInformation = sessionInformation;
-        shogiBoard = new ShogiBoard(VIEWKIFU, sessionInformation.getUserPreferences());
-        gameNavigator = new GameNavigator(VIEWKIFU);
-
-        kifuInformationPanel = new KifuInformationPanel();
+        shogiBoard = new ShogiBoard(VIEWLESSON, sessionInformation.getUserPreferences());
+        gameNavigator = new GameNavigator(VIEWLESSON);
 
         shogiBoard.setUpperRightPanel(new KifuNavigationPanel(gameNavigator));
-        shogiBoard.setLowerLeftPanel(kifuInformationPanel);
-
-        kifuEvaluationChartPanel = new KifuEvaluationChartPanel(sessionInformation.getUserPreferences());
 
         textArea = createCommentsArea();
 
-        gameTreePanel = new GameTreePanel(VIEWKIFU, gameNavigator.getGameNavigation(), true,
-                sessionInformation.getUserPreferences(), false, true);
+        gameTreePanel = new GameTreePanel(VIEWLESSON, gameNavigator.getGameNavigation(), true,
+                sessionInformation.getUserPreferences(), true, true);
 
         boardSettingsPanel = new BoardSettingsPanel(this.sessionInformation.getUserPreferences());
         databasePanel = new DatabasePanel(appPlaceHistoryMapper, sessionInformation.getUserPreferences());
@@ -107,7 +98,6 @@ public class ViewKifuView extends Composite {
         TabLayoutPanel tabsPanel = new TabLayoutPanel(1.5, Style.Unit.EM);
 
         tabsPanel.add(treeScrollPanel, "Moves");
-        tabsPanel.add(kifuEvaluationChartPanel, "Computer");
         tabsPanel.add(boardSettingsPanel, "Board");
         tabsPanel.add(databasePanel, "Database");
 
@@ -122,9 +112,7 @@ public class ViewKifuView extends Composite {
         shogiBoard.getBoardConfiguration().setInverted(inverted);
         shogiBoard.activate(eventBus);
         gameNavigator.activate(eventBus);
-        kifuInformationPanel.activate(eventBus);
         positionEvaluationDetailsPanel.activate(eventBus);
-        kifuEvaluationChartPanel.activate(eventBus, kifuId);
         gameTreePanel.activate(eventBus);
         boardSettingsPanel.activate(eventBus);
         databasePanel.activate(eventBus);

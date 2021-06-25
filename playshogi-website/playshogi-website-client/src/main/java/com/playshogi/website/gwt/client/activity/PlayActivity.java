@@ -1,6 +1,7 @@
 package com.playshogi.website.gwt.client.activity;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
 import com.google.web.bindery.event.shared.EventBus;
@@ -9,6 +10,7 @@ import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.library.shogi.models.Player;
 import com.playshogi.library.shogi.models.formats.sfen.SfenConverter;
 import com.playshogi.library.shogi.models.formats.usf.UsfMoveConverter;
+import com.playshogi.library.shogi.models.shogivariant.ShogiInitialPositionFactory;
 import com.playshogi.website.gwt.client.SessionInformation;
 import com.playshogi.website.gwt.client.events.gametree.PositionChangedEvent;
 import com.playshogi.website.gwt.client.place.PlayPlace;
@@ -38,6 +40,8 @@ public class PlayActivity extends MyAbstractActivity {
         eventBinder.bindEventHandlers(this, eventBus);
         playView.activate(eventBus);
         containerWidget.setWidget(playView.asWidget());
+        Scheduler.get().scheduleDeferred(() -> eventBus.fireEvent(
+                new PositionChangedEvent(ShogiInitialPositionFactory.createInitialPosition(), false)));
     }
 
     @Override

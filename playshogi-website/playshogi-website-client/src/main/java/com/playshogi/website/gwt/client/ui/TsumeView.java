@@ -9,8 +9,8 @@ import com.google.inject.Singleton;
 import com.google.web.bindery.event.shared.EventBus;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.website.gwt.client.SessionInformation;
-import com.playshogi.website.gwt.client.events.kifu.ClearDecorationsEvent;
 import com.playshogi.website.gwt.client.util.ElementWidget;
+import com.playshogi.website.gwt.client.widget.board.BoardButtons;
 import com.playshogi.website.gwt.client.widget.board.ShogiBoard;
 import com.playshogi.website.gwt.client.widget.gamenavigator.GameNavigator;
 import com.playshogi.website.gwt.client.widget.problems.ProblemFeedbackPanel;
@@ -64,15 +64,8 @@ public class TsumeView extends Composite {
     private FlowPanel createLowerLeftPanel() {
 
         FlowPanel panel = new FlowPanel();
-        panel.add(new ElementWidget(org.dominokit.domino.ui.button.Button.createPrimary(Icons.ALL.settings_mdi())
-                .setBackground(Theme.DEEP_PURPLE.color()).circle()
-                .setTooltip("Settings")
-                .addClickListener(e -> shogiBoard.getBoardSettingsPanel().showInDialog()).element()));
-        panel.add(new ElementWidget(org.dominokit.domino.ui.button.Button.createPrimary(Icons.ALL.eraser_mdi())
-                .setBackground(Theme.DEEP_PURPLE.color()).circle()
-                .addClickListener(e -> eventBus.fireEvent(new ClearDecorationsEvent()))
-                .setTooltip("Clear arrows")
-                .style().setMarginLeft("1em").element()));
+        panel.add(BoardButtons.createSettingsWidget(shogiBoard));
+        panel.add(BoardButtons.createClearArrowsWidget(shogiBoard));
         panel.add(new ElementWidget(org.dominokit.domino.ui.button.Button.createPrimary(Icons.ALL.help_outline())
                 .setBackground(Theme.DEEP_PURPLE.color()).circle()
                 .addClickListener(e -> getHelpDialog().open())

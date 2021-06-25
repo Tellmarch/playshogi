@@ -15,9 +15,9 @@ import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.website.gwt.client.SessionInformation;
 import com.playshogi.website.gwt.client.events.collections.ListCollectionProblemsEvent;
-import com.playshogi.website.gwt.client.events.kifu.ClearDecorationsEvent;
 import com.playshogi.website.gwt.client.events.puzzles.*;
 import com.playshogi.website.gwt.client.util.ElementWidget;
+import com.playshogi.website.gwt.client.widget.board.BoardButtons;
 import com.playshogi.website.gwt.client.widget.board.ShogiBoard;
 import com.playshogi.website.gwt.client.widget.gamenavigator.GameNavigator;
 import com.playshogi.website.gwt.client.widget.problems.ProblemFeedbackPanel;
@@ -28,7 +28,6 @@ import elemental2.dom.HTMLLIElement;
 import org.dominokit.domino.ui.button.Button;
 import org.dominokit.domino.ui.icons.Icons;
 import org.dominokit.domino.ui.style.Color;
-import org.dominokit.domino.ui.themes.Theme;
 import org.dominokit.domino.ui.tree.Tree;
 import org.dominokit.domino.ui.tree.TreeItem;
 import org.dominokit.domino.ui.utils.DominoElement;
@@ -91,15 +90,8 @@ public class ProblemsView extends Composite {
 
     private Widget createLowerLeftPanel() {
         HtmlContentBuilder<HTMLDivElement> div = Elements.div();
-        div.add(Button.createPrimary(Icons.ALL.settings_mdi())
-                .setBackground(Theme.DEEP_PURPLE.color()).circle()
-                .setTooltip("Settings")
-                .addClickListener(e -> shogiBoard.getBoardSettingsPanel().showInDialog()));
-        div.add(Button.createPrimary(Icons.ALL.eraser_mdi())
-                .setBackground(Theme.DEEP_PURPLE.color()).circle()
-                .addClickListener(e -> eventBus.fireEvent(new ClearDecorationsEvent()))
-                .setTooltip("Clear arrows")
-                .style().setMarginLeft("1em"));
+        div.add(BoardButtons.createSettingsButton(shogiBoard));
+        div.add(BoardButtons.createClearArrowsButton(shogiBoard));
         div.add(Elements.br());
         startTimedRun = Button.createPrimary(Icons.ALL.timer()).setContent("Start timed " +
                 "run")

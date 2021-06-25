@@ -641,6 +641,10 @@ public class ShogiBoard extends Composite implements ClickHandler {
         }
     }
 
+    EventBus getEventBus() {
+        return eventBus;
+    }
+
     @EventHandler
     public void onPositionChanged(final PositionChangedEvent event) {
         GWT.log("ShogiBoard Handling PositionChangedEvent");
