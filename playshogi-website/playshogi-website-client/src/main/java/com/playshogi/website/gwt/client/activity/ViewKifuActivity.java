@@ -199,7 +199,7 @@ public class ViewKifuActivity extends MyAbstractActivity {
 
         if (!isPreviewOnly()) {
             //Update URL with the new move count
-            History.newItem("ViewKifu:" + new ViewKifuPlace.Tokenizer().getToken(new ViewKifuPlace(kifuId,
+            History.replaceItem("ViewKifu:" + new ViewKifuPlace.Tokenizer().getToken(new ViewKifuPlace(kifuId,
                     moveCount)), false);
         }
 
