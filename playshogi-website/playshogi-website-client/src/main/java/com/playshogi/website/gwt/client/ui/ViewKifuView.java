@@ -16,7 +16,7 @@ import com.playshogi.website.gwt.client.widget.board.BoardSettingsPanel;
 import com.playshogi.website.gwt.client.widget.board.ShogiBoard;
 import com.playshogi.website.gwt.client.widget.engine.KifuEvaluationChartPanel;
 import com.playshogi.website.gwt.client.widget.engine.PositionEvaluationDetailsPanel;
-import com.playshogi.website.gwt.client.widget.gamenavigator.GameNavigator;
+import com.playshogi.website.gwt.client.widget.gamenavigator.GameNavigatorPanel;
 import com.playshogi.website.gwt.client.widget.kifu.DatabasePanel;
 import com.playshogi.website.gwt.client.widget.kifu.GameTreePanel;
 import com.playshogi.website.gwt.client.widget.kifu.KifuInformationPanel;
@@ -36,7 +36,7 @@ public class ViewKifuView extends Composite {
 
     private final SessionInformation sessionInformation;
     private final ShogiBoard shogiBoard;
-    private final GameNavigator gameNavigator;
+    private final GameNavigatorPanel gameNavigatorPanel;
     private final KifuInformationPanel kifuInformationPanel;
     private final GameTreePanel gameTreePanel;
     private final PositionEvaluationDetailsPanel positionEvaluationDetailsPanel;
@@ -53,11 +53,11 @@ public class ViewKifuView extends Composite {
         this.sessionInformation = sessionInformation;
         shogiBoard = new ShogiBoard(VIEWKIFU, sessionInformation.getUserPreferences());
         navigationController = new NavigationController(VIEWKIFU);
-        gameNavigator = new GameNavigator(VIEWKIFU);
+        gameNavigatorPanel = new GameNavigatorPanel(VIEWKIFU);
 
         kifuInformationPanel = new KifuInformationPanel();
 
-        shogiBoard.setUpperRightPanel(new KifuNavigationPanel(gameNavigator));
+        shogiBoard.setUpperRightPanel(new KifuNavigationPanel(gameNavigatorPanel));
         shogiBoard.setLowerLeftPanel(kifuInformationPanel);
 
         kifuEvaluationChartPanel = new KifuEvaluationChartPanel(sessionInformation.getUserPreferences());
@@ -124,7 +124,7 @@ public class ViewKifuView extends Composite {
         eventBinder.bindEventHandlers(this, eventBus);
         shogiBoard.getBoardConfiguration().setInverted(inverted);
         shogiBoard.activate(eventBus);
-        gameNavigator.activate(eventBus);
+        gameNavigatorPanel.activate(eventBus);
         kifuInformationPanel.activate(eventBus);
         positionEvaluationDetailsPanel.activate(eventBus);
         kifuEvaluationChartPanel.activate(eventBus, kifuId);

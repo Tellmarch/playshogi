@@ -27,7 +27,7 @@ import com.playshogi.website.gwt.client.place.KifuEditorPlace;
 import com.playshogi.website.gwt.client.widget.board.BoardSettingsPanel;
 import com.playshogi.website.gwt.client.widget.board.ShogiBoard;
 import com.playshogi.website.gwt.client.widget.engine.PositionEvaluationDetailsPanel;
-import com.playshogi.website.gwt.client.widget.gamenavigator.GameNavigator;
+import com.playshogi.website.gwt.client.widget.gamenavigator.GameNavigatorPanel;
 import com.playshogi.website.gwt.client.widget.kifu.*;
 import com.playshogi.website.gwt.shared.models.KifuDetails;
 
@@ -46,7 +46,7 @@ public class KifuEditorView extends Composite {
     private final MyEventBinder eventBinder = GWT.create(MyEventBinder.class);
 
     private final ShogiBoard shogiBoard;
-    private final GameNavigator gameNavigator;
+    private final GameNavigatorPanel gameNavigatorPanel;
     private final KifuEditorPanel kifuEditorPanel;
     private final GameTreePanel gameTreePanel;
     private final GameNavigation gameNavigation;
@@ -74,10 +74,10 @@ public class KifuEditorView extends Composite {
         navigationController = new NavigationController(KIFU_EDITOR);
 
         gameNavigation = navigationController.getGameNavigation();
-        gameNavigator = new GameNavigator(KIFU_EDITOR);
+        gameNavigatorPanel = new GameNavigatorPanel(KIFU_EDITOR);
 
         kifuEditorLeftBarPanel = new KifuEditorLeftBarPanel();
-        kifuEditorPanel = new KifuEditorPanel(gameNavigator);
+        kifuEditorPanel = new KifuEditorPanel(gameNavigatorPanel);
 
         shogiBoard.setUpperRightPanel(kifuEditorPanel);
         shogiBoard.setLowerLeftPanel(kifuEditorLeftBarPanel);
@@ -141,7 +141,7 @@ public class KifuEditorView extends Composite {
         this.eventBus = eventBus;
         eventBinder.bindEventHandlers(this, eventBus);
         shogiBoard.activate(eventBus);
-        gameNavigator.activate(eventBus);
+        gameNavigatorPanel.activate(eventBus);
         kifuEditorPanel.activate(eventBus, place);
         gameTreePanel.activate(eventBus);
         kifuEditorLeftBarPanel.activate(eventBus);

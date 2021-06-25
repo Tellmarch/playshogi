@@ -21,7 +21,7 @@ import com.playshogi.website.gwt.client.events.gametree.UserNavigatedBackEvent;
 import com.playshogi.website.gwt.client.events.kifu.RequestPositionEvaluationEvent;
 import com.playshogi.website.gwt.client.events.puzzles.UserFinishedProblemEvent;
 import com.playshogi.website.gwt.client.events.puzzles.UserSkippedProblemEvent;
-import com.playshogi.website.gwt.client.widget.gamenavigator.GameNavigator;
+import com.playshogi.website.gwt.client.widget.gamenavigator.GameNavigatorPanel;
 
 import java.util.Optional;
 
@@ -47,11 +47,11 @@ public class ProblemFeedbackPanel extends Composite implements ClickHandler {
     private Button tellMeWhyButton = null;
     private final HTML messagePanel;
 
-    public ProblemFeedbackPanel(final GameNavigator gameNavigator, final boolean enableTellMeWhy) {
+    public ProblemFeedbackPanel(final GameNavigatorPanel gameNavigatorPanel, final boolean enableTellMeWhy) {
 
         FlowPanel flowPanel = new FlowPanel();
-        if (gameNavigator != null) {
-            flowPanel.add(gameNavigator);
+        if (gameNavigatorPanel != null) {
+            flowPanel.add(gameNavigatorPanel);
         }
 
         skipButton = new Button("Skip/Next");

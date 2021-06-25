@@ -22,14 +22,14 @@ import com.playshogi.website.gwt.client.events.gametree.GameTreeChangedEvent;
 import com.playshogi.website.gwt.client.i18n.PlayMessages;
 import com.playshogi.website.gwt.client.widget.board.BoardButtons;
 import com.playshogi.website.gwt.client.widget.board.ShogiBoard;
-import com.playshogi.website.gwt.client.widget.gamenavigator.GameNavigator;
+import com.playshogi.website.gwt.client.widget.gamenavigator.GameNavigatorPanel;
 
 @Singleton
 public class PlayView extends Composite {
 
     private static final String PLAY = "play";
     private final ShogiBoard shogiBoard;
-    private final GameNavigator gameNavigator;
+    private final GameNavigatorPanel gameNavigatorPanel;
 
     private final PlayMessages messages = GWT.create(PlayMessages.class);
     private final NavigationController navigationController;
@@ -40,7 +40,7 @@ public class PlayView extends Composite {
         GWT.log("Creating Play view");
         shogiBoard = new ShogiBoard(PLAY, sessionInformation.getUserPreferences());
         navigationController = new NavigationController(PLAY);
-        gameNavigator = new GameNavigator(PLAY);
+        gameNavigatorPanel = new GameNavigatorPanel(PLAY);
         shogiBoard.setUpperRightPanel(null);
         shogiBoard.setLowerLeftPanel(createLowerLeftPanel());
 
@@ -99,7 +99,7 @@ public class PlayView extends Composite {
         com.google.gwt.core.shared.GWT.log("Activating Play view");
         this.eventBus = eventBus;
         shogiBoard.activate(eventBus);
-        gameNavigator.activate(eventBus);
+        gameNavigatorPanel.activate(eventBus);
         navigationController.activate(eventBus);
     }
 

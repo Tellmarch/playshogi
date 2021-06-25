@@ -11,7 +11,7 @@ import com.playshogi.website.gwt.client.controller.NavigationController;
 import com.playshogi.website.gwt.client.util.ElementWidget;
 import com.playshogi.website.gwt.client.widget.board.BoardButtons;
 import com.playshogi.website.gwt.client.widget.board.ShogiBoard;
-import com.playshogi.website.gwt.client.widget.gamenavigator.GameNavigator;
+import com.playshogi.website.gwt.client.widget.gamenavigator.GameNavigatorPanel;
 import org.dominokit.domino.ui.forms.SwitchButton;
 import org.dominokit.domino.ui.themes.Theme;
 
@@ -20,7 +20,7 @@ public class FreeBoardView extends Composite {
 
     private static final String FREEBOARD = "freeboard";
     private final ShogiBoard shogiBoard;
-    private final GameNavigator gameNavigator;
+    private final GameNavigatorPanel gameNavigatorPanel;
     private final NavigationController navigationController;
     private EventBus eventBus;
 
@@ -29,7 +29,7 @@ public class FreeBoardView extends Composite {
         GWT.log("Creating free board view");
         shogiBoard = new ShogiBoard(FREEBOARD, sessionInformation.getUserPreferences());
         navigationController = new NavigationController(FREEBOARD);
-        gameNavigator = new GameNavigator(FREEBOARD);
+        gameNavigatorPanel = new GameNavigatorPanel(FREEBOARD);
         shogiBoard.setUpperRightPanel(null);
 
         FlowPanel panel = new FlowPanel();
@@ -48,7 +48,7 @@ public class FreeBoardView extends Composite {
         GWT.log("Activating free board view");
         this.eventBus = eventBus;
         shogiBoard.activate(eventBus);
-        gameNavigator.activate(eventBus);
+        gameNavigatorPanel.activate(eventBus);
         navigationController.activate(eventBus);
     }
 

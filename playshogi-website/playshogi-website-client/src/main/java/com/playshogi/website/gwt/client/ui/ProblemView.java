@@ -11,7 +11,7 @@ import com.playshogi.website.gwt.client.SessionInformation;
 import com.playshogi.website.gwt.client.controller.NavigationController;
 import com.playshogi.website.gwt.client.widget.board.BoardButtons;
 import com.playshogi.website.gwt.client.widget.board.ShogiBoard;
-import com.playshogi.website.gwt.client.widget.gamenavigator.GameNavigator;
+import com.playshogi.website.gwt.client.widget.gamenavigator.GameNavigatorPanel;
 import com.playshogi.website.gwt.client.widget.problems.ProblemFeedbackPanel;
 
 @Singleton
@@ -25,7 +25,7 @@ public class ProblemView extends Composite {
     private final MyEventBinder eventBinder = GWT.create(MyEventBinder.class);
 
     private final ShogiBoard shogiBoard;
-    private final GameNavigator gameNavigator;
+    private final GameNavigatorPanel gameNavigatorPanel;
     private final ProblemFeedbackPanel problemFeedbackPanel;
     private final NavigationController navigationController;
 
@@ -34,8 +34,8 @@ public class ProblemView extends Composite {
         GWT.log("Creating Problem view");
         shogiBoard = new ShogiBoard(PROBLEMS, sessionInformation.getUserPreferences());
         navigationController = new NavigationController(PROBLEMS, true);
-        gameNavigator = new GameNavigator(PROBLEMS);
-        problemFeedbackPanel = new ProblemFeedbackPanel(gameNavigator, false);
+        gameNavigatorPanel = new GameNavigatorPanel(PROBLEMS);
+        problemFeedbackPanel = new ProblemFeedbackPanel(gameNavigatorPanel, false);
 
         shogiBoard.setUpperRightPanel(problemFeedbackPanel);
         shogiBoard.setLowerLeftPanel(createLowerLeftPanel());
@@ -56,7 +56,7 @@ public class ProblemView extends Composite {
         GWT.log("Activating ProblemsView");
         eventBinder.bindEventHandlers(this, eventBus);
         shogiBoard.activate(eventBus);
-        gameNavigator.activate(eventBus);
+        gameNavigatorPanel.activate(eventBus);
         problemFeedbackPanel.activate(eventBus);
         navigationController.activate(eventBus);
     }

@@ -13,9 +13,9 @@ import com.playshogi.website.gwt.client.events.gametree.NavigateForwardEvent;
 import com.playshogi.website.gwt.client.events.gametree.NavigateToEndEvent;
 import com.playshogi.website.gwt.client.events.gametree.NavigateToStartEvent;
 
-public class GameNavigator extends Composite implements ClickHandler {
+public class GameNavigatorPanel extends Composite implements ClickHandler {
 
-    interface MyEventBinder extends EventBinder<GameNavigator> {
+    interface MyEventBinder extends EventBinder<GameNavigatorPanel> {
     }
 
     private final MyEventBinder eventBinder = GWT.create(MyEventBinder.class);
@@ -29,7 +29,7 @@ public class GameNavigator extends Composite implements ClickHandler {
 
     private final String activityId;
 
-    public GameNavigator(final String activityId) {
+    public GameNavigatorPanel(final String activityId) {
         GWT.log(activityId + ": Creating game navigator");
 
         this.activityId = activityId;

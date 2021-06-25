@@ -13,7 +13,7 @@ import com.playshogi.website.gwt.client.controller.NavigationController;
 import com.playshogi.website.gwt.client.util.ElementWidget;
 import com.playshogi.website.gwt.client.widget.board.BoardButtons;
 import com.playshogi.website.gwt.client.widget.board.ShogiBoard;
-import com.playshogi.website.gwt.client.widget.gamenavigator.GameNavigator;
+import com.playshogi.website.gwt.client.widget.gamenavigator.GameNavigatorPanel;
 import com.playshogi.website.gwt.client.widget.problems.ProblemFeedbackPanel;
 import com.playshogi.website.gwt.client.widget.problems.ProblemOptionsPanel2;
 import org.dominokit.domino.ui.Typography.Paragraph;
@@ -34,7 +34,7 @@ public class TsumeView extends Composite {
     private static final int[] MOVES = {3, 5, 7, 9, 11, 13};
 
     private final ShogiBoard shogiBoard;
-    private final GameNavigator gameNavigator;
+    private final GameNavigatorPanel gameNavigatorPanel;
     private final ProblemFeedbackPanel problemFeedbackPanel;
     private final ProblemOptionsPanel2 problemOptionsPanel;
     private final NavigationController navigationController;
@@ -44,8 +44,8 @@ public class TsumeView extends Composite {
         GWT.log("Creating tsume view");
         shogiBoard = new ShogiBoard(TSUME, sessionInformation.getUserPreferences());
         navigationController = new NavigationController(TSUME, true);
-        gameNavigator = new GameNavigator(TSUME);
-        problemFeedbackPanel = new ProblemFeedbackPanel(gameNavigator, true);
+        gameNavigatorPanel = new GameNavigatorPanel(TSUME);
+        problemFeedbackPanel = new ProblemFeedbackPanel(gameNavigatorPanel, true);
 
         shogiBoard.setUpperRightPanel(problemFeedbackPanel);
 
@@ -120,7 +120,7 @@ public class TsumeView extends Composite {
     public void activate(final EventBus eventBus) {
         GWT.log("Activating tsume view");
         shogiBoard.activate(eventBus);
-        gameNavigator.activate(eventBus);
+        gameNavigatorPanel.activate(eventBus);
         problemFeedbackPanel.activate(eventBus);
         problemOptionsPanel.activate(eventBus);
         navigationController.activate(eventBus);

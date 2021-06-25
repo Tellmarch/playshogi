@@ -11,7 +11,7 @@ import com.playshogi.website.gwt.client.SessionInformation;
 import com.playshogi.website.gwt.client.controller.NavigationController;
 import com.playshogi.website.gwt.client.mvp.AppPlaceHistoryMapper;
 import com.playshogi.website.gwt.client.widget.board.ShogiBoard;
-import com.playshogi.website.gwt.client.widget.gamenavigator.GameNavigator;
+import com.playshogi.website.gwt.client.widget.gamenavigator.GameNavigatorPanel;
 import com.playshogi.website.gwt.client.widget.openings.PositionKifusPanel;
 import com.playshogi.website.gwt.client.widget.openings.PositionStatisticsPanel;
 
@@ -20,7 +20,7 @@ public class OpeningsView extends Composite {
 
     private static final String OPENINGS = "openings";
     private final ShogiBoard shogiBoard;
-    private final GameNavigator gameNavigator;
+    private final GameNavigatorPanel gameNavigatorPanel;
     private final PositionStatisticsPanel positionStatisticsPanel;
     private final PositionKifusPanel positionKifusPanel;
     private final NavigationController navigationController;
@@ -30,7 +30,7 @@ public class OpeningsView extends Composite {
         GWT.log("Creating openings view");
         shogiBoard = new ShogiBoard(OPENINGS, sessionInformation.getUserPreferences());
         navigationController = new NavigationController(OPENINGS);
-        gameNavigator = new GameNavigator(OPENINGS);
+        gameNavigatorPanel = new GameNavigatorPanel(OPENINGS);
 
         positionStatisticsPanel = new PositionStatisticsPanel(historyMapper, sessionInformation.getUserPreferences(),
                 true);
@@ -46,7 +46,7 @@ public class OpeningsView extends Composite {
         GWT.log("Activating openings view");
         shogiBoard.activate(eventBus);
         navigationController.getGameNavigation().setGameTree(new GameTree(position), 0);
-        gameNavigator.activate(eventBus);
+        gameNavigatorPanel.activate(eventBus);
         positionStatisticsPanel.activate(eventBus);
         positionKifusPanel.activate(eventBus);
         navigationController.activate(eventBus);

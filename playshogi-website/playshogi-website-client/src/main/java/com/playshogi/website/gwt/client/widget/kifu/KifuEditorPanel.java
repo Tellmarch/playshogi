@@ -14,7 +14,7 @@ import com.playshogi.website.gwt.client.events.kifu.GameRecordExportRequestedEve
 import com.playshogi.website.gwt.client.events.kifu.GameRecordPreviewRequestedEvent;
 import com.playshogi.website.gwt.client.events.kifu.GameRecordSaveRequestedEvent;
 import com.playshogi.website.gwt.client.place.KifuEditorPlace;
-import com.playshogi.website.gwt.client.widget.gamenavigator.GameNavigator;
+import com.playshogi.website.gwt.client.widget.gamenavigator.GameNavigatorPanel;
 
 public class KifuEditorPanel extends Composite implements ClickHandler {
 
@@ -31,7 +31,7 @@ public class KifuEditorPanel extends Composite implements ClickHandler {
 
     private final ImportKifuPanel importKifuPanel = new ImportKifuPanel();
 
-    public KifuEditorPanel(final GameNavigator gameNavigator) {
+    public KifuEditorPanel(final GameNavigatorPanel gameNavigatorPanel) {
 
         FlowPanel verticalPanel = new FlowPanel();
 
@@ -39,7 +39,7 @@ public class KifuEditorPanel extends Composite implements ClickHandler {
         verticalPanel.add(importButton);
 
         verticalPanel.add(new HTML("<br/>"));
-        verticalPanel.add(gameNavigator);
+        verticalPanel.add(gameNavigatorPanel);
         verticalPanel.add(new HTML("<br/>"));
 
         saveButton = new Button("Save kifu", this);

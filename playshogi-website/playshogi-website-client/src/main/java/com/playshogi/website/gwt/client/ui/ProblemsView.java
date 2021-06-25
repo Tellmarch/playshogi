@@ -20,7 +20,7 @@ import com.playshogi.website.gwt.client.events.puzzles.*;
 import com.playshogi.website.gwt.client.util.ElementWidget;
 import com.playshogi.website.gwt.client.widget.board.BoardButtons;
 import com.playshogi.website.gwt.client.widget.board.ShogiBoard;
-import com.playshogi.website.gwt.client.widget.gamenavigator.GameNavigator;
+import com.playshogi.website.gwt.client.widget.gamenavigator.GameNavigatorPanel;
 import com.playshogi.website.gwt.client.widget.problems.ProblemFeedbackPanel;
 import com.playshogi.website.gwt.shared.models.ProblemDetails;
 import elemental2.dom.HTMLDivElement;
@@ -48,7 +48,7 @@ public class ProblemsView extends Composite {
     private final MyEventBinder eventBinder = GWT.create(MyEventBinder.class);
 
     private final ShogiBoard shogiBoard;
-    private final GameNavigator gameNavigator;
+    private final GameNavigatorPanel gameNavigatorPanel;
     private final ProblemFeedbackPanel problemFeedbackPanel;
     private final Tree<ProblemDetails> problemsTree;
     private final SessionInformation sessionInformation;
@@ -70,8 +70,8 @@ public class ProblemsView extends Composite {
         GWT.log("Creating Problems view");
         shogiBoard = new ShogiBoard(PROBLEMS, sessionInformation.getUserPreferences());
         navigationController = new NavigationController(PROBLEMS, true);
-        gameNavigator = new GameNavigator(PROBLEMS);
-        problemFeedbackPanel = new ProblemFeedbackPanel(gameNavigator, false);
+        gameNavigatorPanel = new GameNavigatorPanel(PROBLEMS);
+        problemFeedbackPanel = new ProblemFeedbackPanel(gameNavigatorPanel, false);
 
         shogiBoard.setUpperRightPanel(problemFeedbackPanel);
         shogiBoard.setLowerLeftPanel(createLowerLeftPanel());
@@ -142,7 +142,7 @@ public class ProblemsView extends Composite {
         this.eventBus = eventBus;
         eventBinder.bindEventHandlers(this, eventBus);
         shogiBoard.activate(eventBus);
-        gameNavigator.activate(eventBus);
+        gameNavigatorPanel.activate(eventBus);
         problemFeedbackPanel.activate(eventBus);
         navigationController.activate(eventBus);
         timerText.hidden(true);

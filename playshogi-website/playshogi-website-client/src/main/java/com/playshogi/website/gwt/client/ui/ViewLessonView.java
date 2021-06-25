@@ -15,7 +15,7 @@ import com.playshogi.website.gwt.client.mvp.AppPlaceHistoryMapper;
 import com.playshogi.website.gwt.client.widget.board.BoardSettingsPanel;
 import com.playshogi.website.gwt.client.widget.board.ShogiBoard;
 import com.playshogi.website.gwt.client.widget.engine.PositionEvaluationDetailsPanel;
-import com.playshogi.website.gwt.client.widget.gamenavigator.GameNavigator;
+import com.playshogi.website.gwt.client.widget.gamenavigator.GameNavigatorPanel;
 import com.playshogi.website.gwt.client.widget.kifu.DatabasePanel;
 import com.playshogi.website.gwt.client.widget.kifu.GameTreePanel;
 import com.playshogi.website.gwt.client.widget.kifu.KifuNavigationPanel;
@@ -34,7 +34,7 @@ public class ViewLessonView extends Composite {
 
     private final SessionInformation sessionInformation;
     private final ShogiBoard shogiBoard;
-    private final GameNavigator gameNavigator;
+    private final GameNavigatorPanel gameNavigatorPanel;
     private final GameTreePanel gameTreePanel;
     private final PositionEvaluationDetailsPanel positionEvaluationDetailsPanel;
     private final TextArea textArea;
@@ -50,9 +50,9 @@ public class ViewLessonView extends Composite {
         this.sessionInformation = sessionInformation;
         shogiBoard = new ShogiBoard(VIEWLESSON, sessionInformation.getUserPreferences());
         navigationController = new NavigationController(VIEWLESSON);
-        gameNavigator = new GameNavigator(VIEWLESSON);
+        gameNavigatorPanel = new GameNavigatorPanel(VIEWLESSON);
 
-        shogiBoard.setUpperRightPanel(new KifuNavigationPanel(gameNavigator));
+        shogiBoard.setUpperRightPanel(new KifuNavigationPanel(gameNavigatorPanel));
 
         textArea = createCommentsArea();
 
@@ -115,7 +115,7 @@ public class ViewLessonView extends Composite {
         eventBinder.bindEventHandlers(this, eventBus);
         shogiBoard.getBoardConfiguration().setInverted(inverted);
         shogiBoard.activate(eventBus);
-        gameNavigator.activate(eventBus);
+        gameNavigatorPanel.activate(eventBus);
         positionEvaluationDetailsPanel.activate(eventBus);
         gameTreePanel.activate(eventBus);
         boardSettingsPanel.activate(eventBus);
