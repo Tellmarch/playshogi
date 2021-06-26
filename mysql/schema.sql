@@ -49,8 +49,8 @@ CREATE TABLE IF NOT EXISTS `playshogi`.`ps_kifu` (
   `starting_pos_id` INT UNSIGNED NULL,
   PRIMARY KEY (`id`))
 ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8
-COLLATE = utf8_bin;
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_bin;
 
 
 -- -----------------------------------------------------
@@ -76,8 +76,8 @@ CREATE TABLE IF NOT EXISTS `playshogi`.`ps_player` (
   `birthdate` DATE NULL,
   PRIMARY KEY (`id`))
 ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8
-COLLATE = utf8_unicode_ci;
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
 
 
 -- -----------------------------------------------------
@@ -90,7 +90,9 @@ CREATE TABLE IF NOT EXISTS `playshogi`.`ps_venue` (
   `name` VARCHAR(45) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE INDEX `name_UNIQUE` (`name` ASC))
-ENGINE = InnoDB;
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
 
 
 -- -----------------------------------------------------
@@ -134,8 +136,8 @@ CREATE TABLE IF NOT EXISTS `playshogi`.`ps_game` (
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8
-COLLATE = utf8_unicode_ci;
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
 
 
 -- -----------------------------------------------------
@@ -169,7 +171,9 @@ CREATE TABLE IF NOT EXISTS `playshogi`.`ps_position` (
   `code` VARCHAR(200) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE INDEX `code_UNIQUE` (`code` ASC))
-ENGINE = InnoDB;
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = ascii
+COLLATE = ascii_bin;
 
 
 -- -----------------------------------------------------
@@ -220,7 +224,9 @@ CREATE TABLE IF NOT EXISTS `playshogi`.`ps_gamesetmove` (
     REFERENCES `playshogi`.`ps_position` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
-ENGINE = InnoDB;
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = ascii
+COLLATE = ascii_bin;
 
 
 -- -----------------------------------------------------
@@ -241,7 +247,9 @@ CREATE TABLE IF NOT EXISTS `playshogi`.`ps_gameset` (
     REFERENCES `playshogi`.`ps_user` (`id`)
     ON DELETE SET NULL
     ON UPDATE NO ACTION)
-ENGINE = InnoDB;
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
 
 
 -- -----------------------------------------------------
@@ -281,7 +289,9 @@ CREATE TABLE IF NOT EXISTS `playshogi`.`ps_problemset` (
     REFERENCES `playshogi`.`ps_user` (`id`)
     ON DELETE SET NULL
     ON UPDATE NO ACTION)
-ENGINE = InnoDB;
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
 
 
 -- -----------------------------------------------------
@@ -342,7 +352,9 @@ CREATE TABLE IF NOT EXISTS `playshogi`.`ps_tag` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(255) NOT NULL,
   PRIMARY KEY (`id`))
-ENGINE = InnoDB;
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
 
 
 -- -----------------------------------------------------
@@ -410,7 +422,9 @@ CREATE TABLE IF NOT EXISTS `playshogi`.`ps_highscore` (
     REFERENCES `playshogi`.`ps_user` (`id`)
     ON DELETE CASCADE
     ON UPDATE NO ACTION)
-ENGINE = InnoDB;
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
 
 
 -- -----------------------------------------------------
@@ -447,7 +461,9 @@ CREATE TABLE IF NOT EXISTS `playshogi`.`ps_lessons` (
     REFERENCES `playshogi`.`ps_user` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
-ENGINE = InnoDB;
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
 
 
 -- -----------------------------------------------------
