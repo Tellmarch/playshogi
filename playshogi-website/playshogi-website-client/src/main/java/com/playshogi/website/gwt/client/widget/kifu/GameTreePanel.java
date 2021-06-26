@@ -2,6 +2,7 @@ package com.playshogi.website.gwt.client.widget.kifu;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ContextMenuEvent;
 import com.google.gwt.event.dom.client.ContextMenuHandler;
 import com.google.gwt.user.client.Window;
@@ -222,13 +223,13 @@ public class GameTreePanel extends Composite {
 
         // First add the move of the current node
         TreeItem item = createTreeItem();
-        setMoveNode(item, currentNode, variationMoveCount);
+        setMoveNode(item, currentNode, variationMoveCount, parent == tree);
         parent.addItem(item);
 
         // Then add all children, along the main line and variations
         while (currentNode.hasChildren()) {
             item = createTreeItem();
-            populateMainMoveAndBranches(item, currentNode, ++variationMoveCount);
+            populateMainMoveAndBranches(item, currentNode, ++variationMoveCount, parent == tree);
             parent.addItem(item);
             currentNode = currentNode.getChildren().get(0);
         }
@@ -246,11 +247,12 @@ public class GameTreePanel extends Composite {
      * - If there is one main move and two or more variations, display the main move at item, create one child item
      * for each move, then show the variation under each child.
      */
-    private void populateMainMoveAndBranches(final TreeItem item, final Node node, final int moveCount) {
+    private void populateMainMoveAndBranches(final TreeItem item, final Node node, final int moveCount,
+                                             final boolean mainLine) {
         if (!node.hasChildren()) return;
 
         List<Node> children = node.getChildren();
-        setMoveNode(item, children.get(0), moveCount);
+        setMoveNode(item, children.get(0), moveCount, mainLine);
 
         if (children.size() == 2) {
             Node variationNode = children.get(1);
@@ -260,6 +262,7 @@ public class GameTreePanel extends Composite {
                 Node variationNode = children.get(i);
                 TreeItem variationItem = createTreeItem();
                 variationItem.setText("Variation #" + i);
+                variationItem.getElement().getStyle().setFontWeight(Style.FontWeight.NORMAL);
                 colorNode(variationItem, variationNode);
                 populateMainVariationAndBranches(variationItem, variationNode, moveCount);
                 item.addItem(variationItem);
@@ -267,7 +270,7 @@ public class GameTreePanel extends Composite {
         }
     }
 
-    private void setMoveNode(final TreeItem item, final Node node, final int moveCount) {
+    private void setMoveNode(final TreeItem item, final Node node, final int moveCount, final boolean mainLine) {
         GWT.log("*** Adding move node");
         Move move = node.getMove();
         item.setUserObject(node);
@@ -284,6 +287,11 @@ public class GameTreePanel extends Composite {
         colorNode(item, node);
         if (node.getComment().isPresent()) {
             item.setHTML(item.getText() + "&nbsp;<i class=\"mdi mdi-comment-text-outline mdi-18px\"></i>");
+        }
+        if (mainLine) {
+            item.getElement().getStyle().setFontWeight(Style.FontWeight.BOLD);
+        } else {
+            item.getElement().getStyle().setFontWeight(Style.FontWeight.NORMAL);
         }
     }
 
