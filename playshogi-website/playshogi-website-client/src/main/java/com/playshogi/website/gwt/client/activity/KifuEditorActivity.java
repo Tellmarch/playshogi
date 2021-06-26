@@ -111,7 +111,8 @@ public class KifuEditorActivity extends MyAbstractActivity {
             }
         };
 
-        if (place.getKifuId() != null && place.getType() == KifuDetails.KifuType.PROBLEM) {
+        if (place.getKifuId() != null && (place.getType() == KifuDetails.KifuType.PROBLEM ||
+                place.getType() == KifuDetails.KifuType.LESSON)) {
             kifuService.updateKifuUsf(sessionInformation.getSessionId(), place.getKifuId(), event.getKifuUsf(),
                     callback);
         } else if (place.getCollectionId() != null) {
