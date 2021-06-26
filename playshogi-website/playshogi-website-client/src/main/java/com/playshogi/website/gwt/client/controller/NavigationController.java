@@ -39,11 +39,7 @@ public class NavigationController {
         this(activityId, new NavigatorConfiguration());
     }
 
-    public NavigationController(final String activityId, final boolean problemMode) {
-        this(activityId, new NavigatorConfiguration(problemMode));
-    }
-
-    private NavigationController(final String activityId, final NavigatorConfiguration navigatorConfiguration) {
+    public NavigationController(final String activityId, final NavigatorConfiguration navigatorConfiguration) {
         GWT.log(activityId + ": Creating NavigationController");
         this.activityId = activityId;
         this.navigatorConfiguration = navigatorConfiguration;
@@ -73,11 +69,19 @@ public class NavigationController {
         return gameNavigation.getPosition();
     }
 
+    public void fireProgress() {
+        if (navigatorConfiguration.isFireVisitedProgress()) {
+            GameTree.VisitedProgress progress = gameNavigation.getGameTree().getPercentVisited();
+            eventBus.fireEvent(new VisitedProgressEvent(progress.visited, progress.total));
+        }
+    }
+
     @EventHandler
     public void onGameTreeChanged(final GameTreeChangedEvent gameTreeChangedEvent) {
         GWT.log(activityId + " NavigationController: Handling game tree changed event - move " + gameTreeChangedEvent.getGoToMove());
         gameNavigation.setGameTree(gameTreeChangedEvent.getGameTree(), gameTreeChangedEvent.getGoToMove());
         firePositionChanged(false);
+        fireProgress();
     }
 
     @EventHandler
@@ -117,6 +121,7 @@ public class NavigationController {
         }
 
         firePositionChanged(true);
+        fireProgress();
     }
 
     @EventHandler
@@ -156,6 +161,7 @@ public class NavigationController {
         eventBus.fireEvent(new UserNavigatedBackEvent());
         firePositionChanged(true);
         fireNodeChanged();
+        fireProgress();
     }
 
     @EventHandler
@@ -164,6 +170,7 @@ public class NavigationController {
         gameNavigation.moveToEndOfVariation();
         firePositionChanged(true);
         fireNodeChanged();
+        fireProgress();
     }
 
     @EventHandler
@@ -172,6 +179,7 @@ public class NavigationController {
         gameNavigation.moveForward();
         firePositionChanged(true);
         fireNodeChanged();
+        fireProgress();
     }
 
     @EventHandler
@@ -181,5 +189,6 @@ public class NavigationController {
         eventBus.fireEvent(new UserNavigatedBackEvent());
         firePositionChanged(true);
         fireNodeChanged();
+        fireProgress();
     }
 }

@@ -12,6 +12,7 @@ import com.playshogi.website.gwt.client.controller.NavigationController;
 import com.playshogi.website.gwt.client.widget.board.BoardButtons;
 import com.playshogi.website.gwt.client.widget.board.ShogiBoard;
 import com.playshogi.website.gwt.client.widget.gamenavigator.GameNavigatorPanel;
+import com.playshogi.website.gwt.client.widget.gamenavigator.NavigatorConfiguration;
 import com.playshogi.website.gwt.client.widget.problems.ProblemFeedbackPanel;
 
 @Singleton
@@ -33,7 +34,7 @@ public class ProblemView extends Composite {
     public ProblemView(final SessionInformation sessionInformation) {
         GWT.log("Creating Problem view");
         shogiBoard = new ShogiBoard(PROBLEMS, sessionInformation.getUserPreferences());
-        navigationController = new NavigationController(PROBLEMS, true);
+        navigationController = new NavigationController(PROBLEMS, NavigatorConfiguration.PROBLEMS);
         gameNavigatorPanel = new GameNavigatorPanel(PROBLEMS);
         problemFeedbackPanel = new ProblemFeedbackPanel(gameNavigatorPanel, false);
 

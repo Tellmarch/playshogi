@@ -1,6 +1,7 @@
 package com.playshogi.website.gwt.client.widget.kifu;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ContextMenuEvent;
 import com.google.gwt.event.dom.client.ContextMenuHandler;
 import com.google.gwt.user.client.Window;
@@ -16,6 +17,7 @@ import com.playshogi.library.shogi.models.record.GameNavigation;
 import com.playshogi.library.shogi.models.record.GameTree;
 import com.playshogi.library.shogi.models.record.Node;
 import com.playshogi.website.gwt.client.UserPreferences;
+import com.playshogi.website.gwt.client.controller.NavigationController;
 import com.playshogi.website.gwt.client.events.gametree.GameTreeChangedEvent;
 import com.playshogi.website.gwt.client.events.gametree.NewVariationPlayedEvent;
 import com.playshogi.website.gwt.client.events.gametree.NodeChangedEvent;
@@ -35,6 +37,7 @@ public class GameTreePanel extends Composite {
 
     private final String activityId;
     private final GameNavigation gameNavigation;
+    private final NavigationController navigationController;
     private final boolean readOnly;
     private final UserPreferences userPreferences;
     private final boolean colorVisitedNodes;
@@ -46,11 +49,13 @@ public class GameTreePanel extends Composite {
     private MenuItem rebaseMenu;
     private EventBus eventBus;
 
-    public GameTreePanel(final String activityId, final GameNavigation gameNavigation, final boolean readOnly,
+    public GameTreePanel(final String activityId, final NavigationController navigationController,
+                         final boolean readOnly,
                          final UserPreferences userPreferences, final boolean colorVisitedNodes,
                          final boolean colorNewNodes) {
         this.activityId = activityId;
-        this.gameNavigation = gameNavigation;
+        this.gameNavigation = navigationController.getGameNavigation();
+        this.navigationController = navigationController;
         this.readOnly = readOnly;
         this.userPreferences = userPreferences;
         this.colorVisitedNodes = colorVisitedNodes;
@@ -83,6 +88,7 @@ public class GameTreePanel extends Composite {
                 if (additionalItem != null) colorNode(additionalItem, node);
                 eventBus.fireEvent(new PositionChangedEvent(gameNavigation.getPosition(),
                         gameNavigation.getBoardDecorations(), gameNavigation.getPreviousMove(), true));
+                navigationController.fireProgress();
             }
         });
         panel.add(tree);
@@ -154,7 +160,8 @@ public class GameTreePanel extends Composite {
     @EventHandler
     public void onGameTreeChanged(final GameTreeChangedEvent gameTreeChangedEvent) {
         GWT.log(activityId + " GameTreePanel: Handling game tree changed event - move " + gameTreeChangedEvent.getGoToMove());
-        populateTree();
+        // Deferred to let the navigation controller update first
+        Scheduler.get().scheduleDeferred(this::populateTree);
     }
 
     @EventHandler
@@ -261,6 +268,7 @@ public class GameTreePanel extends Composite {
     }
 
     private void setMoveNode(final TreeItem item, final Node node, final int moveCount) {
+        GWT.log("*** Adding move node");
         Move move = node.getMove();
         item.setUserObject(node);
         if (move == null) {

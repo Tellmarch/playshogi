@@ -14,6 +14,7 @@ import com.playshogi.website.gwt.client.util.ElementWidget;
 import com.playshogi.website.gwt.client.widget.board.BoardButtons;
 import com.playshogi.website.gwt.client.widget.board.ShogiBoard;
 import com.playshogi.website.gwt.client.widget.gamenavigator.GameNavigatorPanel;
+import com.playshogi.website.gwt.client.widget.gamenavigator.NavigatorConfiguration;
 import com.playshogi.website.gwt.client.widget.problems.ProblemFeedbackPanel;
 import com.playshogi.website.gwt.client.widget.problems.ProblemOptionsPanel2;
 import org.dominokit.domino.ui.Typography.Paragraph;
@@ -43,7 +44,7 @@ public class TsumeView extends Composite {
     public TsumeView(final SessionInformation sessionInformation) {
         GWT.log("Creating tsume view");
         shogiBoard = new ShogiBoard(TSUME, sessionInformation.getUserPreferences());
-        navigationController = new NavigationController(TSUME, true);
+        navigationController = new NavigationController(TSUME, NavigatorConfiguration.PROBLEMS);
         gameNavigatorPanel = new GameNavigatorPanel(TSUME);
         problemFeedbackPanel = new ProblemFeedbackPanel(gameNavigatorPanel, true);
 

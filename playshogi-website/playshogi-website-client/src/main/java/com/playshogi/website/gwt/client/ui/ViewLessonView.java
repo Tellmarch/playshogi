@@ -16,9 +16,11 @@ import com.playshogi.website.gwt.client.widget.board.BoardSettingsPanel;
 import com.playshogi.website.gwt.client.widget.board.ShogiBoard;
 import com.playshogi.website.gwt.client.widget.engine.PositionEvaluationDetailsPanel;
 import com.playshogi.website.gwt.client.widget.gamenavigator.GameNavigatorPanel;
+import com.playshogi.website.gwt.client.widget.gamenavigator.NavigatorConfiguration;
 import com.playshogi.website.gwt.client.widget.kifu.DatabasePanel;
 import com.playshogi.website.gwt.client.widget.kifu.GameTreePanel;
-import com.playshogi.website.gwt.client.widget.kifu.KifuNavigationPanel;
+import com.playshogi.website.gwt.client.widget.lessons.LessonFeedbackPanel;
+import com.playshogi.website.gwt.client.widget.lessons.LessonNavigatorPanel;
 
 import java.util.Optional;
 
@@ -41,7 +43,8 @@ public class ViewLessonView extends Composite {
     private final BoardSettingsPanel boardSettingsPanel;
     private final DatabasePanel databasePanel;
     private final NavigationController navigationController;
-
+    private final LessonNavigatorPanel lessonNavigatorPanel;
+    private final LessonFeedbackPanel lessonFeedbackPanel;
 
     @Inject
     public ViewLessonView(final AppPlaceHistoryMapper appPlaceHistoryMapper,
@@ -49,14 +52,17 @@ public class ViewLessonView extends Composite {
         GWT.log("Creating ViewLessonView");
         this.sessionInformation = sessionInformation;
         shogiBoard = new ShogiBoard(VIEWLESSON, sessionInformation.getUserPreferences());
-        navigationController = new NavigationController(VIEWLESSON);
+        navigationController = new NavigationController(VIEWLESSON, NavigatorConfiguration.LESSONS);
         gameNavigatorPanel = new GameNavigatorPanel(VIEWLESSON);
+        lessonNavigatorPanel = new LessonNavigatorPanel();
+        lessonFeedbackPanel = new LessonFeedbackPanel();
 
-        shogiBoard.setUpperRightPanel(new KifuNavigationPanel(gameNavigatorPanel));
+        shogiBoard.setUpperRightPanel(lessonNavigatorPanel.getAsWidget());
+        shogiBoard.setLowerLeftPanel(lessonFeedbackPanel.getAsWidget());
 
         textArea = createCommentsArea();
 
-        gameTreePanel = new GameTreePanel(VIEWLESSON, navigationController.getGameNavigation(), true,
+        gameTreePanel = new GameTreePanel(VIEWLESSON, navigationController, true,
                 sessionInformation.getUserPreferences(), true, true);
 
         boardSettingsPanel = new BoardSettingsPanel(this.sessionInformation.getUserPreferences());
@@ -121,6 +127,8 @@ public class ViewLessonView extends Composite {
         boardSettingsPanel.activate(eventBus);
         databasePanel.activate(eventBus);
         navigationController.activate(eventBus);
+        lessonNavigatorPanel.activate(eventBus);
+        lessonFeedbackPanel.activate(eventBus);
     }
 
     public NavigationController getNavigationController() {

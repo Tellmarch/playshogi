@@ -11,6 +11,7 @@ import com.playshogi.website.gwt.client.mvp.AppPlaceHistoryMapper;
 import com.playshogi.website.gwt.client.place.ByoYomiPlace;
 import com.playshogi.website.gwt.client.widget.board.ShogiBoard;
 import com.playshogi.website.gwt.client.widget.gamenavigator.GameNavigatorPanel;
+import com.playshogi.website.gwt.client.widget.gamenavigator.NavigatorConfiguration;
 import com.playshogi.website.gwt.client.widget.problems.ByoYomiFeedbackPanel;
 import com.playshogi.website.gwt.client.widget.problems.ByoYomiProgressPanel;
 
@@ -31,7 +32,7 @@ public class ByoYomiView extends Composite {
     public ByoYomiView(final AppPlaceHistoryMapper historyMapper, final SessionInformation sessionInformation) {
         GWT.log("Creating byo yomi view");
         shogiBoard = new ShogiBoard(TSUME, sessionInformation.getUserPreferences());
-        navigationController = new NavigationController(TSUME, true);
+        navigationController = new NavigationController(TSUME, NavigatorConfiguration.PROBLEMS);
         gameNavigatorPanel = new GameNavigatorPanel(TSUME);
         byoYomiFeedbackPanel = new ByoYomiFeedbackPanel();
         byoYomiProgressPanel = new ByoYomiProgressPanel(historyMapper);

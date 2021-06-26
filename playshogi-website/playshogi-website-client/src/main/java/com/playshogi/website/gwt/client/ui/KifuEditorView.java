@@ -82,7 +82,7 @@ public class KifuEditorView extends Composite {
         shogiBoard.setUpperRightPanel(kifuEditorPanel);
         shogiBoard.setLowerLeftPanel(kifuEditorLeftBarPanel);
 
-        gameTreePanel = new GameTreePanel(KIFU_EDITOR, gameNavigation, false,
+        gameTreePanel = new GameTreePanel(KIFU_EDITOR, navigationController, false,
                 sessionInformation.getUserPreferences(), false, false);
 
         positionEvaluationDetailsPanel = new PositionEvaluationDetailsPanel(shogiBoard,

@@ -45,4 +45,23 @@ public class GameTree {
         }
         return res;
     }
+
+    public VisitedProgress getPercentVisited() {
+        VisitedProgress progress = new VisitedProgress();
+        getProgress(progress, rootNode);
+        return progress;
+    }
+
+    public static class VisitedProgress {
+        public int visited;
+        public int total;
+    }
+
+    private void getProgress(final VisitedProgress progress, final Node node) {
+        if (!node.isNew()) progress.total++;
+        if (!node.isNew() && node.isVisited()) progress.visited++;
+        for (Node child : node.getChildren()) {
+            getProgress(progress, child);
+        }
+    }
 }

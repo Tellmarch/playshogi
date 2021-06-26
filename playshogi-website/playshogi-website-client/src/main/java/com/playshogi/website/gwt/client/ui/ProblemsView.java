@@ -21,6 +21,7 @@ import com.playshogi.website.gwt.client.util.ElementWidget;
 import com.playshogi.website.gwt.client.widget.board.BoardButtons;
 import com.playshogi.website.gwt.client.widget.board.ShogiBoard;
 import com.playshogi.website.gwt.client.widget.gamenavigator.GameNavigatorPanel;
+import com.playshogi.website.gwt.client.widget.gamenavigator.NavigatorConfiguration;
 import com.playshogi.website.gwt.client.widget.problems.ProblemFeedbackPanel;
 import com.playshogi.website.gwt.shared.models.ProblemDetails;
 import elemental2.dom.HTMLDivElement;
@@ -69,7 +70,7 @@ public class ProblemsView extends Composite {
         this.placeController = placeController;
         GWT.log("Creating Problems view");
         shogiBoard = new ShogiBoard(PROBLEMS, sessionInformation.getUserPreferences());
-        navigationController = new NavigationController(PROBLEMS, true);
+        navigationController = new NavigationController(PROBLEMS, NavigatorConfiguration.PROBLEMS);
         gameNavigatorPanel = new GameNavigatorPanel(PROBLEMS);
         problemFeedbackPanel = new ProblemFeedbackPanel(gameNavigatorPanel, false);
 
