@@ -12,7 +12,9 @@ import java.util.Optional;
 public class KifMoveConverter {
 
     public static ShogiMove fromKifString(final String str, final ShogiPosition shogiPosition,
-                                          final ShogiMove previousMove, final Player player) {
+                                          final ShogiMove previousMove) {
+
+        Player player = shogiPosition.getPlayerToMove();
 
         if (str.startsWith("投了")) {
             return new SpecialMove(player, SpecialMoveType.RESIGN);

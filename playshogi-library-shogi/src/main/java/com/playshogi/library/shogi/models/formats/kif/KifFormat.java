@@ -11,6 +11,8 @@ import com.playshogi.library.shogi.models.position.MutableKomadaiState;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.library.shogi.models.position.Square;
 import com.playshogi.library.shogi.models.record.*;
+import com.playshogi.library.shogi.models.shogivariant.Handicap;
+import com.playshogi.library.shogi.models.shogivariant.ShogiInitialPositionFactory;
 import com.playshogi.library.shogi.rules.ShogiRulesEngine;
 
 import java.util.Arrays;
@@ -32,7 +34,6 @@ public enum KifFormat implements GameRecordFormat {
         String opening = null;
         String place = null;
         String time = null;
-        String handicap = null;
         String gote = null;
         String sente = null;
 
@@ -103,15 +104,23 @@ public enum KifFormat implements GameRecordFormat {
                     break;
                 case "持ち時間":
                 case "対局日":
-                    time = value;
                     break;
                 case "手合割":
-                    handicap = value;
                     if (!(value.startsWith("平手") || value.startsWith("その他"))) {
-                        // TODO
-                        // System.out.println("Handicap game, we ignore for
-                        // now");
-                        return Collections.emptyList();
+                        boolean found = false;
+                        for (Handicap handicap : Handicap.values()) {
+                            if (handicap.getJapanese().equals(value)) {
+                                found = true;
+                                startingPosition = ShogiInitialPositionFactory.createInitialPosition(handicap);
+                            }
+                        }
+
+                        if (!found) {
+                            // TODO
+                            // System.out.println("Handicap game, we ignore for
+                            // now");
+                            return Collections.emptyList();
+                        }
                     }
                     break;
                 case "後手":
@@ -201,7 +210,7 @@ public enum KifFormat implements GameRecordFormat {
         // s.next();
         // s.useDelimiter("[ \r\n]");
 
-        if (goteToPlay) {
+        if (goteToPlay && startingPosition != null) {
             startingPosition.setPlayerToMove(Player.WHITE);
         }
 
@@ -215,7 +224,6 @@ public enum KifFormat implements GameRecordFormat {
 
         GameResult gameResult = GameResult.UNKNOWN;
 
-        Player player = Player.BLACK;
         ShogiMove curMove;
         ShogiMove prevMove = null;
         int moveNumber = 1;
@@ -239,17 +247,17 @@ public enum KifFormat implements GameRecordFormat {
             }
             moveNumber++;
             String move = ts[1];
-            curMove = KifMoveConverter.fromKifString(move, gameNavigation.getPosition(), prevMove, player);
+            curMove = KifMoveConverter.fromKifString(move, gameNavigation.getPosition(), prevMove);
 
             if (curMove instanceof SpecialMove) {
                 SpecialMove specialMove = (SpecialMove) curMove;
                 if (specialMove.getSpecialMoveType().isLosingMove()) {
-                    gameResult = player == Player.BLACK ? GameResult.WHITE_WIN : GameResult.BLACK_WIN;
+                    gameResult = gameNavigation.getPosition().getPlayerToMove() == Player.BLACK ?
+                            GameResult.WHITE_WIN : GameResult.BLACK_WIN;
                 }
             }
 
             gameNavigation.addMove(curMove);
-            player = player.opposite();
             prevMove = curMove;
         }
 
