@@ -191,4 +191,31 @@ public class NavigationController {
         fireNodeChanged();
         fireProgress();
     }
+
+    @EventHandler
+    public void onNavigateNext(final NavigateNextEvent event) {
+        GWT.log(activityId + " NavigationController: Handling NavigateNextEvent");
+        gameNavigation.moveForwardInFirstUnvisitedVariation();
+        firePositionChanged(true);
+        fireNodeChanged();
+        fireProgress();
+    }
+
+    @EventHandler
+    public void onNavigateStartVariation(final NavigateStartVariationEvent event) {
+        GWT.log(activityId + " NavigationController: Handling NavigateStartVariationEvent");
+        gameNavigation.moveToStartOfVariation();
+        firePositionChanged(true);
+        fireNodeChanged();
+        fireProgress();
+    }
+
+    @EventHandler
+    public void onNavigateStartVariation(final NavigateStartUnvisitedVariationEvent event) {
+        GWT.log(activityId + " NavigationController: Handling NavigateStartVariationEvent");
+        gameNavigation.moveBackToNodeWithUnvisitedOptions();
+        firePositionChanged(true);
+        fireNodeChanged();
+        fireProgress();
+    }
 }

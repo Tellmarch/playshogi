@@ -11,6 +11,7 @@ import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.library.shogi.rules.ShogiRulesEngine;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 public class GameNavigation {
@@ -77,6 +78,29 @@ public class GameNavigation {
         }
     }
 
+    public boolean hasVariations() {
+        return currentNode.hasChildren() && currentNode.getChildren().size() > 1;
+    }
+
+    public boolean hasUnvisitedVariations() {
+        return currentNode.hasChildren() && currentNode.getChildren().size() > 1
+                && !currentNode.getChildren().stream().allMatch(Node::isVisited);
+    }
+
+    public void moveToStartOfVariation() {
+        moveBack();
+        while (canMoveBack() && !hasVariations()) {
+            moveBack();
+        }
+    }
+
+    public void moveBackToNodeWithUnvisitedOptions() {
+        moveBack();
+        while (canMoveBack() && !hasUnvisitedVariations()) {
+            moveBack();
+        }
+    }
+
     public Move getMainVariationMove() {
         if (canMoveForward()) {
             return currentNode.getChildren().get(0).getMove();
@@ -107,6 +131,21 @@ public class GameNavigation {
         } else if (move instanceof ShogiMove) {
             gameRulesEngine.playMoveInPosition(position, (ShogiMove) move);
         }
+    }
+
+    public void moveForwardInFirstUnvisitedVariation() {
+        List<Node> children = currentNode.getChildren();
+        for (int i = 1, childrenSize = children.size(); i < childrenSize; i++) {
+            Node child = children.get(i);
+            if (!child.isVisited()) {
+                currentNode = child;
+                currentNode.setVisited(true);
+                playMove(currentNode.getMove());
+                return;
+            }
+        }
+
+        moveForward();
     }
 
     /**

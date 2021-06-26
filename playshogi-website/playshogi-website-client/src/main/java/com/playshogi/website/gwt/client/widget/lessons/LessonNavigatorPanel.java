@@ -2,10 +2,7 @@ package com.playshogi.website.gwt.client.widget.lessons;
 
 import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.event.shared.EventBus;
-import com.playshogi.website.gwt.client.events.gametree.NavigateBackEvent;
-import com.playshogi.website.gwt.client.events.gametree.NavigateForwardEvent;
-import com.playshogi.website.gwt.client.events.gametree.NavigateToEndEvent;
-import com.playshogi.website.gwt.client.events.gametree.NavigateToStartEvent;
+import com.playshogi.website.gwt.client.events.gametree.*;
 import com.playshogi.website.gwt.client.util.ElementWidget;
 import elemental2.dom.HTMLDivElement;
 import org.dominokit.domino.ui.button.Button;
@@ -19,6 +16,7 @@ public class LessonNavigatorPanel {
     private final HtmlContentBuilder<HTMLDivElement> div;
     private EventBus eventBus;
     private final Button nextVariation;
+    private final Button backButton;
 
     public LessonNavigatorPanel() {
         div = Elements.div();
@@ -35,8 +33,12 @@ public class LessonNavigatorPanel {
 
         div.add(buttonsDiv);
 
-        nextVariation = Button.createPrimary("Next variation").style().setMargin("0.5em").get();
+        backButton = Button.createPrimary("Back").style().setMargin("0.5em").get()
+                .addClickListener(evt -> eventBus.fireEvent(new NavigateStartUnvisitedVariationEvent()));
+        nextVariation = Button.createPrimary("Next").style().setMargin("0.5em").get()
+                .addClickListener(evt -> eventBus.fireEvent(new NavigateNextEvent()));
 
+        div.add(backButton);
         div.add(nextVariation);
 
     }
