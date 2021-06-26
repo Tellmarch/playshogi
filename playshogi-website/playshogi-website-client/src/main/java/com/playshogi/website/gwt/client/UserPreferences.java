@@ -26,7 +26,7 @@ public class UserPreferences {
     }
 
     private PieceGraphics.Style pieceStyle = PieceGraphics.Style.RYOKO;
-    private NotationStyle notationStyle = NotationStyle.TRADITIONAL;
+    private NotationStyle notationStyle = NotationStyle.WESTERN_NUMERICAL;
     private boolean annotateGraphs = false;
 
     public UserPreferences() {
