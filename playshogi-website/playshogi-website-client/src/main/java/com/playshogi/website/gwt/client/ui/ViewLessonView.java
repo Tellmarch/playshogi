@@ -54,7 +54,7 @@ public class ViewLessonView extends Composite {
         shogiBoard = new ShogiBoard(VIEWLESSON, sessionInformation.getUserPreferences());
         navigationController = new NavigationController(VIEWLESSON, NavigatorConfiguration.LESSONS);
         gameNavigatorPanel = new GameNavigatorPanel(VIEWLESSON);
-        lessonNavigatorPanel = new LessonNavigatorPanel(navigationController);
+        lessonNavigatorPanel = new LessonNavigatorPanel(navigationController, sessionInformation.getUserPreferences());
         lessonFeedbackPanel = new LessonFeedbackPanel();
 
         shogiBoard.setUpperRightPanel(lessonNavigatorPanel.getAsWidget());

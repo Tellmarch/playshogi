@@ -6,6 +6,8 @@ import com.playshogi.library.shogi.models.Player;
 import com.playshogi.library.shogi.models.formats.kif.KifMoveConverter;
 import com.playshogi.library.shogi.models.formats.notations.MoveConverter;
 import com.playshogi.library.shogi.models.formats.psn.PsnMoveConverter;
+import com.playshogi.library.shogi.models.moves.EditMove;
+import com.playshogi.library.shogi.models.moves.Move;
 import com.playshogi.library.shogi.models.moves.ShogiMove;
 import com.playshogi.website.gwt.client.widget.board.PieceGraphics;
 
@@ -64,6 +66,22 @@ public class UserPreferences {
     public void setNotationStyle(final NotationStyle notationStyle) {
         this.notationStyle = notationStyle;
         Cookies.setCookie(NOTATION_STYLE_COOKIE, notationStyle.name());
+    }
+
+    public String getMoveNotationAccordingToPreferences(final Move move, final Move previousMove,
+                                                        final boolean withColorSymbol) {
+        if (move instanceof ShogiMove) {
+            if (previousMove instanceof ShogiMove) {
+                return getMoveNotationAccordingToPreferences((ShogiMove) move, (ShogiMove) previousMove,
+                        withColorSymbol);
+            } else {
+                return getMoveNotationAccordingToPreferences((ShogiMove) move, withColorSymbol);
+            }
+        } else if (move instanceof EditMove) {
+            return "EDIT";
+        } else {
+            throw new IllegalStateException("Unknown move type");
+        }
     }
 
     public String getMoveNotationAccordingToPreferences(final ShogiMove move, final boolean withColorSymbol) {

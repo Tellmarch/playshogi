@@ -133,19 +133,30 @@ public class GameNavigation {
         }
     }
 
-    public void moveForwardInFirstUnvisitedVariation() {
+    public Node getFirstUnvisitedVariation() {
         List<Node> children = currentNode.getChildren();
         for (int i = 1, childrenSize = children.size(); i < childrenSize; i++) {
             Node child = children.get(i);
             if (!child.isVisited()) {
-                currentNode = child;
-                currentNode.setVisited(true);
-                playMove(currentNode.getMove());
-                return;
+                return child;
             }
         }
 
-        moveForward();
+        if (children.isEmpty()) {
+            return null;
+        } else {
+            return children.get(0);
+        }
+    }
+
+    public void moveForwardInFirstUnvisitedVariation() {
+        Node node = getFirstUnvisitedVariation();
+
+        if (node != null) {
+            currentNode = node;
+            currentNode.setVisited(true);
+            playMove(currentNode.getMove());
+        }
     }
 
     /**

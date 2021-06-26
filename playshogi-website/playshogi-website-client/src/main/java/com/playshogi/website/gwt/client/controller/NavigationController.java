@@ -195,7 +195,11 @@ public class NavigationController {
     @EventHandler
     public void onNavigateNext(final NavigateNextEvent event) {
         GWT.log(activityId + " NavigationController: Handling NavigateNextEvent");
-        gameNavigation.moveForwardInFirstUnvisitedVariation();
+        if (gameNavigation.canMoveForward()) {
+            gameNavigation.moveForwardInFirstUnvisitedVariation();
+        } else {
+            gameNavigation.moveBackToNodeWithUnvisitedOptions();
+        }
         firePositionChanged(true);
         fireNodeChanged();
         fireProgress();
