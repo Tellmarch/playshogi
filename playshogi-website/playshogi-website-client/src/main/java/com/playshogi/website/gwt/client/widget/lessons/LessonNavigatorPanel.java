@@ -1,7 +1,11 @@
 package com.playshogi.website.gwt.client.widget.lessons;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.event.shared.EventBus;
+import com.google.web.bindery.event.shared.binder.EventBinder;
+import com.google.web.bindery.event.shared.binder.EventHandler;
+import com.playshogi.website.gwt.client.controller.NavigationController;
 import com.playshogi.website.gwt.client.events.gametree.*;
 import com.playshogi.website.gwt.client.util.ElementWidget;
 import elemental2.dom.HTMLDivElement;
@@ -13,12 +17,19 @@ import org.jboss.elemento.HtmlContentBuilder;
 
 public class LessonNavigatorPanel {
 
+    interface MyEventBinder extends EventBinder<LessonNavigatorPanel> {
+    }
+
+    private final MyEventBinder eventBinder = GWT.create(MyEventBinder.class);
+
     private final HtmlContentBuilder<HTMLDivElement> div;
+    private final NavigationController navigationController;
     private EventBus eventBus;
     private final Button nextVariation;
     private final Button backButton;
 
-    public LessonNavigatorPanel() {
+    public LessonNavigatorPanel(final NavigationController navigationController) {
+        this.navigationController = navigationController;
         div = Elements.div();
         DominoElement.of(div).style().setBackgroundColor(Color.WHITE.getHex() + "a0");
 
@@ -49,5 +60,13 @@ public class LessonNavigatorPanel {
 
     public void activate(final EventBus eventBus) {
         this.eventBus = eventBus;
+        eventBinder.bindEventHandlers(this, eventBus);
+    }
+
+    @EventHandler
+    public void onVisitedProgress(final VisitedProgressEvent event) {
+        GWT.log("LessonNavigatorPanel: Handling VisitedProgressEvent");
+        nextVariation.setEnabled(navigationController.getGameNavigation().canMoveForward());
+        backButton.setEnabled(!navigationController.getGameNavigation().canMoveForward());
     }
 }
