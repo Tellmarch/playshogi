@@ -42,7 +42,7 @@ public class LessonsActivity extends MyAbstractActivity {
         lessonsView.activate(eventBus);
         containerWidget.setWidget(lessonsView.asWidget());
 
-        kifuService.getAllLessons(sessionInformation.getSessionId(), new AsyncCallback<LessonDetails[]>() {
+        kifuService.getAllPublicLessons(sessionInformation.getSessionId(), new AsyncCallback<LessonDetails[]>() {
             @Override
             public void onFailure(final Throwable throwable) {
                 GWT.log("LessonsActivity - RPC failure: getAllLessons " + throwable);

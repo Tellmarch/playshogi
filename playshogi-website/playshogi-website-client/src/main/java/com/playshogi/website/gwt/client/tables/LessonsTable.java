@@ -5,7 +5,8 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.event.shared.EventBus;
 import com.playshogi.website.gwt.client.mvp.AppPlaceHistoryMapper;
-import com.playshogi.website.gwt.client.place.ProblemCollectionPlace;
+import com.playshogi.website.gwt.client.place.ProblemsPlace;
+import com.playshogi.website.gwt.client.place.ViewLessonPlace;
 import com.playshogi.website.gwt.client.util.ElementWidget;
 import com.playshogi.website.gwt.client.widget.collections.LessonPropertiesForm;
 import com.playshogi.website.gwt.client.widget.problems.TagsElement;
@@ -187,6 +188,11 @@ public class LessonsTable {
                                         element -> element.style.setProperty("vertical-align", "top"))
                                 .setCellRenderer(cell -> TextNode.of(cell.getRecord().getKifuId())))
                 .addColumn(
+                        ColumnConfig.<LessonDetails>create("problems", "Problem Collection")
+                                .styleCell(
+                                        element -> element.style.setProperty("vertical-align", "top"))
+                                .setCellRenderer(cell -> TextNode.of(cell.getRecord().getProblemCollectionId())))
+                .addColumn(
                         ColumnConfig.<LessonDetails>create("difficulty", "Difficulty")
                                 .styleCell(
                                         element -> element.style.setProperty("vertical-align", "top"))
@@ -215,15 +221,27 @@ public class LessonsTable {
                                             return span.element();
                                         }))
                 .addColumn(
-                        ColumnConfig.<LessonDetails>create("open", "Open Collection")
+                        ColumnConfig.<LessonDetails>create("open", "Open Lesson")
                                 .styleCell(
                                         element -> element.style.setProperty(
                                                 "vertical-align", "top"))
                                 .setCellRenderer(cell -> {
-                                    String href =
-                                            "#" + historyMapper.getToken(new ProblemCollectionPlace(cell.getRecord().getKifuId()));
-                                    return Elements.a(href).add(Button.createPrimary(
-                                            "Open")).element();
+                                    LessonDetails record = cell.getRecord();
+                                    if (record.getKifuId() != null) {
+                                        String href =
+                                                "#" + historyMapper.getToken(new ViewLessonPlace(record.getKifuId(),
+                                                        0));
+                                        return Elements.a(href).add(Button.createPrimary(
+                                                "Open")).element();
+                                    } else if (record.getProblemCollectionId() != null) {
+                                        String href =
+                                                "#" + historyMapper.getToken(new ProblemsPlace(record.getProblemCollectionId(),
+                                                        0));
+                                        return Elements.a(href).add(Button.createPrimary(
+                                                "Open")).element();
+                                    } else {
+                                        return TextNode.of("N/A");
+                                    }
                                 }));
         return tableConfig;
     }

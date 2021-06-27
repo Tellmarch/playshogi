@@ -12,10 +12,13 @@ import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.library.shogi.models.formats.sfen.SfenConverter;
 import com.playshogi.website.gwt.client.SessionInformation;
 import com.playshogi.website.gwt.client.events.tutorial.LessonsListEvent;
-import com.playshogi.website.gwt.client.place.ViewKifuPlace;
+import com.playshogi.website.gwt.client.mvp.AppPlaceHistoryMapper;
+import com.playshogi.website.gwt.client.place.ProblemsPlace;
+import com.playshogi.website.gwt.client.place.ViewLessonPlace;
 import com.playshogi.website.gwt.client.util.ElementWidget;
 import com.playshogi.website.gwt.client.widget.board.BoardPreview;
 import com.playshogi.website.gwt.shared.models.LessonDetails;
+import elemental2.dom.HTMLAnchorElement;
 import elemental2.dom.HTMLElement;
 import elemental2.dom.HTMLHeadingElement;
 import elemental2.dom.Node;
@@ -52,18 +55,21 @@ public class LessonsView extends Composite {
     private final HtmlContentBuilder<HTMLElement> previewTags;
     private final HtmlContentBuilder<HTMLHeadingElement> difficulty;
     private final Node previewDiagram;
-    private final Button openButton;
+    private final HtmlContentBuilder<HTMLAnchorElement> openButton;
     private final BoardPreview boardPreview;
 
     private final PlaceController placeController;
     private final SessionInformation sessionInformation;
+    private final AppPlaceHistoryMapper historyMapper;
 
     private LessonDetails lesson;
 
     @Inject
-    public LessonsView(final PlaceController placeController, final SessionInformation sessionInformation) {
+    public LessonsView(final PlaceController placeController, final SessionInformation sessionInformation,
+                       final AppPlaceHistoryMapper historyMapper) {
         this.placeController = placeController;
         this.sessionInformation = sessionInformation;
+        this.historyMapper = historyMapper;
         GWT.log("Creating lessons view");
 
         breadcrumb = Breadcrumb.create().setColor(Color.ORANGE);
@@ -78,11 +84,10 @@ public class LessonsView extends Composite {
         boardPreview = new BoardPreview(SfenConverter.fromSFEN(SfenConverter.INITIAL_POSITION_SFEN), false,
                 sessionInformation.getUserPreferences());
         previewDiagram = Js.uncheckedCast(boardPreview.getElement());
-        openButton = Button.createPrimary("Open Lesson!").addClickListener(evt -> {
-            if (lesson != null && lesson.getKifuId() != null) {
-                placeController.goTo(new ViewKifuPlace(lesson.getKifuId(), 0));
-            }
-        });
+        openButton = Elements.a("#");
+        openButton.add(Button.createSuccess(Icons.ALL.library_mdi()).setContent("Open Lesson!"));
+        openButton.hidden(true);
+
         previewCard =
                 Card.create("Select a Lesson on the left")
                         .appendChild(previewTags)
@@ -179,9 +184,15 @@ public class LessonsView extends Composite {
         }
 
         if (lesson.getKifuId() != null) {
-            openButton.show();
+            String exploreHRef = "#" + historyMapper.getToken(new ViewLessonPlace(lesson.getKifuId(), 0));
+            openButton.attr("href", exploreHRef);
+            openButton.hidden(false);
+        } else if (lesson.getProblemCollectionId() != null) {
+            String exploreHRef = "#" + historyMapper.getToken(new ProblemsPlace(lesson.getProblemCollectionId(), 0));
+            openButton.attr("href", exploreHRef);
+            openButton.hidden(false);
         } else {
-            openButton.hide();
+            openButton.hidden(true);
         }
 
     }
