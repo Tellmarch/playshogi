@@ -28,6 +28,7 @@ public class LessonPropertiesForm {
     private Select<Boolean> visibility;
     private HtmlContentBuilder<HTMLDivElement> div = null;
     private EventBus eventBus;
+    private TextBox problemCollectionId;
 
     public HtmlContentBuilder<HTMLDivElement> getForm() {
         if (div != null) {
@@ -42,6 +43,7 @@ public class LessonPropertiesForm {
         title = TextBox.create("Title");
         title.setValue("My New Problem Collection");
         kifuId = TextBox.create("kifuId");
+        problemCollectionId = TextBox.create("problemCollectionId");
         parentLessonId = TextBox.create("parentLessonId");
         previewSfen = TextBox.create("previewSfen");
         previewSfen.setValue(SfenConverter.INITIAL_POSITION_SFEN);
@@ -98,7 +100,7 @@ public class LessonPropertiesForm {
 
     private LessonDetails updateDetails(final LessonDetails details) {
         return new LessonDetails(details.getLessonId(), kifuId.getStringValue(),
-                parentLessonId.getStringValue(), title.getStringValue(),
+                parentLessonId.getStringValue(), problemCollectionId.getStringValue(), title.getStringValue(),
                 description.getStringValue(), getTags(), previewSfen.getStringValue(), author.getStringValue(),
                 getDifficulty(), details.getLikes(), details.isCompleted(), visibility.getValue(), details.getIndex());
     }
@@ -107,6 +109,7 @@ public class LessonPropertiesForm {
         title.setValue(details.getTitle() == null ? "" : details.getTitle());
         description.setValue(details.getDescription() == null ? "" : details.getDescription());
         kifuId.setValue(details.getKifuId() == null ? "" : details.getKifuId());
+        problemCollectionId.setValue(details.getProblemCollectionId() == null ? "" : details.getProblemCollectionId());
         parentLessonId.setValue(details.getParentLessonId() == null ? "" : details.getParentLessonId());
         previewSfen.setValue(details.getPreviewSfen() == null ? "" : details.getPreviewSfen());
         author.setValue(details.getAuthor() == null ? "" : details.getAuthor());

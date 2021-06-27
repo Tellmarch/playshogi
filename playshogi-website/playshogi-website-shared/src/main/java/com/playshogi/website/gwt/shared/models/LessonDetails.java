@@ -7,6 +7,7 @@ public class LessonDetails implements Serializable {
     private String lessonId;
     private String kifuId;
     private String parentLessonId;
+    private String problemCollectionId;
     private String title;
     private String description;
     private String[] tags;
@@ -21,7 +22,8 @@ public class LessonDetails implements Serializable {
     public LessonDetails() {
     }
 
-    public LessonDetails(final String lessonId, final String kifuId, final String parentLessonId, final String title,
+    public LessonDetails(final String lessonId, final String kifuId, final String parentLessonId,
+                         final String problemCollectionId, final String title,
                          final String description, final String[] tags, final String previewSfen,
                          final String author, final int difficulty, final int likes, final boolean completed,
                          final boolean hidden,
@@ -29,6 +31,7 @@ public class LessonDetails implements Serializable {
         this.lessonId = lessonId;
         this.kifuId = kifuId;
         this.parentLessonId = parentLessonId;
+        this.problemCollectionId = problemCollectionId;
         this.title = title;
         this.description = description;
         this.tags = tags;
@@ -45,6 +48,7 @@ public class LessonDetails implements Serializable {
         this.lessonId = other.lessonId;
         this.kifuId = other.kifuId;
         this.parentLessonId = other.parentLessonId;
+        this.problemCollectionId = other.problemCollectionId;
         this.title = other.title;
         this.description = other.description;
         this.tags = other.tags;
@@ -161,12 +165,21 @@ public class LessonDetails implements Serializable {
         this.author = author;
     }
 
+    public String getProblemCollectionId() {
+        return problemCollectionId;
+    }
+
+    public void setProblemCollectionId(final String problemCollectionId) {
+        this.problemCollectionId = problemCollectionId;
+    }
+
     @Override
     public String toString() {
         return "LessonDetails{" +
                 "lessonId='" + lessonId + '\'' +
                 ", kifuId='" + kifuId + '\'' +
                 ", parentLessonId='" + parentLessonId + '\'' +
+                ", problemCollectionId='" + problemCollectionId + '\'' +
                 ", title='" + title + '\'' +
                 ", description='" + description + '\'' +
                 ", tags=" + Arrays.toString(tags) +

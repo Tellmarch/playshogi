@@ -448,17 +448,24 @@ CREATE TABLE IF NOT EXISTS `playshogi`.`ps_lessons` (
   `update_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `type` TINYINT UNSIGNED NOT NULL DEFAULT 0,
   `index` INT NOT NULL DEFAULT 0,
+  `problemset_id` INT UNSIGNED NULL,
   PRIMARY KEY (`id`),
   INDEX `fk_ps_lessons_1_idx` (`kifu_id` ASC),
   INDEX `fk_ps_lessons_2_idx` (`author_id` ASC),
+  INDEX `fk_ps_lessons_3_idx` (`problemset_id` ASC),
   CONSTRAINT `fk_ps_lessons_1`
     FOREIGN KEY (`kifu_id`)
     REFERENCES `playshogi`.`ps_kifu` (`id`)
-    ON DELETE CASCADE
+    ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_ps_lessons_2`
     FOREIGN KEY (`author_id`)
     REFERENCES `playshogi`.`ps_user` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_ps_lessons_3`
+    FOREIGN KEY (`problemset_id`)
+    REFERENCES `playshogi`.`ps_problemset` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
