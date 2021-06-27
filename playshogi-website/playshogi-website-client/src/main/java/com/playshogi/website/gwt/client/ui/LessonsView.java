@@ -116,46 +116,6 @@ public class LessonsView extends Composite {
         });
     }
 
-    @EventHandler
-    public void onLessonsList(final LessonsListEvent event) {
-        GWT.log("LessonsView: handle LessonsListEvent");
-
-
-        for (TreeItem<LessonDetails> subItem : lessonsTree.getSubItems()) {
-            lessonsTree.removeItem(subItem);
-        }
-
-        Map<String, TreeItem<LessonDetails>> items = new HashMap<>();
-
-        for (LessonDetails lesson : event.getLessons()) {
-            items.put(lesson.getLessonId(), TreeItem.create(lesson.getTitle(), lesson));
-        }
-
-        for (LessonDetails lesson : event.getLessons()) {
-            TreeItem<LessonDetails> item = items.get(lesson.getLessonId());
-            if (lesson.getParentLessonId() == null) {
-                lessonsTree.appendChild(item);
-            } else {
-                items.get(lesson.getParentLessonId()).appendChild(item);
-            }
-
-            item.addClickListener(evt -> {
-                showLessonPreview(lesson);
-
-                breadcrumb.removeAll();
-                breadcrumb.appendChild(Icons.ALL.home(), "Lessons", e -> {
-                });
-
-                for (LessonDetails l : item.getPathValues()) {
-                    breadcrumb.appendChild(Icons.ALL.library_books(), l.getTitle(), e -> {
-                    });
-                }
-
-            });
-        }
-
-    }
-
     private void showLessonPreview(final LessonDetails lesson) {
         this.lesson = lesson;
         previewCard.setTitle(lesson.getTitle());
@@ -193,6 +153,44 @@ public class LessonsView extends Composite {
             openButton.hidden(false);
         } else {
             openButton.hidden(true);
+        }
+    }
+
+    @EventHandler
+    public void onLessonsList(final LessonsListEvent event) {
+        GWT.log("LessonsView: handle LessonsListEvent");
+
+        for (TreeItem<LessonDetails> subItem : lessonsTree.getSubItems()) {
+            lessonsTree.removeItem(subItem);
+        }
+
+        Map<String, TreeItem<LessonDetails>> items = new HashMap<>();
+
+        for (LessonDetails lesson : event.getLessons()) {
+            items.put(lesson.getLessonId(), TreeItem.create(lesson.getTitle(), lesson));
+        }
+
+        for (LessonDetails lesson : event.getLessons()) {
+            TreeItem<LessonDetails> item = items.get(lesson.getLessonId());
+            if (lesson.getParentLessonId() == null) {
+                lessonsTree.appendChild(item);
+            } else if (items.get(lesson.getParentLessonId()) != null) {
+                items.get(lesson.getParentLessonId()).appendChild(item);
+            }
+
+            item.addClickListener(evt -> {
+                showLessonPreview(lesson);
+
+                breadcrumb.removeAll();
+                breadcrumb.appendChild(Icons.ALL.home(), "Lessons", e -> {
+                });
+
+                for (LessonDetails l : item.getPathValues()) {
+                    breadcrumb.appendChild(Icons.ALL.library_books(), l.getTitle(), e -> {
+                    });
+                }
+
+            });
         }
 
     }
