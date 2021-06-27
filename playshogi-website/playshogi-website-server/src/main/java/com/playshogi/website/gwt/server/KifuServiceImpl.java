@@ -32,6 +32,7 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
     private final GameSetRepository gameSetRepository;
     private final PositionRepository positionRepository;
     private final GameRepository gameRepository;
+    private final LessonRepository lessonRepository;
     private final Authenticator authenticator = Authenticator.INSTANCE;
 
     private final TsumeEscapeSolver tsumeEscapeSolver =
@@ -44,6 +45,7 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
         positionRepository = new PositionRepository(dbConnection);
         kifuRepository = new KifuRepository(dbConnection);
         gameRepository = new GameRepository(dbConnection);
+        lessonRepository = new LessonRepository(dbConnection);
     }
 
     @Override
@@ -592,78 +594,78 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
     }
 
     @Override
+    public LessonDetails[] getAllPublicLessons(final String sessionId) {
+        LOGGER.log(Level.INFO, "getAllPublicLessons");
+
+        List<PersistentLesson> allVisibleLessons = lessonRepository.getAllVisibleLessons();
+        return allVisibleLessons.stream().map(this::getLessonDetails).toArray(LessonDetails[]::new);
+    }
+
+    @Override
     public LessonDetails[] getAllLessons(final String sessionId) {
         LOGGER.log(Level.INFO, "getAllLessons");
-        String author = "Jean";
-        return new LessonDetails[]{
-                new LessonDetails("Openings", null, null, null, "Openings", "Learn all about openings!", new String[]{
-                        "openings"}, "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b -", author, 1, 5,
-                        false,
-                        false, 0),
-                new LessonDetails("OpeningsSvS", null, "Openings", null, "Static Rook vs Static Rook", "Learn all " +
-                        "about " +
-                        "openings!", new String[]{"openings", "static rook"}, "lnsgkgsnl/1r5b1/p1ppppppp/9/1p5P1/9" +
-                        "/PPPPPPP1P/1B5R1/LNSGKGSNL b -", author, 1, 5, false, false, 0),
-                new LessonDetails("OpeningsSvR", null, "Openings", null, "Static Rook vs Ranging Rook", "Learn all " +
-                        "about " +
-                        "openings!", new String[]{"openings", "static rook", "ranging rook"}, "lnsgkgsnl/5r1b1" +
-                        "/ppppp2pp/5pp2/9/2P4P1/PP1PPPP1P/1B3S1R1/LNSGKG1NL b -", author, 1, 5, false, false, 0),
-                new LessonDetails("OpeningsRvR", null, "Openings", null, "Ranging Rook vs Ranging Rook", "Learn all " +
-                        "about " +
-                        "openings!", new String[]{"openings", "ranging rook"}, "lnsgkgsnl/6rb1/pppppp1pp/9/2P3p2/9" +
-                        "/PP1PPPPPP/1BR6/LNSGKGSNL b -", author, 1, 5, false, false, 0),
 
-                new LessonDetails("Middle-game", null, null, null, "Middle-game", "Learn all about the middle game!",
-                        new String[]{"middle-game"}, "ln1g2B2/1ks1grs1l/1pp3np1/p3p1p1p/3p3P1/P1P1PpP1P/1P1PS1N2" +
-                        "/2KGGS1R1/LN6L b bp", author, 1, 5, false, false, 0),
-                new LessonDetails("Castles", null, "Middle-game", null, "Castles", "Learn all about castles!",
-                        new String[]{"middle-game", "castles"}, "ln1g5/1ks1g4/1pppp4/p8/9/9/5PPPP/6GGL/6SNK b " +
-                        "2R2B2S2N2L9P", author, 1, 5, false, false, 0),
-                new LessonDetails("Mino Castle", null, "Castles", null, "Mino Castle", "Learn all about the Mino " +
-                        "Castle!",
-                        new String[]{"middle-game", "castles", "mino"}, "ln1g5/1ks1g4/1pppp4/p8/9/9/9/9/9 b " +
-                        "2r2b2g3s3n3l13p", author, 1, 5, false, false, 0),
+        LoginResult loginResult = authenticator.checkSession(sessionId);
+        if (loginResult == null || !loginResult.isLoggedIn() || !loginResult.isAdmin()) {
+            throw new IllegalStateException("Restricted to admins");
+        }
 
-                new LessonDetails("Endgame", null, null, null, "Endgame", "Learn all about endgame techniques!",
-                        new String[]{"endgame"}, "5g3/5+P1pk/8n/6bG1/9/8L/9/9/9 b 2rb2g4s3n3l16p 1", author, 1, 5,
-                        false,
-                        false, 0),
+        List<PersistentLesson> allVisibleLessons = lessonRepository.getAllLessons();
+        return allVisibleLessons.stream().map(this::getLessonDetails).toArray(LessonDetails[]::new);
+    }
 
-                new LessonDetails("Proverbs", null, null, null, "Proverbs", "Improve your play by learning Shogi " +
-                        "proverbs",
-                        new String[]{"proverbs"}, "", author, 1, 5, false, false, 0),
-                new LessonDetails("Proverbs-Pawn", null, "Proverbs", null, "The Pawn", "Proverbs about pawns",
-                        new String[]{"proverbs", "pawn"}, "", author, 1, 5, false, false, 0),
-                new LessonDetails("apiwatg", null, "Proverbs-Pawn", null, "A Pawn is Worth a Thousand Generals", "A " +
-                        "Pawn is" +
-                        " Worth a Thousand Generals", new String[]{"proverbs", "pawn"}, "", author, 1, 5, false,
-                        false, 0),
-                new LessonDetails("apiwatg1", "58998", "apiwatg", null, "A Pawn is Worth a Thousand Generals - Part 1", "A " +
-                        "Pawn is Worth a Thousand Generals, Part 1", new String[]{"proverbs", "pawn"}, "", author, 1, 5,
-                        false, false, 0),
-                new LessonDetails("apiwatg2", "58999", "apiwatg", null, "A Pawn is Worth a Thousand Generals - Part 2", "A " +
-                        "Pawn is Worth a Thousand Generals, Part 2", new String[]{"proverbs", "pawn"}, "", author, 1, 5,
-                        false, false, 0),
-                new LessonDetails("apiwatg3", "59000", "apiwatg", null, "A Pawn is Worth a Thousand Generals - Part 3", "A " +
-                        "Pawn is Worth a Thousand Generals, Part 3", new String[]{"proverbs", "pawn"}, "", author, 1, 5,
-                        false, false, 0),
-                new LessonDetails("apiwatg4", "59001", "apiwatg", null, "A Pawn is Worth a Thousand Generals - Part 4", "A " +
-                        "Pawn is Worth a Thousand Generals, Part 4", new String[]{"proverbs", "pawn"}, "", author, 1, 5,
-                        false, false, 0),
-                new LessonDetails("apiwatg5", "59002", "apiwatg", null, "A Pawn is Worth a Thousand Generals - Part 5", "A " +
-                        "Pawn is Worth a Thousand Generals, Part 5", new String[]{"proverbs", "pawn"}, "", author, 1, 5,
-                        false, false, 0),
-                new LessonDetails("apiwatg6", "59003", "apiwatg", null, "A Pawn is Worth a Thousand Generals - Part 6", "A " +
-                        "Pawn is Worth a Thousand Generals, Part 6", new String[]{"proverbs", "pawn"}, "", author, 1, 5,
-                        false, false, 0),
-                new LessonDetails("apiwatg7", "59004", "apiwatg", null, "A Pawn is Worth a Thousand Generals - Part 7", "A " +
-                        "Pawn is Worth a Thousand Generals, Part 7", new String[]{"proverbs", "pawn"}, "", author, 1, 5,
-                        false, false, 0),
-                new LessonDetails("apiwatg8", "59005", "apiwatg", null, "A Pawn is Worth a Thousand Generals - Part 8", "A " +
-                        "Pawn is Worth a Thousand Generals, Part 8", new String[]{"proverbs", "pawn"}, "", author, 1, 5,
-                        false, false, 0),
 
-        };
+    @Override
+    public void createLesson(final String sessionId, final LessonDetails lesson) {
+        LOGGER.log(Level.INFO, "getAllLessons");
+
+        LoginResult loginResult = authenticator.checkSession(sessionId);
+        if (loginResult == null || !loginResult.isLoggedIn() || !loginResult.isAdmin()) {
+            throw new IllegalStateException("Restricted to admins");
+        }
+
+        lessonRepository.saveLesson(getPersistentLesson(lesson));
+    }
+
+    private LessonDetails getLessonDetails(final PersistentLesson lesson) {
+        LessonDetails details = new LessonDetails();
+        details.setLessonId(String.valueOf(lesson.getId()));
+        details.setIndex(lesson.getIndex());
+        details.setTitle(lesson.getTitle());
+        details.setDescription(lesson.getDescription());
+        details.setKifuId(String.valueOf(lesson.getKifuId()));
+        details.setProblemCollectionId(String.valueOf(lesson.getProblemCollectionId()));
+        details.setDifficulty(lesson.getDifficulty());
+        details.setTags(lesson.getTags());
+        details.setPreviewSfen(lesson.getPreviewSfen());
+        details.setHidden(lesson.isHidden());
+        details.setLikes(lesson.getLikes());
+        details.setAuthor(UsersCache.INSTANCE.getUserName(lesson.getAuthorId()));
+        details.setParentLessonId(String.valueOf(lesson.getParentId()));
+        return details;
+    }
+
+    private PersistentLesson getPersistentLesson(final LessonDetails details) {
+        return new PersistentLesson(
+                0,
+                details.getKifuId() == null ? null : Integer.parseInt(details.getKifuId()),
+                details.getProblemCollectionId() == null ? null : Integer.parseInt(details.getProblemCollectionId()),
+                details.getParentLessonId() == null ? null : Integer.parseInt(details.getParentLessonId()),
+                details.getTitle(),
+                details.getDescription(),
+                details.getTags(),
+                details.getPreviewSfen(),
+                details.getDifficulty(),
+                details.getLikes(),
+                UsersCache.INSTANCE.getUserId(details.getAuthor()),
+                details.isHidden(),
+                null,
+                null,
+                details.getProblemCollectionId() != null ? PersistentLesson.LessonType.PRACTICE :
+                        (details.getKifuId() != null ? PersistentLesson.LessonType.LECTURE :
+                                PersistentLesson.LessonType.UNSPECIFIED),
+                details.getIndex()
+        );
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.playshogi.library.database.models;
 
+import java.util.Arrays;
 import java.util.Date;
 
 public class PersistentLesson {
@@ -42,10 +43,11 @@ public class PersistentLesson {
 
     private final int id;
     private final Integer kifuId;
+    private final Integer problemCollectionId;
     private final Integer parentId;
     private final String title;
     private final String description;
-    private final String tags;
+    private final String[] tags;
     private final String previewSfen;
     private final Integer difficulty;
     private final int likes;
@@ -56,12 +58,14 @@ public class PersistentLesson {
     private final LessonType type;
     private final int index;
 
-    public PersistentLesson(final int id, final Integer kifuId, final Integer parentId, final String title,
-                            final String description, final String tags, final String previewSfen,
+    public PersistentLesson(final int id, final Integer kifuId, final Integer problemCollectionId,
+                            final Integer parentId, final String title,
+                            final String description, final String[] tags, final String previewSfen,
                             final Integer difficulty, final int likes, final Integer authorId, final boolean hidden,
                             final Date createTime, final Date updateTime, final LessonType type, final int index) {
         this.id = id;
         this.kifuId = kifuId;
+        this.problemCollectionId = problemCollectionId;
         this.parentId = parentId;
         this.title = title;
         this.description = description;
@@ -97,7 +101,7 @@ public class PersistentLesson {
         return description;
     }
 
-    public String getTags() {
+    public String[] getTags() {
         return tags;
     }
 
@@ -137,15 +141,20 @@ public class PersistentLesson {
         return index;
     }
 
+    public Integer getProblemCollectionId() {
+        return problemCollectionId;
+    }
+
     @Override
     public String toString() {
         return "PersistentLesson{" +
                 "id=" + id +
                 ", kifuId=" + kifuId +
+                ", problemCollectionId=" + problemCollectionId +
                 ", parentId=" + parentId +
                 ", title='" + title + '\'' +
                 ", description='" + description + '\'' +
-                ", tags='" + tags + '\'' +
+                ", tags='" + Arrays.toString(tags) + '\'' +
                 ", previewSfen='" + previewSfen + '\'' +
                 ", difficulty=" + difficulty +
                 ", likes=" + likes +

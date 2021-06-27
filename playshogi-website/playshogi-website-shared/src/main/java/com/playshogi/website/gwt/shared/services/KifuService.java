@@ -49,6 +49,10 @@ public interface KifuService extends RemoteService {
 
     LessonDetails[] getAllLessons(String sessionId);
 
+    LessonDetails[] getAllPublicLessons(String sessionId);
+
+    void createLesson(String sessionId, LessonDetails lesson);
+
     void updateKifuUsf(String sessionId, String kifuId, String kifuUsf);
 
     TournamentDetails getTournament(String sessionID, String tournamentID);

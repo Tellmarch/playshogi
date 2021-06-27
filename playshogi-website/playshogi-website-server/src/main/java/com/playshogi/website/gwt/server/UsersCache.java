@@ -26,4 +26,9 @@ public enum UsersCache {
         }
         return users.get(userId).getUsername();
     }
+
+    public Integer getUserId(final String author) {
+        // TODO
+        return null;
+    }
 }
