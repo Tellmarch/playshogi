@@ -5,8 +5,10 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
+import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.website.gwt.client.SessionInformation;
 import com.playshogi.website.gwt.client.events.tutorial.LessonsListEvent;
+import com.playshogi.website.gwt.client.events.tutorial.SaveLessonDetailsEvent;
 import com.playshogi.website.gwt.client.place.ManageLessonsPlace;
 import com.playshogi.website.gwt.client.ui.ManageLessonsView;
 import com.playshogi.website.gwt.shared.models.LessonDetails;
@@ -44,6 +46,10 @@ public class ManageLessonsActivity extends MyAbstractActivity {
         view.activate(eventBus);
         containerWidget.setWidget(view.asWidget());
 
+        fetchData();
+    }
+
+    private void fetchData() {
         kifuService.getAllLessons(sessionInformation.getSessionId(), new AsyncCallback<LessonDetails[]>() {
             @Override
             public void onFailure(final Throwable throwable) {
@@ -56,6 +62,40 @@ public class ManageLessonsActivity extends MyAbstractActivity {
                 eventBus.fireEvent(new LessonsListEvent(lessonDetails));
             }
         });
+    }
+
+    @EventHandler
+    public void onSaveLessonDetails(final SaveLessonDetailsEvent event) {
+        GWT.log("ManageLessonsView: handle SaveLessonDetailsEvent");
+
+        String lessonId = event.getDetails().getLessonId();
+        if (lessonId == null || "".equals(lessonId)) {
+            kifuService.createLesson(sessionInformation.getSessionId(), event.getDetails(), new AsyncCallback<Void>() {
+                @Override
+                public void onFailure(final Throwable throwable) {
+                    GWT.log("LessonsActivity - RPC failure: createLesson " + throwable);
+                }
+
+                @Override
+                public void onSuccess(final Void unused) {
+                    GWT.log("LessonsActivity - RPC success: createLesson ");
+                    fetchData();
+                }
+            });
+        } else {
+            kifuService.updateLesson(sessionInformation.getSessionId(), event.getDetails(), new AsyncCallback<Void>() {
+                @Override
+                public void onFailure(final Throwable throwable) {
+                    GWT.log("LessonsActivity - RPC failure: updateLesson " + throwable);
+                }
+
+                @Override
+                public void onSuccess(final Void unused) {
+                    GWT.log("LessonsActivity - RPC success: updateLesson ");
+                    fetchData();
+                }
+            });
+        }
     }
 
 }

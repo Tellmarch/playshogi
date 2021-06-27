@@ -64,6 +64,7 @@ public class ManageLessonsView extends Composite {
         this.eventBus = eventBus;
         eventBinder.bindEventHandlers(this, eventBus);
         lessonsTable.activate(eventBus);
+        lessonPropertiesForm.activate(eventBus);
     }
 
     @EventHandler

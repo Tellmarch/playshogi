@@ -1,5 +1,6 @@
 package com.playshogi.website.gwt.server;
 
+import com.google.gwt.thirdparty.guava.common.base.Strings;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.playshogi.library.database.*;
 import com.playshogi.library.database.models.*;
@@ -617,7 +618,7 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
 
     @Override
     public void createLesson(final String sessionId, final LessonDetails lesson) {
-        LOGGER.log(Level.INFO, "getAllLessons");
+        LOGGER.log(Level.INFO, "createLesson: " + lesson);
 
         LoginResult loginResult = authenticator.checkSession(sessionId);
         if (loginResult == null || !loginResult.isLoggedIn() || !loginResult.isAdmin()) {
@@ -625,6 +626,18 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
         }
 
         lessonRepository.saveLesson(getPersistentLesson(lesson));
+    }
+
+    @Override
+    public void updateLesson(final String sessionId, final LessonDetails lesson) {
+        LOGGER.log(Level.INFO, "updateLesson: " + lesson);
+
+        LoginResult loginResult = authenticator.checkSession(sessionId);
+        if (loginResult == null || !loginResult.isLoggedIn() || !loginResult.isAdmin()) {
+            throw new IllegalStateException("Restricted to admins");
+        }
+
+        lessonRepository.updateLesson(getPersistentLesson(lesson));
     }
 
     private LessonDetails getLessonDetails(final PersistentLesson lesson) {
@@ -640,7 +653,7 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
         details.setPreviewSfen(lesson.getPreviewSfen());
         details.setHidden(lesson.isHidden());
         details.setLikes(lesson.getLikes());
-        details.setAuthor(UsersCache.INSTANCE.getUserName(lesson.getAuthorId()));
+        details.setAuthor(lesson.getAuthorId() == null ? null : UsersCache.INSTANCE.getUserName(lesson.getAuthorId()));
         details.setParentLessonId(String.valueOf(lesson.getParentId()));
         return details;
     }
@@ -648,9 +661,11 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
     private PersistentLesson getPersistentLesson(final LessonDetails details) {
         return new PersistentLesson(
                 0,
-                details.getKifuId() == null ? null : Integer.parseInt(details.getKifuId()),
-                details.getProblemCollectionId() == null ? null : Integer.parseInt(details.getProblemCollectionId()),
-                details.getParentLessonId() == null ? null : Integer.parseInt(details.getParentLessonId()),
+                Strings.isNullOrEmpty(details.getKifuId()) ? null : Integer.parseInt(details.getKifuId()),
+                Strings.isNullOrEmpty(details.getProblemCollectionId()) ? null :
+                        Integer.parseInt(details.getProblemCollectionId()),
+                Strings.isNullOrEmpty(details.getParentLessonId()) ? null :
+                        Integer.parseInt(details.getParentLessonId()),
                 details.getTitle(),
                 details.getDescription(),
                 details.getTags(),

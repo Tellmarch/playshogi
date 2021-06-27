@@ -90,7 +90,7 @@ public class LessonPropertiesForm {
         closeButton.addClickListener(evt -> modal.close());
         Button saveButton = Button.create("SAVE CHANGES").linkify();
         saveButton.addClickListener(evt -> {
-            eventBus.fireEvent(new SaveLessonDetailsEvent(updateDetails(details)));
+            saveLessonDetails(details);
             modal.close();
         });
         modal.appendFooterChild(saveButton);
@@ -121,6 +121,10 @@ public class LessonPropertiesForm {
                 tags.addValue(tag);
             }
         }
+    }
+
+    private void saveLessonDetails(final LessonDetails details) {
+        eventBus.fireEvent(new SaveLessonDetailsEvent(updateDetails(details)));
     }
 
     public void activate(final EventBus eventBus) {

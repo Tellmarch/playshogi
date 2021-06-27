@@ -20,6 +20,11 @@ public class LessonRepository {
             "`title`, `description`, `tags`, `preview_sfen`, `difficulty`, `author_id`, `hidden`, " +
             "`type`, `index`, `problemset_id`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 
+    private static final String UPDATE_LESSON = "UPDATE `playshogi`.`ps_lessons` SET `kifu_id` = ?, `parent_id` = ?, " +
+            "`title` = ?, `description` = ?, `tags` = ?, `preview_sfen` = ?, `difficulty` = ?, `author_id` = ?, " +
+            "`hidden` = ?, " +
+            "`type` = ?, `index` = ?, `problemset_id` = ? WHERE `id` = ?;";
+
     private final DbConnection dbConnection;
 
     public LessonRepository(final DbConnection dbConnection) {
@@ -126,6 +131,36 @@ public class LessonRepository {
         }
 
         return key;
+    }
+
+    public void updateLesson(final PersistentLesson lesson) {
+        Connection connection = dbConnection.getConnection();
+        try (PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_LESSON,
+                Statement.RETURN_GENERATED_KEYS)) {
+            setInteger(preparedStatement, 1, lesson.getKifuId());
+            setInteger(preparedStatement, 2, lesson.getParentId());
+            preparedStatement.setString(3, lesson.getTitle());
+            preparedStatement.setString(4, lesson.getDescription());
+            preparedStatement.setString(5, lesson.getTags() == null ? "" : String.join(",", lesson.getTags()));
+            preparedStatement.setString(6, lesson.getPreviewSfen());
+            setInteger(preparedStatement, 7, lesson.getDifficulty());
+            setInteger(preparedStatement, 8, lesson.getAuthorId());
+            preparedStatement.setBoolean(9, lesson.isHidden());
+            preparedStatement.setInt(10, lesson.getType().getDbInt());
+            preparedStatement.setInt(11, lesson.getIndex());
+            setInteger(preparedStatement, 12, lesson.getProblemCollectionId());
+            preparedStatement.setInt(13, lesson.getId());
+
+            int res = preparedStatement.executeUpdate();
+
+            if (res == 1) {
+                LOGGER.log(Level.INFO, "Updated lesson");
+            } else {
+                LOGGER.log(Level.SEVERE, "Could not update lesson");
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error updating the lesson in db", e);
+        }
     }
 
 

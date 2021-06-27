@@ -50,9 +50,9 @@ public class LessonsTable {
     private final LocalListDataStore<LessonDetails> localListDataStore;
     private final SimplePaginationPlugin<LessonDetails> simplePaginationPlugin;
     private final DataTable<LessonDetails> table;
-    private EventBus eventBus;
     private final LessonPropertiesForm lessonPropertiesForm;
     private CustomSearchTableAction<LessonDetails> customSearchTableAction;
+    private EventBus eventBus;
 
     public LessonsTable(final AppPlaceHistoryMapper historyMapper) {
         TableConfig<LessonDetails> tableConfig = getTableConfig(historyMapper);

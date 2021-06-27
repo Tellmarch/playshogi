@@ -59,6 +59,8 @@ public interface KifuServiceAsync {
 
     void createLesson(String sessionId, LessonDetails lesson, AsyncCallback<Void> callback);
 
+    void updateLesson(String sessionId, LessonDetails lesson, AsyncCallback<Void> callback);
+
     void updateKifuUsf(String sessionId, String kifuId, String kifuUsf, AsyncCallback<Void> callback);
 
     void getTournament(String sessionID, String tournamentID, AsyncCallback<TournamentDetails> callback);
