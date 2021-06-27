@@ -71,7 +71,7 @@ public class GameTreePanel extends Composite {
                 // Don't do anything (https://github.com/gwtproject/gwt/issues/9475)
             }
         };
-        tree.setScrollOnSelectEnabled(true);
+        tree.setScrollOnSelectEnabled(false);
         tree.addSelectionHandler(selectionEvent -> {
             TreeItem item = selectionEvent.getSelectedItem();
             Node node = null;
@@ -190,7 +190,7 @@ public class GameTreePanel extends Composite {
             TreeItem item = iterator.next();
             if (item.getUserObject() == gameNavigation.getCurrentNode()) {
                 tree.setSelectedItem(item, false);
-                item.getElement().scrollIntoView();
+                tree.getElement().getParentElement().getParentElement().getParentElement().setScrollTop(item.getElement().getOffsetTop() - 200);
                 colorNode(item, gameNavigation.getCurrentNode());
             }
         }

@@ -70,7 +70,7 @@ public class ViewLessonView extends Composite {
 
         positionEvaluationDetailsPanel = new PositionEvaluationDetailsPanel(shogiBoard,
                 sessionInformation);
-        positionEvaluationDetailsPanel.setSize("1450px", "300px");
+        positionEvaluationDetailsPanel.setSize("1250px", "300px");
 
         VerticalPanel boardAndTextPanel = new VerticalPanel();
         boardAndTextPanel.add(shogiBoard);
@@ -103,7 +103,7 @@ public class ViewLessonView extends Composite {
     private TabLayoutPanel createRightTabsPanel() {
         ScrollPanel treeScrollPanel = new ScrollPanel();
         treeScrollPanel.add(gameTreePanel);
-        treeScrollPanel.setSize("620px", "600px");
+        treeScrollPanel.setSize("420px", "600px");
 
         TabLayoutPanel tabsPanel = new TabLayoutPanel(1.5, Style.Unit.EM);
 
@@ -111,7 +111,7 @@ public class ViewLessonView extends Composite {
         tabsPanel.add(boardSettingsPanel, "Board");
         tabsPanel.add(databasePanel, "Database");
 
-        tabsPanel.setSize("650px", "640px");
+        tabsPanel.setSize("450px", "640px");
         tabsPanel.getElement().getStyle().setMarginTop(3, Style.Unit.PX);
         return tabsPanel;
     }
