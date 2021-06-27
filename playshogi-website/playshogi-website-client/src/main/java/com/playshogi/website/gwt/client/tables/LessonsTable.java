@@ -2,15 +2,22 @@ package com.playshogi.website.gwt.client.tables;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.event.shared.EventBus;
+import com.playshogi.library.shogi.models.formats.sfen.SfenConverter;
+import com.playshogi.library.shogi.models.formats.usf.UsfFormat;
+import com.playshogi.website.gwt.client.SessionInformation;
 import com.playshogi.website.gwt.client.mvp.AppPlaceHistoryMapper;
 import com.playshogi.website.gwt.client.place.ProblemsPlace;
 import com.playshogi.website.gwt.client.place.ViewLessonPlace;
 import com.playshogi.website.gwt.client.util.ElementWidget;
+import com.playshogi.website.gwt.client.widget.board.GamePreview;
 import com.playshogi.website.gwt.client.widget.collections.LessonPropertiesForm;
 import com.playshogi.website.gwt.client.widget.problems.TagsElement;
 import com.playshogi.website.gwt.shared.models.LessonDetails;
+import com.playshogi.website.gwt.shared.services.KifuService;
+import com.playshogi.website.gwt.shared.services.KifuServiceAsync;
 import elemental2.dom.HTMLDivElement;
 import elemental2.dom.HTMLElement;
 import elemental2.dom.Node;
@@ -46,16 +53,20 @@ import static org.jboss.elemento.Elements.h;
 
 public class LessonsTable {
 
+    private final KifuServiceAsync kifuService = GWT.create(KifuService.class);
+
     private static final int PAGE_SIZE = 15;
 
     private final LocalListDataStore<LessonDetails> localListDataStore;
     private final SimplePaginationPlugin<LessonDetails> simplePaginationPlugin;
     private final DataTable<LessonDetails> table;
     private final LessonPropertiesForm lessonPropertiesForm;
+    private final SessionInformation sessionInformation;
     private CustomSearchTableAction<LessonDetails> customSearchTableAction;
     private EventBus eventBus;
 
-    public LessonsTable(final AppPlaceHistoryMapper historyMapper) {
+    public LessonsTable(final AppPlaceHistoryMapper historyMapper, final SessionInformation sessionInformation) {
+        this.sessionInformation = sessionInformation;
         TableConfig<LessonDetails> tableConfig = getTableConfig(historyMapper);
         tableConfig.addPlugin(new RecordDetailsPlugin<>(cell -> getDetails(cell.getRecord())));
         tableConfig.addPlugin(new SortPlugin<>());
@@ -123,11 +134,48 @@ public class LessonsTable {
                 .appendChild(h(5).add("Description:"))
                 .appendChild(TextNode.of(details.getDescription()))
         );
-        rowElement.addColumn(Column.span4().appendChild(Button.createPrimary("Edit properties"))
-                .addClickListener(evt -> lessonPropertiesForm.showInPopup(details)));
-        rowElement.addColumn(Column.span4().appendChild(Button.createDanger(Icons.ALL.delete_forever())
-                .setContent("Delete lesson")
-                .addClickListener(evt -> confirmLessonDeletion(details))));
+        rowElement.addColumn(Column.span4().appendChild(Button.createPrimary("Edit properties")
+                .addClickListener(evt -> lessonPropertiesForm.showInPopup(details)))
+                .appendChild(Elements.br())
+                .appendChild(Button.createPrimary("Add child")
+                        .addClickListener(evt -> {
+                            LessonDetails child = new LessonDetails();
+                            child.setParentLessonId(details.getLessonId());
+                            child.setTags(details.getTags());
+                            lessonPropertiesForm.showInPopup(child);
+                        }).style().setMarginTop("1em"))
+        );
+
+        if (details.getKifuId() != null) {
+            HtmlContentBuilder<HTMLDivElement> previewDiv = Elements.div();
+
+            kifuService.getKifuUsf(null, details.getKifuId(), new AsyncCallback<String>() {
+                @Override
+                public void onFailure(final Throwable throwable) {
+                }
+
+                @Override
+                public void onSuccess(final String usf) {
+                    GamePreview gamePreview = new GamePreview(sessionInformation.getUserPreferences(),
+                            UsfFormat.INSTANCE.readSingle(usf), 0.5);
+                    previewDiv.add(gamePreview.asElement());
+                    previewDiv.add(Button.createPrimary("Set as preview")
+                            .addClickListener(evt -> {
+                                details.setPreviewSfen(SfenConverter.toSFEN(gamePreview.getCurrentPosition()));
+                                lessonPropertiesForm.showInPopup(details);
+                            }).style().setMarginTop("1em"));
+                }
+            });
+
+            rowElement.addColumn(Column.span4().appendChild(previewDiv));
+        } else {
+            rowElement.addColumn(Column.span4());
+        }
+
+
+//        rowElement.addColumn(Column.span4().appendChild(Button.createDanger(Icons.ALL.delete_forever())
+//                .setContent("Delete lesson")
+//                .addClickListener(evt -> confirmLessonDeletion(details))));
         return rowElement.element();
     }
 
@@ -220,6 +268,14 @@ public class LessonsTable {
                                             }
                                             return span.element();
                                         }))
+                .addColumn(
+                        ColumnConfig.<LessonDetails>create("edit", "Edit")
+                                .styleCell(
+                                        element -> element.style.setProperty("vertical-align", "top"))
+                                .setCellRenderer(cell ->
+                                        Button.createPrimary("Edit").addClickListener(evt ->
+                                                lessonPropertiesForm.showInPopup(cell.getRecord())).element()
+                                ))
                 .addColumn(
                         ColumnConfig.<LessonDetails>create("open", "Open Lesson")
                                 .styleCell(

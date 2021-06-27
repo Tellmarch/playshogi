@@ -1,5 +1,6 @@
 package com.playshogi.website.gwt.client.widget.board;
 
+import com.playshogi.library.shogi.models.position.ReadOnlyShogiPosition;
 import com.playshogi.library.shogi.models.record.GameNavigation;
 import com.playshogi.library.shogi.models.record.GameRecord;
 import com.playshogi.website.gwt.client.UserPreferences;
@@ -29,6 +30,10 @@ public class GamePreview {
         div.on(EventType.keydown, this::handleKeyDownEvent);
         div.on(EventType.click, this::handleClick);
         div.attr("tabindex", "-1");
+    }
+
+    public ReadOnlyShogiPosition getCurrentPosition() {
+        return gameNavigation.getPosition();
     }
 
     private void handleClick(final MouseEvent e) {

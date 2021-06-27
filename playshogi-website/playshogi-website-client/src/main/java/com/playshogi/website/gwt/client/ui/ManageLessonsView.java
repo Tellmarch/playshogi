@@ -40,7 +40,7 @@ public class ManageLessonsView extends Composite {
     public ManageLessonsView(final SessionInformation sessionInformation, AppPlaceHistoryMapper historyMapper) {
 
         lessonPropertiesForm = new LessonPropertiesForm();
-        lessonsTable = new LessonsTable(historyMapper);
+        lessonsTable = new LessonsTable(historyMapper, sessionInformation);
 
         HtmlContentBuilder<HTMLDivElement> div = Elements.div();
         div.css(Styles.padding_20);
