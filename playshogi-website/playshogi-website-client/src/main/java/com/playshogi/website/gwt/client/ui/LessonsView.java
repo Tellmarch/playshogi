@@ -167,7 +167,14 @@ public class LessonsView extends Composite {
         Map<String, TreeItem<LessonDetails>> items = new HashMap<>();
 
         for (LessonDetails lesson : event.getLessons()) {
-            items.put(lesson.getLessonId(), TreeItem.create(lesson.getTitle(), lesson));
+            if (lesson.getKifuId() != null) {
+                items.put(lesson.getLessonId(), TreeItem.create(lesson.getTitle(), Icons.ALL.library_mdi(), lesson));
+            } else if (lesson.getProblemCollectionId() != null) {
+                items.put(lesson.getLessonId(), TreeItem.create(lesson.getTitle(), Icons.ALL.weight_lifter_mdi(),
+                        lesson));
+            } else {
+                items.put(lesson.getLessonId(), TreeItem.create(lesson.getTitle(), lesson));
+            }
         }
 
         for (LessonDetails lesson : event.getLessons()) {
@@ -192,6 +199,9 @@ public class LessonsView extends Composite {
 
             });
         }
+
+        lessonsTree.setAutoCollapse(false);
+        lessonsTree.expandAll();
 
     }
 }
