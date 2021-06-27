@@ -7,10 +7,12 @@ import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.website.gwt.client.SessionInformation;
+import com.playshogi.website.gwt.client.events.collections.ListKifusEvent;
 import com.playshogi.website.gwt.client.events.tutorial.LessonsListEvent;
 import com.playshogi.website.gwt.client.events.tutorial.SaveLessonDetailsEvent;
 import com.playshogi.website.gwt.client.place.ManageLessonsPlace;
 import com.playshogi.website.gwt.client.ui.ManageLessonsView;
+import com.playshogi.website.gwt.shared.models.KifuDetails;
 import com.playshogi.website.gwt.shared.models.LessonDetails;
 import com.playshogi.website.gwt.shared.services.KifuService;
 import com.playshogi.website.gwt.shared.services.KifuServiceAsync;
@@ -62,11 +64,25 @@ public class ManageLessonsActivity extends MyAbstractActivity {
                 eventBus.fireEvent(new LessonsListEvent(lessonDetails));
             }
         });
+
+        kifuService.getLessonKifus(sessionInformation.getSessionId(), sessionInformation.getUsername(),
+                new AsyncCallback<KifuDetails[]>() {
+                    @Override
+                    public void onFailure(final Throwable throwable) {
+                        GWT.log("LessonsActivity: error retrieving kifus list");
+                    }
+
+                    @Override
+                    public void onSuccess(final KifuDetails[] kifuDetails) {
+                        GWT.log("LessonsActivity: retrieved kifus list");
+                        eventBus.fireEvent(new ListKifusEvent(kifuDetails));
+                    }
+                });
     }
 
     @EventHandler
     public void onSaveLessonDetails(final SaveLessonDetailsEvent event) {
-        GWT.log("ManageLessonsView: handle SaveLessonDetailsEvent");
+        GWT.log("ManageLessonsView: handle SaveLessonDetailsEvent: " + event.getDetails());
 
         String lessonId = event.getDetails().getLessonId();
         if (lessonId == null || "".equals(lessonId)) {

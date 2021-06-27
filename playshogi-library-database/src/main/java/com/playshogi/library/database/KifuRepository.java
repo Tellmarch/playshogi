@@ -37,6 +37,9 @@ public class KifuRepository {
     private static final String SELECT_USER_KIFUS = "SELECT id, name, author_id, create_time, update_time, type_id " +
             "FROM ps_kifu WHERE author_id = ? ORDER BY update_time DESC LIMIT 10000;";
 
+    private static final String SELECT_LESSON_KIFUS = "SELECT id, name, author_id, create_time, update_time, type_id " +
+            "FROM ps_kifu WHERE type_id = 3 ORDER BY update_time DESC LIMIT 10000;";
+
     private static final String UPDATE_KIFU = "UPDATE ps_kifu SET usf = ? WHERE id = ? AND author_id = ?";
 
     private final DbConnection dbConnection;
@@ -120,6 +123,30 @@ public class KifuRepository {
             return kifus;
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error looking up the kifus of user " + userId + " in db", e);
+            return null;
+        }
+    }
+
+    public List<PersistentKifu> getLessonKifus() {
+        Connection connection = dbConnection.getConnection();
+        try (PreparedStatement preparedStatement = connection.prepareStatement(SELECT_LESSON_KIFUS)) {
+            ResultSet rs = preparedStatement.executeQuery();
+            ArrayList<PersistentKifu> kifus = new ArrayList<>();
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                String name = rs.getString("name");
+                int userId = rs.getInt("author_id");
+                int type = rs.getInt("type_id");
+                KifuType kifuType = KifuType.fromDbInt(type);
+                Date creationDate = rs.getDate("create_time");
+                Date updateDate = rs.getDate("update_time");
+
+                kifus.add(new PersistentKifu(id, name, null, creationDate, updateDate, kifuType, userId));
+            }
+            LOGGER.log(Level.INFO, "Found " + kifus.size() + " lesson kifus");
+            return kifus;
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error looking up the lesson kifus in db", e);
             return null;
         }
     }

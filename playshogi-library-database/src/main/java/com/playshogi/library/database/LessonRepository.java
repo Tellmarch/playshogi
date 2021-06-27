@@ -156,7 +156,7 @@ public class LessonRepository {
             if (res == 1) {
                 LOGGER.log(Level.INFO, "Updated lesson");
             } else {
-                LOGGER.log(Level.SEVERE, "Could not update lesson");
+                LOGGER.log(Level.SEVERE, "Could not update lesson: " + preparedStatement);
             }
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error updating the lesson in db", e);

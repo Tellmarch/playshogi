@@ -46,6 +46,8 @@ public interface KifuServiceAsync {
 
     void removeGameFromCollection(String sessionId, String gameId, String gameSetId, AsyncCallback<Void> callback);
 
+    void getLessonKifus(String sessionId, String userName, AsyncCallback<KifuDetails[]> callback);
+
     void getUserKifus(String sessionId, String userName, AsyncCallback<KifuDetails[]> callback);
 
     void deleteKifu(String sessionId, String kifuId, AsyncCallback<Void> callback);

@@ -133,6 +133,20 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
         return userKifus.stream().map(this::getKifuDetails).toArray(KifuDetails[]::new);
     }
 
+    @Override
+    public KifuDetails[] getLessonKifus(final String sessionId, final String userName) {
+        LOGGER.log(Level.INFO, "querying kifus for user: " + userName);
+
+        LoginResult loginResult = authenticator.checkSession(sessionId);
+        if (loginResult == null || !loginResult.isLoggedIn() || !loginResult.isAdmin()) {
+            throw new IllegalStateException("Restricted to admins");
+        }
+
+        List<PersistentKifu> userKifus = kifuRepository.getLessonKifus();
+
+        return userKifus.stream().map(this::getKifuDetails).toArray(KifuDetails[]::new);
+    }
+
     private KifuDetails getKifuDetails(final PersistentKifu kifu) {
         KifuDetails details = new KifuDetails();
         details.setId(String.valueOf(kifu.getId()));
@@ -646,21 +660,22 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
         details.setIndex(lesson.getIndex());
         details.setTitle(lesson.getTitle());
         details.setDescription(lesson.getDescription());
-        details.setKifuId(String.valueOf(lesson.getKifuId()));
-        details.setProblemCollectionId(String.valueOf(lesson.getProblemCollectionId()));
+        details.setKifuId(lesson.getKifuId() == null ? null : String.valueOf(lesson.getKifuId()));
+        details.setProblemCollectionId(lesson.getProblemCollectionId() == null ? null :
+                String.valueOf(lesson.getProblemCollectionId()));
         details.setDifficulty(lesson.getDifficulty());
         details.setTags(lesson.getTags());
         details.setPreviewSfen(lesson.getPreviewSfen());
         details.setHidden(lesson.isHidden());
         details.setLikes(lesson.getLikes());
         details.setAuthor(lesson.getAuthorId() == null ? null : UsersCache.INSTANCE.getUserName(lesson.getAuthorId()));
-        details.setParentLessonId(String.valueOf(lesson.getParentId()));
+        details.setParentLessonId(lesson.getParentId() == null ? null : String.valueOf(lesson.getParentId()));
         return details;
     }
 
     private PersistentLesson getPersistentLesson(final LessonDetails details) {
         return new PersistentLesson(
-                0,
+                Strings.isNullOrEmpty(details.getLessonId()) ? 0 : Integer.parseInt(details.getLessonId()),
                 Strings.isNullOrEmpty(details.getKifuId()) ? null : Integer.parseInt(details.getKifuId()),
                 Strings.isNullOrEmpty(details.getProblemCollectionId()) ? null :
                         Integer.parseInt(details.getProblemCollectionId()),

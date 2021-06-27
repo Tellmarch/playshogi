@@ -27,13 +27,12 @@ import java.util.Arrays;
 @Singleton
 public class ManageLessonsView extends Composite {
 
-    private final LessonsTable lessonsTable;
-
     interface MyEventBinder extends EventBinder<ManageLessonsView> {
     }
 
     private final MyEventBinder eventBinder = GWT.create(MyEventBinder.class);
     private final LessonPropertiesForm lessonPropertiesForm;
+    private final LessonsTable lessonsTable;
 
     private EventBus eventBus;
 

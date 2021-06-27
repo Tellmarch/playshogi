@@ -1,8 +1,14 @@
 package com.playshogi.website.gwt.client.widget.collections;
 
+import com.google.gwt.core.client.GWT;
 import com.google.web.bindery.event.shared.EventBus;
+import com.google.web.bindery.event.shared.binder.EventBinder;
+import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.library.shogi.models.formats.sfen.SfenConverter;
+import com.playshogi.website.gwt.client.events.collections.ListKifusEvent;
+import com.playshogi.website.gwt.client.events.tutorial.LessonsListEvent;
 import com.playshogi.website.gwt.client.events.tutorial.SaveLessonDetailsEvent;
+import com.playshogi.website.gwt.shared.models.KifuDetails;
 import com.playshogi.website.gwt.shared.models.LessonDetails;
 import elemental2.dom.HTMLDivElement;
 import org.dominokit.domino.ui.button.Button;
@@ -17,10 +23,15 @@ import org.jboss.elemento.HtmlContentBuilder;
 
 public class LessonPropertiesForm {
 
+    interface MyEventBinder extends EventBinder<LessonPropertiesForm> {
+    }
+
+    private final MyEventBinder eventBinder = GWT.create(MyEventBinder.class);
+
     private TextArea description;
     private TextBox title;
-    private TextBox kifuId;
-    private TextBox parentLessonId;
+    private Select<String> kifuId;
+    private Select<String> parentLessonId;
     private TextBox previewSfen;
     private TextBox author;
     private TagsInput<String> tags;
@@ -29,6 +40,10 @@ public class LessonPropertiesForm {
     private HtmlContentBuilder<HTMLDivElement> div = null;
     private EventBus eventBus;
     private TextBox problemCollectionId;
+
+    public LessonPropertiesForm() {
+        getForm();
+    }
 
     public HtmlContentBuilder<HTMLDivElement> getForm() {
         if (div != null) {
@@ -42,9 +57,11 @@ public class LessonPropertiesForm {
         description = TextArea.create("Description").setHelperText("Less than 5000 characters");
         title = TextBox.create("Title");
         title.setValue("My New Problem Collection");
-        kifuId = TextBox.create("kifuId");
+        kifuId = Select.create();
+        kifuId.setHelperText("Lesson Kifu");
         problemCollectionId = TextBox.create("problemCollectionId");
-        parentLessonId = TextBox.create("parentLessonId");
+        parentLessonId = Select.create();
+        parentLessonId.setHelperText("Parent Lesson");
         previewSfen = TextBox.create("previewSfen");
         previewSfen.setValue(SfenConverter.INITIAL_POSITION_SFEN);
         author = TextBox.create("author");
@@ -64,6 +81,7 @@ public class LessonPropertiesForm {
                 .add(title)
                 .add(description)
                 .add(kifuId)
+                .add(problemCollectionId)
                 .add(parentLessonId)
                 .add(previewSfen)
                 .add(author)
@@ -90,7 +108,7 @@ public class LessonPropertiesForm {
         closeButton.addClickListener(evt -> modal.close());
         Button saveButton = Button.create("SAVE CHANGES").linkify();
         saveButton.addClickListener(evt -> {
-            saveLessonDetails(details);
+            eventBus.fireEvent(new SaveLessonDetailsEvent(updateDetails(details)));
             modal.close();
         });
         modal.appendFooterChild(saveButton);
@@ -99,8 +117,9 @@ public class LessonPropertiesForm {
     }
 
     private LessonDetails updateDetails(final LessonDetails details) {
-        return new LessonDetails(details.getLessonId(), kifuId.getStringValue(),
-                parentLessonId.getStringValue(), problemCollectionId.getStringValue(), title.getStringValue(),
+        return new LessonDetails(details.getLessonId(), kifuId.getSelectedOption().getValue(),
+                parentLessonId.getSelectedOption().getValue(), problemCollectionId.getStringValue(),
+                title.getStringValue(),
                 description.getStringValue(), getTags(), previewSfen.getStringValue(), author.getStringValue(),
                 getDifficulty(), details.getLikes(), details.isCompleted(), visibility.getValue(), details.getIndex());
     }
@@ -123,11 +142,28 @@ public class LessonPropertiesForm {
         }
     }
 
-    private void saveLessonDetails(final LessonDetails details) {
-        eventBus.fireEvent(new SaveLessonDetailsEvent(updateDetails(details)));
-    }
-
     public void activate(final EventBus eventBus) {
         this.eventBus = eventBus;
+        eventBinder.bindEventHandlers(this, eventBus);
+    }
+
+    @EventHandler
+    public void onLessonsList(final LessonsListEvent event) {
+        GWT.log("LessonPropertiesForm: handle LessonsListEvent");
+        parentLessonId.removeAllOptions();
+        parentLessonId.appendChild(SelectOption.create("", " - None - "));
+        for (LessonDetails details : event.getLessons()) {
+            parentLessonId.appendChild(SelectOption.create(details.getLessonId(), details.getTitle()));
+        }
+    }
+
+    @EventHandler
+    public void onListKifusEvent(final ListKifusEvent event) {
+        GWT.log("LessonPropertiesForm: handle ListKifusEvent");
+        kifuId.removeAllOptions();
+        kifuId.appendChild(SelectOption.create("", " - None - "));
+        for (KifuDetails details : event.getKifus()) {
+            kifuId.appendChild(SelectOption.create(details.getId(), details.getName()));
+        }
     }
 }
