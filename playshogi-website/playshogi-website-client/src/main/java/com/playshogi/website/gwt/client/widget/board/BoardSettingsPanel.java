@@ -2,21 +2,29 @@ package com.playshogi.website.gwt.client.widget.board;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.DialogBox;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.playshogi.website.gwt.client.UserPreferences;
 import com.playshogi.website.gwt.client.events.kifu.ClearDecorationsEvent;
+import com.playshogi.website.gwt.client.events.kifu.CopyPositionEvent;
 import com.playshogi.website.gwt.client.events.kifu.FlipBoardEvent;
 import com.playshogi.website.gwt.client.events.user.ArrowModeSelectedEvent;
 import com.playshogi.website.gwt.client.events.user.NotationStyleSelectedEvent;
 import com.playshogi.website.gwt.client.events.user.PieceStyleSelectedEvent;
 import com.playshogi.website.gwt.client.util.ElementWidget;
+import elemental2.dom.HTMLDivElement;
 import org.dominokit.domino.ui.button.Button;
 import org.dominokit.domino.ui.forms.CheckBox;
 import org.dominokit.domino.ui.forms.Radio;
 import org.dominokit.domino.ui.forms.RadioGroup;
 import org.dominokit.domino.ui.forms.SwitchButton;
+import org.dominokit.domino.ui.icons.Icons;
+import org.jboss.elemento.Elements;
+import org.jboss.elemento.HtmlContentBuilder;
 
 import static org.jboss.elemento.Elements.h;
 
@@ -31,13 +39,14 @@ public class BoardSettingsPanel extends Composite {
     private DialogBox dialogBox = null;
 
     public BoardSettingsPanel(final UserPreferences userPreferences) {
-        FlowPanel panel = new FlowPanel();
-        panel.add(new ElementWidget(CheckBox.create("Flip Board").addChangeHandler(this::onFlipBoard).element()));
+
+        HtmlContentBuilder<HTMLDivElement> div = Elements.div();
+        div.add(CheckBox.create("Flip Board").addChangeHandler(this::onFlipBoard));
         SwitchButton pieces = SwitchButton.create("Pieces", "Traditional", "International");
         if (userPreferences.getPieceStyle() == PieceGraphics.Style.HIDETCHI) {
             pieces.check();
         }
-        panel.add(new ElementWidget(pieces.addChangeHandler(this::setInternationalPieceStyle).element()));
+        div.add(pieces.addChangeHandler(this::setInternationalPieceStyle));
 
         Radio<UserPreferences.NotationStyle> radio1 = Radio.create(UserPreferences.NotationStyle.WESTERN_ALPHABETICAL
                 , "International").check();
@@ -67,16 +76,20 @@ public class BoardSettingsPanel extends Composite {
                 break;
         }
 
-        panel.add(new ElementWidget(h(5).textContent("Move notation:").element()));
-        panel.add(new ElementWidget(notationGroup.addChangeHandler(this::setInternationalMoveNotation).element()));
+        div.add(h(5).textContent("Move notation:"));
+        div.add(notationGroup.addChangeHandler(this::setInternationalMoveNotation));
 
         CheckBox drawArrows =
-                CheckBox.create("Let me draw arrows").check().addChangeHandler(value -> eventBus.fireEvent(new ArrowModeSelectedEvent(value)));
-        panel.add(new ElementWidget(drawArrows.element()));
-        panel.add(new ElementWidget(Button.create("Clear Arrows").addClickListener(value -> eventBus.fireEvent(new ClearDecorationsEvent())).element()));
+                CheckBox.create("Let me draw arrows").check()
+                        .addChangeHandler(value -> eventBus.fireEvent(new ArrowModeSelectedEvent(value)));
+        div.add(drawArrows);
+        div.add(Button.create(Icons.ALL.eraser_mdi()).setContent("Clear Arrows")
+                .addClickListener(value -> eventBus.fireEvent(new ClearDecorationsEvent())));
 
+        div.add(Button.create(Icons.ALL.content_copy()).setContent("Copy Position SFEN")
+                .addClickListener(value -> eventBus.fireEvent(new CopyPositionEvent())).style().setMarginLeft("1em"));
 
-        initWidget(panel);
+        initWidget(new ElementWidget(div.element()));
     }
 
     private void onFlipBoard(boolean inverted) {

@@ -5,6 +5,7 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
@@ -15,6 +16,7 @@ import com.playshogi.library.shogi.models.Player;
 import com.playshogi.library.shogi.models.decorations.Arrow;
 import com.playshogi.library.shogi.models.decorations.BoardDecorations;
 import com.playshogi.library.shogi.models.decorations.Color;
+import com.playshogi.library.shogi.models.formats.sfen.SfenConverter;
 import com.playshogi.library.shogi.models.moves.CaptureMove;
 import com.playshogi.library.shogi.models.moves.DropMove;
 import com.playshogi.library.shogi.models.moves.NormalMove;
@@ -28,6 +30,7 @@ import com.playshogi.website.gwt.client.events.gametree.HighlightMoveEvent;
 import com.playshogi.website.gwt.client.events.gametree.MovePlayedEvent;
 import com.playshogi.website.gwt.client.events.gametree.PositionChangedEvent;
 import com.playshogi.website.gwt.client.events.kifu.ArrowDrawnEvent;
+import com.playshogi.website.gwt.client.events.kifu.CopyPositionEvent;
 import com.playshogi.website.gwt.client.events.kifu.FlipBoardEvent;
 import com.playshogi.website.gwt.client.events.user.ArrowModeSelectedEvent;
 import com.playshogi.website.gwt.client.events.user.NotationStyleSelectedEvent;
@@ -685,5 +688,11 @@ public class ShogiBoard extends Composite implements ClickHandler {
         boardConfiguration.setInverted(event.isInverted());
         refreshCoordinates();
         Scheduler.get().scheduleDeferred(this::displayPosition);
+    }
+
+    @EventHandler
+    public void onCopyPosition(final CopyPositionEvent event) {
+        // TODO figure out a way to put the position SFEN in clipboard
+        if (position != null) Window.alert(SfenConverter.toSFENWithMoveCount(position));
     }
 }
