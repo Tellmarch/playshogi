@@ -1,7 +1,8 @@
 package com.playshogi.library.shogi.models.shogivariant;
 
 public enum ShogiVariant {
-    NORMAL_SHOGI("Shogi", 9, 9, 3, true), MINI_SHOGI("Mini Shogi", 5, 5, 1, true);
+    NORMAL_SHOGI("Shogi", 9, 9, 3, true),
+    MINI_SHOGI("Mini Shogi", 5, 5, 1, true);
 
     private final String variantName;
     private final int boardWidth;
@@ -9,8 +10,8 @@ public enum ShogiVariant {
     private final int sentePromotionHeight;
     private final boolean dropsAllowed;
 
-    private ShogiVariant(final String variantName, final int boardWidth, final int boardHeight,
-                         final int promotionHeight, final boolean dropsAllowed) {
+    ShogiVariant(final String variantName, final int boardWidth, final int boardHeight,
+                 final int promotionHeight, final boolean dropsAllowed) {
         this.variantName = variantName;
         this.boardWidth = boardWidth;
         this.boardHeight = boardHeight;

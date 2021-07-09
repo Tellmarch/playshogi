@@ -3,6 +3,8 @@ package com.playshogi.library.shogi.models.position;
 import com.playshogi.library.shogi.models.Piece;
 import com.playshogi.library.shogi.models.Player;
 
+import java.util.Arrays;
+import java.util.Objects;
 import java.util.Optional;
 
 public class ShogiBoardStateImpl extends MutableShogiBoardState {
@@ -77,5 +79,20 @@ public class ShogiBoardStateImpl extends MutableShogiBoardState {
     public boolean isSquareEmptyOrGote(final Square square) {
         Optional<Piece> piece = getPieceAt(square);
         return !piece.isPresent() || piece.get().isWhitePiece();
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ShogiBoardStateImpl that = (ShogiBoardStateImpl) o;
+        return width == that.width && height == that.height && Arrays.deepEquals(board, that.board);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hash(width, height);
+        result = 31 * result + Arrays.deepHashCode(board);
+        return result;
     }
 }

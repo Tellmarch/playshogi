@@ -2,7 +2,7 @@ package com.playshogi.library.shogi.models.formats.csa;
 
 import com.playshogi.library.shogi.models.Piece;
 import com.playshogi.library.shogi.models.Player;
-import com.playshogi.library.shogi.models.formats.sfen.LineReader;
+import com.playshogi.library.shogi.models.formats.util.LineReader;
 import com.playshogi.library.shogi.models.moves.*;
 import com.playshogi.library.shogi.models.position.Square;
 import com.playshogi.library.shogi.models.record.*;

@@ -1,4 +1,4 @@
-package com.playshogi.library.shogi.models.formats.sfen;
+package com.playshogi.library.shogi.models.formats.util;
 
 public interface LineReader {
 

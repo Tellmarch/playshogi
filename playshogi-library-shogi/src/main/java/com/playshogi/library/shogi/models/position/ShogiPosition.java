@@ -4,13 +4,17 @@ import com.playshogi.library.shogi.models.Piece;
 import com.playshogi.library.shogi.models.PieceType;
 import com.playshogi.library.shogi.models.Player;
 import com.playshogi.library.shogi.models.formats.sfen.SfenConverter;
+import com.playshogi.library.shogi.models.shogivariant.ShogiInitialPositionFactory;
 import com.playshogi.library.shogi.models.shogivariant.ShogiVariant;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 public class ShogiPosition implements ReadOnlyShogiPosition {
+
+    private static final ShogiPosition EMPTY_POSITION = new ShogiPosition();
 
     // How many moves were played in the position (starts at 0)
     private int moveCount;
@@ -181,5 +185,31 @@ public class ShogiPosition implements ReadOnlyShogiPosition {
             invert = new InvertedShogiPosition(this);
         }
         return invert;
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ReadOnlyShogiPosition)) return false;
+        ReadOnlyShogiPosition that = (ReadOnlyShogiPosition) o;
+        return getMoveCount() == that.getMoveCount()
+                && getPlayerToMove() == that.getPlayerToMove()
+                && getShogiBoardState().equals(that.getShogiBoardState())
+                && getSenteKomadai().equals(that.getSenteKomadai())
+                && getGoteKomadai().equals(that.getGoteKomadai());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getMoveCount(), getPlayerToMove(), getShogiBoardState(), getSenteKomadai(),
+                getGoteKomadai());
+    }
+
+    public boolean isEmpty() {
+        return this.equals(EMPTY_POSITION);
+    }
+
+    public boolean isDefaultStartingPosition() {
+        return this.equals(ShogiInitialPositionFactory.READ_ONLY_INITIAL_POSITION);
     }
 }

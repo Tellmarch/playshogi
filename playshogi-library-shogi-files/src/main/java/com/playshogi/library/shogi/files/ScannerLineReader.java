@@ -1,6 +1,6 @@
 package com.playshogi.library.shogi.files;
 
-import com.playshogi.library.shogi.models.formats.sfen.LineReader;
+import com.playshogi.library.shogi.models.formats.util.LineReader;
 
 import java.util.Scanner;
 

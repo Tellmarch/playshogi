@@ -740,6 +740,53 @@ public class KifFormatTest {
             "127   ５三銀打   (0:9/0:10:4)\n" +
             "128   投了   (0:1/0:14:13)";
 
+    private static final String TSUME_EXAMPLE = "# ---- 分岐棋譜(BKF)形式棋譜ファイル\n" +
+            "# ----   saved by aaa bbb\n" +
+            "対局日：1997 年 3 月 12 日\n" +
+            "表題：無題\n" +
+            "作意：aaa\n" +
+            "作者：bbb\n" +
+            "発表誌：出所不明\n" +
+            "詰手数：7\n" +
+            "目安時間：5\n" +
+            "手合割：平手　　\n" +
+            "後手の持駒：飛二　金四　銀　桂三　香三　歩十四　\n" +
+            "  ９ ８ ７ ６ ５ ４ ３ ２ １\n" +
+            "+---------------------------+\n" +
+            "| ・ ・ ・ ・ ・ 角 ・ ・v香|一\n" +
+            "| ・ ・ ・ ・ ・ ・ ・ ・ ・|二\n" +
+            "| ・ ・ ・ ・ 銀 ・v玉 ・v銀|三\n" +
+            "| ・ ・ ・ ・ ・v歩v歩 ・ ・|四\n" +
+            "| ・ ・ ・ ・ ・ ・ ・v歩v歩|五\n" +
+            "| ・ ・ ・ ・ ・ ・ ・ ・ ・|六\n" +
+            "| ・ ・ ・ ・ ・ ・ ・ ・ ・|七\n" +
+            "| ・ ・ ・ ・ ・ ・ ・ ・ ・|八\n" +
+            "| ・ ・ ・ ・ ・ ・ ・ ・ ・|九\n" +
+            "+---------------------------+\n" +
+            "先手の持駒：角　銀　桂　\n" +
+            "先手番\n" +
+            "先手：\n" +
+            "後手：\n" +
+            "手数----指手---------消費時間--\n" +
+            "*作者：伊藤果\n" +
+            "*”宇宙物”です。\n" +
+            "   1 ４五桂打     ( 0:00/00:00:00)\n" +
+            "   2 同　歩(44)   ( 0:00/00:00:00)+\n" +
+            "   3 ４四角打     ( 0:00/00:00:00)\n" +
+            "   4 ４三玉(33)   ( 0:00/00:00:00)\n" +
+            "   5 ５二銀打     ( 0:00/00:00:00)\n" +
+            "   6 ５四玉(43)   ( 0:00/00:00:00)\n" +
+            "   7 ３二角成(41) ( 0:00/00:00:00)\n" +
+            "\n" +
+            "変化：2手\n" +
+            "   2 ２四玉(33)   ( 0:00/00:00:00)\n" +
+            "*変化手順\n" +
+            "   3 ４六角打     ( 0:00/00:00:00)\n" +
+            "   4 ３五歩(34)   ( 0:00/00:00:00)\n" +
+            "   5 ３三銀打     ( 0:00/00:00:00)\n" +
+            "   6 ３四玉(24)   ( 0:00/00:00:00)\n" +
+            "   7 ４四銀成(53) ( 0:00/00:00:00)\n";
+
     @Test
     public void readFromShogiClub24Kifu() {
         GameRecord kif24 = KifFormat.INSTANCE.read(KIF_24).get(0);
@@ -787,8 +834,7 @@ public class KifFormatTest {
         assertEquals("USF:1.0\n" +
                 "^*ln1g3nl/1ks1g2r1/1pppp2pp/p4sp2/7P1/P1PP1SP1P/1PS1P4/1KG4R1/LN3G1NL w BPbp:\n" +
                 "BN:AAA\n" +
-                "WN:BBB\n" +
-                "GD:1000-1-1\n", UsfFormat.INSTANCE.write(kif));
+                "WN:BBB\n", UsfFormat.INSTANCE.write(kif));
     }
 
     @Test
@@ -830,16 +876,15 @@ public class KifFormatTest {
     public void readShogiGui() {
         GameRecord kif = KifFormat.INSTANCE.read(SHOGI_GUI_TSUME).get(0);
         assertEquals("USF:1.0\n" +
-                "^*6p1k/9/7b1/6N2/9/9/9/9/9 b 2RNb4g4s2n4l17p:R*1cb*1b1c1B1a1bR*1a1b1aB*3c1a2a3d2B\n" +
-                "GD:1000-1-1\n", UsfFormat.INSTANCE.write(kif));
+                        "^*6p1k/9/7b1/6N2/9/9/9/9/9 b 2RNb4g4s2n4l17p:R*1cb*1b1c1B1a1bR*1a1b1aB*3c1a2a3d2B\n",
+                UsfFormat.INSTANCE.write(kif));
     }
 
     @Test
     public void readIsShogi() {
         GameRecord kif = KifFormat.INSTANCE.read(IS_SHOGI_TSUME).get(0);
         assertEquals("USF:1.0\n" +
-                "^*8+B/3+b3+R1/3S1k3/3p2r2/5Pp2/9/9/9/9 b 4gs4n3l14p:4e4d4c4d2b4b\n" +
-                "GD:1000-1-1\n", UsfFormat.INSTANCE.write(kif));
+                "^*8+B/3+b3+R1/3S1k3/3p2r2/5Pp2/9/9/9/9 b 4gs4n3l14p:4e4d4c4d2b4b\n", UsfFormat.INSTANCE.write(kif));
     }
 
     @Test
@@ -874,5 +919,13 @@ public class KifFormatTest {
                 "WN:bbb\n" +
                 "GD:2021/06/26\n" +
                 "GQ:81Dojo\n", UsfFormat.INSTANCE.write(kif));
+    }
+
+    @Test
+    public void readExampleTsume() {
+        GameRecord kif = KifFormat.INSTANCE.read(TSUME_EXAMPLE).get(0);
+        assertEquals("USF:1.0\n" +
+                "^*5B2l/9/4S1k1s/5pp2/7pp/9/9/9/9 b BSN2r4gs3n3l14p:N*4e4d4eB*4d3c4cS*5b4c5d4a3B\n" +
+                "GD:1997 年 3 月 12 日\n", UsfFormat.INSTANCE.write(kif));
     }
 }

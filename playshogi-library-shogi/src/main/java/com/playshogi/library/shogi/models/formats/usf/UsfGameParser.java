@@ -1,7 +1,7 @@
 package com.playshogi.library.shogi.models.formats.usf;
 
-import com.playshogi.library.shogi.models.formats.sfen.LineReader;
 import com.playshogi.library.shogi.models.formats.sfen.SfenConverter;
+import com.playshogi.library.shogi.models.formats.util.LineReader;
 import com.playshogi.library.shogi.models.moves.Move;
 import com.playshogi.library.shogi.models.record.*;
 import com.playshogi.library.shogi.rules.ShogiRulesEngine;

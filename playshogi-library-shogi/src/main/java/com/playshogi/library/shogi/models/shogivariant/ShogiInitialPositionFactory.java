@@ -17,6 +17,11 @@ public class ShogiInitialPositionFactory {
 
     public static ShogiPosition createInitialPosition(final Handicap handicap) {
         ShogiPosition shogiPosition = new ShogiPosition(ShogiVariant.NORMAL_SHOGI);
+        fillInitialPosition(shogiPosition, handicap);
+        return shogiPosition;
+    }
+
+    public static void fillInitialPosition(final ShogiPosition shogiPosition, final Handicap handicap) {
         MutableShogiBoardState shogiBoardState = shogiPosition.getMutableShogiBoardState();
 
         setWhitePieces(shogiBoardState, handicap);
@@ -31,8 +36,6 @@ public class ShogiInitialPositionFactory {
         if (handicap != Handicap.EVEN && handicap != Handicap.SENTE) {
             shogiPosition.setPlayerToMove(Player.WHITE);
         }
-
-        return shogiPosition;
     }
 
     private static void setWhitePieces(final MutableShogiBoardState shogiBoardState, final Handicap handicap) {

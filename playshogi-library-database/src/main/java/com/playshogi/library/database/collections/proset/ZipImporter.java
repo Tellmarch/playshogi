@@ -2,8 +2,8 @@ package com.playshogi.library.database.collections.proset;
 
 import com.playshogi.library.shogi.files.ScannerLineReader;
 import com.playshogi.library.shogi.models.formats.csa.CsaFormat;
-import com.playshogi.library.shogi.models.formats.sfen.GameRecordFormat;
 import com.playshogi.library.shogi.models.formats.usf.UsfFormat;
+import com.playshogi.library.shogi.models.formats.util.GameRecordFormat;
 import com.playshogi.library.shogi.models.record.GameRecord;
 
 import java.io.File;

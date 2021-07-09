@@ -1,8 +1,8 @@
 package com.playshogi.library.shogi.models.formats.csa;
 
-import com.playshogi.library.shogi.models.formats.sfen.GameRecordFormat;
-import com.playshogi.library.shogi.models.formats.sfen.LineReader;
-import com.playshogi.library.shogi.models.formats.sfen.StringLineReader;
+import com.playshogi.library.shogi.models.formats.util.GameRecordFormat;
+import com.playshogi.library.shogi.models.formats.util.LineReader;
+import com.playshogi.library.shogi.models.formats.util.StringLineReader;
 import com.playshogi.library.shogi.models.record.GameRecord;
 import com.playshogi.library.shogi.models.record.GameTree;
 

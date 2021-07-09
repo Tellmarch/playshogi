@@ -2,6 +2,8 @@ package com.playshogi.library.shogi.models.position;
 
 import com.playshogi.library.shogi.models.PieceType;
 
+import java.util.Arrays;
+
 public class MutableKomadaiState implements KomadaiState {
     private final int[] pieces = new int[PieceType.values().length];
 
@@ -31,5 +33,18 @@ public class MutableKomadaiState implements KomadaiState {
     @Override
     public int[] getPieces() {
         return pieces;
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (!(o instanceof KomadaiState)) return false;
+        KomadaiState that = (KomadaiState) o;
+        return Arrays.equals(getPieces(), that.getPieces());
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.hashCode(getPieces());
     }
 }

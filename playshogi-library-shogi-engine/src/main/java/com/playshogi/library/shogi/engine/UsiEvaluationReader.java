@@ -1,9 +1,9 @@
 package com.playshogi.library.shogi.engine;
 
 import com.playshogi.library.shogi.models.Player;
-import com.playshogi.library.shogi.models.formats.sfen.LineReader;
 import com.playshogi.library.shogi.models.formats.sfen.SfenConverter;
 import com.playshogi.library.shogi.models.formats.usi.UsiMoveConverter;
+import com.playshogi.library.shogi.models.formats.util.LineReader;
 import com.playshogi.library.shogi.models.position.PositionScore;
 
 import java.util.ArrayList;

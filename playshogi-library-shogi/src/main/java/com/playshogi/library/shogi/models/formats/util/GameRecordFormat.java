@@ -1,4 +1,4 @@
-package com.playshogi.library.shogi.models.formats.sfen;
+package com.playshogi.library.shogi.models.formats.util;
 
 import com.playshogi.library.shogi.models.record.GameRecord;
 import com.playshogi.library.shogi.models.record.GameTree;

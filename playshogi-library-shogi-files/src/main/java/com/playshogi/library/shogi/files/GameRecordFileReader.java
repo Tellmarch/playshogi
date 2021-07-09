@@ -1,6 +1,6 @@
 package com.playshogi.library.shogi.files;
 
-import com.playshogi.library.shogi.models.formats.sfen.GameRecordFormat;
+import com.playshogi.library.shogi.models.formats.util.GameRecordFormat;
 import com.playshogi.library.shogi.models.record.GameRecord;
 
 import java.io.File;

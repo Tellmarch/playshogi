@@ -1,6 +1,6 @@
 package com.playshogi.library.shogi.engine;
 
-import com.playshogi.library.shogi.models.formats.sfen.StringLineReader;
+import com.playshogi.library.shogi.models.formats.util.StringLineReader;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
