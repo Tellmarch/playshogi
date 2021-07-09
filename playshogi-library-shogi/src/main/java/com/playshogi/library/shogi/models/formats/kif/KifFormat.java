@@ -21,36 +21,42 @@ import java.util.List;
 public enum KifFormat implements GameRecordFormat {
     INSTANCE;
 
-    public static final String GOTE_TO_PLAY = "後手番";
-    public static final String SENTE_TO_PLAY = "先手番";
-    public static final String MOVE_NUMBER = "手数";
-    public static final String START_DATE_AND_TIME = "開始日時";
-    public static final String TOURNAMENT = "棋戦";
-    public static final String END_DATE_AND_TIME = "終了日時";
-    public static final String OPENING = "戦型";
-    public static final String PLACE = "場所";
-    public static final String TIME_CONTROL = "持ち時間";
-    public static final String GAME_DAY = "対局日";
-    public static final String HANDICAP = "手合割";
-    public static final String HIRATE = "平手";
-    public static final String OTHER = "その他"; // Other handicap
-    public static final String GOTE = "後手";
-    public static final String HANDICAP_GIVER = "上手";
-    public static final String SENTE = "先手";
-    public static final String HANDICAP_RECEIVER = "下手";
-    public static final String REFERENCE = "備考";
-    public static final String AUTHOR = "作者";
-    public static final String PUBLICATION = "発表誌";
-    public static final String ESTIMATED_TIME = "目安時間";
-    public static final String THINKING_TIME = "思考時間";
-    public static final String NUMBER_OF_MOVES = "詰手数";
-    public static final String HEADING = "表題";
-    public static final String TIME_SPENT = "消費時間";
-    public static final String GOTE_PIECES_IN_HAND = "後手の持駒";
-    public static final String HANDICAP_GIVER_PIECES_IN_HAND = "上手の持駒";
-    public static final String SENTE_PIECES_IN_HAND = "先手の持駒";
-    public static final String HANDICAP_RECEIVER_PIECES_IN_HAND = "下手の持駒";
-    public static final String NONE = "なし"; // For pieces in hand
+    private static final String GOTE_TO_PLAY = "後手番";
+    private static final String SENTE_TO_PLAY = "先手番";
+    private static final String MOVE_NUMBER = "手数";
+    private static final String START_DATE_AND_TIME = "開始日時";
+    private static final String TOURNAMENT = "棋戦";
+    private static final String END_DATE_AND_TIME = "終了日時";
+    private static final String OPENING = "戦型";
+    private static final String PLACE = "場所";
+    private static final String TIME_CONTROL = "持ち時間";
+    private static final String GAME_DAY = "対局日";
+    private static final String HANDICAP = "手合割";
+    private static final String HIRATE = "平手";
+    private static final String OTHER = "その他"; // Other handicap
+    private static final String GOTE = "後手";
+    private static final String HANDICAP_GIVER = "上手";
+    private static final String SENTE = "先手";
+    private static final String HANDICAP_RECEIVER = "下手";
+    private static final String REFERENCE = "備考";
+    private static final String AUTHOR = "作者";
+    private static final String PUBLICATION = "発表誌";
+    private static final String ESTIMATED_TIME = "目安時間";
+    private static final String THINKING_TIME = "思考時間";
+    private static final String NUMBER_OF_MOVES = "詰手数";
+    private static final String HEADING = "表題";
+    private static final String TIME_SPENT = "消費時間";
+    private static final String GOTE_PIECES_IN_HAND = "後手の持駒";
+    private static final String HANDICAP_GIVER_PIECES_IN_HAND = "上手の持駒";
+    private static final String SENTE_PIECES_IN_HAND = "先手の持駒";
+    private static final String HANDICAP_RECEIVER_PIECES_IN_HAND = "下手の持駒";
+    private static final String NONE = "なし"; // For pieces in hand
+    private static final String HANDICAP_GIVER_TO_PLAY = "上手番";
+    private static final String HANDICAP_RECEIVER_TO_PLAY = "下手番";
+    private static final String SENTE_CASTLE = "先手の囲い";
+    private static final String GOTE_CASTLE = "後手の囲い";
+    private static final String SENTE_REMARKS = "先手の備考";
+    private static final String GOTE_REMARKS = "後手の備考";
 
     @Override
     public List<GameRecord> read(String string) {
@@ -144,11 +150,11 @@ public enum KifFormat implements GameRecordFormat {
             return;
         }
 
-        if (line.equals(SENTE_TO_PLAY)) {
+        if (line.equals(SENTE_TO_PLAY) || line.equals(HANDICAP_RECEIVER_TO_PLAY)) {
             return;
         }
 
-        if (line.equals(GOTE_TO_PLAY)) {
+        if (line.equals(GOTE_TO_PLAY) || line.equals(HANDICAP_GIVER_TO_PLAY)) {
             startingPosition.setPlayerToMove(Player.WHITE);
             return;
         }
@@ -215,6 +221,10 @@ public enum KifFormat implements GameRecordFormat {
             case TIME_SPENT:
             case REFERENCE:
             case AUTHOR:
+            case SENTE_CASTLE:
+            case GOTE_CASTLE:
+            case SENTE_REMARKS:
+            case GOTE_REMARKS:
                 break;
             default:
                 System.out.println("WARNING : unknown field " + line + " when parsing kifu, ignored !");

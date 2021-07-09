@@ -818,10 +818,10 @@ public class KifFormatTest {
     public void readFromPyo() {
         List<GameRecord> kif = KifFormat.INSTANCE.read(KIF_PYO);
         assertEquals("USF:1.0\n" +
-                "^w4k4/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b " +
-                "-:8c8d2g2f8d8e2f2e8e8f8g8f8b8f7g7f8f8d6i7h5a6ap*8g6a5b3i3h8d8a3h2gP*8e2g3f8a8d3f3e8d6d2e2d2c2d3e2dP" +
-                "*2f2h2f2b3a2d3C8e8f2f2A8f8G7h8g6d6G2a3a6g8g3a4b5b6a4i5hP*2hp*8bG" +
-                "*5b4b4a5b5a4a3b6a7a3c4c2h2I8h3C5a4b3b4b2i2hg*7bRSGN\n" +
+                "^b4k4/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w " +
+                "-:8c8d2g2f8d8e2f2e8e8f8g8f8b8f7g7f8f8d6i7h5a6aP*8g6a5b3i3h8d8a3h2gp*8e2g3f8a8d3f3e8d6d2e2d2c2d3e2dp" +
+                "*2f2h2f2b3a2d3C8e8f2f2A8f8G7h8g6d6G2a3a6g8g3a4b5b6a4i5hp*2hP*8bg" +
+                "*5b4b4a5b5a4a3b6a7a3c4c2h2I8h3C5a4b3b4b2i2hG*7bRSGN\n" +
                 "BN:プレイヤー\n" +
                 "WN:Lv16 ピヨ郎(R810)\n" +
                 "GD:2020/09/27 18:07:32\n" +
