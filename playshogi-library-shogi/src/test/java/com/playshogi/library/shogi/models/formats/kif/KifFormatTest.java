@@ -939,14 +939,45 @@ public class KifFormatTest {
     public void readFromShogiExtend() {
         GameRecord kif = KifFormat.INSTANCE.read(ANOTHER_KIF).get(0);
         assertEquals("USF:1.0\n" +
-                "^w:2g2f3c3d2f2e2b3c3i4h3a3b1g1f4c4d3g3f3b4c4h3g8b3b5i6h5a6b6h7h6b7b7i6h7b8b6i7i7a7b9g9f9c9d3g4f5c5d" +
-                "5g5f4a5b4i5i3c4b7g7f1a1b1f1e4b6d5f5e4d4e4f4e6d5e8h5e5d5e2e2d2c2dB*2c3b2b4e3d4c3b2c3B2b3bS" +
-                "*4c3b3a2h2d5e5f8i7g5b4c3d4C3a3f2d2A3f3IP*5h5f5G6h5g3i5iN*5c6a7a4c5bb*3e2a1bb*3d1b3b5i7i7h7i3d" +
-                "6GG*6hg*8i7i6i3e5G5h5gs*7h6i5ig*4iMATE\n" +
+                "^w:2g2f3c3d2f2e2b3c3i4h3a3b1g1f4c4d3g3f3b4c4h3g8b3b5i6h5a6b6h7h6b7b7i6h7b8b6i7i7a7b9g9f9c9d3g4f5c5d5g5f4a5b4i5i3c4b7g7f1a1b1f1e4b6d5f5e4d4e4f4e6d5e8h5e5d5e2e2d2c2dB*2c3b2b4e3d4c3b2c3B2b3bS*4c3b3a2h2d5e5f8i7g5b4c3d4C3a3f2d2A3f3IP*5h5f5G6h5g3i5iN*5c6a7a4c5bb*3e2a1bb*3d1b3b5i7i7h7i3d6GG*6hg*8i7i6i3e5G5h5gs*7h6i5ig*4iMATE\n" +
                 "BN:AAA 初段\n" +
                 "WN:BBB 初段\n" +
                 "GD:2020/09/28 22:00:12\n" +
-                "GN:将棋ウォーズ(10分切れ負け)\n", UsfFormat.INSTANCE.write(kif));
+                "GN:将棋ウォーズ(10分切れ負け)\n" +
+                ".0\n" +
+                ".\n" +
+                "#▲備考：居飛車\n" +
+                ".\n" +
+                ".\n" +
+                ".\n" +
+                ".\n" +
+                ".\n" +
+                ".\n" +
+                ".\n" +
+                ".\n" +
+                ".\n" +
+                ".\n" +
+                ".\n" +
+                "#△備考：振り飛車\n" +
+                ".\n" +
+                ".\n" +
+                ".\n" +
+                ".\n" +
+                ".\n" +
+                ".\n" +
+                ".\n" +
+                "#▲囲い：elmo囲い\n" +
+                ".\n" +
+                "#△囲い：片美濃囲い\n" +
+                ".\n" +
+                ".\n" +
+                ".\n" +
+                ".\n" +
+                ".\n" +
+                ".\n" +
+                "#△囲い：美濃囲い\n" +
+                ".\n" +
+                "#▲囲い：左山囲い\n", UsfFormat.INSTANCE.write(kif));
     }
 
     @Test
@@ -974,7 +1005,9 @@ public class KifFormatTest {
     public void readShogiGui() {
         GameRecord kif = KifFormat.INSTANCE.read(SHOGI_GUI_TSUME).get(0);
         assertEquals("USF:1.0\n" +
-                        "^*6p1k/9/7b1/6N2/9/9/9/9/9 b 2RNb4g4s2n4l17p:R*1cb*1b1c1B1a1bR*1a1b1aB*3c1a2a3d2B\n",
+                        "^*6p1k/9/7b1/6N2/9/9/9/9/9 b 2RNb4g4s2n4l17p:R*1cb*1b1c1B1a1bR*1a1b1aB*3c1a2a3d2B\n" +
+                        ".0\n" +
+                        "#*Engines 0 YaneuraOu 2018 T.N.K. (dolphin) NNUE 4.82 64AVX2 TOURNAMENT\n",
                 UsfFormat.INSTANCE.write(kif));
     }
 
@@ -982,7 +1015,13 @@ public class KifFormatTest {
     public void readIsShogi() {
         GameRecord kif = KifFormat.INSTANCE.read(IS_SHOGI_TSUME).get(0);
         assertEquals("USF:1.0\n" +
-                "^*8+B/3+b3+R1/3S1k3/3p2r2/5Pp2/9/9/9/9 b 4gs4n3l14p:4e4d4c4d2b4b\n", UsfFormat.INSTANCE.write(kif));
+                "^*8+B/3+b3+R1/3S1k3/3p2r2/5Pp2/9/9/9/9 b 4gs4n3l14p:4e4d4c4d2b4b\n" +
+                ".0\n" +
+                "#第２問\n" +
+                ".\n" +
+                ".\n" +
+                ".\n" +
+                "#正解図\n", UsfFormat.INSTANCE.write(kif));
     }
 
     @Test
@@ -1026,6 +1065,8 @@ public class KifFormatTest {
                 "^*5B2l/9/4S1k1s/5pp2/7pp/9/9/9/9 b BSN2r4gs3n3l14p:N*4e4d4eB*4d3c4cS*5b4c5d4a3B\n" +
                 "GD:1997 年 3 月 12 日\n" +
                 ".0\n" +
+                "#作者：伊藤果\n" +
+                "#”宇宙物”です。\n" +
                 ".\n" +
                 ".\n" +
                 ".\n" +
@@ -1035,6 +1076,7 @@ public class KifFormatTest {
                 ".\n" +
                 ".1\n" +
                 ".3c2d\n" +
+                "#変化手順\n" +
                 ".B*4f\n" +
                 ".3d3e\n" +
                 ".S*3c\n" +
@@ -1050,6 +1092,18 @@ public class KifFormatTest {
                         "4g2s3l13p:8b9A9b9a9d8B9a8b7f7b8b9cP*9d9e9d6b7a9c8d7b7E8d8c8g9e9d9e8h8e9e8eN" +
                         "*9e8c9d7a6a9d9e6a6bp*7c\n" +
                         ".0\n" +
+                        "#将棋精妙  第１番\n" +
+                        "#\n" +
+                        "#余詰作\n" +
+                        "#作意不詰\n" +
+                        ".\n" +
+                        ".\n" +
+                        ".\n" +
+                        ".\n" +
+                        ".\n" +
+                        ".\n" +
+                        ".\n" +
+                        "#余詰あり\n" +
                         ".\n" +
                         ".\n" +
                         ".\n" +
@@ -1065,13 +1119,7 @@ public class KifFormatTest {
                         ".\n" +
                         ".\n" +
                         ".\n" +
-                        ".\n" +
-                        ".\n" +
-                        ".\n" +
-                        ".\n" +
-                        ".\n" +
-                        ".\n" +
-                        ".\n" +
+                        "#以下逃れ\n" +
                         ".21\n" +
                         ".9e9f\n" +
                         ".5i5f\n" +
@@ -1085,6 +1133,7 @@ public class KifFormatTest {
                         ".N*8g\n" +
                         ".8f8g\n" +
                         ".7f9f\n" +
+                        "#７手目以降の余詰手順に多数の余詰があり、作意不詰としました。\n" +
                         ".6\n" +
                         ".6b7a\n" +
                         ".9c9d\n" +
@@ -1116,7 +1165,8 @@ public class KifFormatTest {
                         ".1a2a\n" +
                         ".P*2b\n" +
                         ".2a1b\n" +
-                        ".3c1c\n",
+                        ".3c1c\n" +
+                        "#まで37手詰\n",
                 UsfFormat.INSTANCE.write(kif));
     }
 }

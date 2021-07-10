@@ -314,9 +314,17 @@ public enum KifFormat implements GameRecordFormat {
             if (line.isEmpty() || line.startsWith("#")) {
                 continue;
             }
+
             if (line.startsWith("*")) {
-                currentComment = currentComment + "\n" + line;
+                if (currentComment.isEmpty()) {
+                    currentComment = line.substring(1);
+                } else {
+                    currentComment = currentComment + "\n" + line.substring(1);
+                }
                 continue;
+            } else if (!currentComment.isEmpty()) {
+                gameNavigation.getCurrentNode().setComment(currentComment);
+                currentComment = "";
             }
 
             int moveNumber = gameNavigation.getPosition().getMoveCount() + 1;
@@ -350,12 +358,14 @@ public enum KifFormat implements GameRecordFormat {
                 int i = Integer.parseInt(ts[1].substring(0, ts[1].indexOf('手')));
                 gameNavigation.goToNodeUSF(i - 1);
             } else if (line.startsWith("まで")) {
-                // Game result: Ignore in this form
+                // Game result: Ignore in this form (we read it as a move)
             } else {
                 throw new IllegalArgumentException("Unexpected line at move " + moveNumber + ": " + line);
             }
+        }
 
-
+        if (!currentComment.isEmpty()) {
+            gameNavigation.getCurrentNode().setComment(currentComment);
         }
 
         gameNavigation.moveToStart();
