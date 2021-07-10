@@ -283,7 +283,7 @@ public enum KifFormat implements GameRecordFormat {
             // nothing in hand
             return;
         }
-        String[] piecesInHandStrings = value.split("[ 　]", 0);
+        String[] piecesInHandStrings = value.trim().split("[ 　]", 0);
 
         for (String pieceString : piecesInHandStrings) {
             PieceParsingResult pieceParsingResult = KifUtils.readPiece(pieceString, 0);
