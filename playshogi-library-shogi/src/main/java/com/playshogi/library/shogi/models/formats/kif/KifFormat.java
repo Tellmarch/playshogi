@@ -65,6 +65,7 @@ public enum KifFormat implements GameRecordFormat {
     private static final String PROBLEM_NUMBER = "作品番号";
     private static final String PUBLICATION_DATE = "発表年月";
     private static final String STATUS = "完全性";
+    private static final String CLASSIFICATION = "分類";
 
     @Override
     public List<GameRecord> read(String string) {
@@ -209,6 +210,7 @@ public enum KifFormat implements GameRecordFormat {
             case PUBLICATION_DATE:
             case PROBLEM_NUMBER:
             case STATUS:
+            case CLASSIFICATION:
                 break;
             default:
                 System.out.println("WARNING : unknown field " + line + " when parsing kifu, ignored !");
