@@ -3,6 +3,7 @@ package com.playshogi.library.shogi.models.position;
 import com.playshogi.library.shogi.models.Piece;
 import com.playshogi.library.shogi.models.Player;
 import com.playshogi.library.shogi.models.formats.sfen.SfenConverter;
+import com.playshogi.library.shogi.models.shogivariant.ShogiInitialPositionFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -106,5 +107,10 @@ public class InvertedShogiPosition implements ReadOnlyShogiPosition {
     @Override
     public String toString() {
         return getPlayerToMove().name() + " to move:\n" + getShogiBoardState().toString();
+    }
+
+    @Override
+    public boolean isDefaultStartingPosition() {
+        return ShogiInitialPositionFactory.READ_ONLY_INITIAL_POSITION.equals(this);
     }
 }

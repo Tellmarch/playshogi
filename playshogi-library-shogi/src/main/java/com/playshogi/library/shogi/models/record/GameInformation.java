@@ -1,5 +1,7 @@
 package com.playshogi.library.shogi.models.record;
 
+import java.util.Objects;
+
 public class GameInformation {
 
     private String black; // Sente or Shitate
@@ -74,5 +76,20 @@ public class GameInformation {
 
     public String getSummaryString() {
         return black + " vs " + white + ", " + date;
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        GameInformation that = (GameInformation) o;
+        return Objects.equals(black, that.black) && Objects.equals(white, that.white) && Objects.equals(date,
+                that.date) && Objects.equals(location, that.location) && Objects.equals(event, that.event)
+                && Objects.equals(opening, that.opening);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(black, white, date, location, event, opening);
     }
 }

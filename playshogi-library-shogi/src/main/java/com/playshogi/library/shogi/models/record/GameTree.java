@@ -34,6 +34,17 @@ public class GameTree {
         }
     }
 
+    public void setInitialPosition(final ReadOnlyShogiPosition startingPosition) {
+        rootNode.setMove(new EditMove(startingPosition));
+    }
+
+    public void cleanUpInitialPosition() {
+        if (rootNode.getMove() instanceof EditMove &&
+                ((EditMove) rootNode.getMove()).getPosition().isDefaultStartingPosition()) {
+            rootNode.setMove(null);
+        }
+    }
+
     public int getMainVariationLength() {
         int res = 0;
         Node n = rootNode;

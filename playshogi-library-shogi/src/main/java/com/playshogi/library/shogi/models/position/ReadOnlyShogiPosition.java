@@ -36,4 +36,6 @@ public interface ReadOnlyShogiPosition {
     ShogiPosition clonePosition();
 
     ReadOnlyShogiPosition opposite();
+
+    boolean isDefaultStartingPosition();
 }

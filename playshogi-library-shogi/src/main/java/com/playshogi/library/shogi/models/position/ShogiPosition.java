@@ -209,6 +209,7 @@ public class ShogiPosition implements ReadOnlyShogiPosition {
         return this.equals(EMPTY_POSITION);
     }
 
+    @Override
     public boolean isDefaultStartingPosition() {
         return this.equals(ShogiInitialPositionFactory.READ_ONLY_INITIAL_POSITION);
     }

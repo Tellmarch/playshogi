@@ -10,7 +10,10 @@ import com.playshogi.library.shogi.models.moves.SpecialMove;
 import com.playshogi.library.shogi.models.position.MutableKomadaiState;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.library.shogi.models.position.Square;
-import com.playshogi.library.shogi.models.record.*;
+import com.playshogi.library.shogi.models.record.GameNavigation;
+import com.playshogi.library.shogi.models.record.GameRecord;
+import com.playshogi.library.shogi.models.record.GameResult;
+import com.playshogi.library.shogi.models.record.GameTree;
 import com.playshogi.library.shogi.models.shogivariant.Handicap;
 import com.playshogi.library.shogi.models.shogivariant.ShogiInitialPositionFactory;
 import com.playshogi.library.shogi.rules.ShogiRulesEngine;
@@ -23,7 +26,7 @@ public enum KifFormat implements GameRecordFormat {
 
     private static final String GOTE_TO_PLAY = "後手番";
     private static final String SENTE_TO_PLAY = "先手番";
-    private static final String MOVE_NUMBER = "手数";
+    private static final String START_OF_MOVES_SECTION = "手数-";
     private static final String START_DATE_AND_TIME = "開始日時";
     private static final String TOURNAMENT = "棋戦";
     private static final String END_DATE_AND_TIME = "終了日時";
@@ -44,6 +47,7 @@ public enum KifFormat implements GameRecordFormat {
     private static final String ESTIMATED_TIME = "目安時間";
     private static final String THINKING_TIME = "思考時間";
     private static final String NUMBER_OF_MOVES = "詰手数";
+    private static final String NUMBER_OF_MOVES_ALT = "手数";
     private static final String HEADING = "表題";
     private static final String TIME_SPENT = "消費時間";
     private static final String GOTE_PIECES_IN_HAND = "後手の持駒";
@@ -57,6 +61,10 @@ public enum KifFormat implements GameRecordFormat {
     private static final String GOTE_CASTLE = "後手の囲い";
     private static final String SENTE_REMARKS = "先手の備考";
     private static final String GOTE_REMARKS = "後手の備考";
+    private static final String SOURCE = "出典";
+    private static final String PROBLEM_NUMBER = "作品番号";
+    private static final String PUBLICATION_DATE = "発表年月";
+    private static final String STATUS = "完全性";
 
     @Override
     public List<GameRecord> read(String string) {
@@ -66,41 +74,235 @@ public enum KifFormat implements GameRecordFormat {
 
     @Override
     public List<GameRecord> read(final LineReader lineReader) {
-        GameInformation gameInformation = new GameInformation();
+        GameRecord gameRecord = new GameRecord();
+        gameRecord.setGameResult(GameResult.UNKNOWN);
 
-        ShogiPosition startingPosition = new ShogiPosition();
+        readHeader(lineReader, gameRecord);
+        readMoves(lineReader, gameRecord);
 
+        if (gameRecord.isEmpty()) {
+            throw new IllegalStateException("Couldn't parse the game record");
+        }
+
+        return Arrays.asList(gameRecord);
+    }
+
+    private void readHeader(final LineReader lineReader, final GameRecord gameRecord) {
         while (true) {
             if (!lineReader.hasNextLine()) {
                 break;
             }
 
-            String l = lineReader.peekNextLine();
+            String l = lineReader.peekNextLine().trim();
 
-            if (l.startsWith(MOVE_NUMBER)) {
+            if (l.startsWith(START_OF_MOVES_SECTION)) { // Reached the moves section
                 lineReader.nextLine();
                 break;
             }
 
+            if (l.startsWith("1") || l.startsWith("*")) { // Reached the first move
+                break;
+            }
+
             if (l.startsWith(GOTE_PIECES_IN_HAND) || l.startsWith(HANDICAP_GIVER_PIECES_IN_HAND)) {
-                readStartingPosition(lineReader, startingPosition);
+                readStartingPosition(lineReader, gameRecord);
                 continue;
             }
 
             lineReader.nextLine();
 
-            readHeaderLine(gameInformation, startingPosition, l);
+            readHeaderLine(gameRecord, l);
         }
 
-        GameTree gameTree;
-        if (startingPosition.isEmpty() || startingPosition.isDefaultStartingPosition()) {
-            gameTree = new GameTree();
-        } else {
-            gameTree = new GameTree(startingPosition);
-        }
-        GameNavigation gameNavigation = new GameNavigation(new ShogiRulesEngine(), gameTree);
+        gameRecord.getGameTree().cleanUpInitialPosition();
+    }
 
-        GameResult gameResult = GameResult.UNKNOWN;
+    private void readHeaderLine(final GameRecord gameRecord, final String line) {
+        if (line.isEmpty() || line.startsWith("#")) {
+            return;
+        }
+
+        if (line.equals(SENTE_TO_PLAY) || line.equals(HANDICAP_RECEIVER_TO_PLAY)) {
+            return;
+        }
+
+        if (line.equals(GOTE_TO_PLAY) || line.equals(HANDICAP_GIVER_TO_PLAY)) {
+            ShogiPosition position = gameRecord.getInitialPosition().clonePosition();
+            position.setPlayerToMove(Player.WHITE);
+            gameRecord.getGameTree().setInitialPosition(position);
+            return;
+        }
+
+        if (line.startsWith("手数＝")) { // number of moves played so far
+            return;
+        }
+
+        String[] sp = line.split("：", 2);
+        if (sp.length < 2) {
+            System.out.println("WARNING : unable to parse line " + line + ", ignored.");
+            return;
+        }
+        String field = sp[0];
+        String value = sp[1];
+        switch (field) {
+            case START_DATE_AND_TIME:
+            case GAME_DAY:
+                gameRecord.getGameInformation().setDate(value);
+                break;
+            case TOURNAMENT:
+                gameRecord.getGameInformation().setEvent(value);
+                break;
+            case OPENING:
+                gameRecord.getGameInformation().setOpening(value);
+                break;
+            case PLACE:
+                gameRecord.getGameInformation().setLocation(value);
+                break;
+            case HANDICAP:
+                if (!(value.startsWith(HIRATE) || value.startsWith(OTHER))) {
+                    boolean found = false;
+                    for (Handicap handicap : Handicap.values()) {
+                        if (handicap.getJapanese().equals(value)) {
+                            found = true;
+                            gameRecord.getGameTree().setInitialPosition(
+                                    ShogiInitialPositionFactory.createInitialPosition(handicap));
+                        }
+                    }
+
+                    if (!found) {
+                        throw new IllegalArgumentException("Unknown handicap type: " + value);
+                    }
+                }
+                break;
+            case GOTE:
+            case HANDICAP_GIVER:
+                gameRecord.getGameInformation().setWhite(value);
+                break;
+            case SENTE:
+            case HANDICAP_RECEIVER:
+                gameRecord.getGameInformation().setBlack(value);
+                break;
+            case "作意":
+                // TODO: conception
+                break;
+            case GOTE_PIECES_IN_HAND:
+            case HANDICAP_GIVER_PIECES_IN_HAND:
+            case SENTE_PIECES_IN_HAND:
+            case HANDICAP_RECEIVER_PIECES_IN_HAND:
+                throw new IllegalStateException("Should have processed pieces in hand while reading position");
+            case END_DATE_AND_TIME:
+            case TIME_CONTROL:
+            case PUBLICATION:
+            case ESTIMATED_TIME:
+            case THINKING_TIME:
+            case NUMBER_OF_MOVES:
+            case NUMBER_OF_MOVES_ALT:
+            case HEADING:
+            case TIME_SPENT:
+            case REFERENCE:
+            case AUTHOR:
+            case SENTE_CASTLE:
+            case GOTE_CASTLE:
+            case SENTE_REMARKS:
+            case GOTE_REMARKS:
+            case SOURCE:
+            case PUBLICATION_DATE:
+            case PROBLEM_NUMBER:
+            case STATUS:
+                break;
+            default:
+                System.out.println("WARNING : unknown field " + line + " when parsing kifu, ignored !");
+                break;
+        }
+    }
+
+    // Example position:
+    //    後手の持駒： 金三　歩十二　
+    //      ９ ８ ７ ６ ５ ４ ３ ２ １
+    //    +---------------------------+
+    //    | ・v歩 ・ ・ ・ ・ ・v桂 銀|一
+    //    | ・ ・ ・v銀 ・v桂v玉 ・ ・|二
+    //    | 香 桂 ・ ・v香 ・v歩 飛v銀|三
+    //    | ・ ・ ・ 桂 ・ 金 ・ ・ ・|四
+    //    | ・ ・ ・ ・ ・ ・ 銀 ・ ・|五
+    //    | ・ ・ 歩 歩 ・ 歩 ・ ・ ・|六
+    //    | ・ ・ ・ 馬 ・ ・ ・v飛 ・|七
+    //    | ・ 香 ・ ・ ・ ・ ・ 香 ・|八
+    //    | ・ ・ ・ ・ ・ ・ 馬 ・ ・|九
+    //    +---------------------------+
+    //    先手の持駒：歩　
+    private void readStartingPosition(final LineReader lineReader, final GameRecord gameRecord) {
+        ShogiPosition position = gameRecord.getInitialPosition().clonePosition();
+
+        String goteKomadaiLine = lineReader.nextLine().trim();
+
+        if (!goteKomadaiLine.equals(GOTE_PIECES_IN_HAND) && !goteKomadaiLine.equals(HANDICAP_GIVER_PIECES_IN_HAND)) {
+            String[] goteSplit = goteKomadaiLine.split("：", 2);
+            if (goteSplit.length < 2 ||
+                    (!goteSplit[0].equals(GOTE_PIECES_IN_HAND) && !goteSplit[0].equals(HANDICAP_GIVER_PIECES_IN_HAND))) {
+                throw new IllegalArgumentException("ERROR : unable to parse gote komadai line " + goteKomadaiLine);
+            }
+
+            MutableKomadaiState komadai = position.getMutableGoteKomadai();
+            readPiecesInHand(goteSplit[1], komadai);
+        }
+
+        lineReader.nextLine(); //  ９ ８ ７ ６ ５ ４ ３ ２ １
+        lineReader.nextLine(); // +---------------------------+
+
+        for (int row = 1; row <= 9; row++) {
+            String l = lineReader.nextLine();
+            int pos = 1;
+            for (int column = 9; column >= 1; column--) {
+                PieceParsingResult pieceParsingResult = KifUtils.readPiece(l, pos);
+                pos = pieceParsingResult.nextPosition;
+                position.getMutableShogiBoardState().setPieceAt(Square.of(column, row),
+                        pieceParsingResult.piece);
+            }
+        }
+        lineReader.nextLine(); // +---------------------------+
+
+        String senteKomadaiLine = lineReader.nextLine().trim();
+        if (!senteKomadaiLine.equals(SENTE_PIECES_IN_HAND) && !senteKomadaiLine.equals(HANDICAP_RECEIVER_PIECES_IN_HAND)) {
+            String[] senteSplit = senteKomadaiLine.split("：", 2);
+            if (senteSplit.length < 2 ||
+                    (!senteSplit[0].equals(SENTE_PIECES_IN_HAND) &&
+                            !senteSplit[0].equals(HANDICAP_RECEIVER_PIECES_IN_HAND))) {
+                throw new IllegalArgumentException("ERROR : unable to parse sente komadai line " + senteKomadaiLine);
+            }
+
+            MutableKomadaiState senteKomadai = position.getMutableSenteKomadai();
+            readPiecesInHand(senteSplit[1], senteKomadai);
+        }
+
+        gameRecord.getGameTree().setInitialPosition(position);
+    }
+
+    private void readPiecesInHand(final String value, final MutableKomadaiState komadai) {
+        if (NONE.equals(value) || "".equals(value)) {
+            // nothing in hand
+            return;
+        }
+        String[] piecesInHandStrings = value.split("[ 　]", 0);
+
+        for (String pieceString : piecesInHandStrings) {
+            PieceParsingResult pieceParsingResult = KifUtils.readPiece(pieceString, 0);
+            int number;
+            if (pieceString.length() == 1) {
+                number = 1;
+            } else if (pieceString.length() == 2) {
+                number = KifUtils.getNumberFromJapanese(pieceString.charAt(1));
+            } else if (pieceString.length() == 3 && pieceString.charAt(1) == '十') {
+                number = 10 + KifUtils.getNumberFromJapanese(pieceString.charAt(2));
+            } else {
+                throw new IllegalArgumentException("Error reading pieces in hand: " + value + " at " + pieceString);
+            }
+            komadai.setPiecesOfType(pieceParsingResult.piece.getPieceType(), number);
+        }
+    }
+
+    private void readMoves(final LineReader lineReader, final GameRecord gameRecord) {
+        GameNavigation gameNavigation = new GameNavigation(new ShogiRulesEngine(), gameRecord.getGameTree());
 
         ShogiMove curMove;
         ShogiMove prevMove = null;
@@ -130,8 +332,8 @@ public enum KifFormat implements GameRecordFormat {
             if (curMove instanceof SpecialMove) {
                 SpecialMove specialMove = (SpecialMove) curMove;
                 if (specialMove.getSpecialMoveType().isLosingMove()) {
-                    gameResult = gameNavigation.getPosition().getPlayerToMove() == Player.BLACK ?
-                            GameResult.WHITE_WIN : GameResult.BLACK_WIN;
+                    gameRecord.setGameResult(gameNavigation.getPosition().getPlayerToMove() == Player.BLACK ?
+                            GameResult.WHITE_WIN : GameResult.BLACK_WIN);
                 }
             }
 
@@ -140,180 +342,6 @@ public enum KifFormat implements GameRecordFormat {
         }
 
         gameNavigation.moveToStart();
-        return Arrays.asList(new GameRecord(gameInformation, gameTree, gameResult));
-    }
-
-    private void readHeaderLine(final GameInformation gameInformation, final ShogiPosition startingPosition,
-                                String line) {
-        line = line.trim();
-        if (line.isEmpty() || line.startsWith("#")) {
-            return;
-        }
-
-        if (line.equals(SENTE_TO_PLAY) || line.equals(HANDICAP_RECEIVER_TO_PLAY)) {
-            return;
-        }
-
-        if (line.equals(GOTE_TO_PLAY) || line.equals(HANDICAP_GIVER_TO_PLAY)) {
-            startingPosition.setPlayerToMove(Player.WHITE);
-            return;
-        }
-
-        String[] sp = line.split("：", 2);
-        if (sp.length < 2) {
-            System.out.println("WARNING : unable to parse line " + line + " in file " + "???" + " , ignored.");
-            return;
-        }
-        String field = sp[0];
-        String value = sp[1];
-        switch (field) {
-            case START_DATE_AND_TIME:
-            case GAME_DAY:
-                gameInformation.setDate(value);
-                break;
-            case TOURNAMENT:
-                gameInformation.setEvent(value);
-                break;
-            case OPENING:
-                gameInformation.setOpening(value);
-                break;
-            case PLACE:
-                gameInformation.setLocation(value);
-                break;
-            case HANDICAP:
-                if (!(value.startsWith(HIRATE) || value.startsWith(OTHER))) {
-                    boolean found = false;
-                    for (Handicap handicap : Handicap.values()) {
-                        if (handicap.getJapanese().equals(value)) {
-                            found = true;
-                            ShogiInitialPositionFactory.fillInitialPosition(startingPosition, handicap);
-                        }
-                    }
-
-                    if (!found) {
-                        throw new IllegalArgumentException("Unknown handicap type: " + value);
-                    }
-                }
-                break;
-            case GOTE:
-            case HANDICAP_GIVER:
-                gameInformation.setWhite(value);
-                break;
-            case SENTE:
-            case HANDICAP_RECEIVER:
-                gameInformation.setBlack(value);
-                break;
-            case "作意":
-                // TODO: conception
-                break;
-            case GOTE_PIECES_IN_HAND:
-            case HANDICAP_GIVER_PIECES_IN_HAND:
-            case SENTE_PIECES_IN_HAND:
-            case HANDICAP_RECEIVER_PIECES_IN_HAND:
-                throw new IllegalStateException("Should have processed pieces in hand while reading position");
-            case END_DATE_AND_TIME:
-            case TIME_CONTROL:
-            case PUBLICATION:
-            case ESTIMATED_TIME:
-            case THINKING_TIME:
-            case NUMBER_OF_MOVES:
-            case HEADING:
-            case TIME_SPENT:
-            case REFERENCE:
-            case AUTHOR:
-            case SENTE_CASTLE:
-            case GOTE_CASTLE:
-            case SENTE_REMARKS:
-            case GOTE_REMARKS:
-                break;
-            default:
-                System.out.println("WARNING : unknown field " + line + " when parsing kifu, ignored !");
-                break;
-        }
-    }
-
-    // Example position:
-    //    後手の持駒： 金三　歩十二　
-    //      ９ ８ ７ ６ ５ ４ ３ ２ １
-    //    +---------------------------+
-    //    | ・v歩 ・ ・ ・ ・ ・v桂 銀|一
-    //    | ・ ・ ・v銀 ・v桂v玉 ・ ・|二
-    //    | 香 桂 ・ ・v香 ・v歩 飛v銀|三
-    //    | ・ ・ ・ 桂 ・ 金 ・ ・ ・|四
-    //    | ・ ・ ・ ・ ・ ・ 銀 ・ ・|五
-    //    | ・ ・ 歩 歩 ・ 歩 ・ ・ ・|六
-    //    | ・ ・ ・ 馬 ・ ・ ・v飛 ・|七
-    //    | ・ 香 ・ ・ ・ ・ ・ 香 ・|八
-    //    | ・ ・ ・ ・ ・ ・ 馬 ・ ・|九
-    //    +---------------------------+
-    //    先手の持駒：歩　
-    private void readStartingPosition(final LineReader lineReader, final ShogiPosition startingPosition) {
-        String goteKomadaiLine = lineReader.nextLine().trim();
-
-        if (!goteKomadaiLine.equals(GOTE_PIECES_IN_HAND) && !goteKomadaiLine.equals(HANDICAP_GIVER_PIECES_IN_HAND)) {
-            String[] goteSplit = goteKomadaiLine.split("：", 2);
-            if (goteSplit.length < 2 ||
-                    (!goteSplit[0].equals(GOTE_PIECES_IN_HAND) && !goteSplit[0].equals(HANDICAP_GIVER_PIECES_IN_HAND))) {
-                throw new IllegalArgumentException("ERROR : unable to parse gote komadai line " + goteKomadaiLine);
-            }
-
-            MutableKomadaiState komadai = startingPosition.getMutableGoteKomadai();
-            readPiecesInHand(goteSplit[1], komadai);
-        }
-
-        lineReader.nextLine(); //  ９ ８ ７ ６ ５ ４ ３ ２ １
-        lineReader.nextLine(); // +---------------------------+
-
-        for (int row = 1; row <= 9; row++) {
-            String l = lineReader.nextLine();
-            int pos = 1;
-            for (int column = 9; column >= 1; column--) {
-                PieceParsingResult pieceParsingResult = KifUtils.readPiece(l, pos);
-                pos = pieceParsingResult.nextPosition;
-                startingPosition.getMutableShogiBoardState().setPieceAt(Square.of(column, row),
-                        pieceParsingResult.piece);
-            }
-        }
-        lineReader.nextLine(); // +---------------------------+
-
-        String senteKomadaiLine = lineReader.nextLine().trim();
-        if (senteKomadaiLine.equals(SENTE_PIECES_IN_HAND) || senteKomadaiLine.equals(HANDICAP_RECEIVER_PIECES_IN_HAND)) {
-            // Nothing in sente hand
-            return;
-        }
-
-        String[] senteSplit = senteKomadaiLine.split("：", 2);
-        if (senteSplit.length < 2 ||
-                (!senteSplit[0].equals(SENTE_PIECES_IN_HAND) &&
-                        !senteSplit[0].equals(HANDICAP_RECEIVER_PIECES_IN_HAND))) {
-            throw new IllegalArgumentException("ERROR : unable to parse sente komadai line " + senteKomadaiLine);
-        }
-
-        MutableKomadaiState senteKomadai = startingPosition.getMutableSenteKomadai();
-        readPiecesInHand(senteSplit[1], senteKomadai);
-    }
-
-    private void readPiecesInHand(final String value, final MutableKomadaiState komadai) {
-        if (NONE.equals(value) || "".equals(value)) {
-            // nothing in hand
-            return;
-        }
-        String[] piecesInHandStrings = value.split("[ 　]", 0);
-
-        for (String pieceString : piecesInHandStrings) {
-            PieceParsingResult pieceParsingResult = KifUtils.readPiece(pieceString, 0);
-            int number;
-            if (pieceString.length() == 1) {
-                number = 1;
-            } else if (pieceString.length() == 2) {
-                number = KifUtils.getNumberFromJapanese(pieceString.charAt(1));
-            } else if (pieceString.length() == 3 && pieceString.charAt(1) == '十') {
-                number = 10 + KifUtils.getNumberFromJapanese(pieceString.charAt(2));
-            } else {
-                throw new IllegalArgumentException("Error reading pieces in hand: " + value + " at " + pieceString);
-            }
-            komadai.setPiecesOfType(pieceParsingResult.piece.getPieceType(), number);
-        }
     }
 
     @Override
