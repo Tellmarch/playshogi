@@ -96,6 +96,10 @@ public class KifuUploadServlet extends HttpServlet {
                                   final boolean returnDetails, final String charset, final String collectionId) throws IOException {
         List<GameRecord> records = readGameRecords(inputStream, fileName, charset);
 
+        if (records.isEmpty()) {
+            throw new IllegalArgumentException("Couldn't parse any kifu from the file");
+        }
+
         String actualId;
         if (Strings.isNullOrEmpty(collectionId) || "new".equals(collectionId)) {
             actualId = CollectionUploads.INSTANCE.addCollection(new KifuCollection("New Collection", records));
@@ -110,7 +114,6 @@ public class KifuUploadServlet extends HttpServlet {
             for (GameRecord kifu : collection.getKifus()) {
                 writer.println("KIFU:" + getSummary(kifu));
             }
-
         }
     }
 
@@ -152,11 +155,15 @@ public class KifuUploadServlet extends HttpServlet {
 
         while ((entry = zipInputStream.getNextEntry()) != null) {
             if (!entry.isDirectory()) {
-                List<GameRecord> gameRecords = readGameRecords(zipInputStream, entry.getName(), charset);
-                for (GameRecord gameRecord : gameRecords) {
-                    LOGGER.log(Level.INFO,
-                            "Successfully read kifu: " + entry.getName() + " " + UsfFormat.INSTANCE.write(gameRecord));
-                    records.add(gameRecord);
+                try {
+                    List<GameRecord> gameRecords = readGameRecords(zipInputStream, entry.getName(), charset);
+                    for (GameRecord gameRecord : gameRecords) {
+                        LOGGER.log(Level.INFO,
+                                "Successfully read kifu: " + entry.getName());
+                        records.add(gameRecord);
+                    }
+                } catch (Exception ex) {
+                    LOGGER.log(Level.SEVERE, "Error reading kifu: " + entry.getName(), ex);
                 }
             }
         }
