@@ -3,10 +3,7 @@ package com.playshogi.website.gwt.client.ui;
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.place.shared.PlaceController;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.ScrollPanel;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.web.bindery.event.shared.EventBus;
@@ -16,6 +13,7 @@ import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.website.gwt.client.SessionInformation;
 import com.playshogi.website.gwt.client.controller.NavigationController;
 import com.playshogi.website.gwt.client.events.collections.ListCollectionProblemsEvent;
+import com.playshogi.website.gwt.client.events.gametree.PositionChangedEvent;
 import com.playshogi.website.gwt.client.events.puzzles.*;
 import com.playshogi.website.gwt.client.util.ElementWidget;
 import com.playshogi.website.gwt.client.widget.board.BoardButtons;
@@ -37,6 +35,7 @@ import org.jboss.elemento.Elements;
 import org.jboss.elemento.HtmlContentBuilder;
 
 import java.util.List;
+import java.util.Optional;
 
 @Singleton
 public class ProblemsView extends Composite {
@@ -56,6 +55,7 @@ public class ProblemsView extends Composite {
     private final PlaceController placeController;
     private final ScrollPanel scrollPanel;
     private final NavigationController navigationController;
+    private final TextArea textArea;
     private HtmlContentBuilder<HTMLElement> timerText;
     private EventBus eventBus;
     private Button startTimedRun;
@@ -85,9 +85,24 @@ public class ProblemsView extends Composite {
         scrollPanel.setSize("250px", "600px");
         scrollPanel.add(new ElementWidget(problemsTree.element()));
         horizontalPanel.add(scrollPanel);
-        horizontalPanel.add(shogiBoard);
+
+        textArea = createCommentsArea();
+        VerticalPanel boardAndTextPanel = new VerticalPanel();
+        boardAndTextPanel.add(shogiBoard);
+        boardAndTextPanel.add(textArea);
+
+        horizontalPanel.add(boardAndTextPanel);
 
         initWidget(horizontalPanel);
+    }
+
+    private TextArea createCommentsArea() {
+        final TextArea textArea;
+        textArea = new TextArea();
+        textArea.setSize("782px", "150px");
+        textArea.setStyleName("lesson-content");
+        textArea.setEnabled(false);
+        return textArea;
     }
 
     private Widget createLowerLeftPanel() {
@@ -210,6 +225,20 @@ public class ProblemsView extends Composite {
         int timeSeconds = timeInSeconds % 60;
         timerTextSeconds.textContent(timeMinutes + ":" + (timeSeconds < 10 ? "0" + timeSeconds : timeSeconds));
         timerTextMs.textContent("." + (timeMs < 10 ? "0" + timeMs : timeMs));
+    }
+
+    @EventHandler
+    public void onPositionChanged(final PositionChangedEvent event) {
+        GWT.log("ViewKifuView: handle PositionChangedEvent");
+
+        Optional<String> comment = navigationController.getGameNavigation().getCurrentComment();
+        if (comment.isPresent()) {
+            textArea.setText(comment.get());
+            textArea.setVisible(true);
+        } else {
+            textArea.setText("");
+            textArea.setVisible(false);
+        }
     }
 
 }
