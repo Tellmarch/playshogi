@@ -124,10 +124,8 @@ public class SfenConverter {
         MutableKomadaiState senteKomadai = new MutableKomadaiState();
         MutableKomadaiState goteKomadai = new MutableKomadaiState();
 
-        int moveCount = 1;
         Player player = Player.BLACK;
         if (fields[1].equalsIgnoreCase("w")) {
-            moveCount = 2;
             player = Player.WHITE;
         }
 
@@ -180,6 +178,7 @@ public class SfenConverter {
             }
         }
 
+        int moveCount = 1;
         if (fields.length > 3) {
             moveCount = Integer.parseInt(fields[3]);
         }

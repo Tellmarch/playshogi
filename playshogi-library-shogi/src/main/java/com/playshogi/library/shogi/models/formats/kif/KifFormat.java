@@ -306,39 +306,56 @@ public enum KifFormat implements GameRecordFormat {
 
         ShogiMove curMove;
         ShogiMove prevMove = null;
-        int moveNumber = 1;
+
+        String currentComment = "";
+
         while (lineReader.hasNextLine()) {
             String line = lineReader.nextLine().trim();
-            if (line.isEmpty()) {
+            if (line.isEmpty() || line.startsWith("#")) {
                 continue;
             }
             if (line.startsWith("*")) {
+                currentComment = currentComment + "\n" + line;
                 continue;
             }
-            String[] ts = line.split("\\s+", 2);
-            int i;
-            try {
-                i = new Integer(ts[0]);
-            } catch (Exception ex) {
-                break;
-            }
-            if (i != moveNumber || ts.length < 2) {
-                throw new IllegalArgumentException("Error after move " + moveNumber);
-            }
-            moveNumber++;
-            String move = ts[1];
-            curMove = KifMoveConverter.fromKifString(move, gameNavigation.getPosition(), prevMove);
 
-            if (curMove instanceof SpecialMove) {
-                SpecialMove specialMove = (SpecialMove) curMove;
-                if (specialMove.getSpecialMoveType().isLosingMove()) {
-                    gameRecord.setGameResult(gameNavigation.getPosition().getPlayerToMove() == Player.BLACK ?
-                            GameResult.WHITE_WIN : GameResult.BLACK_WIN);
+            int moveNumber = gameNavigation.getPosition().getMoveCount() + 1;
+
+            if (line.startsWith(String.valueOf(moveNumber))) {
+                // Read the next move
+                String[] ts = line.split("\\s+", 2);
+                int i = Integer.parseInt(ts[0]);
+                if (i != moveNumber || ts.length < 2) {
+                    throw new IllegalArgumentException("Error after move " + moveNumber);
                 }
+                String move = ts[1];
+                curMove = KifMoveConverter.fromKifString(move, gameNavigation.getPosition(), prevMove);
+
+                if (curMove instanceof SpecialMove) {
+                    SpecialMove specialMove = (SpecialMove) curMove;
+                    if (specialMove.getSpecialMoveType().isLosingMove()) {
+                        gameRecord.setGameResult(gameNavigation.getPosition().getPlayerToMove() == Player.BLACK ?
+                                GameResult.WHITE_WIN : GameResult.BLACK_WIN);
+                    }
+                }
+
+                gameNavigation.addMove(curMove);
+                prevMove = curMove;
+            } else if (line.startsWith("変化")) {
+                // Variation
+                String[] ts = line.split("：", 2);
+                if (ts.length < 2 || !ts[1].endsWith("手")) {
+                    throw new IllegalArgumentException("Error reading variation line " + line);
+                }
+                int i = Integer.parseInt(ts[1].substring(0, ts[1].indexOf('手')));
+                gameNavigation.goToNodeUSF(i - 1);
+            } else if (line.startsWith("まで")) {
+                // Game result: Ignore in this form
+            } else {
+                throw new IllegalArgumentException("Unexpected line at move " + moveNumber + ": " + line);
             }
 
-            gameNavigation.addMove(curMove);
-            prevMove = curMove;
+
         }
 
         gameNavigation.moveToStart();

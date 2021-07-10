@@ -1024,7 +1024,22 @@ public class KifFormatTest {
         GameRecord kif = KifFormat.INSTANCE.read(TSUME_EXAMPLE).get(0);
         assertEquals("USF:1.0\n" +
                 "^*5B2l/9/4S1k1s/5pp2/7pp/9/9/9/9 b BSN2r4gs3n3l14p:N*4e4d4eB*4d3c4cS*5b4c5d4a3B\n" +
-                "GD:1997 年 3 月 12 日\n", UsfFormat.INSTANCE.write(kif));
+                "GD:1997 年 3 月 12 日\n" +
+                ".0\n" +
+                ".\n" +
+                ".\n" +
+                ".\n" +
+                ".\n" +
+                ".\n" +
+                ".\n" +
+                ".\n" +
+                ".1\n" +
+                ".3c2d\n" +
+                ".B*4f\n" +
+                ".3d3e\n" +
+                ".S*3c\n" +
+                ".2d3d\n" +
+                ".5c4D\n", UsfFormat.INSTANCE.write(kif));
     }
 
     @Test
@@ -1033,7 +1048,75 @@ public class KifFormatTest {
         assertEquals("USF:1.0\n" +
                         "^*3n5/kBp+B5/9/N2p5/+pn2p4/2R1+s4/pN7/1L7/1s2+R4 b " +
                         "4g2s3l13p:8b9A9b9a9d8B9a8b7f7b8b9cP*9d9e9d6b7a9c8d7b7E8d8c8g9e9d9e8h8e9e8eN" +
-                        "*9e8c9d7a6a9d9e6a6bp*7c\n",
+                        "*9e8c9d7a6a9d9e6a6bp*7c\n" +
+                        ".0\n" +
+                        ".\n" +
+                        ".\n" +
+                        ".\n" +
+                        ".\n" +
+                        ".\n" +
+                        ".\n" +
+                        ".\n" +
+                        ".\n" +
+                        ".\n" +
+                        ".\n" +
+                        ".\n" +
+                        ".\n" +
+                        ".\n" +
+                        ".\n" +
+                        ".\n" +
+                        ".\n" +
+                        ".\n" +
+                        ".\n" +
+                        ".\n" +
+                        ".\n" +
+                        ".\n" +
+                        ".\n" +
+                        ".21\n" +
+                        ".9e9f\n" +
+                        ".5i5f\n" +
+                        ".5e5f\n" +
+                        ".6b9e\n" +
+                        ".8e9e\n" +
+                        ".7e7f\n" +
+                        ".9e8f\n" +
+                        ".S*8e\n" +
+                        ".9f9e\n" +
+                        ".N*8g\n" +
+                        ".8f8g\n" +
+                        ".7f9f\n" +
+                        ".6\n" +
+                        ".6b7a\n" +
+                        ".9c9d\n" +
+                        ".7b7D\n" +
+                        ".g*8d\n" +
+                        ".7a6a\n" +
+                        ".9d9c\n" +
+                        ".6a7a\n" +
+                        ".p*8b\n" +
+                        ".7a8b\n" +
+                        ".9c8b\n" +
+                        ".7d8d\n" +
+                        ".8b7b\n" +
+                        ".G*7c\n" +
+                        ".7b6a\n" +
+                        ".8d6d\n" +
+                        ".6a5b\n" +
+                        ".6d6c\n" +
+                        ".5b4a\n" +
+                        ".P*4b\n" +
+                        ".4a4b\n" +
+                        ".N*5d\n" +
+                        ".4b3b\n" +
+                        ".5i3i\n" +
+                        ".3b2b\n" +
+                        ".3i3c\n" +
+                        ".2b1a\n" +
+                        ".P*1b\n" +
+                        ".1a2a\n" +
+                        ".P*2b\n" +
+                        ".2a1b\n" +
+                        ".3c1c\n",
                 UsfFormat.INSTANCE.write(kif));
     }
 }
