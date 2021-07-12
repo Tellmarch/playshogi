@@ -30,11 +30,13 @@ import com.playshogi.website.gwt.client.util.ElementWidget;
 import com.playshogi.website.gwt.client.widget.board.ShogiBoard;
 import com.playshogi.website.gwt.shared.models.PositionEvaluationDetails;
 import com.playshogi.website.gwt.shared.models.PrincipalVariationDetails;
+import com.playshogi.website.gwt.shared.models.TsumeAnalysisDetails;
 import org.dominokit.domino.ui.button.Button;
 import org.dominokit.domino.ui.loaders.Loader;
 import org.dominokit.domino.ui.loaders.LoaderEffect;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class PositionEvaluationDetailsPanel extends Composite {
 
@@ -130,6 +132,10 @@ public class PositionEvaluationDetailsPanel extends Composite {
             public String getValue(final PrincipalVariationDetails object) {
                 if (object.isForcedMate()) {
                     return "Mate in " + object.getNumMovesBeforeMate();
+                } else if (object.isNoMate()) {
+                    return "No Mate";
+                } else if (object.isTimeout()) {
+                    return "Timeout";
                 } else {
                     return String.valueOf(object.getEvaluationCP());
                 }
@@ -140,7 +146,19 @@ public class PositionEvaluationDetailsPanel extends Composite {
         TextColumn<PrincipalVariationDetails> variationColumn = new TextColumn<PrincipalVariationDetails>() {
             @Override
             public String getValue(final PrincipalVariationDetails details) {
-                return getPVStringFromUSF(details.getPrincipalVariation());
+                if (details.getPrincipalVariation() == null && details.isNoMate()) {
+                    return "No Mating variation";
+                } else if ("notcheck".equals(details.getPrincipalVariation())) {
+                    return "The king is not in check";
+                } else if (details.getPrincipalVariation() != null) {
+                    return getPVStringFromUSF(details.getPrincipalVariation());
+                } else if (details.isTimeout()) {
+                    return "Did not find a Tsume in the allotted time";
+                } else if (details.isForcedMate() && details.getNumMovesBeforeMate() == 0) {
+                    return "The King is in checkmate";
+                } else {
+                    return "Error";
+                }
             }
         };
         table.addColumn(variationColumn, "Principal variation");
@@ -150,7 +168,8 @@ public class PositionEvaluationDetailsPanel extends Composite {
                     BrowserEvents.CLICK.equals(event.getNativeEvent().getType())) {
                 selectedVariation = event.getValue();
             } else if (BrowserEvents.MOUSEOVER.equals(event.getNativeEvent().getType())) {
-                if (isSync() && evaluation != null && event.getValue().getPrincipalVariation().length() >= 4) {
+                if (isSync() && evaluation != null && event.getValue().getPrincipalVariation() != null
+                        && event.getValue().getPrincipalVariation().length() >= 4) {
                     String move = event.getValue().getPrincipalVariation().substring(0, 4);
                     GWT.log("Highlighting move: " + move);
                     eventBus.fireEvent(new HighlightMoveEvent(UsfMoveConverter.fromUsfString(move,
@@ -183,7 +202,7 @@ public class PositionEvaluationDetailsPanel extends Composite {
         contextMenu = new PopupPanel(true);
         MenuBar menuBar = new MenuBar(true);
         MenuItem addVariation = new MenuItem("Add Variation", () -> {
-            if (isSync() && selectedVariation != null) {
+            if (isSync() && selectedVariation != null && selectedVariation.getPrincipalVariation() != null) {
                 GWT.log("Add variation: " + selectedVariation);
                 eventBus.fireEvent(new InsertVariationEvent(selectedVariation));
             }
@@ -232,14 +251,46 @@ public class PositionEvaluationDetailsPanel extends Composite {
     private void showEvaluation() {
         if (evaluation != null) {
             PrincipalVariationDetails[] principalVariationHistory = evaluation.getPrincipalVariationHistory();
-            table.setRowCount(principalVariationHistory.length);
-            ArrayList<PrincipalVariationDetails> list = new ArrayList<>(principalVariationHistory.length);
-            for (int i = principalVariationHistory.length - 1; i >= 0; i--) {
-                list.add(principalVariationHistory[i]);
+            TsumeAnalysisDetails tsumeAnalysis = evaluation.getTsumeAnalysis();
+            if (principalVariationHistory != null) {
+                table.setRowCount(principalVariationHistory.length);
+                ArrayList<PrincipalVariationDetails> list = new ArrayList<>(principalVariationHistory.length);
+                for (int i = principalVariationHistory.length - 1; i >= 0; i--) {
+                    list.add(principalVariationHistory[i]);
+                }
+                table.setRowData(0, list);
+            } else if (tsumeAnalysis != null) {
+                PrincipalVariationDetails t = new PrincipalVariationDetails();
+                switch (tsumeAnalysis.getResult()) {
+                    case NOT_CHECK:
+                        t.setPrincipalVariation("notcheck");
+                        t.setNoMate(true);
+                        break;
+                    case ESCAPE:
+                        t.setPrincipalVariation(tsumeAnalysis.getEscapeMove());
+                        t.setNoMate(true);
+                        break;
+                    case ESCAPE_BY_TIMEOUT:
+                        t.setPrincipalVariation(tsumeAnalysis.getEscapeMove());
+                        t.setTimeout(true);
+                        break;
+                    case FIND_TSUME_TIMEOUT:
+                        t.setTimeout(true);
+                        break;
+                    case NO_MATE:
+                        t.setNoMate(true);
+                        break;
+                    case TSUME:
+                        t.setForcedMate(true);
+                        t.setNumMovesBeforeMate(tsumeAnalysis.getTsumeNumMoves());
+                        break;
+                    default:
+                        throw new IllegalStateException("Unexpected result: " + tsumeAnalysis);
+                }
+                table.setRowData(Collections.singletonList(t));
             }
-            table.setRowData(0, list);
-            table.setVisible(true);
         }
+        table.setVisible(true);
     }
 
     private void highlightBestMove() {

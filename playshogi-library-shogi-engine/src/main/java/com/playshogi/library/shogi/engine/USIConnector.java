@@ -126,7 +126,7 @@ public class USIConnector {
         LOGGER.log(Level.INFO, "Looking for mate: " + sfen);
 
         sendCommand("position sfen " + sfen + " 0");
-        sendCommand("go mate 2000");
+        sendCommand("go mate 5000");
 
         return readTsumeResult(sfen);
     }
@@ -141,7 +141,7 @@ public class USIConnector {
         String[] split = nextLine.split(" ");
 
         if (split[1].equals("nomate") || split[1].equals("timeout")) {
-            return new PositionEvaluation(sfen, Collections.emptyList(), null, null);
+            return new PositionEvaluation(sfen, Collections.emptyList(), null, null, split[1]);
         } else {
             Player player = SfenConverter.extractPlayer(sfen);
             StringBuilder variation = new StringBuilder();
@@ -155,7 +155,7 @@ public class USIConnector {
             principalVariation.setUsf(variation.toString());
             String bestMove = UsiMoveConverter.fromUsiToUsfSTring(split[1], sfen);
             return new PositionEvaluation(sfen, Collections.singletonList(new MultiVariations(principalVariation)),
-                    bestMove, null);
+                    bestMove, null, null);
         }
     }
 

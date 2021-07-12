@@ -62,6 +62,14 @@ public class Variation {
         this.timeMs = timeMs;
     }
 
+    public int getNumMoves() {
+        if (usf == null) {
+            return 0;
+        } else {
+            return usf.length() / 5;
+        }
+    }
+
     @Override
     public String toString() {
         return "Variation{" +

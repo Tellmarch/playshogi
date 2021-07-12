@@ -71,8 +71,7 @@ public class UsiEvaluationReader {
             ponderMove = UsiMoveConverter.fromUsiToUsfSTring(split[3], sfen);
         }
 
-        return new PositionEvaluation(sfen, variationsHistory, bestMove,
-                ponderMove);
+        return new PositionEvaluation(sfen, variationsHistory, bestMove, ponderMove, null);
     }
 
     public static Variation parsePrincipalVariation(final String line, final String sfen) {

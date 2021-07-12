@@ -8,6 +8,7 @@ import com.playshogi.library.database.models.PersistentKifu.KifuType;
 import com.playshogi.library.shogi.engine.*;
 import com.playshogi.library.shogi.engine.insights.GameInsights;
 import com.playshogi.library.shogi.engine.insights.Mistake;
+import com.playshogi.library.shogi.models.Player;
 import com.playshogi.library.shogi.models.formats.sfen.SfenConverter;
 import com.playshogi.library.shogi.models.formats.usf.UsfFormat;
 import com.playshogi.library.shogi.models.position.PositionScore;
@@ -36,8 +37,8 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
     private final LessonRepository lessonRepository;
     private final Authenticator authenticator = Authenticator.INSTANCE;
 
-    private final TsumeEscapeSolver tsumeEscapeSolver =
-            new TsumeEscapeSolver(new QueuedTsumeSolver(EngineConfiguration.TSUME_ENGINE));
+    private final QueuedTsumeSolver queuedTsumeSolver = new QueuedTsumeSolver(EngineConfiguration.TSUME_ENGINE);
+    private final TsumeEscapeSolver tsumeEscapeSolver = new TsumeEscapeSolver(queuedTsumeSolver);
     private final QueuedKifuAnalyzer queuedKifuAnalyzer = new QueuedKifuAnalyzer(EngineConfiguration.NORMAL_ENGINE);
 
     public KifuServiceImpl() {
@@ -310,17 +311,45 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
 
     private PositionEvaluationDetails analyseTsumePosition(final String sessionId, final ShogiPosition position,
                                                            final String sfen) {
-        EscapeTsumeResult result = tsumeEscapeSolver.escapeTsume(position);
-        LOGGER.log(Level.INFO, "Tsume analysis: " + result);
-        PositionEvaluationDetails details = new PositionEvaluationDetails();
-        EscapeTsumeDetails tsumeDetails = new EscapeTsumeDetails();
-        tsumeDetails.setResult(EscapeTsumeDetails.ResultEnum.valueOf(result.getResult().name()));
-        if (result.getEscapeMove() != null) {
-            tsumeDetails.setEscapeMove(result.getEscapeMove().getUsfString());
+        if (position.getPlayerToMove() == Player.BLACK) { // Find Tsume
+            PositionEvaluation positionEvaluation = queuedTsumeSolver.analyseTsume(sfen);
+            if (positionEvaluation.getBestMove() == null) {
+                PositionEvaluationDetails details = new PositionEvaluationDetails();
+                details.setSfen(sfen);
+                if ("nomate".equals(positionEvaluation.getMateDetails())) {
+                    details.setTsumeAnalysis(new TsumeAnalysisDetails(TsumeAnalysisDetails.ResultEnum.NO_MATE, null));
+                } else if ("timeout".equals(positionEvaluation.getMateDetails())) {
+                    details.setTsumeAnalysis(new TsumeAnalysisDetails(TsumeAnalysisDetails.ResultEnum.FIND_TSUME_TIMEOUT, null));
+                } else {
+                    throw new IllegalStateException("Unknown mate details: " + positionEvaluation.getMateDetails());
+                }
+                return details;
+            } else {
+                PositionEvaluationDetails positionEvaluationDetails = convertPositionEvaluation(positionEvaluation);
+                positionEvaluationDetails.setTsumeAnalysis(new TsumeAnalysisDetails(TsumeAnalysisDetails.ResultEnum.TSUME, null));
+                return positionEvaluationDetails;
+            }
+        } else { // Escape Tsume
+            EscapeTsumeResult result = tsumeEscapeSolver.escapeTsume(position);
+            LOGGER.log(Level.INFO, "Tsume analysis: " + result);
+            PositionEvaluationDetails details = new PositionEvaluationDetails();
+            TsumeAnalysisDetails tsumeDetails = new TsumeAnalysisDetails();
+            tsumeDetails.setResult(TsumeAnalysisDetails.ResultEnum.valueOf(result.getResult().name()));
+            if (result.getEscapeMove() != null) {
+                tsumeDetails.setEscapeMove(result.getEscapeMove().getUsfString());
+            }
+            tsumeDetails.setTsumeNumMoves(result.getTsumeNumMoves());
+            if (!Strings.isNullOrEmpty(result.getTsumeVariationUsf())) {
+                PrincipalVariationDetails variationDetails = new PrincipalVariationDetails();
+                variationDetails.setPrincipalVariation(result.getTsumeVariationUsf());
+                variationDetails.setForcedMate(true);
+                variationDetails.setNumMovesBeforeMate(result.getTsumeNumMoves());
+                details.setPrincipalVariationHistory(new PrincipalVariationDetails[]{variationDetails});
+            }
+            details.setTsumeAnalysis(tsumeDetails);
+            details.setSfen(sfen);
+            return details;
         }
-        details.setTsumeAnalysis(tsumeDetails);
-        details.setSfen(sfen);
-        return details;
     }
 
     private PositionEvaluationDetails convertPositionEvaluation(final PositionEvaluation evaluation) {

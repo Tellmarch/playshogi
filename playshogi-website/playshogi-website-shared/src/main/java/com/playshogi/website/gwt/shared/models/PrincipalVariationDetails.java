@@ -4,6 +4,8 @@ import java.io.Serializable;
 
 public class PrincipalVariationDetails implements Serializable {
 
+    private boolean timeout;
+    private boolean noMate;
     private boolean forcedMate;
     private int numMovesBeforeMate;
     private int evaluationCP;
@@ -71,10 +73,28 @@ public class PrincipalVariationDetails implements Serializable {
         this.principalVariation = principalVariation;
     }
 
+    public boolean isNoMate() {
+        return noMate;
+    }
+
+    public void setNoMate(final boolean noMate) {
+        this.noMate = noMate;
+    }
+
+    public boolean isTimeout() {
+        return timeout;
+    }
+
+    public void setTimeout(final boolean timeout) {
+        this.timeout = timeout;
+    }
+
     @Override
     public String toString() {
         return "PrincipalVariationDetails{" +
-                "forcedMate=" + forcedMate +
+                "timeout=" + timeout +
+                ", noMate=" + noMate +
+                ", forcedMate=" + forcedMate +
                 ", numMovesBeforeMate=" + numMovesBeforeMate +
                 ", evaluationCP=" + evaluationCP +
                 ", depth=" + depth +

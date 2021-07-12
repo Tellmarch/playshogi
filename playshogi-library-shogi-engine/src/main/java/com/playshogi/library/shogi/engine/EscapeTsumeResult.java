@@ -6,21 +6,35 @@ public class EscapeTsumeResult {
     public enum EscapeTsumeEnum {
         TSUME,
         NOT_CHECK,
-        ESCAPE
+        ESCAPE,
+        ESCAPE_BY_TIMEOUT
     }
 
     public static final EscapeTsumeResult NOT_CHECK = new EscapeTsumeResult(EscapeTsumeEnum.NOT_CHECK);
 
     private final EscapeTsumeEnum result;
     private final ShogiMove escapeMove;
+    private final int tsumeNumMoves;
+    private final String tsumeVariationUsf;
 
-    public EscapeTsumeResult(EscapeTsumeEnum result) {
-        this(result, null);
+    public EscapeTsumeResult(final int tsumeNumMoves, final String tsumeVariationUsf) {
+        this(EscapeTsumeEnum.TSUME, null, tsumeNumMoves, tsumeVariationUsf);
     }
 
-    public EscapeTsumeResult(EscapeTsumeEnum result, ShogiMove escapeMove) {
+    public EscapeTsumeResult(final EscapeTsumeEnum result) {
+        this(result, null, 0, null);
+    }
+
+    public EscapeTsumeResult(final EscapeTsumeEnum result, final ShogiMove escapeMove) {
+        this(result, escapeMove, 0, null);
+    }
+
+    private EscapeTsumeResult(final EscapeTsumeEnum result, final ShogiMove escapeMove, final int tsumeNumMoves,
+                              final String tsumeVariationUsf) {
         this.result = result;
         this.escapeMove = escapeMove;
+        this.tsumeNumMoves = tsumeNumMoves;
+        this.tsumeVariationUsf = tsumeVariationUsf;
     }
 
     public EscapeTsumeEnum getResult() {
@@ -31,12 +45,21 @@ public class EscapeTsumeResult {
         return escapeMove;
     }
 
+    public int getTsumeNumMoves() {
+        return tsumeNumMoves;
+    }
+
+    public String getTsumeVariationUsf() {
+        return tsumeVariationUsf;
+    }
+
     @Override
     public String toString() {
         return "EscapeTsumeResult{" +
                 "result=" + result +
                 ", escapeMove=" + escapeMove +
+                ", tsumeNumMoves=" + tsumeNumMoves +
+                ", tsumeVariationUsf='" + tsumeVariationUsf + '\'' +
                 '}';
     }
-
 }

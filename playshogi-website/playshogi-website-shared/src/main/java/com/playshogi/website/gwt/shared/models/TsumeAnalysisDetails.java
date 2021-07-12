@@ -2,20 +2,24 @@ package com.playshogi.website.gwt.shared.models;
 
 import java.io.Serializable;
 
-public class EscapeTsumeDetails implements Serializable {
+public class TsumeAnalysisDetails implements Serializable {
     public enum ResultEnum {
         TSUME,
         NOT_CHECK,
-        ESCAPE
+        ESCAPE,
+        ESCAPE_BY_TIMEOUT,
+        FIND_TSUME_TIMEOUT,
+        NO_MATE
     }
 
     private ResultEnum result;
     private String escapeMove;
+    private int tsumeNumMoves;
 
-    public EscapeTsumeDetails() {
+    public TsumeAnalysisDetails() {
     }
 
-    public EscapeTsumeDetails(final ResultEnum result, final String escapeMove) {
+    public TsumeAnalysisDetails(final ResultEnum result, final String escapeMove) {
         this.result = result;
         this.escapeMove = escapeMove;
     }
@@ -36,11 +40,20 @@ public class EscapeTsumeDetails implements Serializable {
         this.escapeMove = escapeMove;
     }
 
+    public int getTsumeNumMoves() {
+        return tsumeNumMoves;
+    }
+
+    public void setTsumeNumMoves(final int tsumeNumMoves) {
+        this.tsumeNumMoves = tsumeNumMoves;
+    }
+
     @Override
     public String toString() {
-        return "EscapeTsumeResult{" +
+        return "TsumeAnalysisDetails{" +
                 "result=" + result +
                 ", escapeMove='" + escapeMove + '\'' +
+                ", tsumeNumMoves=" + tsumeNumMoves +
                 '}';
     }
 }

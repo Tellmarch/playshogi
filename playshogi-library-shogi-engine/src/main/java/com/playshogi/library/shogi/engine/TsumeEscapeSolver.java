@@ -6,7 +6,7 @@ import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.library.shogi.rules.ShogiRulesEngine;
 
 import static com.playshogi.library.shogi.engine.EscapeTsumeResult.EscapeTsumeEnum.ESCAPE;
-import static com.playshogi.library.shogi.engine.EscapeTsumeResult.EscapeTsumeEnum.TSUME;
+import static com.playshogi.library.shogi.engine.EscapeTsumeResult.EscapeTsumeEnum.ESCAPE_BY_TIMEOUT;
 
 
 public class TsumeEscapeSolver {
@@ -28,19 +28,32 @@ public class TsumeEscapeSolver {
             return EscapeTsumeResult.NOT_CHECK;
         }
 
+        int maxMove = 0;
+        String variationUsf = "";
+
         for (ShogiMove move : rulesEngine.getAllPossibleMoves(position)) {
             rulesEngine.playMoveInPosition(position, move);
             if (!rulesEngine.isPositionCheck(position, Player.WHITE)) { // If Gote is still in check, there is no
                 // need to ask the engine
                 PositionEvaluation evaluation = queuedTsumeSolver.analyseTsume(position);
                 if (evaluation.getBestMove() == null) {
-                    //No best move for sente: it is not a tsume, got successfully escaped.
-                    return new EscapeTsumeResult(ESCAPE, move);
+                    if ("timeout".equals(evaluation.getMateDetails())) {
+                        return new EscapeTsumeResult(ESCAPE_BY_TIMEOUT, move);
+                    } else if ("nomate".equals(evaluation.getMateDetails())) {
+                        return new EscapeTsumeResult(ESCAPE, move);
+                    } else {
+                        throw new IllegalStateException("Unknown mate details: " + evaluation.getMateDetails());
+                    }
+                } else {
+                    if (evaluation.getMainVariation().getNumMoves() + 1 > maxMove) {
+                        maxMove = evaluation.getMainVariation().getNumMoves() + 1;
+                        variationUsf = move.getUsfString() + " " + evaluation.getMainVariation().getUsf();
+                    }
                 }
             }
             rulesEngine.undoMoveInPosition(position, move);
         }
 
-        return new EscapeTsumeResult(TSUME);
+        return new EscapeTsumeResult(maxMove, variationUsf);
     }
 }

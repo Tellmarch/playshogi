@@ -13,13 +13,15 @@ public class PositionEvaluation {
     // All moves in USF notation
     private final String bestMove;
     private final String ponderMove;
+    private final String mateDetails;
 
     public PositionEvaluation(final String sfen, final List<MultiVariations> variationsHistory,
-                              final String bestMove, final String ponderMove) {
+                              final String bestMove, final String ponderMove, final String mateDetails) {
         this.sfen = sfen;
         this.variationsHistory = variationsHistory;
         this.bestMove = bestMove;
         this.ponderMove = ponderMove;
+        this.mateDetails = mateDetails;
     }
 
     public String getSfen() {
@@ -57,14 +59,18 @@ public class PositionEvaluation {
         return getMainVariation().getScore();
     }
 
+    public String getMateDetails() {
+        return mateDetails;
+    }
+
     @Override
     public String toString() {
         return "PositionEvaluation{" +
                 "sfen='" + sfen + '\'' +
-                ", score=" + getScore() +
                 ", variationsHistory=" + variationsHistory +
                 ", bestMove='" + bestMove + '\'' +
                 ", ponderMove='" + ponderMove + '\'' +
+                ", mateDetails='" + mateDetails + '\'' +
                 '}';
     }
 }

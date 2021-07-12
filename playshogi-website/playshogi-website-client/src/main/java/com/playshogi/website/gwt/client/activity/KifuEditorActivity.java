@@ -187,7 +187,7 @@ public class KifuEditorActivity extends MyAbstractActivity {
                 new AsyncCallback<PositionEvaluationDetails>() {
                     @Override
                     public void onFailure(Throwable throwable) {
-                        GWT.log("EditKifu - ERROR GETTING POSITION EVALUATION");
+                        GWT.log("EditKifu - ERROR GETTING POSITION EVALUATION", throwable);
                     }
 
                     @Override
