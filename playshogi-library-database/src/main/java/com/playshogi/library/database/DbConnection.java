@@ -47,7 +47,7 @@ public class DbConnection {
         if (connection == null) return false;
 
         try {
-            if (connection.isClosed()) return false;
+            if (!connection.isValid(1000)) return false;
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Connection error: ", e);
             return false;
