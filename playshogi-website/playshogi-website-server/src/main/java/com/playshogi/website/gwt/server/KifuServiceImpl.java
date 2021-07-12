@@ -115,7 +115,7 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
             return null;
         } else {
             String usf = UsfFormat.INSTANCE.write(gameRecord);
-            LOGGER.log(Level.INFO, "found kifu:\n" + usf);
+            LOGGER.log(Level.INFO, "found kifu");
             return usf;
         }
     }
