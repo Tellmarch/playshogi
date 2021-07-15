@@ -22,6 +22,8 @@ Recommended setup: IntelliJ Idea + local MySQL server
 
 1. Import any collection of Tsume (For instance the "Solution" folder from https://github.com/francoiswnel/Pony-Canyon-Shogi-GB-Tsume-Problems as a zip) as a problem collection.
 2. For game collections, you can use e.g. SC24 zip download of all your games.
+3. For using engines, adjust the configuration in com.playshogi.library.shogi.engine.EngineConfiguration.  
+Recommended setup: YaneuraOu (normal version with e.g. Elmo evaluation function), and YaneuraOu Tsume engine (needs to be compiled separately).
 
 #### Deploying the website on a server
 
