@@ -8,7 +8,8 @@ sudo apt-get upgrade
 sudo apt-get install mysql-server
 sudo mysql_secure_installation
 
-# Allow root to connect by password:
+### Optional: Allow root to connect by password (if not, adjust the mysql commands)
+
 Replace "password" by your sql root password
 
 sudo mysql
