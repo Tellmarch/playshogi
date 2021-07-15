@@ -10,6 +10,7 @@ public class DbConnection {
 
     private static final Logger LOGGER = Logger.getLogger(DbConnection.class.getName());
 
+    private static final int MAX_RETRIES = 3;
     private final String database = "playshogi";
     private final String host = "localhost";
     private final int port = 3306;
@@ -28,12 +29,18 @@ public class DbConnection {
     public void start() {
         LOGGER.log(Level.INFO, "Connecting to database");
 
-        try {
-            connection = DriverManager.getConnection(url, user, password);
-        } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Could not establish JDBC connection", e);
+        for (int i = 0; i < MAX_RETRIES; i++) {
+            try {
+                connection = DriverManager.getConnection(url, user, password);
+                return;
+            } catch (SQLException e) {
+                LOGGER.log(Level.SEVERE, "Try " + i + ": Could not establish JDBC connection", e);
+            }
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException ignored) {
+            }
         }
-
     }
 
     public Connection getConnection() {

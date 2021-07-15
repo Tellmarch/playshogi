@@ -174,6 +174,10 @@ public class Node {
         isNew = aNew;
     }
 
+    public boolean isWrongAnswer() {
+        return additionalTags != null && additionalTags.contains("X:PLAYSHOGI:INCORRECT");
+    }
+
     @Override
     public String toString() {
         return "Node{" +

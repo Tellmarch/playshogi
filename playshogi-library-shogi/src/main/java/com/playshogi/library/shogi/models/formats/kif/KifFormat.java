@@ -18,7 +18,7 @@ import com.playshogi.library.shogi.models.shogivariant.Handicap;
 import com.playshogi.library.shogi.models.shogivariant.ShogiInitialPositionFactory;
 import com.playshogi.library.shogi.rules.ShogiRulesEngine;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public enum KifFormat implements GameRecordFormat {
@@ -85,7 +85,7 @@ public enum KifFormat implements GameRecordFormat {
             throw new IllegalStateException("Couldn't parse the game record");
         }
 
-        return Arrays.asList(gameRecord);
+        return Collections.singletonList(gameRecord);
     }
 
     private void readHeader(final LineReader lineReader, final GameRecord gameRecord) {
@@ -313,7 +313,7 @@ public enum KifFormat implements GameRecordFormat {
 
         while (lineReader.hasNextLine()) {
             String line = lineReader.nextLine().trim();
-            if (line.isEmpty() || line.startsWith("#")) {
+            if (line.isEmpty() || line.startsWith("#") || line.startsWith("&")) {
                 continue;
             }
 

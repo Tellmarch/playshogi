@@ -1,16 +1,30 @@
 package com.playshogi.website.gwt.client.events.gametree;
 
 import com.google.web.bindery.event.shared.binder.GenericEvent;
+import com.playshogi.library.shogi.models.position.ShogiPosition;
 
 public class EndOfVariationReachedEvent extends GenericEvent {
 
-    private final boolean mainLine;
+    private final ShogiPosition position;
+    private final boolean isNewNode;
+    private final boolean isProblemWrongAnswerNode;
 
-    public EndOfVariationReachedEvent(boolean mainLine) {
-        this.mainLine = mainLine;
+    public EndOfVariationReachedEvent(final ShogiPosition position, final boolean isNewNode,
+                                      final boolean isProblemWrongAnswerNode) {
+        this.position = position;
+        this.isNewNode = isNewNode;
+        this.isProblemWrongAnswerNode = isProblemWrongAnswerNode;
     }
 
-    public boolean isMainLine() {
-        return mainLine;
+    public ShogiPosition getPosition() {
+        return position;
+    }
+
+    public boolean isNewNode() {
+        return isNewNode;
+    }
+
+    public boolean isProblemWrongAnswerNode() {
+        return isProblemWrongAnswerNode;
     }
 }

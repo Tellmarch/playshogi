@@ -32,6 +32,7 @@ import org.dominokit.domino.ui.grid.Row_12;
 import org.dominokit.domino.ui.icons.Icons;
 import org.dominokit.domino.ui.labels.Label;
 import org.dominokit.domino.ui.style.Color;
+import org.dominokit.domino.ui.tree.ToggleTarget;
 import org.dominokit.domino.ui.tree.Tree;
 import org.dominokit.domino.ui.tree.TreeItem;
 import org.jboss.elemento.Elements;
@@ -74,6 +75,13 @@ public class LessonsView extends Composite {
 
         breadcrumb = Breadcrumb.create().setColor(Color.ORANGE);
         lessonsTree = Tree.create("Lessons", null);
+        lessonsTree.setAutoCollapse(false);
+        lessonsTree.setToggleTarget(ToggleTarget.ICON);
+        lessonsTree.deactivateAll();
+        lessonsTree.enableFolding();
+        lessonsTree.enableSearch();
+        lessonsTree.autoExpandFound();
+        lessonsTree.style().setOverFlowY("auto").setHeight("calc(100vh - 80px)");
 
         FlowPanel flowPanel = new FlowPanel();
         flowPanel.add(new ElementWidget(breadcrumb.element()));
@@ -200,8 +208,6 @@ public class LessonsView extends Composite {
             });
         }
 
-        lessonsTree.setAutoCollapse(false);
         lessonsTree.expandAll();
-
     }
 }

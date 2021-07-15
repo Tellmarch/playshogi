@@ -4,10 +4,8 @@ import com.google.gwt.core.client.GWT;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
-import com.playshogi.library.shogi.models.PieceType;
 import com.playshogi.library.shogi.models.Player;
 import com.playshogi.library.shogi.models.formats.usf.UsfMoveConverter;
-import com.playshogi.library.shogi.models.moves.DropMove;
 import com.playshogi.library.shogi.models.moves.ShogiMove;
 import com.playshogi.library.shogi.models.position.ReadOnlyShogiPosition;
 import com.playshogi.library.shogi.models.record.GameNavigation;
@@ -17,8 +15,6 @@ import com.playshogi.website.gwt.client.events.gametree.*;
 import com.playshogi.website.gwt.client.events.kifu.ArrowDrawnEvent;
 import com.playshogi.website.gwt.client.events.kifu.ClearDecorationsEvent;
 import com.playshogi.website.gwt.client.widget.gamenavigator.NavigatorConfiguration;
-
-import java.util.Objects;
 
 public class NavigationController {
 
@@ -89,7 +85,7 @@ public class NavigationController {
         GWT.log(activityId + " NavigationController: Handling EditMovePlayedEvent");
         gameNavigation.addMove(event.getMove(), true);
         firePositionChanged(true);
-        eventBus.fireEvent(new NewVariationPlayedEvent(false));
+        eventBus.fireEvent(new NewVariationPlayedEvent(gameNavigation.getPosition()));
     }
 
     @EventHandler
@@ -98,25 +94,21 @@ public class NavigationController {
         ShogiMove move = movePlayedEvent.getMove();
         GWT.log("Move played: " + move.toString());
         boolean existingMove = gameNavigation.hasMoveInCurrentPosition(move);
-        boolean mainMove = Objects.equals(gameNavigation.getMainVariationMove(), move);
 
         gameNavigation.addMove(move, true);
         if (!existingMove) {
             GWT.log("New variation");
-            boolean positionCheckmate = shogiRulesEngine.isPositionCheckmate(gameNavigation.getPosition());
-            if (move instanceof DropMove) {
-                DropMove dropMove = (DropMove) move;
-                if (dropMove.getPieceType() == PieceType.PAWN) {
-                    positionCheckmate = false;
-                }
-            }
-            GWT.log("Checkmate: " + positionCheckmate);
-            eventBus.fireEvent(new NewVariationPlayedEvent(positionCheckmate));
+            eventBus.fireEvent(new NewVariationPlayedEvent(gameNavigation.getPosition()));
         } else if (gameNavigation.isEndOfVariation()) {
-            eventBus.fireEvent(new EndOfVariationReachedEvent(mainMove));
+            eventBus.fireEvent(new EndOfVariationReachedEvent(gameNavigation.getPosition(),
+                    gameNavigation.getCurrentNode().isNew(), gameNavigation.getCurrentNode().isWrongAnswer()));
             fireNodeChanged();
         } else if (gameNavigation.getPosition().getPlayerToMove() == Player.WHITE && navigatorConfiguration.isProblemMode()) {
             gameNavigation.moveForward();
+            if (gameNavigation.isEndOfVariation()) {
+                eventBus.fireEvent(new EndOfVariationReachedEvent(gameNavigation.getPosition(),
+                        gameNavigation.getCurrentNode().isNew(), gameNavigation.getCurrentNode().isWrongAnswer()));
+            }
             fireNodeChanged();
         }
 
@@ -136,7 +128,7 @@ public class NavigationController {
             gameNavigation.moveBack();
         }
 
-        eventBus.fireEvent(new NewVariationPlayedEvent(false));
+        eventBus.fireEvent(new NewVariationPlayedEvent(gameNavigation.getPosition()));
         firePositionChanged(true);
     }
 
