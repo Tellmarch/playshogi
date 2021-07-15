@@ -18,22 +18,13 @@ FLUSH PRIVILEGES;
 
 # Setup database
 
-1. export schema from MySQL Workbench
-File - export - forward engineer
-select "SELECT DROP BEFORE CREATE" and "GENERATE INSERT FOR TABLES"
-
-!! remove the line GRANT EXECUTE ON ROUTINE `playshogi`.* TO 'playshogi';
-
-2. Copy to server
-scp schema.sql ...:
-
-3. Import schema
+1. Copy the mysql/schema.sql file to the server, and import the schema with:
 mysql -u root -p < schema.sql 
 
-4. update user auth
+2. update user auth
 ALTER USER 'playshogi'@'%' IDENTIFIED WITH mysql_native_password BY 'playshogiDB1';
 
-5. Import data
+3. (Optional, if you have a data dump) Import data
 
 scp ../dumps/Dump20200726-data.sql  ...:
 
@@ -49,7 +40,7 @@ sudo nano /etc/tomcat9/tomcat-users.xml
 
 Add: !!! CHANGE THE USERNAME AND PASSWORD
 <role rolename="manager-gui"/>
-<user username="tomcatplayshogi" password="s3cret" roles="manager-gui"/>
+<user username="tomcatplayshogi" password="<PASSWORD HERE>" roles="manager-gui"/>
 
 # Install JDBC connector
 
@@ -65,7 +56,7 @@ sudo systemctl restart tomcat9.service
 2. Select WAR file to upload -> Choose ROOT.WAR, built with mvn package.
 3. Deploy
 
-# Listen on port 80
+# Optional: Listen on port 80 (by default tomcat listens to 8080)
 
 1. sudo su
 2. Find out interface: ip addr show , example enp0s20
