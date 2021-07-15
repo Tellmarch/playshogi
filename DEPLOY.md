@@ -22,17 +22,17 @@ Replace "password" by your sql root password
 
 1. Copy the mysql/schema.sql file to the server, and import the schema with:
 
-    mysql -u root -p < schema.sql 
+        mysql -u root -p < schema.sql 
 
 2. update user auth (If you change the password, change it in DbConnection.java too)
 
-    ALTER USER 'playshogi'@'%' IDENTIFIED WITH mysql_native_password BY 'playshogiDB1';
+        ALTER USER 'playshogi'@'%' IDENTIFIED WITH mysql_native_password BY 'playshogiDB1';
 
 3. (Optional, if you have a data dump) Import data
 
-    scp ../dumps/Dump20200726-data.sql  ...:  
-    sudo apt install pv  
-    pv Dump20200726-data.sql | mysql -u root -p playshogi  
+        scp ../dumps/Dump20200726-data.sql  ...:  
+        sudo apt install pv  
+        pv Dump20200726-data.sql | mysql -u root -p playshogi  
 
 # Install Tomcat
 
@@ -65,13 +65,15 @@ Add: !!! CHANGE THE USERNAME AND PASSWORD
 2. Find out interface: ip addr show , example enp0s20
 3. Add iptables rules
 
-    iptables -A PREROUTING -t nat -i enp0s20f0 -p tcp --dport 80 -j REDIRECT --to-port 8080  
-    iptables -A PREROUTING -t nat -i enp0s20f0 -p tcp --dport 443 -j REDIRECT --to-port 8443  
+        iptables -A PREROUTING -t nat -i enp0s20f0 -p tcp --dport 80 -j REDIRECT --to-port 8080  
+        iptables -A PREROUTING -t nat -i enp0s20f0 -p tcp --dport 443 -j REDIRECT --to-port 8443  
 
 4. Make it permanent
-    apt-get install iptables-persistent
+
+        apt-get install iptables-persistent
 
 5. Check
-    iptables -L -n -t nat
-    iptables -L -n
-    less /etc/iptables/rules.v4
+
+        iptables -L -n -t nat
+        iptables -L -n
+        less /etc/iptables/rules.v4
