@@ -499,6 +499,34 @@ CREATE TABLE IF NOT EXISTS `playshogi`.`ps_userpbsetstats` (
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
+
+-- -----------------------------------------------------
+-- Table `playshogi`.`ps_userlessonsprogress`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `playshogi`.`ps_userlessonsprogress` ;
+
+CREATE TABLE IF NOT EXISTS `playshogi`.`ps_userlessonsprogress` (
+  `user_id` INT UNSIGNED NOT NULL,
+  `lesson_id` INT UNSIGNED NOT NULL,
+  `time_viewed` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `time_spent_ms` INT NULL,
+  `complete` TINYINT(1) NOT NULL,
+  `percentage` INT NOT NULL,
+  `rating` INT NULL,
+  INDEX `fk_ps_userlessonsprogress_1_idx` (`user_id` ASC),
+  INDEX `fk_ps_userlessonsprogress_2_idx` (`lesson_id` ASC),
+  CONSTRAINT `fk_ps_userlessonsprogress_1`
+    FOREIGN KEY (`user_id`)
+    REFERENCES `playshogi`.`ps_user` (`id`)
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_ps_userlessonsprogress_2`
+    FOREIGN KEY (`lesson_id`)
+    REFERENCES `playshogi`.`ps_lessons` (`id`)
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
 SET SQL_MODE = '';
 DROP USER IF EXISTS playshogi;
 SET SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
