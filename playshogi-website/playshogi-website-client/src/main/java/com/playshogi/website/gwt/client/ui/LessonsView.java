@@ -3,13 +3,13 @@ package com.playshogi.website.gwt.client.ui;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.place.shared.PlaceController;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.library.shogi.models.formats.sfen.SfenConverter;
+import com.playshogi.library.shogi.models.shogivariant.ShogiInitialPositionFactory;
 import com.playshogi.website.gwt.client.SessionInformation;
 import com.playshogi.website.gwt.client.events.tutorial.LessonsListEvent;
 import com.playshogi.website.gwt.client.mvp.AppPlaceHistoryMapper;
@@ -18,17 +18,13 @@ import com.playshogi.website.gwt.client.place.ViewLessonPlace;
 import com.playshogi.website.gwt.client.util.ElementWidget;
 import com.playshogi.website.gwt.client.widget.board.BoardPreview;
 import com.playshogi.website.gwt.shared.models.LessonDetails;
-import elemental2.dom.HTMLAnchorElement;
-import elemental2.dom.HTMLElement;
-import elemental2.dom.HTMLHeadingElement;
-import elemental2.dom.Node;
+import elemental2.dom.*;
 import jsinterop.base.Js;
 import org.dominokit.domino.ui.breadcrumbs.Breadcrumb;
 import org.dominokit.domino.ui.button.Button;
 import org.dominokit.domino.ui.cards.Card;
 import org.dominokit.domino.ui.grid.Column;
 import org.dominokit.domino.ui.grid.Row;
-import org.dominokit.domino.ui.grid.Row_12;
 import org.dominokit.domino.ui.icons.Icons;
 import org.dominokit.domino.ui.labels.Label;
 import org.dominokit.domino.ui.style.Color;
@@ -63,28 +59,17 @@ public class LessonsView extends Composite {
     private final SessionInformation sessionInformation;
     private final AppPlaceHistoryMapper historyMapper;
 
-    private LessonDetails lesson;
-
     @Inject
     public LessonsView(final PlaceController placeController, final SessionInformation sessionInformation,
                        final AppPlaceHistoryMapper historyMapper) {
+        GWT.log("Creating lessons view");
+
         this.placeController = placeController;
         this.sessionInformation = sessionInformation;
         this.historyMapper = historyMapper;
-        GWT.log("Creating lessons view");
 
         breadcrumb = Breadcrumb.create().setColor(Color.ORANGE);
-        lessonsTree = Tree.create("Lessons", null);
-        lessonsTree.setAutoCollapse(false);
-        lessonsTree.setToggleTarget(ToggleTarget.ICON);
-        lessonsTree.deactivateAll();
-        lessonsTree.enableFolding();
-        lessonsTree.enableSearch();
-        lessonsTree.autoExpandFound();
-        lessonsTree.style().setOverFlowY("auto").setHeight("calc(100vh - 80px)");
-
-        FlowPanel flowPanel = new FlowPanel();
-        flowPanel.add(new ElementWidget(breadcrumb.element()));
+        lessonsTree = createLessonsTree();
 
         previewDescription = Elements.span();
         previewTags = Elements.span();
@@ -108,12 +93,26 @@ public class LessonsView extends Composite {
                         .appendChild(Elements.p())
                         .appendChild(openButton);
 
-        Row_12 row_12 = Row.create()
-                .addColumn(Column.span3().appendChild(lessonsTree))
-                .addColumn(Column.span9().appendChild(previewCard));
 
-        flowPanel.add(new ElementWidget(row_12.element()));
-        initWidget(flowPanel);
+        HtmlContentBuilder<HTMLDivElement> root = Elements.div();
+        root.add(breadcrumb);
+        root.add(Row.create()
+                .addColumn(Column.span3().appendChild(lessonsTree))
+                .addColumn(Column.span9().appendChild(previewCard)));
+        initWidget(new ElementWidget(root.element()));
+    }
+
+    private Tree<LessonDetails> createLessonsTree() {
+        final Tree<LessonDetails> lessonsTree;
+        lessonsTree = Tree.create("Lessons", null);
+        lessonsTree.setAutoCollapse(false);
+        lessonsTree.setToggleTarget(ToggleTarget.ICON);
+        lessonsTree.deactivateAll();
+        lessonsTree.enableFolding();
+        lessonsTree.enableSearch();
+        lessonsTree.autoExpandFound();
+        lessonsTree.style().setOverFlowY("auto").setHeight("calc(100vh - 80px)");
+        return lessonsTree;
     }
 
     public void activate(final EventBus eventBus) {
@@ -124,8 +123,17 @@ public class LessonsView extends Composite {
         });
     }
 
+    private void showLessonSelection() {
+        previewCard.setTitle("Select a Lesson on the left");
+        previewDescription.textContent("");
+        difficulty.textContent("");
+        previewTags.textContent("");
+        boardPreview.showPosition(ShogiInitialPositionFactory.READ_ONLY_INITIAL_POSITION);
+        boardPreview.setVisible(true);
+        openButton.hidden(true);
+    }
+
     private void showLessonPreview(final LessonDetails lesson) {
-        this.lesson = lesson;
         previewCard.setTitle(lesson.getTitle());
         previewDescription.textContent(lesson.getDescription());
 
@@ -144,7 +152,6 @@ public class LessonsView extends Composite {
         }
 
         if (lesson.getPreviewSfen() != null && !lesson.getPreviewSfen().isEmpty()) {
-            GWT.log("Showing position " + lesson.getPreviewSfen());
             boardPreview.showPosition(SfenConverter.fromSFEN(lesson.getPreviewSfen()));
             boardPreview.setVisible(true);
         } else {
@@ -164,17 +171,14 @@ public class LessonsView extends Composite {
         }
     }
 
-    @EventHandler
-    public void onLessonsList(final LessonsListEvent event) {
-        GWT.log("LessonsView: handle LessonsListEvent");
-
+    private void fillLessonsTree(final LessonDetails[] lessons) {
         for (TreeItem<LessonDetails> subItem : lessonsTree.getSubItems()) {
             lessonsTree.removeItem(subItem);
         }
 
         Map<String, TreeItem<LessonDetails>> items = new HashMap<>();
 
-        for (LessonDetails lesson : event.getLessons()) {
+        for (LessonDetails lesson : lessons) {
             if (lesson.getKifuId() != null) {
                 items.put(lesson.getLessonId(), TreeItem.create(lesson.getTitle(), Icons.ALL.library_mdi(), lesson));
             } else if (lesson.getProblemCollectionId() != null) {
@@ -185,7 +189,7 @@ public class LessonsView extends Composite {
             }
         }
 
-        for (LessonDetails lesson : event.getLessons()) {
+        for (LessonDetails lesson : lessons) {
             TreeItem<LessonDetails> item = items.get(lesson.getLessonId());
             if (lesson.getParentLessonId() == null) {
                 lessonsTree.appendChild(item);
@@ -193,21 +197,33 @@ public class LessonsView extends Composite {
                 items.get(lesson.getParentLessonId()).appendChild(item);
             }
 
-            item.addClickListener(evt -> {
-                showLessonPreview(lesson);
-
-                breadcrumb.removeAll();
-                breadcrumb.appendChild(Icons.ALL.home(), "Lessons", e -> {
-                });
-
-                for (LessonDetails l : item.getPathValues()) {
-                    breadcrumb.appendChild(Icons.ALL.library_books(), l.getTitle(), e -> {
-                    });
-                }
-
-            });
+            item.addClickListener(evt -> selectLesson(item));
         }
 
         lessonsTree.expandAll();
+    }
+
+    private void selectLesson(final TreeItem<LessonDetails> item) {
+        if (item != null) {
+            showLessonPreview(item.getValue());
+        } else {
+            showLessonSelection();
+        }
+
+        breadcrumb.removeAll();
+        breadcrumb.appendChild(Icons.ALL.home(), "Lessons", e -> selectLesson(null));
+
+        if (item != null) {
+            for (TreeItem<LessonDetails> treeItem : item.getPath()) {
+                breadcrumb.appendChild(Icons.ALL.library_books(), treeItem.getValue().getTitle(),
+                        e -> selectLesson(treeItem));
+            }
+        }
+    }
+
+    @EventHandler
+    public void onLessonsList(final LessonsListEvent event) {
+        GWT.log("LessonsView: handle LessonsListEvent");
+        fillLessonsTree(event.getLessons());
     }
 }
