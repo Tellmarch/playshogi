@@ -17,6 +17,16 @@
     </servlet-mapping>
 
     <servlet>
+        <servlet-name>user</servlet-name>
+        <servlet-class>com.playshogi.website.gwt.server.UserServiceImpl</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>user</servlet-name>
+        <url-pattern>/PlayShogiWebsite/user</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
         <servlet-name>positionSharing</servlet-name>
         <servlet-class>com.playshogi.website.gwt.server.PositionSharingServiceImpl</servlet-class>
     </servlet>

@@ -22,10 +22,13 @@ import com.playshogi.website.gwt.client.events.kifu.PositionStatisticsEvent;
 import com.playshogi.website.gwt.client.events.kifu.RequestPositionEvaluationEvent;
 import com.playshogi.website.gwt.client.place.ViewLessonPlace;
 import com.playshogi.website.gwt.client.ui.ViewLessonView;
+import com.playshogi.website.gwt.client.util.FireAndForgetCallback;
 import com.playshogi.website.gwt.shared.models.PositionDetails;
 import com.playshogi.website.gwt.shared.models.PositionEvaluationDetails;
 import com.playshogi.website.gwt.shared.services.KifuService;
 import com.playshogi.website.gwt.shared.services.KifuServiceAsync;
+import com.playshogi.website.gwt.shared.services.UserService;
+import com.playshogi.website.gwt.shared.services.UserServiceAsync;
 
 public class ViewLessonActivity extends MyAbstractActivity {
 
@@ -35,6 +38,7 @@ public class ViewLessonActivity extends MyAbstractActivity {
     private final MyEventBinder eventBinder = GWT.create(MyEventBinder.class);
 
     private final KifuServiceAsync kifuService = GWT.create(KifuService.class);
+    private final UserServiceAsync userService = GWT.create(UserService.class);
 
     private final ViewLessonView view;
 
@@ -98,6 +102,8 @@ public class ViewLessonActivity extends MyAbstractActivity {
     @Override
     public void onStop() {
         GWT.log("Stopping view kifu activity");
+        userService.saveLessonProgress(sessionInformation.getSessionId(), "", 0, false, 0, 0,
+                new FireAndForgetCallback("saveLessonProgress"));
         super.onStop();
     }
 
