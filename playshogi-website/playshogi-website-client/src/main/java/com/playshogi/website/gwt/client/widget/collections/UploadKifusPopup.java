@@ -78,9 +78,10 @@ public class UploadKifusPopup {
                 "kifus."));
 
         Select<String> charsetSelect = Select.<String>create()
-                .appendChild(SelectOption.create("UTF-8", "Encoding: Unicode (UTF-8)"))
+                .appendChild(SelectOption.create("UTF-8", "Encoding: Unicode (UTF-8) - Ex: 81dojo"))
                 .appendChild(SelectOption.create("SHIFT-JIS", "Encoding: Japanese (SHIFT-JIS)"))
-                .appendChild(SelectOption.create("windows-932", "Encoding: Japanese (windows-932)"))
+                .appendChild(SelectOption.create("windows-932", "Encoding: Japanese (windows-932) - Ex: SC24, " +
+                        "KifuForWindows, etc."))
                 .setSearchable(false)
                 .selectAt(2);
 
