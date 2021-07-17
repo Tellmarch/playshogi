@@ -212,7 +212,7 @@ public class KifuRepository {
 
             }
 
-            LOGGER.log(Level.INFO, "Found kifus: " + result);
+            LOGGER.log(Level.INFO, "Found kifus: " + result.size());
 
             return result;
         } catch (SQLException e) {
@@ -246,7 +246,7 @@ public class KifuRepository {
 
             }
 
-            LOGGER.log(Level.INFO, "Found kifus: " + result);
+            LOGGER.log(Level.INFO, "Found kifus: " + result.size());
 
             return result;
         } catch (SQLException e) {

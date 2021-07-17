@@ -171,7 +171,7 @@ public class ProblemsServiceImpl extends RemoteServiceServlet implements Problem
                 stats[i].setCorrect(problemStats.getCorrect());
                 stats[i].setTimeSpentMs(problemStats.getTimeSpentMs());
             }
-            LOGGER.log(Level.INFO, "Retrieved pb stats for the user: " + Arrays.toString(stats));
+            LOGGER.log(Level.INFO, "Retrieved pb stats for the user: " + stats.length);
             return stats;
         } else {
             LOGGER.log(Level.INFO, "No stats for guest user");

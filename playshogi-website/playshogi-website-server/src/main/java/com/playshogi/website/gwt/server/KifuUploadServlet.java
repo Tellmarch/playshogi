@@ -28,7 +28,7 @@ import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-@MultipartConfig(maxFileSize = 1024 * 1024 * 5, maxRequestSize = 1024 * 1024 * 5 * 2)
+@MultipartConfig(maxFileSize = 1024 * 1024 * 15, maxRequestSize = 1024 * 1024 * 15 * 2)
 public class KifuUploadServlet extends HttpServlet {
 
     private static final Logger LOGGER = Logger.getLogger(KifuUploadServlet.class.getName());

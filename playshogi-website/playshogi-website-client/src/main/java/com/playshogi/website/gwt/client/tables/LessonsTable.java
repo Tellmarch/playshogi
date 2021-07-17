@@ -285,8 +285,8 @@ public class LessonsTable {
                                     LessonDetails record = cell.getRecord();
                                     if (record.getKifuId() != null) {
                                         String href =
-                                                "#" + historyMapper.getToken(new ViewLessonPlace(record.getKifuId(),
-                                                        0));
+                                                "#" + historyMapper.getToken(new ViewLessonPlace(record.getLessonId()
+                                                        , record.getKifuId(), 0));
                                         return Elements.a(href).add(Button.createPrimary(
                                                 "Open")).element();
                                     } else if (record.getProblemCollectionId() != null) {

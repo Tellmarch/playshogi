@@ -1,5 +1,6 @@
 package com.playshogi.website.gwt.client.activity;
 
+import com.google.gwt.core.client.Duration;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.user.client.History;
@@ -16,6 +17,7 @@ import com.playshogi.website.gwt.client.SessionInformation;
 import com.playshogi.website.gwt.client.events.gametree.GameTreeChangedEvent;
 import com.playshogi.website.gwt.client.events.gametree.MoveSelectedEvent;
 import com.playshogi.website.gwt.client.events.gametree.PositionChangedEvent;
+import com.playshogi.website.gwt.client.events.gametree.VisitedProgressEvent;
 import com.playshogi.website.gwt.client.events.kifu.GameInformationChangedEvent;
 import com.playshogi.website.gwt.client.events.kifu.PositionEvaluationEvent;
 import com.playshogi.website.gwt.client.events.kifu.PositionStatisticsEvent;
@@ -40,35 +42,30 @@ public class ViewLessonActivity extends MyAbstractActivity {
     private final KifuServiceAsync kifuService = GWT.create(KifuService.class);
     private final UserServiceAsync userService = GWT.create(UserService.class);
 
+    private final ViewLessonPlace place;
     private final ViewLessonView view;
-
-    private GameRecord gameRecord;
-
-    private EventBus eventBus;
-
     private final SessionInformation sessionInformation;
-
-    private final String kifuId;
     private final String kifuUsf;
-    private final int initialMoveCount;
-    private boolean inverted;
+    private final Duration duration = new Duration();
+
+    private int percentage = 0;
+    private GameRecord gameRecord;
+    private EventBus eventBus;
 
     public ViewLessonActivity(final ViewLessonPlace place, final ViewLessonView view,
                               final SessionInformation sessionInformation) {
+        this.place = place;
         this.view = view;
         this.sessionInformation = sessionInformation;
-        kifuId = place.getKifuId();
         kifuUsf = null;
-        initialMoveCount = place.getMove();
-        inverted = place.isInverted();
     }
 
     @Override
     public void start(final AcceptsOneWidget containerWidget, final EventBus eventBus) {
-        GWT.log("Starting view kifu activity");
+        GWT.log("Starting ViewLessonActivity");
         this.eventBus = eventBus;
         eventBinder.bindEventHandlers(this, eventBus);
-        view.activate(eventBus, kifuId, inverted);
+        view.activate(eventBus, place.getKifuId(), place.isInverted());
         containerWidget.setWidget(view.asWidget());
 
         if (kifuUsf != null) {
@@ -76,7 +73,7 @@ public class ViewLessonActivity extends MyAbstractActivity {
                     loadUsf(kifuUsf)
             );
         } else {
-            kifuService.getKifuUsf(sessionInformation.getSessionId(), kifuId, new AsyncCallback<String>() {
+            kifuService.getKifuUsf(sessionInformation.getSessionId(), place.getKifuId(), new AsyncCallback<String>() {
 
                 @Override
                 public void onSuccess(final String usf) {
@@ -92,24 +89,22 @@ public class ViewLessonActivity extends MyAbstractActivity {
     }
 
     private void loadUsf(final String usf) {
-        GWT.log("Loading Kifu from USF: " + usf);
+        GWT.log("Loading Kifu from USF: " + usf.length());
         gameRecord = UsfFormat.INSTANCE.readSingle(usf);
 
-        eventBus.fireEvent(new GameTreeChangedEvent(gameRecord.getGameTree(), initialMoveCount));
+        eventBus.fireEvent(new GameTreeChangedEvent(gameRecord.getGameTree(), place.getMove()));
         eventBus.fireEvent(new GameInformationChangedEvent(gameRecord.getGameInformation()));
     }
 
     @Override
     public void onStop() {
-        GWT.log("Stopping view kifu activity");
-        userService.saveLessonProgress(sessionInformation.getSessionId(), "", 0, false, 0, 0,
-                new FireAndForgetCallback("saveLessonProgress"));
+        GWT.log("Stopping ViewLessonActivity");
         super.onStop();
     }
 
     @EventHandler
     public void onRequestPositionEvaluationEvent(final RequestPositionEvaluationEvent event) {
-        GWT.log("View Kifu Activity Handling RequestPositionEvaluationEvent");
+        GWT.log("ViewLessonActivity Handling RequestPositionEvaluationEvent");
         String sfen = SfenConverter.toSFEN(view.getNavigationController().getPosition());
         kifuService.analysePosition(sessionInformation.getSessionId(), sfen,
                 new AsyncCallback<PositionEvaluationDetails>() {
@@ -128,35 +123,49 @@ public class ViewLessonActivity extends MyAbstractActivity {
 
     @EventHandler
     public void onPositionChangedEvent(final PositionChangedEvent event) {
-        GWT.log("ViewKifuActivity handling PositionChangedEvent");
+        GWT.log("ViewLessonActivity handling PositionChangedEvent");
 
         ShogiPosition position = event.getPosition();
         int moveCount = position.getMoveCount();
 
         //Update URL with the new move count
-        History.replaceItem("ViewLesson:" + new ViewLessonPlace.Tokenizer().getToken(new ViewLessonPlace(kifuId,
-                moveCount)), false);
+        History.replaceItem("ViewLesson:" +
+                new ViewLessonPlace.Tokenizer().getToken(place.withMove(moveCount)), false);
 
         String gameSetId = "1";
         kifuService.getPositionDetails(SfenConverter.toSFEN(position), gameSetId, new AsyncCallback<PositionDetails>() {
-
             @Override
             public void onSuccess(final PositionDetails result) {
-                GWT.log("VIEW KIFU - GOT POSITION DETAILS ");
+                GWT.log("ViewLessonActivity - GOT POSITION DETAILS ");
                 eventBus.fireEvent(new PositionStatisticsEvent(result, position, gameSetId));
             }
 
             @Override
             public void onFailure(final Throwable caught) {
-                GWT.log("VIEW KIFU - ERROR GETTING POSITION STATS");
+                GWT.log("ViewLessonActivity - ERROR GETTING POSITION STATS");
             }
         });
     }
 
     @EventHandler
     public void onMoveSelectedEvent(final MoveSelectedEvent event) {
-        GWT.log("ViewKifuActivity handling MoveSelectedEvent");
+        GWT.log("ViewLessonActivity handling MoveSelectedEvent");
         eventBus.fireEvent(new GameTreeChangedEvent(gameRecord.getGameTree(), event.getMoveNumber()));
     }
 
+    @EventHandler
+    public void onVisitedProgress(final VisitedProgressEvent event) {
+        GWT.log("ViewLessonActivity: Handling VisitedProgressEvent");
+        if (sessionInformation.isLoggedIn()) {
+            boolean complete = event.getTotal() == event.getVisited();
+            int newPercentage = 100 * event.getVisited() / event.getTotal();
+
+            if ((percentage != 100 && newPercentage == 100) || newPercentage > percentage + 10) {
+                percentage = newPercentage;
+                userService.saveLessonProgress(sessionInformation.getSessionId(), place.getLessonId(),
+                        duration.elapsedMillis(), complete, percentage, 0,
+                        new FireAndForgetCallback("saveLessonProgress"));
+            }
+        }
+    }
 }

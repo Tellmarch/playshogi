@@ -159,7 +159,8 @@ public class LessonsView extends Composite {
         }
 
         if (lesson.getKifuId() != null) {
-            String exploreHRef = "#" + historyMapper.getToken(new ViewLessonPlace(lesson.getKifuId(), 0));
+            String exploreHRef = "#" + historyMapper.getToken(new ViewLessonPlace(lesson.getLessonId(),
+                    lesson.getKifuId(), 0));
             openButton.attr("href", exploreHRef);
             openButton.hidden(false);
         } else if (lesson.getProblemCollectionId() != null) {
