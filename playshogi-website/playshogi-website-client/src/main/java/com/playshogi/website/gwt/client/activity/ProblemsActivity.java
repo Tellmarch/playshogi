@@ -24,10 +24,7 @@ import com.playshogi.website.gwt.client.util.FireAndForgetCallback;
 import com.playshogi.website.gwt.shared.models.ProblemCollectionDetails;
 import com.playshogi.website.gwt.shared.models.ProblemCollectionDetailsAndProblems;
 import com.playshogi.website.gwt.shared.models.ProblemDetails;
-import com.playshogi.website.gwt.shared.services.KifuService;
-import com.playshogi.website.gwt.shared.services.KifuServiceAsync;
-import com.playshogi.website.gwt.shared.services.ProblemsService;
-import com.playshogi.website.gwt.shared.services.ProblemsServiceAsync;
+import com.playshogi.website.gwt.shared.services.*;
 
 import java.util.Arrays;
 
@@ -47,12 +44,15 @@ public class ProblemsActivity extends MyAbstractActivity {
 
     private final ProblemsServiceAsync problemsService = GWT.create(ProblemsService.class);
     private final KifuServiceAsync kifuService = GWT.create(KifuService.class);
+    private final UserServiceAsync userService = GWT.create(UserService.class);
+
     private final ProblemsView problemsView;
     private final SessionInformation sessionInformation;
     private final ProblemController problemController = new ProblemController();
     private EventBus eventBus;
 
     private final String collectionId;
+    private final String lessonId;
 
     private int problemIndex;
     private ProblemCollectionDetails details;
@@ -66,6 +66,7 @@ public class ProblemsActivity extends MyAbstractActivity {
                             final SessionInformation sessionInformation) {
         this.problemsView = problemsView;
         this.collectionId = place.getCollectionId();
+        this.lessonId = place.getLessonId();
         this.problemIndex = place.getProblemIndex();
         this.sessionInformation = sessionInformation;
     }
@@ -135,7 +136,7 @@ public class ProblemsActivity extends MyAbstractActivity {
     }
 
     private ProblemsPlace getPlace() {
-        return new ProblemsPlace(collectionId, problemIndex);
+        return new ProblemsPlace(collectionId, problemIndex, lessonId);
     }
 
     private void initTimer() {
@@ -188,11 +189,18 @@ public class ProblemsActivity extends MyAbstractActivity {
                 if (sessionInformation.isLoggedIn()) {
                     saveTime(time);
                 }
-                return;
             } else {
                 Window.alert("You reached the last problem in the collection!");
-                return;
             }
+
+            if (lessonId != null && !lessonId.isEmpty() && !"null".equals(lessonId)
+                    && sessionInformation.isLoggedIn()) {
+                userService.saveLessonProgress(sessionInformation.getSessionId(), lessonId,
+                        duration == null ? 0 : duration.elapsedMillis(), true, 100, null,
+                        new FireAndForgetCallback("saveLessonProgress"));
+            }
+
+            return;
         }
 
         loadProblem();

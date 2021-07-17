@@ -180,7 +180,8 @@ public class LessonsView extends Composite {
                             .add(Elements.p())
                             .add("Suggested next: ")
                             .add(Button.createPrimary(suggested.getTitle())
-                                    .addClickListener(e -> selectLesson(finalSuggested))));
+                                    .addClickListener(e -> selectLesson(finalSuggested)))
+                            .add(Elements.p()));
                 }
 
             }
@@ -255,7 +256,8 @@ public class LessonsView extends Composite {
             openButton.attr("href", exploreHRef);
             openButton.hidden(false);
         } else if (lesson.getProblemCollectionId() != null) {
-            String exploreHRef = "#" + historyMapper.getToken(new ProblemsPlace(lesson.getProblemCollectionId(), 0));
+            String exploreHRef = "#" + historyMapper.getToken(new ProblemsPlace(lesson.getProblemCollectionId(), 0,
+                    lesson.getLessonId()));
             openButton.attr("href", exploreHRef);
             openButton.hidden(false);
         } else {
@@ -357,6 +359,11 @@ public class LessonsView extends Composite {
                 breadcrumb.appendChild(Icons.ALL.library_books(), treeItem.getValue().getTitle(),
                         e -> selectLesson(treeItem));
             }
+
+            GWT.log("Activating " + item.getValue().getTitle());
+            lessonsTree.deactivateAll();
+            item.activate(true);
+            item.expand(true);
         }
     }
 
