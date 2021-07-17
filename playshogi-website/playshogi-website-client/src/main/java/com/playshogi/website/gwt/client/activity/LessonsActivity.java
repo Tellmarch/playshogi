@@ -5,8 +5,10 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
+import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.website.gwt.client.SessionInformation;
 import com.playshogi.website.gwt.client.events.tutorial.LessonsListEvent;
+import com.playshogi.website.gwt.client.events.user.UserLoggedInEvent;
 import com.playshogi.website.gwt.client.place.LessonsPlace;
 import com.playshogi.website.gwt.client.ui.LessonsView;
 import com.playshogi.website.gwt.shared.models.LessonDetails;
@@ -33,15 +35,7 @@ public class LessonsActivity extends MyAbstractActivity {
         this.sessionInformation = sessionInformation;
     }
 
-    @Override
-    public void start(final AcceptsOneWidget containerWidget, final EventBus eventBus) {
-        GWT.log("Starting lessons activity");
-        this.eventBus = eventBus;
-        eventBinder.bindEventHandlers(this, eventBus);
-
-        lessonsView.activate(eventBus);
-        containerWidget.setWidget(lessonsView.asWidget());
-
+    private void refreshData() {
         kifuService.getAllPublicLessons(sessionInformation.getSessionId(), new AsyncCallback<LessonDetails[]>() {
             @Override
             public void onFailure(final Throwable throwable) {
@@ -56,4 +50,20 @@ public class LessonsActivity extends MyAbstractActivity {
         });
     }
 
+    @Override
+    public void start(final AcceptsOneWidget containerWidget, final EventBus eventBus) {
+        GWT.log("Starting lessons activity");
+        this.eventBus = eventBus;
+        eventBinder.bindEventHandlers(this, eventBus);
+
+        lessonsView.activate(eventBus);
+        containerWidget.setWidget(lessonsView.asWidget());
+
+        refreshData();
+    }
+
+    @EventHandler
+    public void onUserLoggedIn(final UserLoggedInEvent event) {
+        refreshData();
+    }
 }
