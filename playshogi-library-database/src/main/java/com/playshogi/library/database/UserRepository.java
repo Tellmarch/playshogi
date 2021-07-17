@@ -1,9 +1,6 @@
 package com.playshogi.library.database;
 
-import com.playshogi.library.database.models.PersistentHighScore;
-import com.playshogi.library.database.models.PersistentUser;
-import com.playshogi.library.database.models.PersistentUserProblemSetStats;
-import com.playshogi.library.database.models.PersistentUserProblemStats;
+import com.playshogi.library.database.models.*;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -48,6 +45,15 @@ public class UserRepository {
     private static final String GET_COLLECTION_HIGHSCORES_WITH_NAMES = "SELECT username, min(time_spent_ms) as " +
             "time_spent_ms FROM ps_userpbsetstats JOIN ps_user u ON (user_id = u.id) WHERE problemset_id = ? AND " +
             "complete = 1 GROUP BY username ORDER BY time_spent_ms ASC LIMIT 3;";
+
+    private static final String UPDATE_USER_LESSON_PROGRESS = "INSERT INTO `playshogi`.`ps_userlessonsprogress` "
+            + "(`user_id`, `lesson_id`, `time_spent_ms`, `complete`, `percentage`, `rating`)" +
+            " VALUES ( ?, ?, ?, ?, ?, ?)" +
+            "ON DUPLICATE KEY UPDATE " +
+            "time_spent_ms = GREATEST(time_spent_ms, ?), " +
+            "complete = GREATEST(complete, ?), " +
+            "percentage = GREATEST(percentage, ?), " +
+            "rating = IFNULL(?, rating);";
 
     private final DbConnection dbConnection;
 
@@ -291,6 +297,32 @@ public class UserRepository {
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error looking up the user in db", e);
             return null;
+        }
+    }
+
+    public void insertUserLessonProgress(final PersistentUserLessonProgress userLessonProgress) {
+
+        Connection connection = dbConnection.getConnection();
+        try (PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_USER_LESSON_PROGRESS)) {
+            // First set of values for the insert
+            preparedStatement.setInt(1, userLessonProgress.getUserId());
+            preparedStatement.setInt(2, userLessonProgress.getLessonId());
+            SqlUtils.setInteger(preparedStatement, 3, userLessonProgress.getTimeSpentMs());
+            preparedStatement.setBoolean(4, userLessonProgress.getComplete());
+            preparedStatement.setInt(5, userLessonProgress.getPercentage());
+            SqlUtils.setInteger(preparedStatement, 6, userLessonProgress.getRating());
+
+            // Second set of values for the update
+            SqlUtils.setInteger(preparedStatement, 7, userLessonProgress.getTimeSpentMs());
+            preparedStatement.setBoolean(8, userLessonProgress.getComplete());
+            preparedStatement.setInt(9, userLessonProgress.getPercentage());
+            SqlUtils.setInteger(preparedStatement, 10, userLessonProgress.getRating());
+            preparedStatement.executeUpdate();
+
+            LOGGER.log(Level.INFO, "Inserted PersistentUserLessonProgress");
+
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error saving the PersistentUserLessonProgress in db", e);
         }
     }
 }

@@ -7,6 +7,6 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 public interface UserService extends RemoteService {
 
     void saveLessonProgress(String sessionId, String lessonId, int timeMs, boolean complete, int percentage,
-                            int rating);
+                            Integer rating);
 
 }

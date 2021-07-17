@@ -162,6 +162,4 @@ public class LessonRepository {
             LOGGER.log(Level.SEVERE, "Error updating the lesson in db", e);
         }
     }
-
-
 }

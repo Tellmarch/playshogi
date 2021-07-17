@@ -163,7 +163,7 @@ public class ViewLessonActivity extends MyAbstractActivity {
             if ((percentage != 100 && newPercentage == 100) || newPercentage > percentage + 10) {
                 percentage = newPercentage;
                 userService.saveLessonProgress(sessionInformation.getSessionId(), place.getLessonId(),
-                        duration.elapsedMillis(), complete, percentage, 0,
+                        duration.elapsedMillis(), complete, percentage, null,
                         new FireAndForgetCallback("saveLessonProgress"));
             }
         }
