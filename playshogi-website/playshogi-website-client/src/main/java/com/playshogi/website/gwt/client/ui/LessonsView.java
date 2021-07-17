@@ -224,7 +224,7 @@ public class LessonsView extends Composite {
 
     @EventHandler
     public void onLessonsList(final LessonsListEvent event) {
-        GWT.log("LessonsView: handle LessonsListEvent");
+        GWT.log("LessonsView: handle LessonsListEvent: " + event);
         fillLessonsTree(event.getLessons());
     }
 }

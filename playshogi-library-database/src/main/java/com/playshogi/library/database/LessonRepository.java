@@ -1,6 +1,8 @@
 package com.playshogi.library.database;
 
 import com.playshogi.library.database.models.PersistentLesson;
+import com.playshogi.library.database.models.PersistentLessonWithUserProgress;
+import com.playshogi.library.database.models.PersistentUserLessonProgress;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -15,6 +17,10 @@ public class LessonRepository {
     private static final Logger LOGGER = Logger.getLogger(LessonRepository.class.getName());
 
     private static final String SELECT_VISIBLE_LESSONS = "SELECT * FROM `playshogi`.`ps_lessons` WHERE hidden = 0;";
+    private static final String SELECT_VISIBLE_LESSONS_WITH_USER_PROGRESS =
+            "SELECT * FROM `playshogi`.`ps_lessons`" +
+                    "LEFT JOIN (SELECT * FROM `playshogi`.`ps_userlessonsprogress` WHERE user_id = ?) p " +
+                    "ON (id = lesson_id) WHERE hidden = 0;";
     private static final String SELECT_ALL_LESSONS = "SELECT * FROM `playshogi`.`ps_lessons`;";
     private static final String INSERT_LESSON = "INSERT INTO `playshogi`.`ps_lessons` (`kifu_id`, `parent_id`, " +
             "`title`, `description`, `tags`, `preview_sfen`, `difficulty`, `author_id`, `hidden`, " +
@@ -57,6 +63,53 @@ public class LessonRepository {
                 result.add(new PersistentLesson(id, kifuId, problemCollectionId, parentId, title, description,
                         tags == null ? null : tags.split(","), previewSfen,
                         difficulty, likes, authorId, hidden, creationDate, updateDate, type, index));
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error retrieving visible lessons in db", e);
+        }
+        return result;
+    }
+
+    public List<PersistentLessonWithUserProgress> getAllVisibleLessonsWithUserProgress(final int userId) {
+        List<PersistentLessonWithUserProgress> result = new ArrayList<>();
+        Connection connection = dbConnection.getConnection();
+        try (PreparedStatement preparedStatement =
+                     connection.prepareStatement(SELECT_VISIBLE_LESSONS_WITH_USER_PROGRESS)) {
+            preparedStatement.setInt(1, userId);
+            ResultSet rs = preparedStatement.executeQuery();
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                Integer kifuId = SqlUtils.getInteger(rs, "kifu_id");
+                Integer problemCollectionId = SqlUtils.getInteger(rs, "problemset_id");
+                Integer parentId = SqlUtils.getInteger(rs, "parent_id");
+                String title = rs.getString("title");
+                String description = rs.getString("description");
+                String tags = rs.getString("tags");
+                String previewSfen = rs.getString("preview_sfen");
+                Integer difficulty = SqlUtils.getInteger(rs, "difficulty");
+                int likes = rs.getInt("likes");
+                Integer authorId = SqlUtils.getInteger(rs, "author_id");
+                boolean hidden = rs.getBoolean("hidden");
+                Date creationDate = rs.getDate("create_time");
+                Date updateDate = rs.getDate("update_time");
+                PersistentLesson.LessonType type = PersistentLesson.LessonType.fromDbInt(rs.getInt("type"));
+                int index = rs.getInt("index");
+
+                PersistentLesson lesson = new PersistentLesson(id, kifuId, problemCollectionId, parentId, title,
+                        description,
+                        tags == null ? null : tags.split(","), previewSfen,
+                        difficulty, likes, authorId, hidden, creationDate, updateDate, type, index);
+
+                Date timeViewed = rs.getDate("time_viewed");
+                Integer timeSpentMs = SqlUtils.getInteger(rs, "time_spent_ms");
+                boolean complete = rs.getBoolean("complete");
+                int percentage = rs.getInt("percentage");
+                Integer rating = SqlUtils.getInteger(rs, "rating");
+
+                PersistentUserLessonProgress progress = new PersistentUserLessonProgress(userId, id, timeViewed,
+                        timeSpentMs, complete, percentage, rating);
+
+                result.add(new PersistentLessonWithUserProgress(lesson, progress));
             }
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error retrieving visible lessons in db", e);

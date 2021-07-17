@@ -641,8 +641,17 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
     public LessonDetails[] getAllPublicLessons(final String sessionId) {
         LOGGER.log(Level.INFO, "getAllPublicLessons");
 
-        List<PersistentLesson> allVisibleLessons = lessonRepository.getAllVisibleLessons();
-        return allVisibleLessons.stream().map(this::getLessonDetails).toArray(LessonDetails[]::new);
+        LoginResult loginResult = authenticator.checkSession(sessionId);
+
+        if (loginResult != null && loginResult.isLoggedIn()) {
+            LOGGER.log(Level.INFO, "getAllPublicLessons: user is logged in, querying progress");
+            List<PersistentLessonWithUserProgress> allVisibleLessons =
+                    lessonRepository.getAllVisibleLessonsWithUserProgress(loginResult.getUserId());
+            return allVisibleLessons.stream().map(this::getLessonDetails).toArray(LessonDetails[]::new);
+        } else {
+            List<PersistentLesson> allVisibleLessons = lessonRepository.getAllVisibleLessons();
+            return allVisibleLessons.stream().map(this::getLessonDetails).toArray(LessonDetails[]::new);
+        }
     }
 
     @Override
@@ -700,6 +709,12 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
         details.setAuthor(lesson.getAuthorId() == null ? null : UsersCache.INSTANCE.getUserName(lesson.getAuthorId()));
         details.setParentLessonId(lesson.getParentId() == null ? null : String.valueOf(lesson.getParentId()));
         return details;
+    }
+
+    private LessonDetails getLessonDetails(final PersistentLessonWithUserProgress lesson) {
+        LessonDetails lessonDetails = getLessonDetails(lesson.getPersistentLesson());
+        lessonDetails.setCompleted(lesson.getPersistentUserLessonProgress().getComplete());
+        return lessonDetails;
     }
 
     private PersistentLesson getPersistentLesson(final LessonDetails details) {
