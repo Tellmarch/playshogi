@@ -2,7 +2,10 @@ package com.playshogi.library.shogi.models.formats.usf;
 
 import com.playshogi.library.shogi.models.formats.sfen.SfenConverter;
 import com.playshogi.library.shogi.models.formats.util.LineReader;
+import com.playshogi.library.shogi.models.moves.EditMove;
 import com.playshogi.library.shogi.models.moves.Move;
+import com.playshogi.library.shogi.models.moves.SpecialMove;
+import com.playshogi.library.shogi.models.moves.SpecialMoveType;
 import com.playshogi.library.shogi.models.record.*;
 import com.playshogi.library.shogi.rules.ShogiRulesEngine;
 
@@ -113,7 +116,14 @@ class UsfGameParser {
     private void readSfenTag(final String line) {
         // Changes the position
         String sfen = line.substring(5);
-        // gameTree.addEdit(sfen);
+        Node node = gameNavigation.getCurrentNode();
+        if (node.getMove() instanceof SpecialMove
+                && ((SpecialMove) node.getMove()).getSpecialMoveType() == SpecialMoveType.SILENT) {
+            node.setMove(new EditMove(SfenConverter.fromSFEN(sfen)));
+        } else {
+            throw new UnsupportedOperationException("Position edit before arbitrary move: not supported yet");
+            // gameTree.addEdit(sfen);
+        }
     }
 
     private void readComment(final String line) {

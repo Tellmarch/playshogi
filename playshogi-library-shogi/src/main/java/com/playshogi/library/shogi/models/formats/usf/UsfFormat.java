@@ -144,9 +144,16 @@ public enum UsfFormat implements GameRecordFormat {
                 needNodesSection = true;
             }
             n = children.get(0);
-            builder.append(UsfMoveConverter.toUsfString((ShogiMove) n.getMove()));
-            if (n.getComment().isPresent() || n.getObjects().isPresent() || n.getAdditionalTags().isPresent()) {
+            if (n.getMove() instanceof EditMove) {
+                builder.append("SLNT");
                 needNodesSection = true;
+            } else if (n.getMove() instanceof ShogiMove) {
+                builder.append(UsfMoveConverter.toUsfString((ShogiMove) n.getMove()));
+                if (n.getComment().isPresent() || n.getObjects().isPresent() || n.getAdditionalTags().isPresent()) {
+                    needNodesSection = true;
+                }
+            } else {
+                throw new IllegalStateException("Unknown move class: " + n);
             }
         }
         builder.append('\n');
@@ -217,6 +224,12 @@ public enum UsfFormat implements GameRecordFormat {
     }
 
     private static void writeNodeTags(final Node node, final StringBuilder builder) {
+        if (node.getMove() instanceof EditMove && node.getParent() != null) {
+            EditMove editMove = (EditMove) node.getMove();
+            builder.append("SFEN:");
+            builder.append(SfenConverter.toSFEN(editMove.getPosition()));
+            builder.append('\n');
+        }
         Optional<String> comment = node.getComment();
         if (comment.isPresent()) {
             String[] lines = comment.get().split("\n");

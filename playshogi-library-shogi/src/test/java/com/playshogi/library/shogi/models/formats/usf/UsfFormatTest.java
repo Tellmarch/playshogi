@@ -1,6 +1,11 @@
 package com.playshogi.library.shogi.models.formats.usf;
 
+import com.playshogi.library.shogi.models.moves.EditMove;
+import com.playshogi.library.shogi.models.record.GameNavigation;
 import com.playshogi.library.shogi.models.record.GameRecord;
+import com.playshogi.library.shogi.models.record.GameTree;
+import com.playshogi.library.shogi.models.shogivariant.Handicap;
+import com.playshogi.library.shogi.models.shogivariant.ShogiInitialPositionFactory;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -104,5 +109,54 @@ public class UsfFormatTest {
                 "X:PLAYSHOGI:PREVIOUSMOVE:2a2b\n";
         GameRecord gameRecord = UsfFormat.INSTANCE.readSingle(usfGame);
         Assert.assertEquals(usfGame, UsfFormat.INSTANCE.write(gameRecord));
+    }
+
+    @Test
+    public void writeMultiplePositionChanges() {
+        GameTree gameTree = new GameTree(ShogiInitialPositionFactory.createInitialPosition(Handicap.TWO_PIECES));
+        GameNavigation gameNavigation = new GameNavigation(gameTree);
+        gameNavigation.getCurrentNode().setComment("Before first move");
+        gameNavigation.addMove(UsfMoveConverter.fromUsfString("4c4d", gameNavigation.getPosition()));
+        gameNavigation.getCurrentNode().setComment("After first move");
+        gameNavigation.addMove(new EditMove(ShogiInitialPositionFactory.createInitialPosition(Handicap.FOUR_PIECES)));
+        gameNavigation.getCurrentNode().setComment("After position change");
+        gameNavigation.addMove(UsfMoveConverter.fromUsfString("3c3d", gameNavigation.getPosition()));
+        gameNavigation.getCurrentNode().setComment("After second first move");
+        gameNavigation.addMove(UsfMoveConverter.fromUsfString("7g7f", gameNavigation.getPosition()));
+        gameNavigation.getCurrentNode().setComment("After last move");
+
+        Assert.assertEquals("USF:1.0\n" +
+                        "^*lnsgkgsnl/9/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w -:4c4dSLNT3c3d7g7f\n" +
+                        ".0\n" +
+                        "#Before first move\n" +
+                        ".\n" +
+                        "#After first move\n" +
+                        ".\n" +
+                        "SFEN:1nsgkgsn1/9/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w -\n" +
+                        "#After position change\n" +
+                        ".\n" +
+                        "#After second first move\n" +
+                        ".\n" +
+                        "#After last move\n",
+                UsfFormat.INSTANCE.write(gameTree));
+    }
+
+    @Test
+    public void readWriteMultiplePositionChanges() {
+        String usf = "USF:1.0\n" +
+                "^*lnsgkgsnl/9/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w -:4c4dSLNT3c3d7g7f\n" +
+                ".0\n" +
+                "#Before first move\n" +
+                ".\n" +
+                "#After first move\n" +
+                ".\n" +
+                "SFEN:1nsgkgsn1/9/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w -\n" +
+                "#After position change\n" +
+                ".\n" +
+                "#After second first move\n" +
+                ".\n" +
+                "#After last move\n";
+        GameRecord gameRecord = UsfFormat.INSTANCE.readSingle(usf);
+        Assert.assertEquals(usf, UsfFormat.INSTANCE.write(gameRecord));
     }
 }
