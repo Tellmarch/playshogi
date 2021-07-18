@@ -22,6 +22,7 @@ import com.playshogi.website.gwt.client.events.kifu.GameInformationChangedEvent;
 import com.playshogi.website.gwt.client.events.kifu.PositionEvaluationEvent;
 import com.playshogi.website.gwt.client.events.kifu.PositionStatisticsEvent;
 import com.playshogi.website.gwt.client.events.kifu.RequestPositionEvaluationEvent;
+import com.playshogi.website.gwt.client.events.tutorial.MarkLessonCompleteEvent;
 import com.playshogi.website.gwt.client.place.ViewLessonPlace;
 import com.playshogi.website.gwt.client.ui.ViewLessonView;
 import com.playshogi.website.gwt.client.util.FireAndForgetCallback;
@@ -31,6 +32,7 @@ import com.playshogi.website.gwt.shared.services.KifuService;
 import com.playshogi.website.gwt.shared.services.KifuServiceAsync;
 import com.playshogi.website.gwt.shared.services.UserService;
 import com.playshogi.website.gwt.shared.services.UserServiceAsync;
+import org.dominokit.domino.ui.notifications.Notification;
 
 public class ViewLessonActivity extends MyAbstractActivity {
 
@@ -166,6 +168,18 @@ public class ViewLessonActivity extends MyAbstractActivity {
                         duration.elapsedMillis(), complete, percentage, null,
                         new FireAndForgetCallback("saveLessonProgress"));
             }
+        }
+    }
+
+    @EventHandler
+    public void onMarkLessonComplete(final MarkLessonCompleteEvent event) {
+        GWT.log("ViewLessonActivity: Handling MarkLessonCompleteEvent");
+        if (sessionInformation.isLoggedIn()) {
+            percentage = 100;
+            userService.saveLessonProgress(sessionInformation.getSessionId(), place.getLessonId(),
+                    duration.elapsedMillis(), true, percentage, null,
+                    new FireAndForgetCallback("saveLessonProgress"));
+            Notification.createSuccess("Lesson was marked as complete").show();
         }
     }
 }

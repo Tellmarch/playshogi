@@ -6,6 +6,7 @@ import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.website.gwt.client.events.gametree.VisitedProgressEvent;
+import com.playshogi.website.gwt.client.events.tutorial.MarkLessonCompleteEvent;
 import com.playshogi.website.gwt.client.util.ElementWidget;
 import elemental2.dom.HTMLDivElement;
 import org.dominokit.domino.ui.button.Button;
@@ -41,6 +42,10 @@ public class LessonFeedbackPanel {
         progressBar = ProgressBar.create(100).showText();
         progress = Progress.create().appendChild(progressBar.setValue(0)).style().setMargin("0.5em").get();
         completeButton = Button.create("Mark Complete").style().setMargin("0.5em").get();
+        completeButton.addClickListener(evt -> {
+            eventBus.fireEvent(new MarkLessonCompleteEvent());
+            completeButton.hide();
+        });
 
         div.add(TextNode.of("Progress:"));
         div.add(progress);
