@@ -425,6 +425,7 @@ public class ShogiBoard extends Composite implements ClickHandler {
             if (selectedPiece != null) {
                 // Capture an opponent piece?
                 if (!selectedPiece.isInKomadai()
+                        && !boardConfiguration.isPositionEditingMode()
                         && selectedPiece.getPiece().getOwner() != pieceWrapper.getPiece().getOwner()
                         && (boardConfiguration.allowIllegalMoves() || shogiRulesEngine.getPossibleTargetSquares(position, selectedPiece.getSquare()).contains(pieceWrapper.getSquare()))) {
                     NormalMove move = new CaptureMove(selectedPiece.getPiece(),
