@@ -31,7 +31,7 @@ public class PieceGraphics {
             case GOTE_GOLD:
                 return resources.gkin();
             case GOTE_KING:
-                return resources.gou();
+                return resources.ggyoku();
             case GOTE_KNIGHT:
                 return resources.gkei();
             case GOTE_LANCE:
@@ -59,7 +59,7 @@ public class PieceGraphics {
             case SENTE_GOLD:
                 return resources.skin();
             case SENTE_KING:
-                return resources.sou();
+                return resources.sgyoku();
             case SENTE_KNIGHT:
                 return resources.skei();
             case SENTE_LANCE:
