@@ -125,9 +125,11 @@ public class ProblemsView extends Composite {
                 .get();
         stopTimedRun = Button.createDanger(Icons.ALL.timer_off()).setContent("Stop timer")
                 .addClickListener(evt -> {
-                    eventBus.fireEvent(new StopTimedRunEvent());
-                    stopTimedRun.hide();
-                    startTimedRun.show();
+                    if (Window.confirm("Are you sure you want to stop the timer? All progress will be lost.")) {
+                        eventBus.fireEvent(new StopTimedRunEvent());
+                        stopTimedRun.hide();
+                        startTimedRun.show();
+                    }
                 })
                 .style().setMarginTop("3em").setMarginBottom("3em")
                 .get();
