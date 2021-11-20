@@ -1,6 +1,8 @@
 package com.playshogi.website.gwt.client.widget.board;
 
+import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.playshogi.library.shogi.models.PieceType;
@@ -31,13 +33,23 @@ class PromotionPopupController {
     }
 
     private PopupPanel createPromotionPopupPanel() {
-        PopupPanel popup = new PopupPanel(false, true);
+        FocusPanel focusPanel = new FocusPanel();
+        PopupPanel popup = new PopupPanel(false, true) {
+            @Override
+            public void show() {
+                super.show();
+                focusPanel.setFocus(true);
+            }
+        };
         FlowPanel flowPanel = new FlowPanel();
         unPromotedImage = new Image(PieceGraphics.getPieceImage(PieceType.PAWN, false));
         promotedImage = new Image(PieceGraphics.getPieceImage(PieceType.PAWN, true));
         flowPanel.add(promotedImage);
         flowPanel.add(unPromotedImage);
-        popup.add(flowPanel);
+
+
+        focusPanel.setWidget(flowPanel);
+        popup.add(focusPanel);
         promotedImage.addClickHandler(clickEvent -> {
             shogiBoard.playNormalMoveIfAllowed(promotionMove);
             popup.hide();
@@ -45,6 +57,11 @@ class PromotionPopupController {
         unPromotedImage.addClickHandler(clickEvent -> {
             shogiBoard.playNormalMoveIfAllowed(move);
             popup.hide();
+        });
+        focusPanel.addKeyDownHandler(event -> {
+            if (event.getNativeKeyCode() == KeyCodes.KEY_ESCAPE) {
+                popup.hide();
+            }
         });
         return popup;
     }
