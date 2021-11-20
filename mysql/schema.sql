@@ -302,6 +302,8 @@ DROP TABLE IF EXISTS `playshogi`.`ps_problemsetpbs` ;
 CREATE TABLE IF NOT EXISTS `playshogi`.`ps_problemsetpbs` (
   `problemset_id` INT UNSIGNED NOT NULL,
   `problem_id` INT UNSIGNED NOT NULL,
+  `index` INT NOT NULL DEFAULT 0,
+  `hidden` TINYINT(1) NOT NULL DEFAULT 0,
   INDEX `fk_pr_problemsetpbs_1_idx` (`problemset_id` ASC),
   INDEX `fk_pr_problemsetpbs_2_idx` (`problem_id` ASC),
   CONSTRAINT `fk_pr_problemsetpbs_1`
@@ -388,6 +390,8 @@ DROP TABLE IF EXISTS `playshogi`.`ps_gamesetgame` ;
 CREATE TABLE IF NOT EXISTS `playshogi`.`ps_gamesetgame` (
   `gameset_id` INT UNSIGNED NOT NULL,
   `game_id` INT UNSIGNED NOT NULL,
+  `index` INT NOT NULL DEFAULT 0,
+  `hidden` TINYINT(1) NOT NULL DEFAULT 0,
   INDEX `fk_ps_gamesetgame_1_idx` (`gameset_id` ASC),
   INDEX `fk_ps_gamesetgame_2_idx` (`game_id` ASC),
   CONSTRAINT `fk_ps_gamesetgame_1`
