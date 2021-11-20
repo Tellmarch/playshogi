@@ -58,20 +58,23 @@ public class ProblemCollectionActivity extends MyAbstractActivity {
     }
 
     private void fetchData() {
-        GWT.log("Querying for collection games");
-        problemService.getProblemCollection(sessionInformation.getSessionId(), place.getCollectionId(), true,
-                new AsyncCallback<ProblemCollectionDetailsAndProblems>() {
-                    @Override
-                    public void onFailure(Throwable throwable) {
-                        GWT.log("ProblemCollectionActivity: error retrieving collection games");
-                    }
+        if (sessionInformation.isLoggedIn()) {
+            GWT.log("Querying for collection games");
+            problemService.getProblemCollection(sessionInformation.getSessionId(), place.getCollectionId(), true,
+                    new AsyncCallback<ProblemCollectionDetailsAndProblems>() {
+                        @Override
+                        public void onFailure(Throwable throwable) {
+                            GWT.log("ProblemCollectionActivity: error retrieving collection games");
+                        }
 
-                    @Override
-                    public void onSuccess(ProblemCollectionDetailsAndProblems result) {
-                        GWT.log("ProblemCollectionActivity: retrieved collection games");
-                        eventBus.fireEvent(new ListCollectionProblemsEvent(result.getProblems(), result.getDetails()));
-                    }
-                });
+                        @Override
+                        public void onSuccess(ProblemCollectionDetailsAndProblems result) {
+                            GWT.log("ProblemCollectionActivity: retrieved collection games");
+                            eventBus.fireEvent(new ListCollectionProblemsEvent(result.getProblems(),
+                                    result.getDetails()));
+                        }
+                    });
+        }
     }
 
     @EventHandler
