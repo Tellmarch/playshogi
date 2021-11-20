@@ -85,7 +85,7 @@ public class ProblemsActivity extends MyAbstractActivity {
 
     private void loadCollection() {
         GWT.log("Querying for collection problems");
-        problemsService.getProblemCollection(sessionInformation.getSessionId(), collectionId,
+        problemsService.getProblemCollection(sessionInformation.getSessionId(), collectionId, false,
                 new AsyncCallback<ProblemCollectionDetailsAndProblems>() {
                     @Override
                     public void onFailure(final Throwable throwable) {

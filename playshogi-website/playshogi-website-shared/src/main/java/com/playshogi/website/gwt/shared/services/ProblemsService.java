@@ -35,7 +35,8 @@ public interface ProblemsService extends RemoteService {
 
     ProblemCollectionDetails[] getUserProblemCollections(String sessionId, String userName);
 
-    ProblemCollectionDetailsAndProblems getProblemCollection(String sessionId, String collectionId);
+    ProblemCollectionDetailsAndProblems getProblemCollection(String sessionId, String collectionId,
+                                                             boolean includeHiddenProblems);
 
     void deleteProblemCollection(String sessionId, String problemSetId, boolean alsoDeleteKifus);
 

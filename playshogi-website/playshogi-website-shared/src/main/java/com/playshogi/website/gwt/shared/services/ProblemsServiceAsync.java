@@ -38,7 +38,7 @@ public interface ProblemsServiceAsync {
 
     void getPublicProblemCollections(String sessionId, AsyncCallback<ProblemCollectionDetails[]> callback);
 
-    void getProblemCollection(String sessionId, String collectionId,
+    void getProblemCollection(String sessionId, String collectionId, boolean includeHiddenProblems,
                               AsyncCallback<ProblemCollectionDetailsAndProblems> callback);
 
     void deleteProblemCollection(String sessionId, String problemSetId, boolean alsoDeleteKifus,

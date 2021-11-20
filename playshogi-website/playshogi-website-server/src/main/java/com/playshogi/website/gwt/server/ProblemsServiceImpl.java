@@ -395,7 +395,8 @@ public class ProblemsServiceImpl extends RemoteServiceServlet implements Problem
     }
 
     @Override
-    public ProblemCollectionDetailsAndProblems getProblemCollection(final String sessionId, final String collectionId) {
+    public ProblemCollectionDetailsAndProblems getProblemCollection(final String sessionId, final String collectionId
+            , final boolean includeHiddenProblems) {
         LOGGER.log(Level.INFO, "getProblemCollections");
 
         PersistentProblemSet gameSet = problemSetRepository.getProblemSetById(Integer.parseInt(collectionId));
@@ -403,12 +404,18 @@ public class ProblemsServiceImpl extends RemoteServiceServlet implements Problem
             throw new IllegalArgumentException("Invalid problem collection ID");
         }
 
-        List<PersistentProblem> games = problemSetRepository.getProblemsFromProblemSet(Integer.parseInt(collectionId));
+        List<PersistentProblem> games = problemSetRepository.getProblemsFromProblemSet(Integer.parseInt(collectionId)
+                , includeHiddenProblems);
 
         ProblemCollectionDetailsAndProblems result = new ProblemCollectionDetailsAndProblems();
 
         LoginResult loginResult = authenticator.checkSession(sessionId);
         Integer userId = loginResult != null && loginResult.isLoggedIn() ? loginResult.getUserId() : null;
+
+        if (includeHiddenProblems && !Objects.equals(userId, gameSet.getOwnerId())) {
+            throw new IllegalStateException("The user does not have permission to see the specified problem " +
+                    "collection");
+        }
 
         result.setDetails(getProblemCollectionDetails(gameSet, userId));
         result.setProblems(games.stream().map(this::getProblemDetails).toArray(ProblemDetails[]::new));
@@ -427,7 +434,7 @@ public class ProblemsServiceImpl extends RemoteServiceServlet implements Problem
             throw new IllegalStateException("Only logged in users can delete a problem collection");
         }
 
-        List<PersistentProblem> problems = problemSetRepository.getProblemsFromProblemSet(setId);
+        List<PersistentProblem> problems = problemSetRepository.getProblemsFromProblemSet(setId, true);
 
         if (!problemSetRepository.deleteProblemsetById(setId, loginResult.getUserId())) {
             throw new IllegalStateException("The user does not have permission to delete the specified problem " +

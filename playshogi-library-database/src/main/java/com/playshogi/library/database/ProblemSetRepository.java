@@ -41,7 +41,11 @@ public class ProblemSetRepository {
     private static final String SELECT_PROBLEMSET = "SELECT * FROM `playshogi`.`ps_problemset` WHERE id = ?";
     private static final String SELECT_PROBLEMS_FROM_PROBLEMSET = "SELECT * FROM playshogi.ps_problemsetpbs join " +
             "playshogi" +
-            ".ps_problem on ps_problem.id = problem_id WHERE problemset_id = ?;";
+            ".ps_problem on ps_problem.id = problem_id WHERE problemset_id = ? ORDER BY `index` ASC;";
+    private static final String SELECT_VISIBLE_PROBLEMS_FROM_PROBLEMSET = "SELECT * FROM playshogi.ps_problemsetpbs " +
+            "join " +
+            "playshogi" +
+            ".ps_problem on ps_problem.id = problem_id WHERE problemset_id = ? AND hidden=0 ORDER BY `index` ASC;";
     private static final String SELECT_COUNT_PROBLEMS_FROM_PROBLEMSET = "SELECT COUNT(*) as num_problems" +
             " FROM playshogi.ps_problemsetpbs WHERE problemset_id = ?;";
     private static final String DELETE_PROBLEMSET = "DELETE FROM `playshogi`.`ps_problemset` WHERE id = ? AND " +
@@ -273,10 +277,12 @@ public class ProblemSetRepository {
         return null;
     }
 
-    public List<PersistentProblem> getProblemsFromProblemSet(final int problemSetId) {
+    public List<PersistentProblem> getProblemsFromProblemSet(final int problemSetId,
+                                                             final boolean includeHiddenProblems) {
         ArrayList<PersistentProblem> problems = new ArrayList<>();
         Connection connection = dbConnection.getConnection();
-        try (PreparedStatement preparedStatement = connection.prepareStatement(SELECT_PROBLEMS_FROM_PROBLEMSET)) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(includeHiddenProblems ?
+                SELECT_PROBLEMS_FROM_PROBLEMSET : SELECT_VISIBLE_PROBLEMS_FROM_PROBLEMSET)) {
             preparedStatement.setInt(1, problemSetId);
             ResultSet rs = preparedStatement.executeQuery();
             while (rs.next()) {

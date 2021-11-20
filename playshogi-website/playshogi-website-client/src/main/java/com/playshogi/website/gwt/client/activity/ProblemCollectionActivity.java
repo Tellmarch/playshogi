@@ -59,7 +59,7 @@ public class ProblemCollectionActivity extends MyAbstractActivity {
 
     private void fetchData() {
         GWT.log("Querying for collection games");
-        problemService.getProblemCollection(sessionInformation.getSessionId(), place.getCollectionId(),
+        problemService.getProblemCollection(sessionInformation.getSessionId(), place.getCollectionId(), true,
                 new AsyncCallback<ProblemCollectionDetailsAndProblems>() {
                     @Override
                     public void onFailure(Throwable throwable) {
