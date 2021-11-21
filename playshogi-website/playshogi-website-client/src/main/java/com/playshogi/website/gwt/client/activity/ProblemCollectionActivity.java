@@ -8,15 +8,13 @@ import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.library.shogi.models.formats.usf.UsfFormat;
 import com.playshogi.website.gwt.client.SessionInformation;
-import com.playshogi.website.gwt.client.events.collections.ListCollectionProblemsEvent;
-import com.playshogi.website.gwt.client.events.collections.RemoveProblemFromCollectionEvent;
-import com.playshogi.website.gwt.client.events.collections.SaveCollectionDetailsResultEvent;
-import com.playshogi.website.gwt.client.events.collections.SaveProblemCollectionDetailsEvent;
+import com.playshogi.website.gwt.client.events.collections.*;
 import com.playshogi.website.gwt.client.events.kifu.ImportGameRecordEvent;
 import com.playshogi.website.gwt.client.events.user.UserLoggedInEvent;
 import com.playshogi.website.gwt.client.place.ProblemCollectionPlace;
 import com.playshogi.website.gwt.client.ui.ProblemCollectionView;
 import com.playshogi.website.gwt.shared.models.ProblemCollectionDetailsAndProblems;
+import com.playshogi.website.gwt.shared.models.ProblemDetails;
 import com.playshogi.website.gwt.shared.services.KifuService;
 import com.playshogi.website.gwt.shared.services.KifuServiceAsync;
 import com.playshogi.website.gwt.shared.services.ProblemsService;
@@ -37,6 +35,8 @@ public class ProblemCollectionActivity extends MyAbstractActivity {
     private final ProblemCollectionPlace place;
     private final ProblemCollectionView view;
     private final SessionInformation sessionInformation;
+
+    private ProblemCollectionDetailsAndProblems problemCollectionDetailsAndProblems = null;
 
     public ProblemCollectionActivity(final ProblemCollectionPlace place, final ProblemCollectionView view,
                                      final SessionInformation sessionInformation) {
@@ -64,12 +64,13 @@ public class ProblemCollectionActivity extends MyAbstractActivity {
                     new AsyncCallback<ProblemCollectionDetailsAndProblems>() {
                         @Override
                         public void onFailure(Throwable throwable) {
-                            GWT.log("ProblemCollectionActivity: error retrieving collection games");
+                            GWT.log("ProblemCollectionActivity: error retrieving collection problems");
                         }
 
                         @Override
                         public void onSuccess(ProblemCollectionDetailsAndProblems result) {
-                            GWT.log("ProblemCollectionActivity: retrieved collection games");
+                            GWT.log("ProblemCollectionActivity: retrieved collection problems");
+                            problemCollectionDetailsAndProblems = result;
                             eventBus.fireEvent(new ListCollectionProblemsEvent(result.getProblems(),
                                     result.getDetails()));
                         }
@@ -137,6 +138,70 @@ public class ProblemCollectionActivity extends MyAbstractActivity {
                     @Override
                     public void onSuccess(final Void unused) {
                         GWT.log("ProblemCollectionActivity: removeProblemFromCollection success");
+                        refresh();
+                    }
+                });
+    }
+
+    @EventHandler
+    public void onMoveProblemUp(final MoveProblemUpEvent event) {
+        GWT.log("ProblemCollectionActivity Handling MoveProblemUpEvent");
+
+        ProblemDetails[] problems = problemCollectionDetailsAndProblems.getProblems();
+
+        if (problems[event.getProblemDetails().getIndexInCollection() - 1] != event.getProblemDetails()) {
+            GWT.log("Can't move the problem in the collection (inconsistent indexes)");
+            return;
+        }
+
+        if (event.getProblemDetails().getIndexInCollection() == 1) {
+            GWT.log("Can't move the first problem in the collection");
+            return;
+        }
+
+        String firstProblemId = event.getProblemDetails().getId();
+        String secondProblemId = problems[event.getProblemDetails().getIndexInCollection() - 2].getId();
+
+        swapProblemIds(firstProblemId, secondProblemId);
+
+    }
+
+    @EventHandler
+    public void onMoveProblemUp(final MoveProblemDownEvent event) {
+        GWT.log("ProblemCollectionActivity Handling MoveProblemDownEvent");
+
+        ProblemDetails[] problems = problemCollectionDetailsAndProblems.getProblems();
+
+        if (problems[event.getProblemDetails().getIndexInCollection() - 1] != event.getProblemDetails()) {
+            GWT.log("Can't move the problem in the collection (inconsistent indexes)");
+            return;
+        }
+
+        if (event.getProblemDetails().getIndexInCollection() == problems.length) {
+            GWT.log("Can't move the last problem in the collection");
+            return;
+        }
+
+        String firstProblemId = event.getProblemDetails().getId();
+        String secondProblemId = problems[event.getProblemDetails().getIndexInCollection()].getId();
+
+        swapProblemIds(firstProblemId, secondProblemId);
+    }
+
+
+    private void swapProblemIds(final String firstProblemId, final String secondProblemId) {
+        problemService.swapProblemsInCollection(sessionInformation.getSessionId(),
+                problemCollectionDetailsAndProblems.getDetails().getId(), firstProblemId, secondProblemId,
+                new AsyncCallback<Void>() {
+                    @Override
+                    public void onFailure(final Throwable throwable) {
+                        GWT.log("ProblemCollectionActivity: swapProblemsInCollection failure");
+                        Notification.createDanger("Move failed").show();
+                    }
+
+                    @Override
+                    public void onSuccess(final Void unused) {
+                        GWT.log("ProblemCollectionActivity: swapProblemsInCollection success");
                         refresh();
                     }
                 });

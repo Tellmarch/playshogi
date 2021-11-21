@@ -62,4 +62,7 @@ public interface ProblemsServiceAsync {
 
     void createCollectionsByDifficulty(String sessionId, AsyncCallback<Void> callback);
 
+    void swapProblemsInCollection(String sessionId, String collectionId, String firstProblemId,
+                                  String secondProblemId, AsyncCallback<Void> callback);
+
 }

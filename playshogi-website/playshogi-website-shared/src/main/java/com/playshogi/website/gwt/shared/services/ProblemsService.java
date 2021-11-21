@@ -53,4 +53,7 @@ public interface ProblemsService extends RemoteService {
     void convertGameCollection(String sessionId, String gameCollectionId);
 
     void createCollectionsByDifficulty(String sessionId);
+
+    void swapProblemsInCollection(String sessionId, String collectionId, String firstProblemId, String secondProblemId);
+
 }

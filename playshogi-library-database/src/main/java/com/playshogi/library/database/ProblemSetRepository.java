@@ -442,7 +442,7 @@ public class ProblemSetRepository {
         PersistentProblemInCollection problem = problemsFromProblemSet.get(index);
         Connection connection = dbConnection.getConnection();
         try (PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_INDEX)) {
-            preparedStatement.setInt(1, index);
+            preparedStatement.setInt(1, index + 1);
             preparedStatement.setInt(2, problemSetId);
             preparedStatement.setInt(3, problem.getProblem().getId());
             int res = preparedStatement.executeUpdate();

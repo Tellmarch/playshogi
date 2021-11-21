@@ -7,6 +7,8 @@ import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.event.shared.EventBus;
 import com.playshogi.library.shogi.models.formats.usf.UsfFormat;
 import com.playshogi.website.gwt.client.UserPreferences;
+import com.playshogi.website.gwt.client.events.collections.MoveProblemDownEvent;
+import com.playshogi.website.gwt.client.events.collections.MoveProblemUpEvent;
 import com.playshogi.website.gwt.client.events.collections.RemoveProblemFromCollectionEvent;
 import com.playshogi.website.gwt.client.mvp.AppPlaceHistoryMapper;
 import com.playshogi.website.gwt.client.place.KifuEditorPlace;
@@ -20,6 +22,7 @@ import com.playshogi.website.gwt.shared.services.KifuService;
 import com.playshogi.website.gwt.shared.services.KifuServiceAsync;
 import elemental2.dom.HTMLDivElement;
 import elemental2.dom.HTMLElement;
+import elemental2.dom.Node;
 import org.dominokit.domino.ui.badges.Badge;
 import org.dominokit.domino.ui.button.Button;
 import org.dominokit.domino.ui.datatable.ColumnConfig;
@@ -39,8 +42,7 @@ import org.jboss.elemento.HtmlContentBuilder;
 
 import java.util.List;
 
-import static org.jboss.elemento.Elements.br;
-import static org.jboss.elemento.Elements.h;
+import static org.jboss.elemento.Elements.*;
 
 public class ProblemTable {
 
@@ -89,8 +91,11 @@ public class ProblemTable {
                                         element -> element.style.setProperty("vertical-align", "top"))
                                 .textAlign("right")
                                 .asHeader()
-                                .setCellRenderer(
-                                        cell -> TextNode.of(String.valueOf(cell.getTableRow().getIndex() + 1 + PAGE_SIZE * (simplePaginationPlugin.getSimplePagination().activePage() - 1)))))
+                                .setCellRenderer(cell -> TextNode.of(String.valueOf(cell.getRecord().getIndexInCollection()))))
+                .addColumn(
+                        ColumnConfig.<ProblemDetails>create("updown", "Order")
+                                .setCellRenderer(cell -> getUpDownIcons(cell.getRecord()))
+                )
                 .addColumn(
                         ColumnConfig.<ProblemDetails>create("nummoves", "Number of Moves")
                                 .styleCell(
@@ -152,6 +157,15 @@ public class ProblemTable {
 //                )
         ;
         return tableConfig;
+    }
+
+    private Node getUpDownIcons(final ProblemDetails record) {
+        HtmlContentBuilder<HTMLDivElement> difficulty = div();
+        difficulty.add(Button.createPrimary(Icons.ALL.transfer_up_mdi())
+                .addClickListener(e -> eventBus.fireEvent(new MoveProblemUpEvent(record, collectionDetails))));
+        difficulty.add(Button.createPrimary(Icons.ALL.transfer_down_mdi())
+                .addClickListener(e -> eventBus.fireEvent(new MoveProblemDownEvent(record, collectionDetails))));
+        return difficulty.element();
     }
 
     private HTMLElement getDetails(final ProblemDetails details) {

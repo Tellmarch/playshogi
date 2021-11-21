@@ -125,6 +125,12 @@ public class ProblemsServiceImpl extends RemoteServiceServlet implements Problem
         return getProblemDetails(persistentProblem, usf);
     }
 
+    private ProblemDetails getProblemDetails(final PersistentProblemInCollection problem) {
+        ProblemDetails problemDetails = getProblemDetails(problem.getProblem());
+        problemDetails.setHiddenInCollection(problem.isHidden());
+        problemDetails.setIndexInCollection(problem.getIndex());
+        return problemDetails;
+    }
 
     private ProblemDetails getProblemDetails(final PersistentProblem persistentProblem) {
         return getProblemDetails(persistentProblem, null);
@@ -399,17 +405,19 @@ public class ProblemsServiceImpl extends RemoteServiceServlet implements Problem
             , final boolean includeHiddenProblems) {
         LOGGER.log(Level.INFO, "getProblemCollections");
 
-        PersistentProblemSet gameSet = problemSetRepository.getProblemSetById(Integer.parseInt(collectionId));
+        int problemSetId = Integer.parseInt(collectionId);
+        PersistentProblemSet gameSet = problemSetRepository.getProblemSetById(problemSetId);
         if (gameSet == null) {
             throw new IllegalArgumentException("Invalid problem collection ID");
         }
 
         List<PersistentProblemInCollection> problems =
-                problemSetRepository.getProblemsFromProblemSet(Integer.parseInt(collectionId), includeHiddenProblems);
+                problemSetRepository.getProblemsFromProblemSet(problemSetId, includeHiddenProblems);
 
         boolean indexesAreAllZeros = problems.size() >= 2 && problems.stream().allMatch(p -> p.getIndex() == 0);
         if (indexesAreAllZeros) {
-            problemSetRepository.updateIndexesForProblemSet(Integer.parseInt(collectionId));
+            problemSetRepository.updateIndexesForProblemSet(problemSetId);
+            problems = problemSetRepository.getProblemsFromProblemSet(problemSetId, includeHiddenProblems);
         }
 
         ProblemCollectionDetailsAndProblems result = new ProblemCollectionDetailsAndProblems();
@@ -423,7 +431,7 @@ public class ProblemsServiceImpl extends RemoteServiceServlet implements Problem
         }
 
         result.setDetails(getProblemCollectionDetails(gameSet, userId));
-        result.setProblems(problems.stream().map(p -> getProblemDetails(p.getProblem())).toArray(ProblemDetails[]::new));
+        result.setProblems(problems.stream().map(this::getProblemDetails).toArray(ProblemDetails[]::new));
 
         return result;
     }
@@ -611,6 +619,15 @@ public class ProblemsServiceImpl extends RemoteServiceServlet implements Problem
         }
 
         problemSetRepository.createCollectionsByDifficulty(loginResult.getUserId(), 5);
+
+    }
+
+    @Override
+    public void swapProblemsInCollection(final String sessionId, final String collectionId,
+                                         final String firstProblemId, final String secondProblemId) {
+        LOGGER.log(Level.INFO,
+                "swapProblemsInCollection: " + collectionId + "-" + firstProblemId + "-" + secondProblemId);
+
 
     }
 }

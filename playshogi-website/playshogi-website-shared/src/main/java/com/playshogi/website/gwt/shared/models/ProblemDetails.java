@@ -12,6 +12,8 @@ public class ProblemDetails implements Serializable {
     private String pbType;
     private String usf;
     private String[] tags;
+    private int indexInCollection;
+    private boolean hiddenInCollection;
 
     public ProblemDetails() {
     }
@@ -72,16 +74,34 @@ public class ProblemDetails implements Serializable {
         this.tags = tags;
     }
 
+    public int getIndexInCollection() {
+        return indexInCollection;
+    }
+
+    public void setIndexInCollection(final int indexInCollection) {
+        this.indexInCollection = indexInCollection;
+    }
+
+    public boolean isHiddenInCollection() {
+        return hiddenInCollection;
+    }
+
+    public void setHiddenInCollection(final boolean hiddenInCollection) {
+        this.hiddenInCollection = hiddenInCollection;
+    }
+
     @Override
     public String toString() {
         return "ProblemDetails{" +
-                "id=" + id +
-                ", kifuId=" + kifuId +
+                "id='" + id + '\'' +
+                ", kifuId='" + kifuId + '\'' +
                 ", numMoves=" + numMoves +
                 ", elo=" + elo +
                 ", pbType='" + pbType + '\'' +
                 ", usf='" + usf + '\'' +
                 ", tags=" + Arrays.toString(tags) +
+                ", indexInCollection=" + indexInCollection +
+                ", hiddenInCollection=" + hiddenInCollection +
                 '}';
     }
 }
