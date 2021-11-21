@@ -1,9 +1,6 @@
 package com.playshogi.library.database;
 
-import com.playshogi.library.database.models.PersistentKifu;
-import com.playshogi.library.database.models.PersistentProblem;
-import com.playshogi.library.database.models.PersistentProblemSet;
-import com.playshogi.library.database.models.Visibility;
+import com.playshogi.library.database.models.*;
 import com.playshogi.library.shogi.models.features.FeatureTag;
 import com.playshogi.library.shogi.models.moves.Move;
 import com.playshogi.library.shogi.models.moves.SpecialMove;
@@ -39,13 +36,12 @@ public class ProblemSetRepository {
     private static final String SELECT_PROBLEMSETS_FOR_USER = "SELECT * FROM `playshogi`.`ps_problemset` WHERE " +
             "owner_user_id = ? LIMIT 1000";
     private static final String SELECT_PROBLEMSET = "SELECT * FROM `playshogi`.`ps_problemset` WHERE id = ?";
-    private static final String SELECT_PROBLEMS_FROM_PROBLEMSET = "SELECT * FROM playshogi.ps_problemsetpbs join " +
-            "playshogi" +
-            ".ps_problem on ps_problem.id = problem_id WHERE problemset_id = ? ORDER BY `index` ASC;";
+    private static final String SELECT_PROBLEMS_FROM_PROBLEMSET =
+            "SELECT * FROM playshogi.ps_problemsetpbs join playshogi.ps_problem" +
+                    " on ps_problem.id = problem_id WHERE problemset_id = ? ORDER BY `index` ASC, `problem_id` ASC;";
     private static final String SELECT_VISIBLE_PROBLEMS_FROM_PROBLEMSET = "SELECT * FROM playshogi.ps_problemsetpbs " +
-            "join " +
-            "playshogi" +
-            ".ps_problem on ps_problem.id = problem_id WHERE problemset_id = ? AND hidden=0 ORDER BY `index` ASC;";
+            "join playshogi.ps_problem on ps_problem.id = problem_id " +
+            "WHERE problemset_id = ? AND hidden=0 ORDER BY `index` ASC, `problem_id` ASC;";
     private static final String SELECT_COUNT_PROBLEMS_FROM_PROBLEMSET = "SELECT COUNT(*) as num_problems" +
             " FROM playshogi.ps_problemsetpbs WHERE problemset_id = ?;";
     private static final String DELETE_PROBLEMSET = "DELETE FROM `playshogi`.`ps_problemset` WHERE id = ? AND " +
@@ -66,6 +62,10 @@ public class ProblemSetRepository {
             " attempts from ps_userpbstats JOIN ps_problem ON (problem_id = id) group by 1,2,3, 4) as t \n" +
             "WHERE num_moves = ? and attempts > 5 and pb_type = 1 WINDOW w AS (ORDER BY success_rate DESC, attempts " +
             "DESC);";
+
+    private static final String UPDATE_INDEX = "UPDATE playshogi.ps_problemsetpbs SET `index` = ? WHERE problemset_id" +
+            " = ? AND problem_id = ?;";
+
 
     private final ProblemRepository problemRepository;
 
@@ -277,9 +277,9 @@ public class ProblemSetRepository {
         return null;
     }
 
-    public List<PersistentProblem> getProblemsFromProblemSet(final int problemSetId,
-                                                             final boolean includeHiddenProblems) {
-        ArrayList<PersistentProblem> problems = new ArrayList<>();
+    public List<PersistentProblemInCollection> getProblemsFromProblemSet(final int problemSetId,
+                                                                         final boolean includeHiddenProblems) {
+        ArrayList<PersistentProblemInCollection> problems = new ArrayList<>();
         Connection connection = dbConnection.getConnection();
         try (PreparedStatement preparedStatement = connection.prepareStatement(includeHiddenProblems ?
                 SELECT_PROBLEMS_FROM_PROBLEMSET : SELECT_VISIBLE_PROBLEMS_FROM_PROBLEMSET)) {
@@ -291,9 +291,12 @@ public class ProblemSetRepository {
                 int numMoves = rs.getInt("num_moves");
                 int elo = rs.getInt("elo");
                 int pbType = rs.getInt("pb_type");
+                int index = rs.getInt("index");
+                boolean hidden = rs.getBoolean("hidden");
 
-                problems.add(new PersistentProblem(id, kifuId, numMoves, elo,
-                        PersistentProblem.ProblemType.fromDbInt(pbType)));
+                PersistentProblem persistentProblem = new PersistentProblem(id, kifuId, numMoves, elo,
+                        PersistentProblem.ProblemType.fromDbInt(pbType));
+                problems.add(new PersistentProblemInCollection(persistentProblem, problemSetId, index, hidden));
             }
             return problems;
         } catch (SQLException e) {
@@ -423,6 +426,36 @@ public class ProblemSetRepository {
             for (Integer kifuId : kifus) {
                 addKifuToProblemSet(problemSet, 0, PersistentProblem.ProblemType.UNSPECIFIED, kifuId, numMoves);
             }
+        }
+    }
+
+    public void updateIndexesForProblemSet(final int problemSetId) {
+        LOGGER.log(Level.INFO, "Updating indexes for problemset: " + problemSetId);
+        List<PersistentProblemInCollection> problemsFromProblemSet = getProblemsFromProblemSet(problemSetId, true);
+        for (int i = 0; i < problemsFromProblemSet.size(); i++) {
+            updateProblemIndex(problemSetId, problemsFromProblemSet, i);
+        }
+    }
+
+    private void updateProblemIndex(final int problemSetId,
+                                    final List<PersistentProblemInCollection> problemsFromProblemSet, final int index) {
+        PersistentProblemInCollection problem = problemsFromProblemSet.get(index);
+        Connection connection = dbConnection.getConnection();
+        try (PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_INDEX)) {
+            preparedStatement.setInt(1, index);
+            preparedStatement.setInt(2, problemSetId);
+            preparedStatement.setInt(3, problem.getProblem().getId());
+            int res = preparedStatement.executeUpdate();
+
+            if (res == 1) {
+                LOGGER.log(Level.INFO,
+                        "Updated problemset index: " + problemSetId + " - " + problem.getProblem().getId() + " - "
+                                + index);
+            } else {
+                LOGGER.log(Level.SEVERE, "Could not update problemset index (res = " + res + ")");
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error updating the problemset in db", e);
         }
     }
 }

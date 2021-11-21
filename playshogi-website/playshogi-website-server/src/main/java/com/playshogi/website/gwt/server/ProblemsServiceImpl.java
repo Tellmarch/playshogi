@@ -404,8 +404,13 @@ public class ProblemsServiceImpl extends RemoteServiceServlet implements Problem
             throw new IllegalArgumentException("Invalid problem collection ID");
         }
 
-        List<PersistentProblem> games = problemSetRepository.getProblemsFromProblemSet(Integer.parseInt(collectionId)
-                , includeHiddenProblems);
+        List<PersistentProblemInCollection> problems =
+                problemSetRepository.getProblemsFromProblemSet(Integer.parseInt(collectionId), includeHiddenProblems);
+
+        boolean indexesAreAllZeros = problems.size() >= 2 && problems.stream().allMatch(p -> p.getIndex() == 0);
+        if (indexesAreAllZeros) {
+            problemSetRepository.updateIndexesForProblemSet(Integer.parseInt(collectionId));
+        }
 
         ProblemCollectionDetailsAndProblems result = new ProblemCollectionDetailsAndProblems();
 
@@ -418,7 +423,7 @@ public class ProblemsServiceImpl extends RemoteServiceServlet implements Problem
         }
 
         result.setDetails(getProblemCollectionDetails(gameSet, userId));
-        result.setProblems(games.stream().map(this::getProblemDetails).toArray(ProblemDetails[]::new));
+        result.setProblems(problems.stream().map(p -> getProblemDetails(p.getProblem())).toArray(ProblemDetails[]::new));
 
         return result;
     }
@@ -434,18 +439,18 @@ public class ProblemsServiceImpl extends RemoteServiceServlet implements Problem
             throw new IllegalStateException("Only logged in users can delete a problem collection");
         }
 
-        List<PersistentProblem> problems = problemSetRepository.getProblemsFromProblemSet(setId, true);
+        List<PersistentProblemInCollection> problems = problemSetRepository.getProblemsFromProblemSet(setId, true);
 
         if (!problemSetRepository.deleteProblemsetById(setId, loginResult.getUserId())) {
             throw new IllegalStateException("The user does not have permission to delete the specified problem " +
                     "collection");
         }
 
-        for (PersistentProblem problem : problems) {
-            problemRepository.deleteProblemById(problem.getId());
+        for (PersistentProblemInCollection problem : problems) {
+            problemRepository.deleteProblemById(problem.getProblem().getId());
 
             if (alsoDeleteKifus) {
-                kifuRepository.deleteKifuById(problem.getKifuId(), loginResult.getUserId());
+                kifuRepository.deleteKifuById(problem.getProblem().getKifuId(), loginResult.getUserId());
             }
         }
 
