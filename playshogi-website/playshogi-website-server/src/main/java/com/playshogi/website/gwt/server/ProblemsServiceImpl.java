@@ -628,6 +628,23 @@ public class ProblemsServiceImpl extends RemoteServiceServlet implements Problem
         LOGGER.log(Level.INFO,
                 "swapProblemsInCollection: " + collectionId + "-" + firstProblemId + "-" + secondProblemId);
 
+        LoginResult loginResult = authenticator.checkSession(sessionId);
+        if (loginResult == null || !loginResult.isLoggedIn()) {
+            throw new IllegalStateException("Only logged in users can re-order problems in a collection");
+        }
+
+        PersistentProblemSet problemSet = problemSetRepository.getProblemSetById(Integer.parseInt(collectionId));
+
+        if (problemSet == null) {
+            throw new IllegalStateException("Invalid collection ID");
+        }
+
+        if (problemSet.getOwnerId() != loginResult.getUserId()) {
+            throw new IllegalStateException("No permission to re-order problems in this collection");
+        }
+
+        problemSetRepository.swapProblemsInCollection(Integer.parseInt(collectionId), Integer.parseInt(firstProblemId),
+                Integer.parseInt(secondProblemId));
 
     }
 }

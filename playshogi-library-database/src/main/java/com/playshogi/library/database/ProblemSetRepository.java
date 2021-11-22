@@ -66,6 +66,14 @@ public class ProblemSetRepository {
     private static final String UPDATE_INDEX = "UPDATE playshogi.ps_problemsetpbs SET `index` = ? WHERE problemset_id" +
             " = ? AND problem_id = ?;";
 
+    private static final String SWAP_INDEX =
+            "UPDATE\n" +
+                    "  playshogi.ps_problemsetpbs t1 INNER JOIN playshogi.ps_problemsetpbs t2\n" +
+                    "  ON (t1.problemset_id, t2.problemset_id, t1.problem_id, t2.problem_id) IN ((?,?,?,?),(?,?," +
+                    "?,?))\n" +
+                    "SET\n" +
+                    "  t1.index = t2.index;";
+
 
     private final ProblemRepository problemRepository;
 
@@ -456,6 +464,31 @@ public class ProblemSetRepository {
             }
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error updating the problemset in db", e);
+        }
+    }
+
+    public void swapProblemsInCollection(final int problemSetId, final int problem1, final int problem2) {
+        Connection connection = dbConnection.getConnection();
+        try (PreparedStatement preparedStatement = connection.prepareStatement(SWAP_INDEX)) {
+            preparedStatement.setInt(1, problemSetId);
+            preparedStatement.setInt(2, problemSetId);
+            preparedStatement.setInt(3, problem1);
+            preparedStatement.setInt(4, problem2);
+            preparedStatement.setInt(5, problemSetId);
+            preparedStatement.setInt(6, problemSetId);
+            preparedStatement.setInt(7, problem2);
+            preparedStatement.setInt(8, problem1);
+
+            int res = preparedStatement.executeUpdate();
+
+            if (res == 2) {
+                LOGGER.log(Level.INFO,
+                        "Swapped problemset index: " + problemSetId + " - " + problem1 + " - " + problem2);
+            } else {
+                LOGGER.log(Level.SEVERE, "Could not swap problemset index (res = " + res + ")");
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error swapping the problemset in db", e);
         }
     }
 }
