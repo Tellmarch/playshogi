@@ -138,7 +138,7 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
     public KifuDetails[] getLessonKifus(final String sessionId, final String userName) {
         LOGGER.log(Level.INFO, "querying kifus for user: " + userName);
 
-        validateAdminSession(sessionId);
+        authenticator.validateAdminSession(sessionId);
 
         List<PersistentKifu> userKifus = kifuRepository.getLessonKifus();
 
@@ -159,7 +159,7 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
     public GameCollectionDetails[] getAllGameCollections(final String sessionId) {
         LOGGER.log(Level.INFO, "getAllGameCollections");
 
-        validateAdminSession(sessionId);
+        authenticator.validateAdminSession(sessionId);
 
         List<PersistentGameSet> problemSets = gameSetRepository.getAllGameSets();
 
@@ -670,7 +670,7 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
     public LessonDetails[] getAllLessons(final String sessionId) {
         LOGGER.log(Level.INFO, "getAllLessons");
 
-        validateAdminSession(sessionId);
+        authenticator.validateAdminSession(sessionId);
 
         List<PersistentLesson> allVisibleLessons = lessonRepository.getAllLessons();
         return allVisibleLessons.stream().map(this::getLessonDetails).toArray(LessonDetails[]::new);
@@ -681,7 +681,7 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
     public void createLesson(final String sessionId, final LessonDetails lesson) {
         LOGGER.log(Level.INFO, "createLesson: " + lesson);
 
-        validateAdminSession(sessionId);
+        authenticator.validateAdminSession(sessionId);
 
         lessonRepository.saveLesson(getPersistentLesson(lesson));
     }
@@ -690,7 +690,7 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
     public void updateLesson(final String sessionId, final LessonDetails lesson) {
         LOGGER.log(Level.INFO, "updateLesson: " + lesson);
 
-        validateAdminSession(sessionId);
+        authenticator.validateAdminSession(sessionId);
 
         lessonRepository.updateLesson(getPersistentLesson(lesson));
     }
@@ -771,10 +771,4 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
         return tournamentDetails;
     }
 
-    private void validateAdminSession(final String sessionId) {
-        LoginResult loginResult = authenticator.checkSession(sessionId);
-        if (loginResult == null || !loginResult.isLoggedIn() || !loginResult.isAdmin()) {
-            throw new IllegalStateException("Restricted to admins");
-        }
-    }
 }

@@ -29,7 +29,7 @@ public interface ProblemsService extends RemoteService {
 
     void addDraftToProblemCollection(String sessionId, String draftId, String collectionId);
 
-    ProblemCollectionDetails[] getProblemCollections(String sessionId);
+    ProblemCollectionDetails[] getAllProblemCollections(String sessionId);
 
     ProblemCollectionDetails[] getPublicProblemCollections(String sessionId);
 

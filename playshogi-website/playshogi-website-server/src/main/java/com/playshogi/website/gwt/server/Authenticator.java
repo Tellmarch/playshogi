@@ -62,4 +62,14 @@ public enum Authenticator {
         activeSessions.remove(sessionId);
         return new LoginResult();
     }
+
+    public LoginResult validateAdminSession(final String sessionId) {
+        LoginResult loginResult = checkSession(sessionId);
+        if (loginResult == null || !loginResult.isLoggedIn() || !loginResult.isAdmin()) {
+            LOGGER.log(Level.INFO, "Admin operation rejected");
+            throw new IllegalStateException("Restricted to admins");
+        }
+
+        return loginResult;
+    }
 }

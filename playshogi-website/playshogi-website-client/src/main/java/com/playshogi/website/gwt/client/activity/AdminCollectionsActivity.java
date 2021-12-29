@@ -67,7 +67,7 @@ public class AdminCollectionsActivity extends MyAbstractActivity {
                                 gameCollectionDetails));
                     }
                 });
-        problemsService.getPublicProblemCollections(sessionInformation.getSessionId(),
+        problemsService.getAllProblemCollections(sessionInformation.getSessionId(),
                 new AsyncCallback<ProblemCollectionDetails[]>() {
                     @Override
                     public void onFailure(final Throwable throwable) {

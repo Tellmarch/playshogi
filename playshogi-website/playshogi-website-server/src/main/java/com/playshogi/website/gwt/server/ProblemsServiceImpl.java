@@ -307,15 +307,17 @@ public class ProblemsServiceImpl extends RemoteServiceServlet implements Problem
     }
 
     @Override
-    public ProblemCollectionDetails[] getProblemCollections(final String sessionId) {
+    public ProblemCollectionDetails[] getAllProblemCollections(final String sessionId) {
         LOGGER.log(Level.INFO, "getProblemCollections");
 
-        LoginResult loginResult = authenticator.checkSession(sessionId);
-        if (loginResult == null || !loginResult.isLoggedIn() || !loginResult.isAdmin()) {
-            throw new IllegalStateException("Only administrators can see problems collections");
-        }
+        LoginResult loginResult = authenticator.validateAdminSession(sessionId);
 
-        throw new IllegalStateException("Not implemented yet");
+        List<PersistentProblemSet> problemSets = problemSetRepository.getAllProblemSets();
+
+        return problemSets.stream()
+                .map((PersistentProblemSet persistentProblemSet) ->
+                        getProblemCollectionDetails(persistentProblemSet, loginResult.getUserId()))
+                .toArray(ProblemCollectionDetails[]::new);
     }
 
     @Override
@@ -358,10 +360,15 @@ public class ProblemsServiceImpl extends RemoteServiceServlet implements Problem
         details.setId(String.valueOf(persistentProblemSet.getId()));
         details.setVisibility(persistentProblemSet.getVisibility().name());
         details.setTags(persistentProblemSet.getTags());
-        details.setDifficulty(persistentProblemSet.getDifficulty());
+        Integer difficulty = persistentProblemSet.getDifficulty();
+        details.setDifficulty(difficulty == null ? 0 : difficulty);
         fillLeaderBoard(persistentProblemSet, details, userId);
         details.setNumProblems(problemSetRepository.getProblemsCountFromProblemSet(persistentProblemSet.getId()));
-        details.setAuthor(UsersCache.INSTANCE.getUserName(persistentProblemSet.getOwnerId()));
+        if (persistentProblemSet.getOwnerId() != null) {
+            details.setAuthor(UsersCache.INSTANCE.getUserName(persistentProblemSet.getOwnerId()));
+        } else {
+            details.setAuthor("NULL");
+        }
         return details;
     }
 
@@ -613,10 +620,7 @@ public class ProblemsServiceImpl extends RemoteServiceServlet implements Problem
     public void createCollectionsByDifficulty(final String sessionId) {
         LOGGER.log(Level.INFO, "createCollectionsByDifficulty");
 
-        LoginResult loginResult = authenticator.checkSession(sessionId);
-        if (loginResult == null || !loginResult.isLoggedIn() || !loginResult.isAdmin()) {
-            throw new IllegalStateException("Only administrators can do this operation");
-        }
+        LoginResult loginResult = authenticator.validateAdminSession(sessionId);
 
         problemSetRepository.createCollectionsByDifficulty(loginResult.getUserId(), 5);
 

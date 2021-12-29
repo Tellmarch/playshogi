@@ -30,6 +30,7 @@ public class ProblemSetRepository {
             "`visibility`, `owner_user_id`, `difficulty`, `tags`) VALUES (?, ?, ?, ?, ?, ?);";
     private static final String INSERT_PROBLEMSET_PROBLEM = "INSERT INTO `playshogi`.`ps_problemsetpbs`" +
             "(`problemset_id`,`problem_id`) VALUES (?,?);";
+    private static final String SELECT_ALL_PROBLEMSETS = "SELECT * FROM `playshogi`.`ps_problemset` LIMIT 1000";
     private static final String SELECT_PUBLIC_PROBLEMSETS = "SELECT * FROM `playshogi`.`ps_problemset` WHERE " +
             "visibility = 2" +
             " LIMIT 1000";
@@ -208,6 +209,30 @@ public class ProblemSetRepository {
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error saving the problem tag in db", e);
         }
+    }
+
+    public List<PersistentProblemSet> getAllProblemSets() {
+        List<PersistentProblemSet> result = new ArrayList<>();
+        Connection connection = dbConnection.getConnection();
+        try (PreparedStatement preparedStatement = connection.prepareStatement(SELECT_ALL_PROBLEMSETS)) {
+            ResultSet rs = preparedStatement.executeQuery();
+            while (rs.next()) {
+                String name = rs.getString("name");
+                int id = rs.getInt("id");
+                String description = rs.getString("description");
+                Visibility visibility = Visibility.values()[rs.getInt("visibility"
+                )];
+                Integer ownerId = SqlUtils.getInteger(rs, "owner_user_id");
+                Integer difficulty = SqlUtils.getInteger(rs, "difficulty");
+                String tags = rs.getString("tags");
+
+                result.add(new PersistentProblemSet(id, name, description, visibility, ownerId, difficulty,
+                        tags == null ? null : tags.split(",")));
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error retrieving problem sets in db", e);
+        }
+        return result;
     }
 
     public List<PersistentProblemSet> getAllPublicProblemSets() {

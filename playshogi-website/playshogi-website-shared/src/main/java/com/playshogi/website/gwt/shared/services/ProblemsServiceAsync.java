@@ -31,7 +31,7 @@ public interface ProblemsServiceAsync {
     void addDraftToProblemCollection(String sessionId, String draftId, String collectionId,
                                      AsyncCallback<Void> callback);
 
-    void getProblemCollections(String sessionId, AsyncCallback<ProblemCollectionDetails[]> callback);
+    void getAllProblemCollections(String sessionId, AsyncCallback<ProblemCollectionDetails[]> callback);
 
     void getUserProblemCollections(String sessionId, String userName,
                                    AsyncCallback<ProblemCollectionDetails[]> callback);
