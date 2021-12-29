@@ -138,10 +138,7 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
     public KifuDetails[] getLessonKifus(final String sessionId, final String userName) {
         LOGGER.log(Level.INFO, "querying kifus for user: " + userName);
 
-        LoginResult loginResult = authenticator.checkSession(sessionId);
-        if (loginResult == null || !loginResult.isLoggedIn() || !loginResult.isAdmin()) {
-            throw new IllegalStateException("Restricted to admins");
-        }
+        validateAdminSession(sessionId);
 
         List<PersistentKifu> userKifus = kifuRepository.getLessonKifus();
 
@@ -156,6 +153,17 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
         details.setName(kifu.getName());
         details.setType(KifuDetails.KifuType.valueOf(kifu.getType().name()));
         return details;
+    }
+
+    @Override
+    public GameCollectionDetails[] getAllGameCollections(final String sessionId) {
+        LOGGER.log(Level.INFO, "getAllGameCollections");
+
+        validateAdminSession(sessionId);
+
+        List<PersistentGameSet> problemSets = gameSetRepository.getAllGameSets();
+
+        return problemSets.stream().map(this::getCollectionDetails).toArray(GameCollectionDetails[]::new);
     }
 
     @Override
@@ -188,7 +196,11 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
         details.setDescription(gameSet.getDescription());
         details.setVisibility(gameSet.getVisibility().toString().toLowerCase());
         details.setNumGames(gameSetRepository.getGamesCountFromGameSet(gameSet.getId()));
-        details.setAuthor(UsersCache.INSTANCE.getUserName(gameSet.getOwnerId()));
+        if (gameSet.getOwnerId() != null) {
+            details.setAuthor(UsersCache.INSTANCE.getUserName(gameSet.getOwnerId()));
+        } else {
+            details.setAuthor("NULL");
+        }
         return details;
     }
 
@@ -658,10 +670,7 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
     public LessonDetails[] getAllLessons(final String sessionId) {
         LOGGER.log(Level.INFO, "getAllLessons");
 
-        LoginResult loginResult = authenticator.checkSession(sessionId);
-        if (loginResult == null || !loginResult.isLoggedIn() || !loginResult.isAdmin()) {
-            throw new IllegalStateException("Restricted to admins");
-        }
+        validateAdminSession(sessionId);
 
         List<PersistentLesson> allVisibleLessons = lessonRepository.getAllLessons();
         return allVisibleLessons.stream().map(this::getLessonDetails).toArray(LessonDetails[]::new);
@@ -672,10 +681,7 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
     public void createLesson(final String sessionId, final LessonDetails lesson) {
         LOGGER.log(Level.INFO, "createLesson: " + lesson);
 
-        LoginResult loginResult = authenticator.checkSession(sessionId);
-        if (loginResult == null || !loginResult.isLoggedIn() || !loginResult.isAdmin()) {
-            throw new IllegalStateException("Restricted to admins");
-        }
+        validateAdminSession(sessionId);
 
         lessonRepository.saveLesson(getPersistentLesson(lesson));
     }
@@ -684,10 +690,7 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
     public void updateLesson(final String sessionId, final LessonDetails lesson) {
         LOGGER.log(Level.INFO, "updateLesson: " + lesson);
 
-        LoginResult loginResult = authenticator.checkSession(sessionId);
-        if (loginResult == null || !loginResult.isLoggedIn() || !loginResult.isAdmin()) {
-            throw new IllegalStateException("Restricted to admins");
-        }
+        validateAdminSession(sessionId);
 
         lessonRepository.updateLesson(getPersistentLesson(lesson));
     }
@@ -766,5 +769,12 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
         tournamentDetails.setOrganizer("Shogi Harbour");
         //tournamentDetails.setSeasons(new TournamentSeasonDetails[]);
         return tournamentDetails;
+    }
+
+    private void validateAdminSession(final String sessionId) {
+        LoginResult loginResult = authenticator.checkSession(sessionId);
+        if (loginResult == null || !loginResult.isLoggedIn() || !loginResult.isAdmin()) {
+            throw new IllegalStateException("Restricted to admins");
+        }
     }
 }

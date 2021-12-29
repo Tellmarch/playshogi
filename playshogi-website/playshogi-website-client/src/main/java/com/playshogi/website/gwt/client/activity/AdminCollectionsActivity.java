@@ -53,7 +53,7 @@ public class AdminCollectionsActivity extends MyAbstractActivity {
     }
 
     private void fetchData() {
-        kifuService.getPublicGameCollections(sessionInformation.getSessionId(),
+        kifuService.getAllGameCollections(sessionInformation.getSessionId(),
                 new AsyncCallback<GameCollectionDetails[]>() {
                     @Override
                     public void onFailure(Throwable throwable) {

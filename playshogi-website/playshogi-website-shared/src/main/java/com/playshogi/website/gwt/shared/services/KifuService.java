@@ -23,6 +23,8 @@ public interface KifuService extends RemoteService {
 
     AnalysisRequestResult getKifuAnalysisResults(String sessionId, String kifuUsf);
 
+    GameCollectionDetails[] getAllGameCollections(String sessionId);
+
     GameCollectionDetails[] getPublicGameCollections(String sessionId);
 
     GameCollectionDetails[] getUserGameCollections(String sessionId, String userName);

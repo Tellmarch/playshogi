@@ -24,6 +24,8 @@ public interface KifuServiceAsync {
 
     void getKifuAnalysisResults(String sessionId, String kifuUsf, AsyncCallback<AnalysisRequestResult> callback);
 
+    void getAllGameCollections(String sessionId, AsyncCallback<GameCollectionDetails[]> callback);
+
     void getPublicGameCollections(String sessionId, AsyncCallback<GameCollectionDetails[]> callback);
 
     void getUserGameCollections(String sessionId, String userName, AsyncCallback<GameCollectionDetails[]> callback);
