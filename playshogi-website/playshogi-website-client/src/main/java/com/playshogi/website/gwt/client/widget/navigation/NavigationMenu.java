@@ -110,6 +110,8 @@ public class NavigationMenu extends Composite {
         if (sessionInformation.isAdmin()) {
             accountMenu.addItem("Manage Problems", (Command) () -> placeController.goTo(new ManageProblemsPlace()));
             accountMenu.addItem("Manage Lessons", (Command) () -> placeController.goTo(new ManageLessonsPlace()));
+            accountMenu.addItem("Manage Collections",
+                    (Command) () -> placeController.goTo(new AdminCollectionsPlace()));
         }
     }
 
