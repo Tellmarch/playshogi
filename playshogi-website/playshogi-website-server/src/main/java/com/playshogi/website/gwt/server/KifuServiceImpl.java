@@ -579,7 +579,7 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
 
     @Override
     public void updateGameCollectionDetails(final String sessionId, final GameCollectionDetails details) {
-        LOGGER.log(Level.INFO, "saveGameCollectionDetails: " + details);
+        LOGGER.log(Level.INFO, "updateGameCollectionDetails: " + details);
 
         LoginResult loginResult = authenticator.checkSession(sessionId);
         if (loginResult == null || !loginResult.isLoggedIn()) {
@@ -590,6 +590,16 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
                 Visibility.valueOf(details.getVisibility().toUpperCase()), loginResult.getUserId());
     }
 
+    @Override
+    public void updateGameCollectionDetailsAdmin(final String sessionId, final GameCollectionDetails details) {
+        LOGGER.log(Level.INFO, "updateGameCollectionDetailsAdmin: " + details);
+
+        authenticator.validateAdminSession(sessionId);
+
+        gameSetRepository.adminUpdateGameSet(Integer.parseInt(details.getId()), details.getName(),
+                details.getDescription(),
+                Visibility.valueOf(details.getVisibility().toUpperCase()));
+    }
 
     @Override
     public void createGameCollection(final String sessionId, final GameCollectionDetails details) {

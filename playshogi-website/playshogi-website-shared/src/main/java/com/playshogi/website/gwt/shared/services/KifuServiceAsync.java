@@ -41,6 +41,9 @@ public interface KifuServiceAsync {
     void updateGameCollectionDetails(String sessionId, GameCollectionDetails gameCollectionDetails,
                                      AsyncCallback<Void> callback);
 
+    void updateGameCollectionDetailsAdmin(String sessionId, GameCollectionDetails gameCollectionDetails,
+                                          AsyncCallback<Void> callback);
+
     void createGameCollection(String sessionId, GameCollectionDetails gameCollectionDetails,
                               AsyncCallback<Void> callback);
 
