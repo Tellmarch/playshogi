@@ -107,17 +107,17 @@ public class AdminCollectionsActivity extends MyAbstractActivity {
     @EventHandler
     public void onSaveProblemCollectionDetails(final SaveProblemCollectionDetailsEvent event) {
         GWT.log("AdminCollectionsActivity: Handling SaveProblemCollectionDetailsEvent: " + event.getDetails());
-        problemsService.updateProblemCollectionDetails(sessionInformation.getSessionId(), event.getDetails(),
+        problemsService.updateProblemCollectionDetailsAdmin(sessionInformation.getSessionId(), event.getDetails(),
                 new AsyncCallback<Void>() {
                     @Override
                     public void onFailure(final Throwable throwable) {
-                        GWT.log("AdminCollectionsActivity: error during updateProblemCollectionDetails");
+                        GWT.log("AdminCollectionsActivity: error during updateProblemCollectionDetailsAdmin");
                         eventBus.fireEvent(new SaveCollectionDetailsResultEvent(false));
                     }
 
                     @Override
                     public void onSuccess(final Void unused) {
-                        GWT.log("AdminCollectionsActivity: updateProblemCollectionDetails success");
+                        GWT.log("AdminCollectionsActivity: updateProblemCollectionDetailsAdmin success");
                         eventBus.fireEvent(new SaveCollectionDetailsResultEvent(true));
                         refresh();
                     }

@@ -51,6 +51,8 @@ public class ProblemSetRepository {
     private static final String UPDATE_PROBLEMSET = "UPDATE `playshogi`.`ps_problemset` " +
             "SET `name` = ?, `description` = ?, `visibility` = ?, `difficulty` = ?, `tags` = ? WHERE `id` = ? AND " +
             "`owner_user_id` = ?;";
+    private static final String ADMIN_UPDATE_PROBLEMSET = "UPDATE `playshogi`.`ps_problemset` " +
+            "SET `name` = ?, `description` = ?, `visibility` = ?, `difficulty` = ?, `tags` = ? WHERE `id` = ?;";
 
     private static final String DELETE_PROBLEMSET_PROBLEM = "DELETE ps_problemsetpbs FROM playshogi.ps_problemsetpbs " +
             "JOIN " +
@@ -386,6 +388,30 @@ public class ProblemSetRepository {
             preparedStatement.setString(5, tags == null ? "" : String.join(",", tags));
             preparedStatement.setInt(6, id);
             setInteger(preparedStatement, 7, ownerId);
+            int res = preparedStatement.executeUpdate();
+
+            if (res == 1) {
+                LOGGER.log(Level.INFO, "Updated problemset with index " + key);
+            } else {
+                LOGGER.log(Level.SEVERE, "Could not update problemset (res = " + res + ")");
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error updating the problemset in db", e);
+        }
+    }
+
+    public void adminUpdateProblemSet(final int id, final String name, final String description,
+                                      final Visibility visibility, final Integer difficulty, final String[] tags) {
+        int key = -1;
+
+        Connection connection = dbConnection.getConnection();
+        try (PreparedStatement preparedStatement = connection.prepareStatement(ADMIN_UPDATE_PROBLEMSET)) {
+            preparedStatement.setString(1, name);
+            preparedStatement.setString(2, description);
+            preparedStatement.setInt(3, visibility.ordinal());
+            setInteger(preparedStatement, 4, difficulty);
+            preparedStatement.setString(5, tags == null ? "" : String.join(",", tags));
+            preparedStatement.setInt(6, id);
             int res = preparedStatement.executeUpdate();
 
             if (res == 1) {

@@ -486,6 +486,18 @@ public class ProblemsServiceImpl extends RemoteServiceServlet implements Problem
                 details.getDifficulty(), details.getTags(), loginResult.getUserId());
     }
 
+    @Override
+    public void updateProblemCollectionDetailsAdmin(final String sessionId,
+                                                    final ProblemCollectionDetails details) {
+        LOGGER.log(Level.INFO, "updateProblemCollectionDetailsAdmin: " + details);
+
+        authenticator.validateAdminSession(sessionId);
+
+        problemSetRepository.adminUpdateProblemSet(Integer.parseInt(details.getId()), details.getName(),
+                details.getDescription(), Visibility.valueOf(details.getVisibility().toUpperCase()),
+                details.getDifficulty(), details.getTags());
+    }
+
     private static Map<String, Integer> sortByValueDesc(final Map<String, Integer> scores) {
         return scores.entrySet()
                 .stream()
