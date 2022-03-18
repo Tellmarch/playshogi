@@ -30,6 +30,8 @@ public class KifMoveConverter {
             return new SpecialMove(player, SpecialMoveType.TIMEOUT);
         } else if (str.startsWith("詰み")) {
             return new SpecialMove(player, SpecialMoveType.CHECKMATE);
+        } else if (str.startsWith("入玉勝ち")) {
+            return new SpecialMove(player, SpecialMoveType.NYUGYOKU_WIN);
         }
 
         int pos = 0;

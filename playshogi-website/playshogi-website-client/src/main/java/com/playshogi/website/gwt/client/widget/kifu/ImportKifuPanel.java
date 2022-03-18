@@ -11,6 +11,8 @@ import com.playshogi.library.shogi.models.formats.psn.PsnFormat;
 import com.playshogi.library.shogi.models.formats.usf.UsfFormat;
 import com.playshogi.library.shogi.models.record.GameRecord;
 import com.playshogi.website.gwt.client.events.kifu.ImportGameRecordEvent;
+import org.dominokit.domino.ui.dialogs.MessageDialog;
+import org.dominokit.domino.ui.notifications.Notification;
 
 import java.util.List;
 
@@ -18,6 +20,7 @@ public class ImportKifuPanel extends Composite implements ClickHandler {
 
     private final Button loadFromTextButton;
     private final TextArea textArea;
+    private final HTML errorText;
     private EventBus eventBus;
     private DialogBox dialogBox;
     private String collectionId;
@@ -44,6 +47,13 @@ public class ImportKifuPanel extends Composite implements ClickHandler {
 
         verticalPanel.add(loadFromTextButton);
 
+        verticalPanel.add(new HTML(SafeHtmlUtils.fromSafeConstant("<br/>")));
+
+        errorText = new HTML();
+        errorText.setVisible(false);
+
+        verticalPanel.add(errorText);
+
         initWidget(verticalPanel);
     }
 
@@ -64,16 +74,23 @@ public class ImportKifuPanel extends Composite implements ClickHandler {
         GWT.log("Importing game...");
         String gameText = textArea.getText();
         List<GameRecord> gameRecords;
-        if (gameText.startsWith("USF")) {
-            GWT.log("Will parse as USF game");
-            gameRecords = UsfFormat.INSTANCE.read(gameText);
-        } else if (gameText.startsWith("[")) {
-            GWT.log("Will parse as PSN game");
-            gameRecords = PsnFormat.INSTANCE.read(gameText);
-        } else {
-            GWT.log("Will parse as KIF game");
-            gameRecords = KifFormat.INSTANCE.read(gameText);
+        try {
+            if (gameText.startsWith("USF")) {
+                GWT.log("Will parse as USF game");
+                gameRecords = UsfFormat.INSTANCE.read(gameText);
+            } else if (gameText.startsWith("[")) {
+                GWT.log("Will parse as PSN game");
+                gameRecords = PsnFormat.INSTANCE.read(gameText);
+            } else {
+                GWT.log("Will parse as KIF game");
+                gameRecords = KifFormat.INSTANCE.read(gameText);
+            }
+        } catch (Exception ex) {
+            errorText.setVisible(true);
+            errorText.setHTML(ex.getMessage());
+            return;
         }
+        errorText.setVisible(false);
         GWT.log("Firing game record changed event...");
         for (GameRecord gameRecord : gameRecords) {
             importGameRecord(gameRecord);
