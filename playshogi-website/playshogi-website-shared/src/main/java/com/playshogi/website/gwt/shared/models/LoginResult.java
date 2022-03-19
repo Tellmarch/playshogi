@@ -14,6 +14,11 @@ public class LoginResult implements Serializable {
     public LoginResult() {
     }
 
+    public LoginResult(String errorMessage) {
+        this.errorMessage = errorMessage;
+        this.loggedIn = false;
+    }
+
     public boolean isLoggedIn() {
         return loggedIn;
     }

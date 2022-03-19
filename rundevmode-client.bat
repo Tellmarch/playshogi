@@ -7,5 +7,7 @@ call "C:\Program Files\JetBrains\IntelliJ IDEA Community Edition 2021.2.1\plugin
 
 call "C:\Program Files\JetBrains\IntelliJ IDEA Community Edition 2021.2.1\plugins\maven\lib\maven3\bin\mvn.cmd" gwt:codeserver -pl playshogi-website-client -am --file playshogi-website/pom.xml
 
+pause
+
 ::# Starts a local webserver to run the website locally
 ::# You may need to comment out the "ExpiresFilter" sections in playshogi-website-gwt-mvn/src/main/webapp/WEB-INF/web.xml for this to work
