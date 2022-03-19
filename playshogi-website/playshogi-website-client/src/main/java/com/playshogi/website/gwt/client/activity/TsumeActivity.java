@@ -43,10 +43,9 @@ public class TsumeActivity extends MyAbstractActivity {
     private final MyEventBinder eventBinder = GWT.create(MyEventBinder.class);
 
     private final ProblemsServiceAsync problemsService = GWT.create(ProblemsService.class);
-    private final KifuServiceAsync kifuService = GWT.create(KifuService.class);
     private final TsumeView tsumeView;
     private final SessionInformation sessionInformation;
-    private final ProblemController problemController = new ProblemController();
+    private final ProblemController problemController;
     private EventBus eventBus;
 
     private String tsumeId;
@@ -59,6 +58,7 @@ public class TsumeActivity extends MyAbstractActivity {
         this.tsumeView = tsumeView;
         this.tsumeId = place.getTsumeId();
         this.sessionInformation = sessionInformation;
+        this.problemController = new ProblemController(tsumeView::getCurrentPosition, sessionInformation);
     }
 
     private void setTsumeId(String tsumeId) {
@@ -160,55 +160,4 @@ public class TsumeActivity extends MyAbstractActivity {
         return new TsumePlace(tsumeId);
     }
 
-    @EventHandler
-    public void onRequestPositionEvaluationEvent(final RequestPositionEvaluationEvent event) {
-        GWT.log("Tsume Activity Handling RequestPositionEvaluationEvent");
-        String sfen = SfenConverter.toSFEN(tsumeView.getCurrentPosition());
-        kifuService.analysePosition(sessionInformation.getSessionId(), sfen,
-                new AsyncCallback<PositionEvaluationDetails>() {
-                    @Override
-                    public void onFailure(Throwable throwable) {
-                        GWT.log("TsumeActivity - ERROR GETTING POSITION EVALUATION");
-                    }
-
-                    @Override
-                    public void onSuccess(PositionEvaluationDetails result) {
-                        GWT.log("TsumeActivity - received position evaluation\n" + result);
-                        processPositionEvaluationResult(result);
-                    }
-                });
-    }
-
-    private void processPositionEvaluationResult(final PositionEvaluationDetails result) {
-        switch (result.getTsumeAnalysis().getResult()) {
-            case TSUME:
-                Window.alert("Gote is still in Tsume - Your solution may be longer, or the puzzle has" +
-                        " multiple solutions.");
-                break;
-            case NOT_CHECK:
-                Window.alert("Gote is not in check - To solve a Tsume problem, every move needs to be" +
-                        " a check.");
-                break;
-            case ESCAPE:
-                String escapeMove = result.getTsumeAnalysis().getEscapeMove();
-                ShogiMove move = UsfMoveConverter.fromUsfString(escapeMove,
-                        tsumeView.getCurrentPosition());
-                eventBus.fireEvent(new HighlightMoveEvent(move));
-                Scheduler.get().scheduleFixedDelay(() -> {
-                    String message;
-                    if (move instanceof NormalMove && ((NormalMove) move).getPiece() == Piece.GOTE_KING) {
-                        Square toSquare = ((NormalMove) move).getToSquare();
-                        message = "If Gote escapes to " + toSquare + ", there is no mate.";
-                    } else {
-                        message =
-                                "If Gote plays the highlighted move (" +
-                                        sessionInformation.getUserPreferences().getMoveNotationAccordingToPreferences(move, true)
-                                        + "), there is no mate.";
-                    }
-                    Window.alert(message);
-                    return false;
-                }, 100);
-                break;
-        }
-    }
 }

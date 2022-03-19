@@ -38,7 +38,7 @@ public class ByoYomiActivity extends MyAbstractActivity {
     private final PlaceController placeController;
     private final ByoYomiView byoYomiView;
     private final SessionInformation sessionInformation;
-    private final ProblemController problemController = new ProblemController();
+    private final ProblemController problemController;
     private EventBus eventBus;
 
     private String tsumeId;
@@ -65,6 +65,7 @@ public class ByoYomiActivity extends MyAbstractActivity {
         this.placeController = placeController;
         this.sessionInformation = sessionInformation;
         numMoves = place.getNumberOfMoves() == 0 ? 3 : place.getNumberOfMoves();
+        this.problemController = new ProblemController(byoYomiView::getCurrentPosition, sessionInformation);
     }
 
     private void setTsumeId(String tsumeId) {

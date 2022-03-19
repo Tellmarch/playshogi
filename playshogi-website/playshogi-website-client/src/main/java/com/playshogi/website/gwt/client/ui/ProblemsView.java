@@ -34,6 +34,7 @@ import org.dominokit.domino.ui.utils.DominoElement;
 import org.jboss.elemento.Elements;
 import org.jboss.elemento.HtmlContentBuilder;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -186,6 +187,9 @@ public class ProblemsView extends Composite {
                     evt -> eventBus.fireEvent(new UserJumpedToProblemEvent(finalI))
             ));
         }
+        boolean hasTsumeTag = Arrays.stream(event.getCollectionDetails().getTags()).anyMatch("Tsume"
+                ::equalsIgnoreCase);
+        problemFeedbackPanel.setEnableTellMeWhy(hasTsumeTag);
     }
 
     @EventHandler

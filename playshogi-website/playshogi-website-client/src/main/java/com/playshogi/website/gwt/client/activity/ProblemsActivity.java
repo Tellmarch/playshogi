@@ -2,6 +2,7 @@ package com.playshogi.website.gwt.client.activity;
 
 import com.google.gwt.core.client.Duration;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
@@ -10,17 +11,26 @@ import com.google.gwt.user.client.ui.AcceptsOneWidget;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
+import com.playshogi.library.shogi.models.Piece;
+import com.playshogi.library.shogi.models.formats.sfen.SfenConverter;
 import com.playshogi.library.shogi.models.formats.usf.UsfFormat;
+import com.playshogi.library.shogi.models.formats.usf.UsfMoveConverter;
+import com.playshogi.library.shogi.models.moves.NormalMove;
+import com.playshogi.library.shogi.models.moves.ShogiMove;
+import com.playshogi.library.shogi.models.position.Square;
 import com.playshogi.library.shogi.models.record.GameRecord;
 import com.playshogi.website.gwt.client.SessionInformation;
 import com.playshogi.website.gwt.client.controller.ProblemController;
 import com.playshogi.website.gwt.client.events.collections.ListCollectionProblemsEvent;
 import com.playshogi.website.gwt.client.events.gametree.GameTreeChangedEvent;
+import com.playshogi.website.gwt.client.events.gametree.HighlightMoveEvent;
 import com.playshogi.website.gwt.client.events.kifu.GameInformationChangedEvent;
+import com.playshogi.website.gwt.client.events.kifu.RequestPositionEvaluationEvent;
 import com.playshogi.website.gwt.client.events.puzzles.*;
 import com.playshogi.website.gwt.client.place.ProblemsPlace;
 import com.playshogi.website.gwt.client.ui.ProblemsView;
 import com.playshogi.website.gwt.client.util.FireAndForgetCallback;
+import com.playshogi.website.gwt.shared.models.PositionEvaluationDetails;
 import com.playshogi.website.gwt.shared.models.ProblemCollectionDetails;
 import com.playshogi.website.gwt.shared.models.ProblemCollectionDetailsAndProblems;
 import com.playshogi.website.gwt.shared.models.ProblemDetails;
@@ -48,7 +58,7 @@ public class ProblemsActivity extends MyAbstractActivity {
 
     private final ProblemsView problemsView;
     private final SessionInformation sessionInformation;
-    private final ProblemController problemController = new ProblemController();
+    private final ProblemController problemController;
     private EventBus eventBus;
 
     private final String collectionId;
@@ -69,6 +79,7 @@ public class ProblemsActivity extends MyAbstractActivity {
         this.lessonId = place.getLessonId();
         this.problemIndex = place.getProblemIndex();
         this.sessionInformation = sessionInformation;
+        this.problemController = new ProblemController(problemsView::getCurrentPosition, sessionInformation);
     }
 
     @Override

@@ -26,7 +26,7 @@ public class ProblemActivity extends MyAbstractActivity {
     private final KifuServiceAsync kifuService = GWT.create(KifuService.class);
     private final ProblemView problemView;
     private final SessionInformation sessionInformation;
-    private final ProblemController problemController = new ProblemController();
+    private final ProblemController problemController;
     private EventBus eventBus;
 
     private final String kifuId;
@@ -36,6 +36,7 @@ public class ProblemActivity extends MyAbstractActivity {
         this.problemView = problemView;
         this.kifuId = place.getKifuId();
         this.sessionInformation = sessionInformation;
+        this.problemController = new ProblemController(problemView::getCurrentPosition, sessionInformation);
     }
 
     @Override

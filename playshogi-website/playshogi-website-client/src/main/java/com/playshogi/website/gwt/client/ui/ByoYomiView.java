@@ -5,6 +5,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.web.bindery.event.shared.EventBus;
+import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.website.gwt.client.SessionInformation;
 import com.playshogi.website.gwt.client.controller.NavigationController;
 import com.playshogi.website.gwt.client.mvp.AppPlaceHistoryMapper;
@@ -57,5 +58,9 @@ public class ByoYomiView extends Composite {
     public void initUi(ByoYomiPlace place) {
         byoYomiProgressPanel.setTimerVisible(place.getMaxTimeSec() != 0);
         byoYomiFeedbackPanel.setTimerVisible(place.getTimePerMove() != 0);
+    }
+
+    public ShogiPosition getCurrentPosition() {
+        return shogiBoard.getPosition();
     }
 }

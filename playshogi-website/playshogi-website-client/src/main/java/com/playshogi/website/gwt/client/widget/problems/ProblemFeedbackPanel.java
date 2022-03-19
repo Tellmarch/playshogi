@@ -44,10 +44,12 @@ public class ProblemFeedbackPanel extends Composite implements ClickHandler {
     private ShogiPosition currentPosition = null;
 
     private final Button skipButton;
-    private Button tellMeWhyButton = null;
+    private Button tellMeWhyButton;
     private final HTML messagePanel;
+    private boolean enableTellMeWhy;
 
     public ProblemFeedbackPanel(final GameNavigatorPanel gameNavigatorPanel, final boolean enableTellMeWhy) {
+        this.enableTellMeWhy = enableTellMeWhy;
 
         FlowPanel flowPanel = new FlowPanel();
         if (gameNavigatorPanel != null) {
@@ -72,14 +74,22 @@ public class ProblemFeedbackPanel extends Composite implements ClickHandler {
 
         flowPanel.add(messagePanel);
 
-        if (enableTellMeWhy) {
-            tellMeWhyButton = new Button("Tell me why!");
-            tellMeWhyButton.addClickHandler(clickEvent -> eventBus.fireEvent(new RequestPositionEvaluationEvent()));
+        tellMeWhyButton = new Button("Tell me why!");
+        tellMeWhyButton.addClickHandler(clickEvent -> eventBus.fireEvent(new RequestPositionEvaluationEvent()));
 
-            flowPanel.add(tellMeWhyButton);
+        flowPanel.add(tellMeWhyButton);
+
+        tellMeWhyButton.setVisible(false);
+
+        if (enableTellMeWhy) {
+            tellMeWhyButton.setVisible(true);
         }
 
         initWidget(flowPanel);
+    }
+
+    public void setEnableTellMeWhy(final boolean enableTellMeWhy) {
+        this.enableTellMeWhy = enableTellMeWhy;
     }
 
     @Override
@@ -146,7 +156,7 @@ public class ProblemFeedbackPanel extends Composite implements ClickHandler {
     }
 
     private void setTellMeWhyVisibility(final boolean b) {
-        if (tellMeWhyButton != null) {
+        if (enableTellMeWhy) {
             tellMeWhyButton.setVisible(b);
         }
     }
