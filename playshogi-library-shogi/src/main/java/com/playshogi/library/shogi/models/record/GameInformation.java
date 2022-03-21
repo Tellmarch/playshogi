@@ -10,6 +10,7 @@ public class GameInformation {
     private String location;
     private String event;
     private String opening;
+    private String timeControl;
 
     public GameInformation() {
     }
@@ -62,6 +63,14 @@ public class GameInformation {
         this.event = event;
     }
 
+    public String getTimeControl() {
+        return timeControl;
+    }
+
+    public void setTimeControl(final String timeControl) {
+        this.timeControl = timeControl;
+    }
+
     @Override
     public String toString() {
         return "GameInformation{" +
@@ -71,6 +80,7 @@ public class GameInformation {
                 ", location='" + location + '\'' +
                 ", event='" + event + '\'' +
                 ", opening='" + opening + '\'' +
+                ", timeControl='" + timeControl + '\'' +
                 '}';
     }
 
@@ -85,11 +95,11 @@ public class GameInformation {
         GameInformation that = (GameInformation) o;
         return Objects.equals(black, that.black) && Objects.equals(white, that.white) && Objects.equals(date,
                 that.date) && Objects.equals(location, that.location) && Objects.equals(event, that.event)
-                && Objects.equals(opening, that.opening);
+                && Objects.equals(opening, that.opening) && Objects.equals(timeControl, that.timeControl);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(black, white, date, location, event, opening);
+        return Objects.hash(black, white, date, location, event, opening, timeControl);
     }
 }

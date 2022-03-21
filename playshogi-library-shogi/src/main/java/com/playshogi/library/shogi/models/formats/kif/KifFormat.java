@@ -182,6 +182,9 @@ public enum KifFormat implements GameRecordFormat {
             case HANDICAP_RECEIVER:
                 gameRecord.getGameInformation().setBlack(value);
                 break;
+            case TIME_CONTROL:
+                gameRecord.getGameInformation().setTimeControl(value);
+                break;
             case "作意":
                 // TODO: conception
                 break;
@@ -191,7 +194,6 @@ public enum KifFormat implements GameRecordFormat {
             case HANDICAP_RECEIVER_PIECES_IN_HAND:
                 throw new IllegalStateException("Should have processed pieces in hand while reading position");
             case END_DATE_AND_TIME:
-            case TIME_CONTROL:
             case PUBLICATION:
             case ESTIMATED_TIME:
             case THINKING_TIME:
@@ -398,6 +400,10 @@ public enum KifFormat implements GameRecordFormat {
 
         if (gameInformation.getOpening() != null && !gameInformation.getOpening().isEmpty()) {
             builder.append(OPENING).append("：").append(gameInformation.getOpening()).append("\n");
+        }
+
+        if (gameInformation.getTimeControl() != null && !gameInformation.getTimeControl().isEmpty()) {
+            builder.append(TIME_CONTROL).append("：").append(gameInformation.getTimeControl()).append("\n");
         }
 
         //TODO handicap
