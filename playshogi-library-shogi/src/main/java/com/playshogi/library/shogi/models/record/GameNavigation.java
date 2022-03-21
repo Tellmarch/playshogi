@@ -216,10 +216,19 @@ public class GameNavigation {
         addMove(move, false);
     }
 
+    public void addMove(final Move move, final MoveTiming moveTiming) {
+        addMove(move, moveTiming, false);
+    }
+
     public void addMove(final Move move, final boolean fromUser) {
+        addMove(move, null, fromUser);
+    }
+
+    public void addMove(final Move move, final MoveTiming moveTiming, final boolean fromUser) {
         Node childNode = currentNode.getChildWithMove(move);
         if (childNode == null) {
             Node newNode = new Node(move);
+            newNode.setTiming(moveTiming);
             if (fromUser) {
                 newNode.setNew(true);
                 newNode.setVisited(true);

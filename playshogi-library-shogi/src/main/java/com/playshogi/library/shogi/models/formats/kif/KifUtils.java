@@ -175,7 +175,7 @@ public class KifUtils {
             case GOLD:
                 return "金";
             case KING:
-                return "王";
+                return "玉";
             case KNIGHT:
                 return "桂";
             case LANCE:

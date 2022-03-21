@@ -19,6 +19,7 @@ public class Node {
 
     private String comment = null;
     private MoveAnnotation annotation = MoveAnnotation.NONE;
+    private MoveTiming timing = null;
     private Integer evaluation = null;
     private String objects = null;
     private String additionalTags = null;
@@ -92,6 +93,14 @@ public class Node {
 
     public void setAnnotation(final MoveAnnotation annotation) {
         this.annotation = annotation;
+    }
+
+    public MoveTiming getTiming() {
+        return timing;
+    }
+
+    public void setTiming(final MoveTiming timing) {
+        this.timing = timing;
     }
 
     public Optional<Integer> getEvaluation() {

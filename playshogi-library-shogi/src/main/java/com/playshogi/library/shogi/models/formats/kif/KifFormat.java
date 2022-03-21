@@ -339,8 +339,10 @@ public enum KifFormat implements GameRecordFormat {
                 if (i != moveNumber || ts.length < 2) {
                     throw new IllegalArgumentException("Error after move " + moveNumber);
                 }
-                String move = ts[1];
+                String move = ts[1].replaceAll(" ", "");
                 curMove = KifMoveConverter.fromKifString(move, gameNavigation.getPosition(), prevMove);
+
+                MoveTiming moveTiming = readMoveTiming(moveNumber, move);
 
                 if (curMove instanceof SpecialMove) {
                     SpecialMove specialMove = (SpecialMove) curMove;
@@ -350,7 +352,7 @@ public enum KifFormat implements GameRecordFormat {
                     }
                 }
 
-                gameNavigation.addMove(curMove);
+                gameNavigation.addMove(curMove, moveTiming);
                 prevMove = curMove;
             } else if (line.startsWith("変化")) {
                 // Variation
@@ -372,6 +374,22 @@ public enum KifFormat implements GameRecordFormat {
         }
 
         gameNavigation.moveToStart();
+    }
+
+    private MoveTiming readMoveTiming(final int moveNumber, final String move) {
+        if (!move.contains("/")) {
+            return null;
+        }
+        String time = move.substring(move.lastIndexOf('(') + 1);
+        String[] split = time.split("[:/)]");
+        if (split.length < 5) {
+            throw new IllegalArgumentException("Error parsing time for move " + moveNumber + ": " + time);
+        }
+        int moveSeconds = Integer.parseInt(split[1]) + 60 * Integer.parseInt(split[0]);
+        int gameSeconds =
+                Integer.parseInt(split[4]) + 60 * Integer.parseInt(split[3]) + 3600 * Integer.parseInt(split[2]);
+
+        return new MoveTiming(moveSeconds, gameSeconds);
     }
 
     @Override
@@ -438,6 +456,8 @@ public enum KifFormat implements GameRecordFormat {
             }
         }
 
+        ShogiMove previousMove = null;
+
         int moveNumber = 1;
         while (n.hasChildren()) {
             List<Node> children = n.getChildren();
@@ -448,10 +468,19 @@ public enum KifFormat implements GameRecordFormat {
             if (n.getMove() instanceof EditMove) {
                 // TODO
             } else if (n.getMove() instanceof ShogiMove) {
-                builder.append(moveNumber).append(" ").append(KifMoveConverter.toKifString((ShogiMove) n.getMove())).append("\n");
+                ShogiMove newMove = (ShogiMove) n.getMove();
+                builder.append(moveNumber).append(" ").append(KifMoveConverter.toKifString(newMove, previousMove));
+                previousMove = newMove;
+
+                if (n.getTiming() != null) {
+                    builder.append("   ").append(n.getTiming().toKifString());
+                }
+
                 if (n.getComment().isPresent() || n.getObjects().isPresent() || n.getAdditionalTags().isPresent()) {
                     // TODO
                 }
+
+                builder.append("\n");
             } else {
                 throw new IllegalStateException("Unknown move class: " + n);
             }

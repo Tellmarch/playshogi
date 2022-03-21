@@ -97,14 +97,26 @@ public class KifMoveConverter {
         }
     }
 
-    public static String toKifString(final ShogiMove move) {
+    public static String toKifString(final ShogiMove move, final ShogiMove previousMove) {
 
         if (move instanceof NormalMove) {
             NormalMove normalMove = (NormalMove) move;
 
-            return "" + KifUtils.getJapaneseWesternNumber(normalMove.getToSquare().getColumn()) + KifUtils.getJapaneseNumber(normalMove.getToSquare().getRow())
-                    + KifUtils.getJapanesePieceSymbol(normalMove.getPiece()) + (normalMove.isPromote() ? "成(" : "(") + normalMove.getFromSquare().getColumn()
-                    + normalMove.getFromSquare().getRow() + ")";
+
+            String dest = "" +
+                    KifUtils.getJapaneseWesternNumber(normalMove.getToSquare().getColumn()) +
+                    KifUtils.getJapaneseNumber(normalMove.getToSquare().getRow());
+
+            if (previousMove instanceof ToSquareMove) {
+                ToSquareMove toSquareMove = (ToSquareMove) previousMove;
+                if (((NormalMove) move).getToSquare().equals(toSquareMove.getToSquare())) {
+                    dest = "同　";
+                }
+            }
+
+            return "" + dest
+                    + KifUtils.getJapanesePieceSymbol(normalMove.getPiece()) + (normalMove.isPromote() ? "成(" : "(")
+                    + normalMove.getFromSquare().getColumn() + normalMove.getFromSquare().getRow() + ")";
 
         } else if (move instanceof DropMove) {
             DropMove dropMove = (DropMove) move;
@@ -115,9 +127,7 @@ public class KifMoveConverter {
         } else if (move instanceof SpecialMove) {
             SpecialMove specialMove = (SpecialMove) move;
 
-            // TODO
-            return specialMove.getUsfString();
-
+            return fromSpecialMove(specialMove);
         } else {
             throw new IllegalArgumentException("Unknown move type " + move);
         }
@@ -155,6 +165,31 @@ public class KifMoveConverter {
 
         } else {
             throw new IllegalArgumentException("Unknown move type " + move);
+        }
+    }
+
+    private static String fromSpecialMove(final SpecialMove specialMove) {
+        switch (specialMove.getSpecialMoveType()) {
+            case RESIGN:
+                return "投了";
+            case SENNICHITE:
+                return "千日手";
+            case JISHOGI:
+                return "持将棋";
+            case ILLEGAL_MOVE:
+                return "反則勝ち";
+            case BREAK:
+                return "中断";
+            case TIMEOUT:
+                return "切れ負け";
+            case CHECKMATE:
+                return "詰み";
+            case NYUGYOKU_WIN:
+                return "入玉勝ち";
+            case OTHER:
+            case SILENT:
+            default:
+                return null;
         }
     }
 
