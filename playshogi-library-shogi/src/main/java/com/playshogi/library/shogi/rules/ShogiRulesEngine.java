@@ -218,6 +218,9 @@ public class ShogiRulesEngine {
     }
 
     private boolean isMoveLegalInPositionWithoutCheckingKingAttack(final ShogiPosition position, final ShogiMove move) {
+        if (move.getPlayer() != position.getPlayerToMove()) {
+            return false;
+        }
         if (move instanceof CaptureMove) {
             return isCaptureMoveLegalInPosition(position, (CaptureMove) move);
         } else if (move instanceof DropMove) {
@@ -234,6 +237,10 @@ public class ShogiRulesEngine {
     // don't capture our piece
 
     private boolean isNormalMoveLegalInPosition(final ReadOnlyShogiPosition position, final NormalMove move) {
+        if (!position.getPieceAt(move.getFromSquare()).isPresent() ||
+                position.getPieceAt(move.getFromSquare()).get() != move.getPiece()) {
+            return false;
+        }
         PieceMovement pieceMovement = PIECE_MOVEMENTS.get(move.getPiece().getSentePiece());
         if (move.isBlackMoving()) {
             return pieceMovement.isMoveDxDyValid(position.getShogiBoardState(), move.getFromSquare(),
@@ -245,8 +252,14 @@ public class ShogiRulesEngine {
     }
 
     private boolean isDropMoveLegalInPosition(final ShogiPosition position, final DropMove move) {
+        KomadaiState komadai = position.getPlayerToMove() == Player.BLACK ? position.getSenteKomadai() :
+                position.getGoteKomadai();
+        PieceType pieceType = move.getPieceType();
+        if (komadai.getPiecesOfType(pieceType) < 1) {
+            return false;
+        }
         boolean result = isDropMoveValidInPosition(position, move);
-        if (result && move.getPieceType() == PieceType.PAWN) {
+        if (result && pieceType == PieceType.PAWN) {
             if (isPawnDropCheck(position, move)) {
                 this.playMoveInPosition(position, move);
                 result = !isPositionCheckmate(position);
@@ -276,6 +289,10 @@ public class ShogiRulesEngine {
     }
 
     private boolean isCaptureMoveLegalInPosition(final ReadOnlyShogiPosition position, final CaptureMove move) {
+        if (!position.getPieceAt(move.getFromSquare()).isPresent() ||
+                position.getPieceAt(move.getFromSquare()).get() != move.getPiece()) {
+            return false;
+        }
         Optional<Piece> capturedPiece = position.getPieceAt(move.getToSquare());
         if (capturedPiece.isPresent() && capturedPiece.get().isBlackPiece() != move.isBlackMoving()) {
             return isNormalMoveLegalInPosition(position, move);
@@ -390,7 +407,6 @@ public class ShogiRulesEngine {
             this.playMoveInPosition(position, everyMove);
             if (!isPositionCheck(position, escapingPlayer)) {
                 this.undoMoveInPosition(position, everyMove);
-                System.out.println("escape:" + everyMove);
                 return false;
             }
             this.undoMoveInPosition(position, everyMove);
