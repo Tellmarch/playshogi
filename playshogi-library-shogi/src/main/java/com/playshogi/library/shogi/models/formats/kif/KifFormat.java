@@ -2,18 +2,17 @@ package com.playshogi.library.shogi.models.formats.kif;
 
 import com.playshogi.library.shogi.models.Player;
 import com.playshogi.library.shogi.models.formats.kif.KifUtils.PieceParsingResult;
+import com.playshogi.library.shogi.models.formats.sfen.SfenConverter;
 import com.playshogi.library.shogi.models.formats.util.GameRecordFormat;
 import com.playshogi.library.shogi.models.formats.util.LineReader;
 import com.playshogi.library.shogi.models.formats.util.StringLineReader;
+import com.playshogi.library.shogi.models.moves.EditMove;
 import com.playshogi.library.shogi.models.moves.ShogiMove;
 import com.playshogi.library.shogi.models.moves.SpecialMove;
 import com.playshogi.library.shogi.models.position.MutableKomadaiState;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.library.shogi.models.position.Square;
-import com.playshogi.library.shogi.models.record.GameNavigation;
-import com.playshogi.library.shogi.models.record.GameRecord;
-import com.playshogi.library.shogi.models.record.GameResult;
-import com.playshogi.library.shogi.models.record.GameTree;
+import com.playshogi.library.shogi.models.record.*;
 import com.playshogi.library.shogi.models.shogivariant.Handicap;
 import com.playshogi.library.shogi.models.shogivariant.ShogiInitialPositionFactory;
 import com.playshogi.library.shogi.rules.ShogiRulesEngine;
@@ -375,12 +374,85 @@ public enum KifFormat implements GameRecordFormat {
 
     @Override
     public String write(final GameRecord gameRecord) {
-        throw new UnsupportedOperationException();
+        StringBuilder builder = new StringBuilder();
+        writeInformation(gameRecord, builder);
+        builder.append(write(gameRecord.getGameTree()));
+        return builder.toString();
+    }
+
+    private void writeInformation(final GameRecord gameRecord, final StringBuilder builder) {
+        GameInformation gameInformation = gameRecord.getGameInformation();
+        builder.append("# ---- PlayShogi Kif Export").append("\n");
+
+        if (gameInformation.getDate() != null && !gameInformation.getDate().isEmpty()) {
+            builder.append(START_DATE_AND_TIME).append("：").append(gameInformation.getDate()).append("\n");
+        }
+
+        if (gameInformation.getLocation() != null && !gameInformation.getLocation().isEmpty()) {
+            builder.append(PLACE).append("：").append(gameInformation.getLocation()).append("\n");
+        }
+
+        if (gameInformation.getEvent() != null && !gameInformation.getEvent().isEmpty()) {
+            builder.append(TOURNAMENT).append("：").append(gameInformation.getEvent()).append("\n");
+        }
+
+        if (gameInformation.getOpening() != null && !gameInformation.getOpening().isEmpty()) {
+            builder.append(OPENING).append("：").append(gameInformation.getOpening()).append("\n");
+        }
+
+        //TODO handicap
+        builder.append("手合割：平手").append("\n");
+
+        if (gameInformation.getBlack() != null && !gameInformation.getBlack().isEmpty()) {
+            builder.append(SENTE).append("：").append(gameInformation.getBlack()).append("\n");
+        }
+
+        if (gameInformation.getWhite() != null && !gameInformation.getWhite().isEmpty()) {
+            builder.append(GOTE).append("：").append(gameInformation.getWhite()).append("\n");
+        }
+
+        builder.append("手数----指手---------消費時間--").append("\n");
+
     }
 
     @Override
     public String write(final GameTree gameTree) {
-        throw new UnsupportedOperationException();
+        StringBuilder builder = new StringBuilder();
+
+        Node n = gameTree.getRootNode();
+        if (n.getComment().isPresent() || n.getObjects().isPresent() || n.getAdditionalTags().isPresent()) {
+            // TODO
+        }
+
+        if (n.getMove() instanceof EditMove) {
+            EditMove editMove = (EditMove) n.getMove();
+            String sfen = SfenConverter.toSFEN(editMove.getPosition());
+            if (!SfenConverter.INITIAL_POSITION_SFEN.equals(sfen)) {
+                // TODO
+            }
+        }
+
+        int moveNumber = 1;
+        while (n.hasChildren()) {
+            List<Node> children = n.getChildren();
+            if (children.size() > 1) {
+                // TODO
+            }
+            n = children.get(0);
+            if (n.getMove() instanceof EditMove) {
+                // TODO
+            } else if (n.getMove() instanceof ShogiMove) {
+                builder.append(moveNumber).append(" ").append(KifMoveConverter.toKifString((ShogiMove) n.getMove())).append("\n");
+                if (n.getComment().isPresent() || n.getObjects().isPresent() || n.getAdditionalTags().isPresent()) {
+                    // TODO
+                }
+            } else {
+                throw new IllegalStateException("Unknown move class: " + n);
+            }
+            moveNumber++;
+        }
+        builder.append('\n');
+        return builder.toString();
     }
 
     public ShogiPosition readPosition(final String position) {

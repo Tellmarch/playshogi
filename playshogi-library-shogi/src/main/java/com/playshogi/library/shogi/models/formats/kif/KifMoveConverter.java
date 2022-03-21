@@ -103,7 +103,7 @@ public class KifMoveConverter {
             NormalMove normalMove = (NormalMove) move;
 
             return "" + KifUtils.getJapaneseWesternNumber(normalMove.getToSquare().getColumn()) + KifUtils.getJapaneseNumber(normalMove.getToSquare().getRow())
-                    + KifUtils.getJapanesePieceSymbol(normalMove.getPiece()) + (normalMove.isPromote() ? "成 (" : " (") + normalMove.getFromSquare().getColumn()
+                    + KifUtils.getJapanesePieceSymbol(normalMove.getPiece()) + (normalMove.isPromote() ? "成(" : "(") + normalMove.getFromSquare().getColumn()
                     + normalMove.getFromSquare().getRow() + ")";
 
         } else if (move instanceof DropMove) {

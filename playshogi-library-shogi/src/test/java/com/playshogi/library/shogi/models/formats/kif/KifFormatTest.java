@@ -4,6 +4,7 @@ import com.playshogi.library.shogi.models.formats.sfen.SfenConverter;
 import com.playshogi.library.shogi.models.formats.usf.UsfFormat;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.library.shogi.models.record.GameRecord;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.List;
@@ -1168,5 +1169,19 @@ public class KifFormatTest {
                         ".3c1c\n" +
                         "#まで37手詰\n",
                 UsfFormat.INSTANCE.write(kif));
+    }
+
+    @Ignore
+    @Test
+    public void readWrite1() {
+        List<GameRecord> gameRecords = KifFormat.INSTANCE.read(KIF_81);
+        assertEquals(KIF_81, KifFormat.INSTANCE.write(gameRecords.get(0)));
+    }
+
+    @Ignore
+    @Test
+    public void readWrite2() {
+        List<GameRecord> gameRecords = KifFormat.INSTANCE.read(KIF_24);
+        assertEquals(KIF_24, KifFormat.INSTANCE.write(gameRecords.get(0)));
     }
 }
