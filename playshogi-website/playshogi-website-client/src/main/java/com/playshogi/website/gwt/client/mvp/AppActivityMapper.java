@@ -72,6 +72,8 @@ public class AppActivityMapper implements ActivityMapper {
     ViewLessonView viewLessonView;
     @Inject
     AdminCollectionsView adminCollectionsView;
+    @Inject
+    ProblemsRaceView problemsRaceView;
 
     @Override
     public Activity getActivity(final Place place) {
@@ -139,6 +141,8 @@ public class AppActivityMapper implements ActivityMapper {
         } else if (place instanceof AdminCollectionsPlace) {
             return new AdminCollectionsActivity((AdminCollectionsPlace) place, adminCollectionsView,
                     sessionInformation);
+        } else if (place instanceof ProblemsRacePlace) {
+            return new ProblemsRaceActivity((ProblemsRacePlace) place, problemsRaceView, sessionInformation);
         }
 
         return null;

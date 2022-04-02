@@ -38,11 +38,11 @@ import java.util.List;
 import java.util.Optional;
 
 @Singleton
-public class ProblemsView extends Composite {
+public class ProblemsRaceView extends Composite {
 
     private static final String PROBLEMS = "problems";
 
-    interface MyEventBinder extends EventBinder<ProblemsView> {
+    interface MyEventBinder extends EventBinder<ProblemsRaceView> {
     }
 
     private final MyEventBinder eventBinder = GWT.create(MyEventBinder.class);
@@ -63,7 +63,7 @@ public class ProblemsView extends Composite {
     private HtmlContentBuilder<HTMLElement> timerTextMs;
 
     @Inject
-    public ProblemsView(final SessionInformation sessionInformation) {
+    public ProblemsRaceView(final SessionInformation sessionInformation) {
         this.sessionInformation = sessionInformation;
         GWT.log("Creating Problems view");
         shogiBoard = new ShogiBoard(PROBLEMS, sessionInformation.getUserPreferences());

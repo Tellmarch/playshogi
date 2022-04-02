@@ -1,16 +1,16 @@
 package com.playshogi.website.gwt.client.events.puzzles;
 
 import com.google.web.bindery.event.shared.binder.GenericEvent;
-import com.playshogi.website.gwt.client.activity.ProblemsActivity;
+import com.playshogi.website.gwt.client.models.ProblemStatus;
 
 import java.util.Arrays;
 
 public class ProblemCollectionProgressEvent extends GenericEvent {
 
-    private int problemIndex;
-    private ProblemsActivity.ProblemStatus[] statuses;
+    private final int problemIndex;
+    private final ProblemStatus[] statuses;
 
-    public ProblemCollectionProgressEvent(final int problemIndex, final ProblemsActivity.ProblemStatus[] statuses) {
+    public ProblemCollectionProgressEvent(final int problemIndex, final ProblemStatus[] statuses) {
         this.problemIndex = problemIndex;
         this.statuses = statuses;
     }
@@ -19,7 +19,7 @@ public class ProblemCollectionProgressEvent extends GenericEvent {
         return problemIndex;
     }
 
-    public ProblemsActivity.ProblemStatus[] getStatuses() {
+    public ProblemStatus[] getStatuses() {
         return statuses;
     }
 

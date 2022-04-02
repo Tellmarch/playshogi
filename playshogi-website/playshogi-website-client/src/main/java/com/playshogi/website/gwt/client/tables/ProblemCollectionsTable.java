@@ -7,6 +7,7 @@ import com.playshogi.website.gwt.client.events.collections.DeleteProblemCollecti
 import com.playshogi.website.gwt.client.mvp.AppPlaceHistoryMapper;
 import com.playshogi.website.gwt.client.place.ProblemCollectionPlace;
 import com.playshogi.website.gwt.client.place.ProblemsPlace;
+import com.playshogi.website.gwt.client.place.ProblemsRacePlace;
 import com.playshogi.website.gwt.client.widget.collections.ProblemCollectionPropertiesForm;
 import com.playshogi.website.gwt.client.widget.problems.TagsElement;
 import com.playshogi.website.gwt.shared.models.ProblemCollectionDetails;
@@ -42,6 +43,7 @@ public class ProblemCollectionsTable {
     private final LocalListDataStore<ProblemCollectionDetails> localListDataStore;
     private final SimplePaginationPlugin<ProblemCollectionDetails> simplePaginationPlugin;
     private final DataTable<ProblemCollectionDetails> table;
+    private final AppPlaceHistoryMapper historyMapper;
     private final boolean canEdit;
     private final boolean isAuthor;
     private EventBus eventBus;
@@ -49,9 +51,10 @@ public class ProblemCollectionsTable {
     private CustomSearchTableAction<ProblemCollectionDetails> customSearchTableAction;
 
     public ProblemCollectionsTable(final AppPlaceHistoryMapper historyMapper, boolean canEdit, boolean isAuthor) {
+        this.historyMapper = historyMapper;
         this.canEdit = canEdit;
         this.isAuthor = isAuthor;
-        TableConfig<ProblemCollectionDetails> tableConfig = getTableConfig(historyMapper);
+        TableConfig<ProblemCollectionDetails> tableConfig = getTableConfig();
         tableConfig.addPlugin(new RecordDetailsPlugin<>(cell -> getDetails(cell.getRecord())));
         tableConfig.addPlugin(new SortPlugin<>());
         addFilterPlugin(tableConfig);
@@ -118,17 +121,19 @@ public class ProblemCollectionsTable {
                 .appendChild(h(5).add("Description:"))
                 .appendChild(TextNode.of(details.getDescription()))
         );
+        String href = "#" + historyMapper.getToken(new ProblemsRacePlace(details.getId(), 0));
+        rowElement.addColumn(Column.span3().appendChild(Elements.a(href).add(Button.createSuccess(Icons.ALL.flag_checkered_mdi()).setContent("Race!"))));
         if (canEdit) {
-            rowElement.addColumn(Column.span4().appendChild(Button.createPrimary("Edit properties")
+            rowElement.addColumn(Column.span2().appendChild(Button.createPrimary("Edit properties")
                     .addClickListener(evt -> problemCollectionProperties.showInPopup(details))));
-            rowElement.addColumn(Column.span4().appendChild(Button.createDanger(Icons.ALL.delete_forever())
+            rowElement.addColumn(Column.span2().appendChild(Button.createDanger(Icons.ALL.delete_forever())
                     .setContent("Delete collection")
                     .addClickListener(evt -> confirmCollectionDeletion(details))));
         }
         return rowElement.element();
     }
 
-    private TableConfig<ProblemCollectionDetails> getTableConfig(final AppPlaceHistoryMapper historyMapper) {
+    private TableConfig<ProblemCollectionDetails> getTableConfig() {
         TableConfig<ProblemCollectionDetails> tableConfig = new TableConfig<>();
         tableConfig
                 .addColumn(

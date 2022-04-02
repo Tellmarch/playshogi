@@ -20,7 +20,8 @@ import com.playshogi.website.gwt.client.events.kifu.GameInformationChangedEvent;
 import com.playshogi.website.gwt.client.events.puzzles.*;
 import com.playshogi.website.gwt.client.models.ProblemStatus;
 import com.playshogi.website.gwt.client.place.ProblemsPlace;
-import com.playshogi.website.gwt.client.ui.ProblemsView;
+import com.playshogi.website.gwt.client.place.ProblemsRacePlace;
+import com.playshogi.website.gwt.client.ui.ProblemsRaceView;
 import com.playshogi.website.gwt.client.util.FireAndForgetCallback;
 import com.playshogi.website.gwt.shared.models.ProblemCollectionDetails;
 import com.playshogi.website.gwt.shared.models.ProblemCollectionDetailsAndProblems;
@@ -29,9 +30,9 @@ import com.playshogi.website.gwt.shared.services.*;
 
 import java.util.Arrays;
 
-public class ProblemsActivity extends MyAbstractActivity {
+public class ProblemsRaceActivity extends MyAbstractActivity {
 
-    interface MyEventBinder extends EventBinder<ProblemsActivity> {
+    interface MyEventBinder extends EventBinder<ProblemsRaceActivity> {
     }
 
     private final MyEventBinder eventBinder = GWT.create(MyEventBinder.class);
@@ -40,7 +41,7 @@ public class ProblemsActivity extends MyAbstractActivity {
     private final KifuServiceAsync kifuService = GWT.create(KifuService.class);
     private final UserServiceAsync userService = GWT.create(UserService.class);
 
-    private final ProblemsView problemsView;
+    private final ProblemsRaceView view;
     private final SessionInformation sessionInformation;
     private final ProblemController problemController;
     private EventBus eventBus;
@@ -56,14 +57,14 @@ public class ProblemsActivity extends MyAbstractActivity {
     private Duration duration;
     private Timer activityTimer;
 
-    public ProblemsActivity(final ProblemsPlace place, final ProblemsView problemsView,
-                            final SessionInformation sessionInformation) {
-        this.problemsView = problemsView;
+    public ProblemsRaceActivity(final ProblemsRacePlace place, final ProblemsRaceView view,
+                                final SessionInformation sessionInformation) {
+        this.view = view;
         this.collectionId = place.getCollectionId();
         this.lessonId = place.getLessonId();
         this.problemIndex = place.getProblemIndex();
         this.sessionInformation = sessionInformation;
-        this.problemController = new ProblemController(problemsView::getCurrentPosition, sessionInformation);
+        this.problemController = new ProblemController(view::getCurrentPosition, sessionInformation);
     }
 
     @Override
@@ -71,9 +72,9 @@ public class ProblemsActivity extends MyAbstractActivity {
         GWT.log("Starting problems activity");
         this.eventBus = eventBus;
         eventBinder.bindEventHandlers(this, eventBus);
-        problemsView.activate(eventBus);
+        view.activate(eventBus);
         problemController.activate(eventBus);
-        containerWidget.setWidget(problemsView.asWidget());
+        containerWidget.setWidget(view.asWidget());
 
         loadCollection();
     }
