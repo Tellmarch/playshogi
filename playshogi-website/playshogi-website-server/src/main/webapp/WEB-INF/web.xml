@@ -8,7 +8,7 @@
 
     <servlet>
         <servlet-name>login</servlet-name>
-        <servlet-class>com.playshogi.website.gwt.server.LoginServiceImpl</servlet-class>
+        <servlet-class>com.playshogi.website.gwt.server.services.LoginServiceImpl</servlet-class>
     </servlet>
 
     <servlet-mapping>
@@ -18,7 +18,7 @@
 
     <servlet>
         <servlet-name>user</servlet-name>
-        <servlet-class>com.playshogi.website.gwt.server.UserServiceImpl</servlet-class>
+        <servlet-class>com.playshogi.website.gwt.server.services.UserServiceImpl</servlet-class>
     </servlet>
 
     <servlet-mapping>
@@ -28,7 +28,7 @@
 
     <servlet>
         <servlet-name>positionSharing</servlet-name>
-        <servlet-class>com.playshogi.website.gwt.server.PositionSharingServiceImpl</servlet-class>
+        <servlet-class>com.playshogi.website.gwt.server.services.PositionSharingServiceImpl</servlet-class>
     </servlet>
 
     <servlet-mapping>
@@ -38,7 +38,7 @@
 
     <servlet>
         <servlet-name>problems</servlet-name>
-        <servlet-class>com.playshogi.website.gwt.server.ProblemsServiceImpl</servlet-class>
+        <servlet-class>com.playshogi.website.gwt.server.services.ProblemsServiceImpl</servlet-class>
     </servlet>
 
     <servlet-mapping>
@@ -48,7 +48,7 @@
 
     <servlet>
         <servlet-name>kifus</servlet-name>
-        <servlet-class>com.playshogi.website.gwt.server.KifuServiceImpl</servlet-class>
+        <servlet-class>com.playshogi.website.gwt.server.services.KifuServiceImpl</servlet-class>
     </servlet>
 
     <servlet-mapping>
@@ -58,7 +58,7 @@
 
     <servlet>
         <servlet-name>computer</servlet-name>
-        <servlet-class>com.playshogi.website.gwt.server.ComputerServiceImpl</servlet-class>
+        <servlet-class>com.playshogi.website.gwt.server.services.ComputerServiceImpl</servlet-class>
     </servlet>
 
     <servlet-mapping>
@@ -68,7 +68,7 @@
 
     <servlet>
         <servlet-name>uploadKifu</servlet-name>
-        <servlet-class>com.playshogi.website.gwt.server.KifuUploadServlet</servlet-class>
+        <servlet-class>com.playshogi.website.gwt.server.servlets.KifuUploadServlet</servlet-class>
     </servlet>
 
     <servlet-mapping>

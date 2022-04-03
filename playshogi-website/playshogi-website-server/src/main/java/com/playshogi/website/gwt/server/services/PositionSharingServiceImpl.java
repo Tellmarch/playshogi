@@ -1,4 +1,4 @@
-package com.playshogi.website.gwt.server;
+package com.playshogi.website.gwt.server.services;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.playshogi.library.shogi.models.formats.sfen.SfenConverter;
@@ -6,6 +6,7 @@ import com.playshogi.library.shogi.models.formats.usf.UsfMoveConverter;
 import com.playshogi.library.shogi.models.moves.ShogiMove;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.library.shogi.rules.ShogiRulesEngine;
+import com.playshogi.website.gwt.server.util.FutureResult;
 import com.playshogi.website.gwt.shared.services.PositionSharingService;
 
 import java.util.HashSet;

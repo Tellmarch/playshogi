@@ -1,4 +1,4 @@
-package com.playshogi.website.gwt.server;
+package com.playshogi.website.gwt.server.controllers;
 
 import com.playshogi.library.shogi.models.record.KifuCollection;
 

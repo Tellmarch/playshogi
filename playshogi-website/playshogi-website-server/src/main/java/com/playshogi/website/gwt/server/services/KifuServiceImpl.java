@@ -1,4 +1,4 @@
-package com.playshogi.website.gwt.server;
+package com.playshogi.website.gwt.server.services;
 
 import com.google.gwt.thirdparty.guava.common.base.Strings;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
@@ -16,6 +16,9 @@ import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.library.shogi.models.record.GameInformation;
 import com.playshogi.library.shogi.models.record.GameRecord;
 import com.playshogi.library.shogi.models.record.KifuCollection;
+import com.playshogi.website.gwt.server.controllers.Authenticator;
+import com.playshogi.website.gwt.server.controllers.CollectionUploads;
+import com.playshogi.website.gwt.server.controllers.UsersCache;
 import com.playshogi.website.gwt.shared.models.*;
 import com.playshogi.website.gwt.shared.services.KifuService;
 

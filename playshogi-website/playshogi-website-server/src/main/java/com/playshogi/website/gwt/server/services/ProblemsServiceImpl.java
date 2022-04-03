@@ -1,4 +1,4 @@
-package com.playshogi.website.gwt.server;
+package com.playshogi.website.gwt.server.services;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.playshogi.library.database.*;
@@ -6,6 +6,9 @@ import com.playshogi.library.database.models.*;
 import com.playshogi.library.shogi.models.formats.usf.UsfFormat;
 import com.playshogi.library.shogi.models.record.GameRecord;
 import com.playshogi.library.shogi.models.record.KifuCollection;
+import com.playshogi.website.gwt.server.controllers.Authenticator;
+import com.playshogi.website.gwt.server.controllers.CollectionUploads;
+import com.playshogi.website.gwt.server.controllers.UsersCache;
 import com.playshogi.website.gwt.shared.models.*;
 import com.playshogi.website.gwt.shared.services.ProblemsService;
 

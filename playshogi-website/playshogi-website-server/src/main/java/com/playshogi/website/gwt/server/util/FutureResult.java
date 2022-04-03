@@ -1,4 +1,4 @@
-package com.playshogi.website.gwt.server;
+package com.playshogi.website.gwt.server.util;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.Callable;

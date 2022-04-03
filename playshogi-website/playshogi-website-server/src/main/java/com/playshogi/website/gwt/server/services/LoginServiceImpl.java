@@ -1,6 +1,7 @@
-package com.playshogi.website.gwt.server;
+package com.playshogi.website.gwt.server.services;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
+import com.playshogi.website.gwt.server.controllers.Authenticator;
 import com.playshogi.website.gwt.shared.Version;
 import com.playshogi.website.gwt.shared.models.LoginResult;
 import com.playshogi.website.gwt.shared.services.LoginService;

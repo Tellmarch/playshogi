@@ -1,9 +1,10 @@
-package com.playshogi.website.gwt.server;
+package com.playshogi.website.gwt.server.services;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.playshogi.library.database.DbConnection;
 import com.playshogi.library.database.UserRepository;
 import com.playshogi.library.database.models.PersistentUserLessonProgress;
+import com.playshogi.website.gwt.server.controllers.Authenticator;
 import com.playshogi.website.gwt.shared.models.LoginResult;
 import com.playshogi.website.gwt.shared.services.UserService;
 

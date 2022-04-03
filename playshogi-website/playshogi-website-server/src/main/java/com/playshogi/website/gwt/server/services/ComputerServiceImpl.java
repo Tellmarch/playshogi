@@ -1,4 +1,4 @@
-package com.playshogi.website.gwt.server;
+package com.playshogi.website.gwt.server.services;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.playshogi.library.shogi.engine.EngineConfiguration;

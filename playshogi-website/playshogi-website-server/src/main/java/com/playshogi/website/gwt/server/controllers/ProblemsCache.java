@@ -1,4 +1,4 @@
-package com.playshogi.website.gwt.server;
+package com.playshogi.website.gwt.server.controllers;
 
 import java.util.logging.Logger;
 

@@ -1,4 +1,4 @@
-package com.playshogi.website.gwt.server;
+package com.playshogi.website.gwt.server.servlets;
 
 import com.google.gwt.thirdparty.guava.common.base.Strings;
 import com.google.gwt.thirdparty.guava.common.io.Closeables;
@@ -9,6 +9,7 @@ import com.playshogi.library.shogi.models.formats.usf.UsfFormat;
 import com.playshogi.library.shogi.models.record.GameRecord;
 import com.playshogi.library.shogi.models.record.KifuCollection;
 import com.playshogi.library.shogi.models.shogivariant.ShogiInitialPositionFactory;
+import com.playshogi.website.gwt.server.controllers.CollectionUploads;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;

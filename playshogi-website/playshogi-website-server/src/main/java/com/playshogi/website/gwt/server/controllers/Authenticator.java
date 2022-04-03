@@ -1,4 +1,4 @@
-package com.playshogi.website.gwt.server;
+package com.playshogi.website.gwt.server.controllers;
 
 import com.playshogi.library.database.AuthenticationResult;
 import com.playshogi.library.database.DbConnection;
