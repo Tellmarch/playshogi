@@ -17,11 +17,19 @@ public class RaceDetails implements Serializable {
         FINISHED
     }
 
+    private enum ProblemStatus {
+        NOT_ATTEMPTED,
+        ATTEMPTING,
+        SOLVED,
+        FAILED,
+        SKIPPED
+    }
+
     private String id;
     private String[] players;
     private int[] playerScores;
     private int[] playerPositions;
-    private int[] playerProgresses;
+    private ProblemStatus[][] playerProgresses;
     private int[] playerCombos;
     private int timeRemainingMs;
     private RaceType raceType;
@@ -62,11 +70,11 @@ public class RaceDetails implements Serializable {
         this.playerPositions = playerPositions;
     }
 
-    public int[] getPlayerProgresses() {
+    public ProblemStatus[][] getPlayerProgresses() {
         return playerProgresses;
     }
 
-    public void setPlayerProgresses(final int[] playerProgresses) {
+    public void setPlayerProgresses(final ProblemStatus[][] playerProgresses) {
         this.playerProgresses = playerProgresses;
     }
 
