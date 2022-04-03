@@ -24,9 +24,16 @@ import com.playshogi.website.gwt.shared.models.ProblemDetails;
 import elemental2.dom.HTMLDivElement;
 import elemental2.dom.HTMLElement;
 import elemental2.dom.HTMLLIElement;
+import org.dominokit.domino.ui.Typography.Paragraph;
 import org.dominokit.domino.ui.button.Button;
+import org.dominokit.domino.ui.button.ButtonSize;
+import org.dominokit.domino.ui.cards.Card;
+import org.dominokit.domino.ui.chips.Chip;
+import org.dominokit.domino.ui.chips.ChipsGroup;
 import org.dominokit.domino.ui.icons.Icons;
+import org.dominokit.domino.ui.modals.ModalDialog;
 import org.dominokit.domino.ui.style.Color;
+import org.dominokit.domino.ui.style.ColorScheme;
 import org.dominokit.domino.ui.tree.Tree;
 import org.dominokit.domino.ui.tree.TreeItem;
 import org.dominokit.domino.ui.utils.DominoElement;
@@ -37,10 +44,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import static org.dominokit.domino.ui.style.Unit.px;
+
 @Singleton
 public class ProblemsRaceView extends Composite {
 
-    private static final String PROBLEMS = "problems";
+    private static final String PROBLEMS = "problemsRace";
 
     interface MyEventBinder extends EventBinder<ProblemsRaceView> {
     }
@@ -65,7 +74,7 @@ public class ProblemsRaceView extends Composite {
     @Inject
     public ProblemsRaceView(final SessionInformation sessionInformation) {
         this.sessionInformation = sessionInformation;
-        GWT.log("Creating Problems view");
+        GWT.log("Creating Problems Race view");
         shogiBoard = new ShogiBoard(PROBLEMS, sessionInformation.getUserPreferences());
         navigationController = new NavigationController(PROBLEMS, NavigatorConfiguration.PROBLEMS);
         gameNavigatorPanel = new GameNavigatorPanel(PROBLEMS);
@@ -153,7 +162,7 @@ public class ProblemsRaceView extends Composite {
     }
 
     public void activate(final EventBus eventBus) {
-        GWT.log("Activating ProblemsView");
+        GWT.log("Activating ProblemsRaceView");
         this.eventBus = eventBus;
         eventBinder.bindEventHandlers(this, eventBus);
         shogiBoard.activate(eventBus);
@@ -163,11 +172,54 @@ public class ProblemsRaceView extends Composite {
         timerText.hidden(true);
         startTimedRun.show();
         stopTimedRun.hide();
+
+        showPreRaceModal();
+    }
+
+    private void showPreRaceModal() {
+        ModalDialog modal = ModalDialog.create("Shogi Tsume Race").setAutoClose(false);
+
+        Card optionsCard = Card.create("Race options");
+        ChipsGroup chipsGroup = ChipsGroup.create()
+                .appendChild(Chip.create("To the end"))
+                .appendChild(Chip.create("Time limit"))
+                .appendChild(Chip.create("Combo race"))
+                .setColorScheme(ColorScheme.TEAL).selectAt(0);
+        optionsCard.appendChild(chipsGroup);
+        modal.appendChild(optionsCard);
+
+        Card urlCard = Card.create("Invite Friends");
+
+        urlCard.appendChild(Paragraph.create("To invite someone to play, give them the URL of this page:"));
+        org.dominokit.domino.ui.forms.TextBox textBox = org.dominokit.domino.ui.forms.TextBox.create();
+        textBox.setValue(Window.Location.getHref());
+        urlCard.appendChild(textBox);
+
+        modal.appendChild(urlCard);
+
+        Card participantsCard = Card.create("Race Participants");
+
+        modal.appendChild(participantsCard);
+
+        Button startRace = Button.createSuccess(Icons.ALL.flag_checkered_mdi())
+                .setContent("START RACE!")
+                .setSize(ButtonSize.LARGE)
+                .style()
+                .setMargin(px.of(5))
+                .setMinWidth(px.of(200))
+                .get();
+
+        modal.appendChild(startRace);
+
+        Button closeButton = Button.create("CANCEL RACE").linkify();
+
+        modal.appendFooterChild(closeButton);
+        modal.open();
     }
 
     @EventHandler
     public void onListCollectionProblemsEvent(final ListCollectionProblemsEvent event) {
-        GWT.log("ProblemsView: handle ListCollectionProblemsEvent");
+        GWT.log("ProblemsRaceView: handle ListCollectionProblemsEvent");
 
         problemsTree.setTitle(event.getCollectionDetails().getName());
 
@@ -190,7 +242,7 @@ public class ProblemsRaceView extends Composite {
 
     @EventHandler
     public void onProblemCollectionProgressEvent(final ProblemCollectionProgressEvent event) {
-        GWT.log("ProblemsView: handle ProblemCollectionProgressEvent");
+        GWT.log("ProblemsRaceView: handle ProblemCollectionProgressEvent");
         List<TreeItem<ProblemDetails>> subItems = problemsTree.getSubItems();
         for (int i = 0; i < subItems.size(); i++) {
             TreeItem<ProblemDetails> subItem = subItems.get(i);
@@ -230,7 +282,7 @@ public class ProblemsRaceView extends Composite {
 
     @EventHandler
     public void onPositionChanged(final PositionChangedEvent event) {
-        GWT.log("ViewKifuView: handle PositionChangedEvent");
+        GWT.log("ProblemsRaceView: handle PositionChangedEvent");
 
         Optional<String> comment = navigationController.getGameNavigation().getCurrentComment();
         if (comment.isPresent()) {
@@ -241,5 +293,6 @@ public class ProblemsRaceView extends Composite {
             textArea.setVisible(false);
         }
     }
+
 
 }

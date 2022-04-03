@@ -12,7 +12,7 @@ public class LoggingEventBus extends SimpleEventBus {
 
     @Override
     public <H> HandlerRegistration addHandler(final Type<H> type, final H handler) {
-        GWT.log("addHandler: " + handler.getClass().getCanonicalName());
+//        GWT.log("addHandler: " + handler.getClass().getCanonicalName());
         return wrap(super.addHandler(type, handler));
     }
 

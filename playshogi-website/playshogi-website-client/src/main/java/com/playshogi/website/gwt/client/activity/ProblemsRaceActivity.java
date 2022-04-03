@@ -19,7 +19,6 @@ import com.playshogi.website.gwt.client.events.gametree.GameTreeChangedEvent;
 import com.playshogi.website.gwt.client.events.kifu.GameInformationChangedEvent;
 import com.playshogi.website.gwt.client.events.puzzles.*;
 import com.playshogi.website.gwt.client.models.ProblemStatus;
-import com.playshogi.website.gwt.client.place.ProblemsPlace;
 import com.playshogi.website.gwt.client.place.ProblemsRacePlace;
 import com.playshogi.website.gwt.client.ui.ProblemsRaceView;
 import com.playshogi.website.gwt.client.util.FireAndForgetCallback;
@@ -69,7 +68,7 @@ public class ProblemsRaceActivity extends MyAbstractActivity {
 
     @Override
     public void start(final AcceptsOneWidget containerWidget, final EventBus eventBus) {
-        GWT.log("Starting problems activity");
+        GWT.log("Starting problems race activity");
         this.eventBus = eventBus;
         eventBinder.bindEventHandlers(this, eventBus);
         view.activate(eventBus);
@@ -85,12 +84,12 @@ public class ProblemsRaceActivity extends MyAbstractActivity {
                 new AsyncCallback<ProblemCollectionDetailsAndProblems>() {
                     @Override
                     public void onFailure(final Throwable throwable) {
-                        GWT.log("ProblemsActivity: error retrieving collection problems");
+                        GWT.log("ProblemsRaceActivity: error retrieving collection problems");
                     }
 
                     @Override
                     public void onSuccess(final ProblemCollectionDetailsAndProblems result) {
-                        GWT.log("ProblemsActivity: retrieved collection problems");
+                        GWT.log("ProblemsRaceActivity: retrieved collection problems");
                         problems = result.getProblems();
                         statuses = new ProblemStatus[problems.length];
                         Arrays.fill(statuses, ProblemStatus.UNSOLVED);
@@ -121,7 +120,8 @@ public class ProblemsRaceActivity extends MyAbstractActivity {
                         eventBus.fireEvent(new GameTreeChangedEvent(gameRecord.getGameTree()));
                         eventBus.fireEvent(new GameInformationChangedEvent(gameRecord.getGameInformation()));
                         if (collectionId != null) {
-                            History.newItem("Problems:" + new ProblemsPlace.Tokenizer().getToken(getPlace()), false);
+                            History.newItem("ProblemsRace:" + new ProblemsRacePlace.Tokenizer().getToken(getPlace()),
+                                    false);
                             if (problemIndex < statuses.length) {
                                 statuses[problemIndex] = ProblemStatus.CURRENT;
                                 eventBus.fireEvent(new ProblemCollectionProgressEvent(problemIndex, statuses));
@@ -131,8 +131,8 @@ public class ProblemsRaceActivity extends MyAbstractActivity {
                 });
     }
 
-    private ProblemsPlace getPlace() {
-        return new ProblemsPlace(collectionId, problemIndex, lessonId);
+    private ProblemsRacePlace getPlace() {
+        return new ProblemsRacePlace(collectionId, problemIndex, lessonId);
     }
 
     private void initTimer() {
