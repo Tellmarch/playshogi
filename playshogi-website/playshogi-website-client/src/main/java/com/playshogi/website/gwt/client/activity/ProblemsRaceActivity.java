@@ -59,7 +59,9 @@ public class ProblemsRaceActivity extends MyAbstractActivity {
     private ProblemDetails[] problems;
     private ProblemStatus[] statuses;
 
-    private Duration duration;
+    private Duration duration = new Duration();
+    private int offSetMs = 0;
+
     private Timer activityTimer;
     private Timer updatesTimer;
     private volatile boolean isStopped = false;
@@ -263,12 +265,10 @@ public class ProblemsRaceActivity extends MyAbstractActivity {
     }
 
     private void initTimer() {
-        duration = new Duration();
-
         activityTimer = new Timer() {
             @Override
             public void run() {
-                eventBus.fireEvent(new ActivityTimerEvent(duration.elapsedMillis(), false));
+                eventBus.fireEvent(new ActivityTimerEvent(duration.elapsedMillis() + offSetMs, false));
             }
         };
 
@@ -284,36 +284,28 @@ public class ProblemsRaceActivity extends MyAbstractActivity {
     }
 
     private void loadNextProblem() {
-        if (isTimerRunning()) {
+        problemIndex++;
+        if (problemIndex == statuses.length) problemIndex = 0;
+        boolean firstPass = true;
+        while (statuses[problemIndex] == ProblemStatus.SOLVED) {
             problemIndex++;
-            if (problemIndex == statuses.length) problemIndex = 0;
-            boolean firstPass = true;
-            while (statuses[problemIndex] == ProblemStatus.SOLVED) {
-                problemIndex++;
-                if (problemIndex == statuses.length) {
-                    if (firstPass) {
-                        firstPass = false;
-                        problemIndex = 0;
-                    } else {
-                        break;
-                    }
+            if (problemIndex == statuses.length) {
+                if (firstPass) {
+                    firstPass = false;
+                    problemIndex = 0;
+                } else {
+                    break;
                 }
             }
-        } else {
-            problemIndex++;
         }
 
         if (problemIndex >= problems.length) {
-            if (isTimerRunning()) {
-                stopTimer();
-                int time = duration.elapsedMillis();
-                eventBus.fireEvent(new ActivityTimerEvent(time, false));
-                Window.alert("Congratulations, you have solved all the problems!");
-                if (sessionInformation.isLoggedIn()) {
-                    saveTime(time);
-                }
-            } else {
-                Window.alert("You reached the last problem in the collection!");
+            stopTimer();
+            int time = duration.elapsedMillis();
+            eventBus.fireEvent(new ActivityTimerEvent(time, false));
+            Window.alert("Congratulations, you have solved all the problems!");
+            if (sessionInformation.isLoggedIn()) {
+                saveTime(time);
             }
 
             return;
@@ -361,9 +353,7 @@ public class ProblemsRaceActivity extends MyAbstractActivity {
             statuses[problemIndex] = event.isSuccess() ? ProblemStatus.SOLVED : ProblemStatus.FAILED;
             eventBus.fireEvent(new ProblemCollectionProgressEvent(problemIndex, statuses));
         }
-        if (isTimerRunning()) {
-            loadNextProblem();
-        }
+        loadNextProblem();
         if (event.isSuccess()) {
             problemsService.reportUserProgressInRace(sessionInformation.getSessionId(), raceId,
                     problems[problemIndex].getId(), RaceDetails.ProblemStatus.SOLVED, new FireAndForgetCallback());
@@ -380,22 +370,6 @@ public class ProblemsRaceActivity extends MyAbstractActivity {
         }
         problemIndex = event.getProblemIndex();
         loadProblem();
-    }
-
-    @EventHandler
-    void onStartTimedRun(final StartTimedRunEvent event) {
-        GWT.log("Start timed run");
-        Arrays.fill(statuses, ProblemStatus.UNSOLVED);
-        problemIndex = 0;
-        eventBus.fireEvent(new ProblemCollectionProgressEvent(problemIndex, statuses));
-        loadProblem();
-        initTimer();
-    }
-
-    @EventHandler
-    void onStopTimedRun(final StopTimedRunEvent event) {
-        GWT.log("Stop timed run");
-        stopTimer();
     }
 
     @EventHandler
@@ -418,4 +392,16 @@ public class ProblemsRaceActivity extends MyAbstractActivity {
         startRace();
     }
 
+    @EventHandler
+    public void onRaceEvent(final RaceEvent event) {
+        com.google.gwt.core.shared.GWT.log("ProblemsRaceView: handle RaceEvent");
+        RaceDetails raceDetails = event.getRaceDetails();
+        if (raceDetails.getRaceStatus() == RaceDetails.RaceStatus.IN_PROGRESS) {
+            offSetMs = raceDetails.getElapsedTimeMs();
+            duration = new Duration();
+            if (!isTimerRunning()) {
+                initTimer();
+            }
+        }
+    }
 }

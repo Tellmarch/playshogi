@@ -1,7 +1,6 @@
 package com.playshogi.website.gwt.client.ui;
 
 import com.google.gwt.core.shared.GWT;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -13,7 +12,9 @@ import com.playshogi.website.gwt.client.SessionInformation;
 import com.playshogi.website.gwt.client.controller.NavigationController;
 import com.playshogi.website.gwt.client.events.collections.ListCollectionProblemsEvent;
 import com.playshogi.website.gwt.client.events.gametree.PositionChangedEvent;
-import com.playshogi.website.gwt.client.events.puzzles.*;
+import com.playshogi.website.gwt.client.events.puzzles.ActivityTimerEvent;
+import com.playshogi.website.gwt.client.events.puzzles.ProblemCollectionProgressEvent;
+import com.playshogi.website.gwt.client.events.puzzles.UserJumpedToProblemEvent;
 import com.playshogi.website.gwt.client.events.races.RaceEvent;
 import com.playshogi.website.gwt.client.util.ElementWidget;
 import com.playshogi.website.gwt.client.widget.board.BoardButtons;
@@ -27,8 +28,6 @@ import com.playshogi.website.gwt.shared.models.RaceDetails;
 import elemental2.dom.HTMLDivElement;
 import elemental2.dom.HTMLElement;
 import elemental2.dom.HTMLLIElement;
-import org.dominokit.domino.ui.button.Button;
-import org.dominokit.domino.ui.icons.Icons;
 import org.dominokit.domino.ui.style.Color;
 import org.dominokit.domino.ui.tree.Tree;
 import org.dominokit.domino.ui.tree.TreeItem;
@@ -36,7 +35,6 @@ import org.dominokit.domino.ui.utils.DominoElement;
 import org.jboss.elemento.Elements;
 import org.jboss.elemento.HtmlContentBuilder;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -61,10 +59,7 @@ public class ProblemsRaceView extends Composite {
     private final TextArea textArea;
     private final PreRacePopup preRacePopup;
     private final AbsolutePanel raceStatusPanel;
-    private HtmlContentBuilder<HTMLElement> timerText;
     private EventBus eventBus;
-    private Button startTimedRun;
-    private Button stopTimedRun;
     private HtmlContentBuilder<HTMLElement> timerTextSeconds;
     private HtmlContentBuilder<HTMLElement> timerTextMs;
 
@@ -118,34 +113,8 @@ public class ProblemsRaceView extends Composite {
         div.add(BoardButtons.createSettingsButton(shogiBoard));
         div.add(BoardButtons.createClearArrowsButton(shogiBoard));
         div.add(Elements.br());
-        startTimedRun = Button.createPrimary(Icons.ALL.timer()).setContent("Start timed " +
-                        "run")
-                .addClickListener(evt -> {
-                    if (!sessionInformation.isLoggedIn()) {
-                        Window.alert("You are not logged in - your score will not be saved.");
-                    }
-                    eventBus.fireEvent(new StartTimedRunEvent());
-                    startTimedRun.hide();
-                    stopTimedRun.show();
-                    timerText.hidden(false);
-                })
-                .style().setMarginTop("3em").setMarginBottom("3em")
-                .get();
-        stopTimedRun = Button.createDanger(Icons.ALL.timer_off()).setContent("Stop timer")
-                .addClickListener(evt -> {
-                    if (Window.confirm("Are you sure you want to stop the timer? All progress will be lost.")) {
-                        eventBus.fireEvent(new StopTimedRunEvent());
-                        stopTimedRun.hide();
-                        startTimedRun.show();
-                    }
-                })
-                .style().setMarginTop("3em").setMarginBottom("3em")
-                .get();
-        stopTimedRun.hide();
-        div.add(startTimedRun);
-        div.add(stopTimedRun);
         div.add(Elements.br());
-        timerText = Elements.b();
+        HtmlContentBuilder<HTMLElement> timerText = Elements.b();
         DominoElement.of(timerText).style()
                 .setBackgroundColor(Color.WHITE.getHex())
                 .setPadding("0.5em")
@@ -154,7 +123,6 @@ public class ProblemsRaceView extends Composite {
         timerTextMs = Elements.span();
         timerText.add(timerTextSeconds.textContent("0:00"))
                 .add(timerTextMs.textContent(".00").style("font-size:20px"));
-        timerText.hidden(true);
         div.add(timerText);
         return new ElementWidget(div.element());
     }
@@ -172,9 +140,6 @@ public class ProblemsRaceView extends Composite {
         problemFeedbackPanel.activate(eventBus);
         navigationController.activate(eventBus);
         preRacePopup.activate(eventBus);
-        timerText.hidden(true);
-        startTimedRun.show();
-        stopTimedRun.hide();
 
         preRacePopup.show();
     }
@@ -197,9 +162,6 @@ public class ProblemsRaceView extends Composite {
                     evt -> eventBus.fireEvent(new UserJumpedToProblemEvent(finalI))
             ));
         }
-        boolean hasTsumeTag = Arrays.stream(event.getCollectionDetails().getTags()).anyMatch("Tsume"
-                ::equalsIgnoreCase);
-        problemFeedbackPanel.setEnableTellMeWhy(hasTsumeTag);
     }
 
     @EventHandler
@@ -275,13 +237,10 @@ public class ProblemsRaceView extends Composite {
             }
             raceStatusPanel.add(new HTML(progress), 100, 20 * playerIndex);
         }
-
     }
 
     private String getChar(final RaceDetails.ProblemStatus status) {
         switch (status) {
-            case NOT_ATTEMPTED:
-                return " ";
             case ATTEMPTING:
                 return ".";
             case SOLVED:
@@ -290,6 +249,7 @@ public class ProblemsRaceView extends Composite {
                 return "X";
             case SKIPPED:
                 return "_";
+            case NOT_ATTEMPTED:
             default:
                 return " ";
         }
