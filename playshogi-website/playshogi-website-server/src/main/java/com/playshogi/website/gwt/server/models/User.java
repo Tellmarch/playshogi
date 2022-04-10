@@ -1,6 +1,7 @@
 package com.playshogi.website.gwt.server.models;
 
 import com.playshogi.website.gwt.server.controllers.UsersCache;
+import com.playshogi.website.gwt.shared.models.LoginResult;
 
 import java.util.Objects;
 
@@ -21,6 +22,10 @@ public class User {
             userName = UsersCache.INSTANCE.getUserName(userId);
         }
         return userName;
+    }
+
+    public static User from(final LoginResult loginResult) {
+        return new User(loginResult.getUserId());
     }
 
     @Override

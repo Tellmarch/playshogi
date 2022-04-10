@@ -68,4 +68,17 @@ public interface ProblemsServiceAsync {
     void swapProblemsInCollection(String sessionId, String collectionId, String firstProblemId,
                                   String secondProblemId, AsyncCallback<Void> callback);
 
+    void createRace(String sessionId, String collectionId, RaceDetails.RaceType raceType,
+                    AsyncCallback<String> callback);
+
+    void getRaceDetails(String sessionId, String raceId, AsyncCallback<RaceDetails> callback);
+
+    void waitForRaceUpdate(String sessionId, String raceId, AsyncCallback<RaceDetails> callback);
+
+    void joinRace(String sessionId, String raceId, AsyncCallback<Void> callback);
+
+    void withdrawFromRace(String sessionId, String raceId, AsyncCallback<Void> callback);
+
+    void startRace(String sessionId, String raceId, AsyncCallback<Void> callback);
+
 }

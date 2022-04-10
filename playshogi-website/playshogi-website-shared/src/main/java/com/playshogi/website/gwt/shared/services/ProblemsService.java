@@ -58,5 +58,15 @@ public interface ProblemsService extends RemoteService {
 
     void swapProblemsInCollection(String sessionId, String collectionId, String firstProblemId, String secondProblemId);
 
+    String createRace(String sessionId, String collectionId, RaceDetails.RaceType raceType);
 
+    RaceDetails getRaceDetails(String sessionId, String raceId);
+
+    RaceDetails waitForRaceUpdate(String sessionId, String raceId);
+
+    void joinRace(String sessionId, String raceId);
+
+    void withdrawFromRace(String sessionId, String raceId);
+
+    void startRace(String sessionId, String raceId);
 }

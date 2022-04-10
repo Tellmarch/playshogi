@@ -8,7 +8,10 @@ import com.playshogi.library.shogi.models.record.GameRecord;
 import com.playshogi.library.shogi.models.record.KifuCollection;
 import com.playshogi.website.gwt.server.controllers.Authenticator;
 import com.playshogi.website.gwt.server.controllers.CollectionUploads;
+import com.playshogi.website.gwt.server.controllers.RaceController;
 import com.playshogi.website.gwt.server.controllers.UsersCache;
+import com.playshogi.website.gwt.server.models.Race;
+import com.playshogi.website.gwt.server.models.User;
 import com.playshogi.website.gwt.shared.models.*;
 import com.playshogi.website.gwt.shared.services.ProblemsService;
 
@@ -28,6 +31,7 @@ public class ProblemsServiceImpl extends RemoteServiceServlet implements Problem
     private final ProblemSetRepository problemSetRepository;
     private final GameRepository gameRepository;
     private final Authenticator authenticator = Authenticator.INSTANCE;
+    private final RaceController raceController = RaceController.INSTANCE;
 
     private final Map<String, Integer> highScores = new HashMap<>();
 
@@ -665,5 +669,51 @@ public class ProblemsServiceImpl extends RemoteServiceServlet implements Problem
         problemSetRepository.swapProblemsInCollection(Integer.parseInt(collectionId), Integer.parseInt(firstProblemId),
                 Integer.parseInt(secondProblemId));
 
+    }
+
+    @Override
+    public String createRace(final String sessionId, final String collectionId, final RaceDetails.RaceType raceType) {
+        LOGGER.log(Level.INFO, "createRace: " + collectionId + "-" + raceType);
+        LoginResult loginResult = authenticator.validateLoggedInUser(sessionId);
+
+        return raceController.createRace(User.from(loginResult), collectionId,
+                Race.RaceType.valueOf(raceType.name()));
+    }
+
+    @Override
+    public RaceDetails getRaceDetails(final String sessionId, final String raceId) {
+        LOGGER.log(Level.INFO, "getRaceDetails: " + raceId);
+        return raceController.getRace(raceId).toRaceDetails();
+    }
+
+    @Override
+    public RaceDetails waitForRaceUpdate(final String sessionId, final String raceId) {
+        LOGGER.log(Level.INFO, "waitForRaceUpdate: " + raceId);
+        Race race = raceController.waitForRaceUpdate(raceId);
+        return race.toRaceDetails();
+    }
+
+    @Override
+    public void joinRace(final String sessionId, final String raceId) {
+        LOGGER.log(Level.INFO, "joinRace: " + raceId);
+        LoginResult loginResult = authenticator.validateLoggedInUser(sessionId);
+
+        raceController.joinRace(User.from(loginResult), raceId);
+    }
+
+    @Override
+    public void withdrawFromRace(final String sessionId, final String raceId) {
+        LOGGER.log(Level.INFO, "withdrawFromRace: " + raceId);
+        LoginResult loginResult = authenticator.validateLoggedInUser(sessionId);
+
+        raceController.withdrawFromRace(User.from(loginResult), raceId);
+    }
+
+    @Override
+    public void startRace(final String sessionId, final String raceId) {
+        LOGGER.log(Level.INFO, "startRace: " + raceId);
+        LoginResult loginResult = authenticator.validateLoggedInUser(sessionId);
+
+        raceController.startRace(User.from(loginResult), raceId);
     }
 }

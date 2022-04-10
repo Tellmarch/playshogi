@@ -7,9 +7,11 @@ import java.util.Date;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class RaceController {
+public enum RaceController {
+    INSTANCE;
 
     private static final Logger LOGGER = Logger.getLogger(RaceController.class.getName());
 
@@ -26,6 +28,14 @@ public class RaceController {
         return id;
     }
 
+    public Race getRace(final String raceId) {
+        Race race = races.get(raceId);
+        if (race == null) {
+            throw new IllegalStateException("Race does not exist.");
+        }
+        return race;
+    }
+
     public void joinRace(final User user, final String raceId) {
         Race race = races.get(raceId);
         if (race == null) {
@@ -40,6 +50,7 @@ public class RaceController {
 
         race.getParticipants().add(user);
         race.getUserProgresses().put(user, new Race.UserProgress());
+        fireRaceUpdate(raceId);
     }
 
     public void withdrawFromRace(final User user, final String raceId) {
@@ -56,6 +67,7 @@ public class RaceController {
 
         race.getParticipants().remove(user);
         race.getUserProgresses().remove(user);
+        fireRaceUpdate(raceId);
     }
 
     public void startRace(final User user, final String raceId) {
@@ -72,6 +84,7 @@ public class RaceController {
 
         race.setStatus(Race.RaceStatus.IN_PROGRESS);
         race.setStartTime(new Date());
+        fireRaceUpdate(raceId);
     }
 
     public void reportUserProgress(final User user, final String raceId, final String problemId,
@@ -89,6 +102,33 @@ public class RaceController {
         }
 
         userProgress.getProblemStatuses().put(problemId, problemStatus);
+        fireRaceUpdate(raceId);
     }
 
+    public Object getRaceMonitor(final String raceId) {
+        Race race = races.get(raceId);
+        if (race == null) {
+            throw new IllegalStateException("Race does not exist.");
+        }
+        return race;
+    }
+
+    private void fireRaceUpdate(final String raceId) {
+        Object raceMonitor = getRaceMonitor(raceId);
+        synchronized (raceMonitor) {
+            raceMonitor.notifyAll();
+        }
+    }
+
+    public Race waitForRaceUpdate(final String raceId) {
+        Object raceMonitor = getRaceMonitor(raceId);
+        synchronized (raceMonitor) {
+            try {
+                raceMonitor.wait(10000);
+            } catch (InterruptedException e) {
+                LOGGER.log(Level.WARNING, "Interrupted", e);
+            }
+        }
+        return races.get(raceId);
+    }
 }

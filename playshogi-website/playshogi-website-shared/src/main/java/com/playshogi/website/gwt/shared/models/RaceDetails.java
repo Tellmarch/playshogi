@@ -5,19 +5,19 @@ import java.util.Arrays;
 
 public class RaceDetails implements Serializable {
 
-    private enum RaceType {
+    public enum RaceType {
         TO_THE_END,
         TIME_LIMIT,
         COMBO
     }
 
-    private enum RaceStatus {
+    public enum RaceStatus {
         PRE_RACE,
         IN_PROGRESS,
         FINISHED
     }
 
-    private enum ProblemStatus {
+    public enum ProblemStatus {
         NOT_ATTEMPTED,
         ATTEMPTING,
         SOLVED,

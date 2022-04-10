@@ -72,4 +72,14 @@ public enum Authenticator {
 
         return loginResult;
     }
+
+    public LoginResult validateLoggedInUser(final String sessionId) {
+        LoginResult loginResult = checkSession(sessionId);
+        if (loginResult == null || !loginResult.isLoggedIn()) {
+            LOGGER.log(Level.INFO, "Operation rejected: not logged in");
+            throw new IllegalStateException("Only logged in users can do this operation");
+        }
+
+        return loginResult;
+    }
 }

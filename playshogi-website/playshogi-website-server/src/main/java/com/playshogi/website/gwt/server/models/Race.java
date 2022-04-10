@@ -1,5 +1,7 @@
 package com.playshogi.website.gwt.server.models;
 
+import com.playshogi.website.gwt.shared.models.RaceDetails;
+
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -114,5 +116,15 @@ public class Race {
 
     public void setStartTime(final Date startTime) {
         this.startTime = startTime;
+    }
+
+    public RaceDetails toRaceDetails() {
+        RaceDetails raceDetails = new RaceDetails();
+        raceDetails.setId(id);
+        raceDetails.setRaceType(RaceDetails.RaceType.valueOf(raceType.name()));
+        raceDetails.setRaceStatus(RaceDetails.RaceStatus.valueOf(status.name()));
+        raceDetails.setPlayers(participants.stream().map(User::getUserName).toArray(String[]::new));
+        // TODO fill the rest
+        return raceDetails;
     }
 }

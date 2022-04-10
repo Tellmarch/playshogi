@@ -14,17 +14,17 @@ public enum UsersCache {
 
     private final UserRepository userRepository = new UserRepository(new DbConnection());
 
-    private final ConcurrentHashMap<Integer, PersistentUser> users = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<Integer, PersistentUser> persistentUsers = new ConcurrentHashMap<>();
 
     public final String getUserName(final int userId) {
-        if (!users.containsKey(userId)) {
+        if (!persistentUsers.containsKey(userId)) {
             PersistentUser user = userRepository.getUserById(userId);
             if (user == null) {
                 return null;
             }
-            users.put(userId, user);
+            persistentUsers.put(userId, user);
         }
-        return users.get(userId).getUsername();
+        return persistentUsers.get(userId).getUsername();
     }
 
     public Integer getUserId(final String author) {
