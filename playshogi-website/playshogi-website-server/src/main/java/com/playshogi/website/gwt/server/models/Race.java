@@ -128,6 +128,9 @@ public class Race {
         raceDetails.setPlayers(participants.stream().map(User::getUserName).toArray(String[]::new));
         raceDetails.setOwner(owner.getUserName());
         raceDetails.setPlayerProgresses(getPlayerProgresses());
+        if (startTime != null) {
+            raceDetails.setElapsedTimeMs((int) (System.currentTimeMillis() - startTime.getTime()));
+        }
         // TODO fill the rest
         return raceDetails;
     }

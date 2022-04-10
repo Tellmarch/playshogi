@@ -32,6 +32,7 @@ public class RaceDetails implements Serializable {
     private int[] playerPositions;
     private ProblemStatus[][] playerProgresses;
     private int[] playerCombos;
+    private int elapsedTimeMs;
     private int timeRemainingMs;
     private RaceType raceType;
     private RaceStatus raceStatus;
@@ -95,6 +96,14 @@ public class RaceDetails implements Serializable {
         this.playerCombos = playerCombos;
     }
 
+    public int getElapsedTimeMs() {
+        return elapsedTimeMs;
+    }
+
+    public void setElapsedTimeMs(final int elapsedTimeMs) {
+        this.elapsedTimeMs = elapsedTimeMs;
+    }
+
     public int getTimeRemainingMs() {
         return timeRemainingMs;
     }
@@ -129,6 +138,7 @@ public class RaceDetails implements Serializable {
                 ", playerPositions=" + Arrays.toString(playerPositions) +
                 ", playerProgresses=" + Arrays.deepToString(playerProgresses) +
                 ", playerCombos=" + Arrays.toString(playerCombos) +
+                ", elapsedTimeMs=" + elapsedTimeMs +
                 ", timeRemainingMs=" + timeRemainingMs +
                 ", raceType=" + raceType +
                 ", raceStatus=" + raceStatus +

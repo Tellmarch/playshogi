@@ -23,6 +23,7 @@ import com.playshogi.website.gwt.client.widget.gamenavigator.NavigatorConfigurat
 import com.playshogi.website.gwt.client.widget.problems.PreRacePopup;
 import com.playshogi.website.gwt.client.widget.problems.ProblemFeedbackPanel;
 import com.playshogi.website.gwt.shared.models.ProblemDetails;
+import com.playshogi.website.gwt.shared.models.RaceDetails;
 import elemental2.dom.HTMLDivElement;
 import elemental2.dom.HTMLElement;
 import elemental2.dom.HTMLLIElement;
@@ -45,7 +46,6 @@ public class ProblemsRaceView extends Composite {
 
     private static final String PROBLEMS = "problemsRace";
 
-
     interface MyEventBinder extends EventBinder<ProblemsRaceView> {
     }
 
@@ -60,6 +60,7 @@ public class ProblemsRaceView extends Composite {
     private final NavigationController navigationController;
     private final TextArea textArea;
     private final PreRacePopup preRacePopup;
+    private final AbsolutePanel raceStatusPanel;
     private HtmlContentBuilder<HTMLElement> timerText;
     private EventBus eventBus;
     private Button startTimedRun;
@@ -93,6 +94,10 @@ public class ProblemsRaceView extends Composite {
         VerticalPanel boardAndTextPanel = new VerticalPanel();
         boardAndTextPanel.add(shogiBoard);
         boardAndTextPanel.add(textArea);
+
+        raceStatusPanel = new AbsolutePanel();
+        raceStatusPanel.setSize("800px", "400px");
+        boardAndTextPanel.add(raceStatusPanel);
 
         horizontalPanel.add(boardAndTextPanel);
 
@@ -254,7 +259,39 @@ public class ProblemsRaceView extends Composite {
     @EventHandler
     public void onRaceEvent(final RaceEvent event) {
         GWT.log("ProblemsRaceView: handle RaceEvent");
-        boolean isRaceOwner = Objects.equals(sessionInformation.getUsername(), event.getRaceDetails().getOwner());
+        RaceDetails raceDetails = event.getRaceDetails();
+        boolean isRaceOwner = Objects.equals(sessionInformation.getUsername(), raceDetails.getOwner());
         GWT.log("is race owner: " + isRaceOwner);
+
+        RaceDetails.ProblemStatus[][] playerProgresses = raceDetails.getPlayerProgresses();
+        String[] players = raceDetails.getPlayers();
+
+        raceStatusPanel.clear();
+        for (int playerIndex = 0; playerIndex < players.length; playerIndex++) {
+            raceStatusPanel.add(new HTML(players[playerIndex]), 0, 20 * playerIndex);
+            String progress = "";
+            for (RaceDetails.ProblemStatus status : playerProgresses[playerIndex]) {
+                progress += getChar(status);
+            }
+            raceStatusPanel.add(new HTML(progress), 100, 20 * playerIndex);
+        }
+
+    }
+
+    private String getChar(final RaceDetails.ProblemStatus status) {
+        switch (status) {
+            case NOT_ATTEMPTED:
+                return " ";
+            case ATTEMPTING:
+                return ".";
+            case SOLVED:
+                return "O";
+            case FAILED:
+                return "X";
+            case SKIPPED:
+                return "_";
+            default:
+                return " ";
+        }
     }
 }

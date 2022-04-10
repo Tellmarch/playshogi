@@ -117,7 +117,8 @@ public enum RaceController {
             throw new IllegalStateException("Race does not exist.");
         }
         if (race.getStatus() != Race.RaceStatus.IN_PROGRESS) {
-            throw new IllegalStateException("Race is not in progress.");
+            LOGGER.log(Level.INFO, "Race is not in progress.");
+            return;
         }
         Race.UserProgress userProgress = race.getUserProgresses().get(user);
         if (userProgress == null) {

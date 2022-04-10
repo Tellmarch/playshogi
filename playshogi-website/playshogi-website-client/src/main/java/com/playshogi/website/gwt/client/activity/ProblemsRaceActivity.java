@@ -62,6 +62,7 @@ public class ProblemsRaceActivity extends MyAbstractActivity {
     private Duration duration;
     private Timer activityTimer;
     private Timer updatesTimer;
+    private volatile boolean isStopped = false;
 
     public ProblemsRaceActivity(final ProblemsRacePlace place, final ProblemsRaceView view,
                                 final SessionInformation sessionInformation) {
@@ -147,6 +148,9 @@ public class ProblemsRaceActivity extends MyAbstractActivity {
                     @Override
                     public void onSuccess(final RaceDetails raceDetails) {
                         GWT.log("ProblemsRaceActivity: received race update " + raceDetails);
+                        if (!raceDetails.getId().equals(raceId) || isStopped) {
+                            return;
+                        }
                         eventBus.fireEvent(new RaceEvent(raceDetails));
                         listenToRaceUpdates();
                     }
@@ -328,6 +332,7 @@ public class ProblemsRaceActivity extends MyAbstractActivity {
         GWT.log("Stopping tsume activity");
         super.onStop();
         stopTimers();
+        isStopped = true;
     }
 
     private void stopTimers() {
