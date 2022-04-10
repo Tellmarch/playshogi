@@ -18,8 +18,10 @@ import org.dominokit.domino.ui.button.ButtonSize;
 import org.dominokit.domino.ui.cards.Card;
 import org.dominokit.domino.ui.chips.Chip;
 import org.dominokit.domino.ui.chips.ChipsGroup;
+import org.dominokit.domino.ui.counter.Counter;
 import org.dominokit.domino.ui.icons.Icons;
 import org.dominokit.domino.ui.modals.ModalDialog;
+import org.dominokit.domino.ui.notifications.Notification;
 import org.dominokit.domino.ui.style.ColorScheme;
 
 import java.util.Arrays;
@@ -82,7 +84,13 @@ public class PreRacePopup {
                 .setMinWidth(px.of(200))
                 .get();
 
-        startRace.addClickListener(evt -> eventBus.fireEvent(new StartRaceEvent()));
+        startRace.addClickListener(evt -> {
+            eventBus.fireEvent(new StartRaceEvent());
+            Counter.countFrom(0).countTo(5).every(1000).incrementBy(1)
+                    .onCount(c -> Notification.createDanger("RACE STARTING IN " + (5 - c) + " SECONDS!")
+                            .setPosition(Notification.TOP_CENTER)
+                            .show()).startCounting();
+        });
 
         modal.appendChild(startRace);
 
@@ -98,7 +106,7 @@ public class PreRacePopup {
 
         modal.appendChild(joinRace);
 
-        withdrawFromRace = Button.createWarning(Icons.ALL.flag_checkered_mdi())
+        withdrawFromRace = Button.createWarning(Icons.ALL.cancel_mdi())
                 .setContent("WITHDRAW")
                 .setSize(ButtonSize.LARGE)
                 .style()
@@ -135,6 +143,11 @@ public class PreRacePopup {
         GWT.log("ProblemsRaceView: handle RaceEvent");
 
         RaceDetails raceDetails = event.getRaceDetails();
+
+        if (raceDetails.getRaceStatus() != RaceDetails.RaceStatus.PRE_RACE) {
+            modal.close();
+        }
+
         String username = sessionInformation.getUsername();
 
         boolean isRaceOwner = Objects.equals(username, raceDetails.getOwner());
