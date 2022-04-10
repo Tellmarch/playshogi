@@ -716,4 +716,16 @@ public class ProblemsServiceImpl extends RemoteServiceServlet implements Problem
 
         raceController.startRace(User.from(loginResult), raceId);
     }
+
+    @Override
+    public void reportUserProgressInRace(final String sessionId, final String raceId, final String problemId,
+                                         final RaceDetails.ProblemStatus status) {
+
+        LOGGER.log(Level.INFO, "reportUserProgressInRace: " + raceId + " - " + problemId + " - " + status);
+        LoginResult loginResult = authenticator.validateLoggedInUser(sessionId);
+
+        raceController.reportUserProgress(User.from(loginResult), raceId, problemId,
+                Race.ProblemStatus.valueOf(status.name()));
+
+    }
 }

@@ -249,6 +249,9 @@ public class ProblemsRaceActivity extends MyAbstractActivity {
                         }
                     }
                 });
+
+        problemsService.reportUserProgressInRace(sessionInformation.getSessionId(), raceId,
+                problems[problemIndex].getId(), RaceDetails.ProblemStatus.ATTEMPTING, new FireAndForgetCallback());
     }
 
     private ProblemsRacePlace getPlace() {
@@ -355,6 +358,13 @@ public class ProblemsRaceActivity extends MyAbstractActivity {
         }
         if (isTimerRunning()) {
             loadNextProblem();
+        }
+        if (event.isSuccess()) {
+            problemsService.reportUserProgressInRace(sessionInformation.getSessionId(), raceId,
+                    problems[problemIndex].getId(), RaceDetails.ProblemStatus.SOLVED, new FireAndForgetCallback());
+        } else {
+            problemsService.reportUserProgressInRace(sessionInformation.getSessionId(), raceId,
+                    problems[problemIndex].getId(), RaceDetails.ProblemStatus.FAILED, new FireAndForgetCallback());
         }
     }
 

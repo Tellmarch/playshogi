@@ -81,4 +81,8 @@ public interface ProblemsServiceAsync {
 
     void startRace(String sessionId, String raceId, AsyncCallback<Void> callback);
 
+    void reportUserProgressInRace(String sessionId, String raceId, String problemId, RaceDetails.ProblemStatus status
+            , AsyncCallback<Void> callback);
+
+
 }

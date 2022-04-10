@@ -69,4 +69,6 @@ public interface ProblemsService extends RemoteService {
     void withdrawFromRace(String sessionId, String raceId);
 
     void startRace(String sessionId, String raceId);
+
+    void reportUserProgressInRace(String sessionId, String raceId, String problemId, RaceDetails.ProblemStatus status);
 }

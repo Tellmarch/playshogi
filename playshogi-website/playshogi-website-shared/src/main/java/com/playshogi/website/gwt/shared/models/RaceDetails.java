@@ -127,7 +127,7 @@ public class RaceDetails implements Serializable {
                 ", players=" + Arrays.toString(players) +
                 ", playerScores=" + Arrays.toString(playerScores) +
                 ", playerPositions=" + Arrays.toString(playerPositions) +
-                ", playerProgresses=" + Arrays.toString(playerProgresses) +
+                ", playerProgresses=" + Arrays.deepToString(playerProgresses) +
                 ", playerCombos=" + Arrays.toString(playerCombos) +
                 ", timeRemainingMs=" + timeRemainingMs +
                 ", raceType=" + raceType +

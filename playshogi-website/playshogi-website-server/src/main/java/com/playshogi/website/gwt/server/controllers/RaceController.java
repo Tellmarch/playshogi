@@ -1,26 +1,49 @@
 package com.playshogi.website.gwt.server.controllers;
 
+import com.playshogi.library.database.DbConnection;
+import com.playshogi.library.database.ProblemSetRepository;
+import com.playshogi.library.database.models.PersistentProblemInCollection;
+import com.playshogi.library.database.models.PersistentProblemSet;
 import com.playshogi.website.gwt.server.models.Race;
 import com.playshogi.website.gwt.server.models.User;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 public enum RaceController {
     INSTANCE;
 
     private static final Logger LOGGER = Logger.getLogger(RaceController.class.getName());
 
+    private final ProblemSetRepository problemSetRepository = new ProblemSetRepository(new DbConnection());
+
     private final Map<String, Race> races = new ConcurrentHashMap<>(); // Race ID
 
     public String createRace(final User user, final String collectionId, final Race.RaceType raceType) {
+
+        if (collectionId == null) {
+            throw new IllegalArgumentException("Invalid collectionId");
+        }
+
+        PersistentProblemSet problemSet = problemSetRepository.getProblemSetById(Integer.parseInt(collectionId));
+        if (problemSet == null) {
+            throw new IllegalArgumentException("Invalid collectionId");
+        }
+        List<PersistentProblemInCollection> problems =
+                problemSetRepository.getProblemsFromProblemSet(problemSet.getId(), false);
+
+        List<String> problemIds =
+                problems.stream().map(p -> String.valueOf(p.getProblem().getId())).collect(Collectors.toList());
+
         String id = UUID.randomUUID().toString();
 
-        Race race = new Race(id, raceType, user);
+        Race race = new Race(id, raceType, user, problemIds);
 
         races.put(id, race);
         joinRace(user, id);

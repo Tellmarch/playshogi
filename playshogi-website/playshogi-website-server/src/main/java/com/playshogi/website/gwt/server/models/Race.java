@@ -2,6 +2,7 @@ package com.playshogi.website.gwt.server.models;
 
 import com.playshogi.website.gwt.shared.models.RaceDetails;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -62,16 +63,17 @@ public class Race {
     private RaceStatus status = RaceStatus.PRE_RACE;
     private final User owner;
 
-    private List<String> problemIds;
+    private final List<String> problemIds;
     private final List<User> participants = new CopyOnWriteArrayList<>();
     private final Map<User, UserProgress> userProgresses = new ConcurrentHashMap<>();
 
     private Date startTime;
 
-    public Race(final String id, final RaceType raceType, final User owner) {
+    public Race(final String id, final RaceType raceType, final User owner, final List<String> problemIds) {
         this.id = id;
         this.raceType = raceType;
         this.owner = owner;
+        this.problemIds = new ArrayList<>(problemIds);
     }
 
     public String getId() {
@@ -125,7 +127,26 @@ public class Race {
         raceDetails.setRaceStatus(RaceDetails.RaceStatus.valueOf(status.name()));
         raceDetails.setPlayers(participants.stream().map(User::getUserName).toArray(String[]::new));
         raceDetails.setOwner(owner.getUserName());
+        raceDetails.setPlayerProgresses(getPlayerProgresses());
         // TODO fill the rest
         return raceDetails;
+    }
+
+    private RaceDetails.ProblemStatus[][] getPlayerProgresses() {
+        RaceDetails.ProblemStatus[][] problemStatuses = new RaceDetails.ProblemStatus[participants.size()][];
+        int userIndex = 0;
+        for (User participant : participants) {
+            UserProgress userProgress = userProgresses.get(participant);
+            problemStatuses[userIndex] = new RaceDetails.ProblemStatus[problemIds.size()];
+            int problemIndex = 0;
+            for (String problemId : problemIds) {
+                ProblemStatus problemStatus = userProgress.getProblemStatuses().getOrDefault(problemId,
+                        ProblemStatus.NOT_ATTEMPTED);
+                problemStatuses[userIndex][problemIndex++] = RaceDetails.ProblemStatus.valueOf(problemStatus.name());
+            }
+            userIndex++;
+        }
+
+        return problemStatuses;
     }
 }
