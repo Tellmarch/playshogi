@@ -7,16 +7,16 @@ import com.google.gwt.place.shared.Prefix;
 public class ProblemsRacePlace extends Place {
     private final String collectionId;
     private final int problemIndex;
-    private final String lessonId;
+    private final String raceId;
 
     public ProblemsRacePlace(final String collectionId, final int problemIndex) {
         this(collectionId, problemIndex, null);
     }
 
-    public ProblemsRacePlace(final String collectionId, final int problemIndex, final String lessonId) {
+    public ProblemsRacePlace(final String collectionId, final int problemIndex, final String raceId) {
         this.collectionId = collectionId;
         this.problemIndex = problemIndex;
-        this.lessonId = lessonId;
+        this.raceId = raceId;
     }
 
     public String getCollectionId() {
@@ -27,8 +27,8 @@ public class ProblemsRacePlace extends Place {
         return problemIndex;
     }
 
-    public String getLessonId() {
-        return lessonId;
+    public String getRaceId() {
+        return raceId;
     }
 
     @Prefix("ProblemsRace")
@@ -36,7 +36,7 @@ public class ProblemsRacePlace extends Place {
 
         @Override
         public String getToken(final ProblemsRacePlace place) {
-            return place.getCollectionId() + ":" + place.getProblemIndex() + ":" + place.getLessonId();
+            return place.getCollectionId() + ":" + place.getProblemIndex() + ":" + place.getRaceId();
         }
 
         @Override

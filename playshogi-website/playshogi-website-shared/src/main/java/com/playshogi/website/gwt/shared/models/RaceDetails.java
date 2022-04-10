@@ -26,6 +26,7 @@ public class RaceDetails implements Serializable {
     }
 
     private String id;
+    private String owner;
     private String[] players;
     private int[] playerScores;
     private int[] playerPositions;
@@ -44,6 +45,14 @@ public class RaceDetails implements Serializable {
 
     public void setId(final String id) {
         this.id = id;
+    }
+
+    public String getOwner() {
+        return owner;
+    }
+
+    public void setOwner(final String owner) {
+        this.owner = owner;
     }
 
     public String[] getPlayers() {
@@ -114,6 +123,7 @@ public class RaceDetails implements Serializable {
     public String toString() {
         return "RaceDetails{" +
                 "id='" + id + '\'' +
+                ", owner='" + owner + '\'' +
                 ", players=" + Arrays.toString(players) +
                 ", playerScores=" + Arrays.toString(playerScores) +
                 ", playerPositions=" + Arrays.toString(playerPositions) +

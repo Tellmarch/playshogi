@@ -59,7 +59,7 @@ public class Race {
     private final String id;
 
     private RaceType raceType;
-    private RaceStatus status;
+    private RaceStatus status = RaceStatus.PRE_RACE;
     private final User owner;
 
     private List<String> problemIds;
@@ -124,6 +124,7 @@ public class Race {
         raceDetails.setRaceType(RaceDetails.RaceType.valueOf(raceType.name()));
         raceDetails.setRaceStatus(RaceDetails.RaceStatus.valueOf(status.name()));
         raceDetails.setPlayers(participants.stream().map(User::getUserName).toArray(String[]::new));
+        raceDetails.setOwner(owner.getUserName());
         // TODO fill the rest
         return raceDetails;
     }

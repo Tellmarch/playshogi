@@ -18,6 +18,11 @@ import com.playshogi.website.gwt.client.events.collections.ListCollectionProblem
 import com.playshogi.website.gwt.client.events.gametree.GameTreeChangedEvent;
 import com.playshogi.website.gwt.client.events.kifu.GameInformationChangedEvent;
 import com.playshogi.website.gwt.client.events.puzzles.*;
+import com.playshogi.website.gwt.client.events.races.JoinRaceEvent;
+import com.playshogi.website.gwt.client.events.races.RaceEvent;
+import com.playshogi.website.gwt.client.events.races.StartRaceEvent;
+import com.playshogi.website.gwt.client.events.races.WithdrawFromRaceEvent;
+import com.playshogi.website.gwt.client.events.user.UserLoggedInEvent;
 import com.playshogi.website.gwt.client.models.ProblemStatus;
 import com.playshogi.website.gwt.client.place.ProblemsRacePlace;
 import com.playshogi.website.gwt.client.ui.ProblemsRaceView;
@@ -25,6 +30,7 @@ import com.playshogi.website.gwt.client.util.FireAndForgetCallback;
 import com.playshogi.website.gwt.shared.models.ProblemCollectionDetails;
 import com.playshogi.website.gwt.shared.models.ProblemCollectionDetailsAndProblems;
 import com.playshogi.website.gwt.shared.models.ProblemDetails;
+import com.playshogi.website.gwt.shared.models.RaceDetails;
 import com.playshogi.website.gwt.shared.services.*;
 
 import java.util.Arrays;
@@ -46,7 +52,7 @@ public class ProblemsRaceActivity extends MyAbstractActivity {
     private EventBus eventBus;
 
     private final String collectionId;
-    private final String lessonId;
+    private String raceId;
 
     private int problemIndex;
     private ProblemCollectionDetails details;
@@ -55,12 +61,13 @@ public class ProblemsRaceActivity extends MyAbstractActivity {
 
     private Duration duration;
     private Timer activityTimer;
+    private Timer updatesTimer;
 
     public ProblemsRaceActivity(final ProblemsRacePlace place, final ProblemsRaceView view,
                                 final SessionInformation sessionInformation) {
         this.view = view;
         this.collectionId = place.getCollectionId();
-        this.lessonId = place.getLessonId();
+        this.raceId = place.getRaceId();
         this.problemIndex = place.getProblemIndex();
         this.sessionInformation = sessionInformation;
         this.problemController = new ProblemController(view::getCurrentPosition, sessionInformation);
@@ -75,7 +82,75 @@ public class ProblemsRaceActivity extends MyAbstractActivity {
         problemController.activate(eventBus);
         containerWidget.setWidget(view.asWidget());
 
+        refresh();
+    }
+
+    private void refresh() {
+        if (!sessionInformation.isLoggedIn()) {
+            return;
+        }
+        if (raceId == null) {
+            createRace();
+        } else {
+            getRaceDetails();
+            listenToRaceUpdates();
+        }
         loadCollection();
+    }
+
+    private void createRace() {
+        GWT.log("Creating problems race");
+        problemsService.createRace(sessionInformation.getSessionId(), collectionId, RaceDetails.RaceType.TO_THE_END,
+                new AsyncCallback<String>() {
+                    @Override
+                    public void onFailure(final Throwable throwable) {
+                        GWT.log("ProblemsRaceActivity: error creating the race");
+                    }
+
+                    @Override
+                    public void onSuccess(final String raceId) {
+                        GWT.log("ProblemsRaceActivity: successfully created race " + raceId);
+                        ProblemsRaceActivity.this.raceId = raceId;
+                        History.replaceItem("ProblemsRace:" + new ProblemsRacePlace.Tokenizer().getToken(getPlace()),
+                                false);
+                        getRaceDetails();
+                        listenToRaceUpdates();
+                    }
+                });
+    }
+
+    private void getRaceDetails() {
+        problemsService.getRaceDetails(sessionInformation.getSessionId(), raceId,
+                new AsyncCallback<RaceDetails>() {
+                    @Override
+                    public void onFailure(final Throwable throwable) {
+                        GWT.log("ProblemsRaceActivity: error getting race details");
+                    }
+
+                    @Override
+                    public void onSuccess(final RaceDetails raceDetails) {
+                        GWT.log("ProblemsRaceActivity: received race details " + raceDetails);
+                        eventBus.fireEvent(new RaceEvent(raceDetails));
+                    }
+                });
+    }
+
+
+    private void listenToRaceUpdates() {
+        problemsService.waitForRaceUpdate(sessionInformation.getSessionId(), raceId,
+                new AsyncCallback<RaceDetails>() {
+                    @Override
+                    public void onFailure(final Throwable throwable) {
+                        GWT.log("ProblemsRaceActivity: error getting race update");
+                    }
+
+                    @Override
+                    public void onSuccess(final RaceDetails raceDetails) {
+                        GWT.log("ProblemsRaceActivity: received race update " + raceDetails);
+                        eventBus.fireEvent(new RaceEvent(raceDetails));
+                        listenToRaceUpdates();
+                    }
+                });
     }
 
     private void loadCollection() {
@@ -98,6 +173,51 @@ public class ProblemsRaceActivity extends MyAbstractActivity {
                         eventBus.fireEvent(new ListCollectionProblemsEvent(result.getProblems(), result.getDetails()));
                     }
                 });
+    }
+
+    private void startRace() {
+        GWT.log("Starting race");
+        problemsService.startRace(sessionInformation.getSessionId(), raceId, new AsyncCallback<Void>() {
+            @Override
+            public void onFailure(final Throwable throwable) {
+                GWT.log("ProblemsRaceActivity: error starting the race");
+            }
+
+            @Override
+            public void onSuccess(final Void unused) {
+                GWT.log("ProblemsRaceActivity: successfully started the race");
+            }
+        });
+    }
+
+    private void joinRace() {
+        GWT.log("Joining race");
+        problemsService.joinRace(sessionInformation.getSessionId(), raceId, new AsyncCallback<Void>() {
+            @Override
+            public void onFailure(final Throwable throwable) {
+                GWT.log("ProblemsRaceActivity: error joining the race");
+            }
+
+            @Override
+            public void onSuccess(final Void unused) {
+                GWT.log("ProblemsRaceActivity: successfully joined the race");
+            }
+        });
+    }
+
+    private void withdrawFromRace() {
+        GWT.log("Withdrawing from race");
+        problemsService.withdrawFromRace(sessionInformation.getSessionId(), raceId, new AsyncCallback<Void>() {
+            @Override
+            public void onFailure(final Throwable throwable) {
+                GWT.log("ProblemsRaceActivity: error withdrawing from the race");
+            }
+
+            @Override
+            public void onSuccess(final Void unused) {
+                GWT.log("ProblemsRaceActivity: successfully withdrew from the race");
+            }
+        });
     }
 
     private void loadProblem() {
@@ -132,7 +252,7 @@ public class ProblemsRaceActivity extends MyAbstractActivity {
     }
 
     private ProblemsRacePlace getPlace() {
-        return new ProblemsRacePlace(collectionId, problemIndex, lessonId);
+        return new ProblemsRacePlace(collectionId, problemIndex, raceId);
     }
 
     private void initTimer() {
@@ -189,13 +309,6 @@ public class ProblemsRaceActivity extends MyAbstractActivity {
                 Window.alert("You reached the last problem in the collection!");
             }
 
-            if (lessonId != null && !lessonId.isEmpty() && !"null".equals(lessonId)
-                    && sessionInformation.isLoggedIn()) {
-                userService.saveLessonProgress(sessionInformation.getSessionId(), lessonId,
-                        duration == null ? 0 : duration.elapsedMillis(), true, 100, null,
-                        new FireAndForgetCallback("saveLessonProgress"));
-            }
-
             return;
         }
 
@@ -218,6 +331,10 @@ public class ProblemsRaceActivity extends MyAbstractActivity {
         if (activityTimer != null) {
             activityTimer.cancel();
             activityTimer = null;
+        }
+        if (updatesTimer != null) {
+            updatesTimer.cancel();
+            updatesTimer = null;
         }
     }
 
@@ -264,6 +381,26 @@ public class ProblemsRaceActivity extends MyAbstractActivity {
     void onStopTimedRun(final StopTimedRunEvent event) {
         GWT.log("Stop timed run");
         stopTimer();
+    }
+
+    @EventHandler
+    public void onUserLoggedIn(final UserLoggedInEvent event) {
+        refresh();
+    }
+
+    @EventHandler
+    public void onJoinRaceEvent(final JoinRaceEvent event) {
+        joinRace();
+    }
+
+    @EventHandler
+    public void onWithdrawFromRaceEvent(final WithdrawFromRaceEvent event) {
+        withdrawFromRace();
+    }
+
+    @EventHandler
+    public void onStartRaceEvent(final StartRaceEvent event) {
+        startRace();
     }
 
 }
