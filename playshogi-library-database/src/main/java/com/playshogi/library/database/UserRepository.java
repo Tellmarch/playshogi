@@ -189,7 +189,7 @@ public class UserRepository {
 
             }
 
-            LOGGER.log(Level.INFO, "Found user pb stats: " + result);
+            LOGGER.log(Level.INFO, "Found user pb stats: " + result.size());
 
             return result;
         } catch (SQLException e) {
