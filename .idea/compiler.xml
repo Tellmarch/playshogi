@@ -6,6 +6,7 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="playshogi-website-java-client" />
         <module name="playshogi-website-shared" />
         <module name="playshogi-library-database" />
         <module name="playshogi-library-shogi-files" />
@@ -23,6 +24,7 @@
       <module name="playshogi-library-shogi-files" target="1.8" />
       <module name="playshogi-website" target="8" />
       <module name="playshogi-website-client" target="8" />
+      <module name="playshogi-website-java-client" target="8" />
       <module name="playshogi-website-server" target="8" />
       <module name="playshogi-website-shared" target="8" />
       <module name="PlayShogiWebsite" target="1.8" />

@@ -14,9 +14,13 @@
     <file url="file://$PROJECT_DIR$/playshogi-library-shogi/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/playshogi-website/playshogi-website-client/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/playshogi-website/playshogi-website-client/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/playshogi-website/playshogi-website-java-client/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/playshogi-website/playshogi-website-java-client/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/playshogi-website/playshogi-website-server/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/playshogi-website/playshogi-website-server/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/playshogi-website/playshogi-website-shared/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/playshogi-website/playshogi-website-shared/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/playshogi-website/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/playshogi-website/src/main/resources" charset="UTF-8" />
   </component>
 </project>

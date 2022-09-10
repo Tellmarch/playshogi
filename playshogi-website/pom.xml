@@ -92,5 +92,6 @@
         <module>playshogi-website-client</module>
         <module>playshogi-website-shared</module>
         <module>playshogi-website-server</module>
+        <module>playshogi-website-java-client</module>
     </modules>
 </project>
