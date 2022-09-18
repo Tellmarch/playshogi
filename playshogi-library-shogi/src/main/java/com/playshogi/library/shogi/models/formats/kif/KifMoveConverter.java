@@ -105,7 +105,7 @@ public class KifMoveConverter {
 
             String dest = "" +
                     KifUtils.getJapaneseWesternNumber(normalMove.getToSquare().getColumn()) +
-                    KifUtils.getJapaneseNumber(normalMove.getToSquare().getRow());
+                    KifUtils.getJapaneseNumberChar(normalMove.getToSquare().getRow());
 
             if (previousMove instanceof ToSquareMove) {
                 ToSquareMove toSquareMove = (ToSquareMove) previousMove;
@@ -121,7 +121,7 @@ public class KifMoveConverter {
         } else if (move instanceof DropMove) {
             DropMove dropMove = (DropMove) move;
 
-            return "" + KifUtils.getJapaneseWesternNumber(dropMove.getToSquare().getColumn()) + KifUtils.getJapaneseNumber(dropMove.getToSquare().getRow())
+            return "" + KifUtils.getJapaneseWesternNumber(dropMove.getToSquare().getColumn()) + KifUtils.getJapaneseNumberChar(dropMove.getToSquare().getRow())
                     + KifUtils.getJapanesePieceSymbol(dropMove.getPieceType()) + "打";
 
         } else if (move instanceof SpecialMove) {
@@ -140,7 +140,7 @@ public class KifMoveConverter {
 
             String dest = "" +
                     KifUtils.getJapaneseWesternNumber(normalMove.getToSquare().getColumn()) +
-                    KifUtils.getJapaneseNumber(normalMove.getToSquare().getRow());
+                    KifUtils.getJapaneseNumberChar(normalMove.getToSquare().getRow());
 
             if (previousMove instanceof ToSquareMove) {
                 ToSquareMove toSquareMove = (ToSquareMove) previousMove;
@@ -154,7 +154,7 @@ public class KifMoveConverter {
         } else if (move instanceof DropMove) {
             DropMove dropMove = (DropMove) move;
 
-            return "" + KifUtils.getJapaneseWesternNumber(dropMove.getToSquare().getColumn()) + KifUtils.getJapaneseNumber(dropMove.getToSquare().getRow())
+            return "" + KifUtils.getJapaneseWesternNumber(dropMove.getToSquare().getColumn()) + KifUtils.getJapaneseNumberChar(dropMove.getToSquare().getRow())
                     + KifUtils.getJapanesePieceSymbol(dropMove.getPieceType()) + "打";
 
         } else if (move instanceof SpecialMove) {

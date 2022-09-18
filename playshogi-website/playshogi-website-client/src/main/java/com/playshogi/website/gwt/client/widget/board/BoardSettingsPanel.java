@@ -11,6 +11,7 @@ import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.playshogi.website.gwt.client.UserPreferences;
 import com.playshogi.website.gwt.client.events.kifu.ClearDecorationsEvent;
 import com.playshogi.website.gwt.client.events.kifu.CopyPositionEvent;
+import com.playshogi.website.gwt.client.events.kifu.CreateSVGDiagramEvent;
 import com.playshogi.website.gwt.client.events.kifu.FlipBoardEvent;
 import com.playshogi.website.gwt.client.events.user.ArrowModeSelectedEvent;
 import com.playshogi.website.gwt.client.events.user.NotationStyleSelectedEvent;
@@ -88,6 +89,9 @@ public class BoardSettingsPanel extends Composite {
 
         div.add(Button.create(Icons.ALL.content_copy()).setContent("Copy Position SFEN")
                 .addClickListener(value -> eventBus.fireEvent(new CopyPositionEvent())).style().setMarginLeft("1em"));
+
+        div.add(Button.create(Icons.ALL.content_copy()).setContent("Create Diagram SVG")
+                .addClickListener(value -> eventBus.fireEvent(new CreateSVGDiagramEvent())).style().setMarginLeft("1em"));
 
         initWidget(new ElementWidget(div.element()));
     }

@@ -132,7 +132,7 @@ public class KifUtils {
         throw new IllegalArgumentException("Illegal row number: " + rowChar);
     }
 
-    public static char getJapaneseNumber(final int number) {
+    public static char getJapaneseNumberChar(final int number) {
         if (number > 0 && number < JAPANESE_NUMBERS.length) {
             return JAPANESE_NUMBERS[number - 1];
         } else {
@@ -140,8 +140,42 @@ public class KifUtils {
         }
     }
 
+    public static String getJapaneseNumberString(final int number) {
+        if(number > 0 && number <= 10) {
+            return String.valueOf(getJapaneseNumberChar(number));
+        } else if (number > 10 && number < 20){
+            return "" + getJapaneseNumberChar(10) + getJapaneseNumberChar(number - 10);
+        } else {
+            throw new IllegalArgumentException("Illegal number: " + number);
+        }
+    }
+
     public static char getJapaneseWesternNumber(final int number) {
         return (char) ('１' + (number - 1));
+    }
+
+    public static String getOneCharJapanesePieceSymbol(final Piece piece) {
+        PieceType pieceType = piece.getPieceType();
+        if (!piece.isPromoted()) {
+            return getJapanesePieceSymbol(pieceType);
+        } else {
+            switch (pieceType) {
+                case BISHOP:
+                    return "馬";
+                case KNIGHT:
+                    return "圭";
+                case LANCE:
+                    return "杏";
+                case PAWN:
+                    return "と";
+                case ROOK:
+                    return "竜";
+                case SILVER:
+                    return "全";
+                default:
+                    throw new IllegalArgumentException("Invalid piece: " + piece);
+            }
+        }
     }
 
     public static String getJapanesePieceSymbol(final Piece piece) {

@@ -17,6 +17,7 @@ import com.playshogi.library.shogi.models.decorations.Arrow;
 import com.playshogi.library.shogi.models.decorations.BoardDecorations;
 import com.playshogi.library.shogi.models.decorations.Color;
 import com.playshogi.library.shogi.models.formats.sfen.SfenConverter;
+import com.playshogi.library.shogi.models.formats.svg.SVGConverter;
 import com.playshogi.library.shogi.models.moves.CaptureMove;
 import com.playshogi.library.shogi.models.moves.DropMove;
 import com.playshogi.library.shogi.models.moves.NormalMove;
@@ -31,11 +32,16 @@ import com.playshogi.website.gwt.client.events.gametree.MovePlayedEvent;
 import com.playshogi.website.gwt.client.events.gametree.PositionChangedEvent;
 import com.playshogi.website.gwt.client.events.kifu.ArrowDrawnEvent;
 import com.playshogi.website.gwt.client.events.kifu.CopyPositionEvent;
+import com.playshogi.website.gwt.client.events.kifu.CreateSVGDiagramEvent;
 import com.playshogi.website.gwt.client.events.kifu.FlipBoardEvent;
 import com.playshogi.website.gwt.client.events.user.ArrowModeSelectedEvent;
 import com.playshogi.website.gwt.client.events.user.NotationStyleSelectedEvent;
 import com.playshogi.website.gwt.client.events.user.PieceStyleSelectedEvent;
 import com.playshogi.website.gwt.client.widget.board.KomadaiPositioning.Point;
+import org.dominokit.domino.ui.dialogs.MessageDialog;
+import org.gwtproject.safehtml.shared.SafeHtml;
+import org.gwtproject.safehtml.shared.SafeHtmlUtils;
+import org.jboss.elemento.Elements;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -696,4 +702,17 @@ public class ShogiBoard extends Composite implements ClickHandler {
         // TODO figure out a way to put the position SFEN in clipboard
         if (position != null) Window.alert(SfenConverter.toSFENWithMoveCount(position));
     }
+
+    @EventHandler
+    public void onCreateDiagramSVG(final CreateSVGDiagramEvent event) {
+        if (position == null) return;
+        MessageDialog.createMessage("Diagram", Elements.div().innerHtml(getSVG(position)).element()).open();
+
+    }
+
+    private SafeHtml getSVG(final ShogiPosition position) {
+        return SafeHtmlUtils.fromTrustedString(SVGConverter.toSVG(position));
+    }
+
+
 }
