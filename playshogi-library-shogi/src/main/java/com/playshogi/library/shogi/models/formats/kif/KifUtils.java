@@ -133,7 +133,7 @@ public class KifUtils {
     }
 
     public static char getJapaneseNumberChar(final int number) {
-        if (number > 0 && number < JAPANESE_NUMBERS.length) {
+        if (number > 0 && number <= JAPANESE_NUMBERS.length) {
             return JAPANESE_NUMBERS[number - 1];
         } else {
             throw new IllegalArgumentException("Illegal number: " + number);

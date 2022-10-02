@@ -76,6 +76,16 @@
         <url-pattern>/PlayShogiWebsite/uploadKifu</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+        <servlet-name>downloadDiagram</servlet-name>
+        <servlet-class>com.playshogi.website.gwt.server.servlets.DiagramDownloadServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>downloadDiagram</servlet-name>
+        <url-pattern>/PlayShogiWebsite/downloadDiagram</url-pattern>
+    </servlet-mapping>
+
     <!-- Default page to serve -->
     <welcome-file-list>
         <welcome-file>ShogiBoard.html</welcome-file>

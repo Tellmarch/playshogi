@@ -38,6 +38,7 @@ import com.playshogi.website.gwt.client.events.user.ArrowModeSelectedEvent;
 import com.playshogi.website.gwt.client.events.user.NotationStyleSelectedEvent;
 import com.playshogi.website.gwt.client.events.user.PieceStyleSelectedEvent;
 import com.playshogi.website.gwt.client.widget.board.KomadaiPositioning.Point;
+import org.dominokit.domino.ui.button.Button;
 import org.dominokit.domino.ui.dialogs.MessageDialog;
 import org.gwtproject.safehtml.shared.SafeHtml;
 import org.gwtproject.safehtml.shared.SafeHtmlUtils;
@@ -706,7 +707,10 @@ public class ShogiBoard extends Composite implements ClickHandler {
     @EventHandler
     public void onCreateDiagramSVG(final CreateSVGDiagramEvent event) {
         if (position == null) return;
-        MessageDialog.createMessage("Diagram", Elements.div().innerHtml(getSVG(position)).element()).open();
+        String dlURL = GWT.getModuleBaseURL() + "downloadDiagram?sfen=" + SfenConverter.toSFEN(position);
+        MessageDialog.createMessage("Diagram", Elements.div().innerHtml(getSVG(position)).element(),
+                        () -> Button.create("Download").addClickListener(x -> Window.open(dlURL, "_blank", "")))
+                .open();
 
     }
 
