@@ -13,11 +13,16 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
+import com.playshogi.library.shogi.models.Piece;
+import com.playshogi.library.shogi.models.PieceType;
 import com.playshogi.library.shogi.models.formats.sfen.SfenConverter;
-import com.playshogi.library.shogi.models.position.ShogiPosition;
+import com.playshogi.library.shogi.models.position.KomadaiState;
+import com.playshogi.library.shogi.models.position.ReadOnlyShogiPosition;
+import com.playshogi.library.shogi.models.position.Square;
 import com.playshogi.website.gwt.client.events.gametree.GameTreeChangedEvent;
 import com.playshogi.website.gwt.client.events.gametree.PositionChangedEvent;
 import com.playshogi.website.gwt.client.events.gametree.UserNavigatedBackEvent;
+import com.playshogi.website.gwt.client.events.kifu.BlindModeEvent;
 import com.playshogi.website.gwt.client.events.kifu.RequestPositionEvaluationEvent;
 import com.playshogi.website.gwt.client.events.puzzles.UserFinishedProblemEvent;
 import com.playshogi.website.gwt.client.events.puzzles.UserSkippedProblemEvent;
@@ -41,15 +46,17 @@ public class ProblemFeedbackPanel extends Composite implements ClickHandler {
             "color:green\">Correct!</p>");
 
     private EventBus eventBus;
-    private ShogiPosition currentPosition = null;
+    private ReadOnlyShogiPosition currentPosition = null;
 
     private final Button skipButton;
     private Button tellMeWhyButton;
     private final HTML messagePanel;
     private boolean enableTellMeWhy;
+    private boolean blind;
 
     public ProblemFeedbackPanel(final GameNavigatorPanel gameNavigatorPanel, final boolean enableTellMeWhy) {
         this.enableTellMeWhy = enableTellMeWhy;
+        this.blind = false;
 
         FlowPanel flowPanel = new FlowPanel();
         if (gameNavigatorPanel != null) {
@@ -145,6 +152,68 @@ public class ProblemFeedbackPanel extends Composite implements ClickHandler {
                 messagePanel.setHTML("Escape the mate - play the correct move!");
             }
         }
+        currentPosition = gameTreeChangedEvent.getGameTree().getInitialPosition();
+        updateBlindMsg();
+    }
+
+    private void updateBlindMsg() {
+        if (blind) {
+            messagePanel.setHTML(messagePanel.getHTML() + "<br />" + getBlindText());
+        } else {
+            messagePanel.setHTML("Play the correct move!");
+        }
+    }
+
+    private String getBlindText() {
+        String result = "<br /><strong>Blind Mode On</strong><br />";
+        String whitePieces = "King Side: ";
+        String blackPieces = "Attacker: ";
+
+        for (Square square : currentPosition.getAllSquares()) {
+            Optional<Piece> piece = currentPosition.getPieceAt(square);
+            if(piece.isPresent()){
+                if(piece.get().isWhitePiece()){
+                    if(piece.get().isPromoted()){
+                        whitePieces += "+";
+                    }
+                    whitePieces += pieceToString(piece.get().getPieceType());
+                    whitePieces += square.toNumericalString();
+                    whitePieces += " ";
+                }else{
+                    if(piece.get().isPromoted()){
+                        blackPieces += "+";
+                    }
+                    blackPieces += pieceToString(piece.get().getPieceType());
+                    blackPieces += square.toNumericalString();
+                    blackPieces += " ";
+                }
+            }
+        }
+
+        result += whitePieces + "<br />";
+        result += blackPieces + "<br />";
+
+        KomadaiState senteKomadai = currentPosition.getSenteKomadai();
+        result += ("In hand: ");
+        if (senteKomadai.isEmpty()) {
+            result += "nothing";
+        } else {
+            for (PieceType pieceType : PieceType.STRONGEST_TO_WEAKEST) {
+                int number = senteKomadai.getPiecesOfType(pieceType);
+                if (number != 0) {
+                    result += (pieceToString(pieceType) + "x" + number + " ");
+                }
+            }
+        }
+
+        return result;
+    }
+
+    @EventHandler
+    public void onBlindMode(final BlindModeEvent event) {
+        GWT.log("ProblemFeedbackPanel Handling BlindModeEvent: " + event.isBlind());
+        blind = event.isBlind();
+        updateBlindMsg();
     }
 
     public void activate(final EventBus eventBus) {
@@ -158,6 +227,29 @@ public class ProblemFeedbackPanel extends Composite implements ClickHandler {
     private void setTellMeWhyVisibility(final boolean b) {
         if (enableTellMeWhy) {
             tellMeWhyButton.setVisible(b);
+        }
+    }
+
+    private static String pieceToString(final PieceType x) {
+        switch (x) {
+            case PAWN:
+                return "P";
+            case LANCE:
+                return "L";
+            case KNIGHT:
+                return "N";
+            case SILVER:
+                return "S";
+            case GOLD:
+                return "G";
+            case BISHOP:
+                return "B";
+            case ROOK:
+                return "R";
+            case KING:
+                return "K";
+            default:
+                return "";
         }
     }
 }

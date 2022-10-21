@@ -93,4 +93,8 @@ public class Square implements Comparable<Square> {
     public String toString() {
         return column + String.valueOf(Character.toChars('a' + row - 1));
     }
+
+    public String toNumericalString() {
+        return column + "" + row;
+    }
 }

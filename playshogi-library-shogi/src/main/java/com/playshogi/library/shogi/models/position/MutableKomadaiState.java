@@ -27,6 +27,16 @@ public class MutableKomadaiState implements KomadaiState {
         return pieces[piece.ordinal()];
     }
 
+    @Override
+    public boolean isEmpty() {
+        for (int piece : pieces) {
+            if (piece != 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     /**
      * @return array of number of pieces in hand (index of array = piece type)
      */

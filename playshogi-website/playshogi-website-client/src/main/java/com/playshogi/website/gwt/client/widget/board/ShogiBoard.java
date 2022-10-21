@@ -308,7 +308,7 @@ public class ShogiBoard extends Composite implements ClickHandler {
     }
 
     private PieceGraphics.Style getPieceStyle() {
-        if(boardConfiguration.isBlind()){
+        if (boardConfiguration.isBlind()) {
             return PieceGraphics.Style.BLIND;
         } else {
             return userPreferences.getPieceStyle();
@@ -451,7 +451,8 @@ public class ShogiBoard extends Composite implements ClickHandler {
             if (position.getPlayerToMove() == pieceWrapper.getPiece().getOwner() || boardConfiguration.isPositionEditingMode()) {
                 selectionController.selectPiece(pieceWrapper);
 
-                if (!pieceWrapper.isInKomadai() && !boardConfiguration.isPositionEditingMode()) {
+                if (!pieceWrapper.isInKomadai() && !boardConfiguration.isPositionEditingMode()
+                        && boardConfiguration.isShowPossibleMovesOnPieceSelection()) {
                     selectionController.selectPossibleMoves(pieceWrapper, position);
                 }
             }
@@ -702,10 +703,14 @@ public class ShogiBoard extends Composite implements ClickHandler {
     @EventHandler
     public void onBlindMode(final BlindModeEvent event) {
         GWT.log("ShogiBoard Handling BlindModeEvent: " + event.isBlind());
-        if(event.isBlind()){
-           boardConfiguration.setBlind(true);
-        }else{
+        if (event.isBlind()) {
+            boardConfiguration.setBlind(true);
+            boardConfiguration.setShowPossibleMovesOnPieceMouseOver(false);
+            boardConfiguration.setShowPossibleMovesOnPieceSelection(false);
+        } else {
             boardConfiguration.setBlind(false);
+            boardConfiguration.setShowPossibleMovesOnPieceMouseOver(true);
+            boardConfiguration.setShowPossibleMovesOnPieceSelection(true);
         }
         Scheduler.get().scheduleDeferred(this::displayPosition);
     }
