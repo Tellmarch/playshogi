@@ -30,10 +30,7 @@ import com.playshogi.website.gwt.client.UserPreferences;
 import com.playshogi.website.gwt.client.events.gametree.HighlightMoveEvent;
 import com.playshogi.website.gwt.client.events.gametree.MovePlayedEvent;
 import com.playshogi.website.gwt.client.events.gametree.PositionChangedEvent;
-import com.playshogi.website.gwt.client.events.kifu.ArrowDrawnEvent;
-import com.playshogi.website.gwt.client.events.kifu.CopyPositionEvent;
-import com.playshogi.website.gwt.client.events.kifu.CreateSVGDiagramEvent;
-import com.playshogi.website.gwt.client.events.kifu.FlipBoardEvent;
+import com.playshogi.website.gwt.client.events.kifu.*;
 import com.playshogi.website.gwt.client.events.user.ArrowModeSelectedEvent;
 import com.playshogi.website.gwt.client.events.user.NotationStyleSelectedEvent;
 import com.playshogi.website.gwt.client.events.user.PieceStyleSelectedEvent;
@@ -110,7 +107,7 @@ public class ShogiBoard extends Composite implements ClickHandler {
         this.activityId = activityId;
         this.boardConfiguration = boardConfiguration;
         this.position = position;
-        this.promotionPopupController = new PromotionPopupController(this);
+        this.promotionPopupController = new PromotionPopupController(this, userPreferences);
 
         absolutePanel = new AbsolutePanel();
 
@@ -311,7 +308,11 @@ public class ShogiBoard extends Composite implements ClickHandler {
     }
 
     private PieceGraphics.Style getPieceStyle() {
-        return userPreferences.getPieceStyle();
+        if(boardConfiguration.isBlind()){
+            return PieceGraphics.Style.BLIND;
+        } else {
+            return userPreferences.getPieceStyle();
+        }
     }
 
     private void displayLowerKomadai() {
@@ -695,6 +696,17 @@ public class ShogiBoard extends Composite implements ClickHandler {
         GWT.log("ShogiBoard Handling FlipBoardEvent: " + event.isInverted());
         boardConfiguration.setInverted(event.isInverted());
         refreshCoordinates();
+        Scheduler.get().scheduleDeferred(this::displayPosition);
+    }
+
+    @EventHandler
+    public void onBlindMode(final BlindModeEvent event) {
+        GWT.log("ShogiBoard Handling BlindModeEvent: " + event.isBlind());
+        if(event.isBlind()){
+           boardConfiguration.setBlind(true);
+        }else{
+            boardConfiguration.setBlind(false);
+        }
         Scheduler.get().scheduleDeferred(this::displayPosition);
     }
 

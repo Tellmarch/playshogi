@@ -14,6 +14,7 @@ public class BoardConfiguration {
     private boolean allowPromotion = true;
     private boolean fillGoteKomadaiWithMissingPieces = false;
     private boolean allowDrawArrows = true;
+    private boolean blind = false;
 
     public BoardConfiguration() {
     }
@@ -126,6 +127,14 @@ public class BoardConfiguration {
         this.allowDrawArrows = allowDrawArrows;
     }
 
+    public boolean isBlind() {
+        return blind;
+    }
+
+    public void setBlind(final boolean blind) {
+        this.blind = blind;
+    }
+
     @Override
     public String toString() {
         return "BoardConfiguration{" +
@@ -142,6 +151,8 @@ public class BoardConfiguration {
                 ", allowPromotion=" + allowPromotion +
                 ", fillGoteKomadaiWithMissingPieces=" + fillGoteKomadaiWithMissingPieces +
                 ", allowDrawArrows=" + allowDrawArrows +
+                ", blind=" + blind +
                 '}';
     }
+
 }

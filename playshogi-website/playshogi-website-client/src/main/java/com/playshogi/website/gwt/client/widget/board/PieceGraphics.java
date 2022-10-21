@@ -4,15 +4,17 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.resources.client.ImageResource;
 import com.playshogi.library.shogi.models.Piece;
 import com.playshogi.library.shogi.models.PieceType;
+import com.playshogi.library.shogi.models.Player;
 
 public class PieceGraphics {
 
     public enum Style {
-        RYOKO, HIDETCHI
+        RYOKO, HIDETCHI, BLIND
     }
 
     private static RyokoPieceBundle ryoko = GWT.create(RyokoPieceBundle.class);
     private static HidetchiPieceBundle hidetchi = GWT.create(HidetchiPieceBundle.class);
+    private static BoardBundle board = GWT.create(BoardBundle.class);
 
     public static ImageResource getPieceImage(final Piece piece, final Style style, final boolean inverted) {
         if (inverted) {
@@ -23,6 +25,9 @@ public class PieceGraphics {
     }
 
     public static ImageResource getPieceImage(final Piece piece, final Style style) {
+        if (style == Style.BLIND) {
+            return board.empty();
+        }
         PieceBundle resources = style == Style.RYOKO ? ryoko : hidetchi;
 
         switch (piece) {
@@ -88,33 +93,7 @@ public class PieceGraphics {
         }
     }
 
-    public static ImageResource getPieceImage(final PieceType pieceType, boolean promoted) {
-        return getPieceImage(pieceType, promoted, Style.RYOKO);
-    }
-
-    public static ImageResource getPieceImage(final PieceType pieceType, boolean promoted, final Style style) {
-
-        PieceBundle resources = style == Style.RYOKO ? ryoko : hidetchi;
-
-        switch (pieceType) {
-            case PAWN:
-                return promoted ? resources.sto() : resources.sfu();
-            case LANCE:
-                return promoted ? resources.snkyo() : resources.skyo();
-            case KNIGHT:
-                return promoted ? resources.snkei() : resources.skei();
-            case SILVER:
-                return promoted ? resources.sngin() : resources.sgin();
-            case GOLD:
-                return resources.skin();
-            case BISHOP:
-                return promoted ? resources.suma() : resources.skaku();
-            case ROOK:
-                return promoted ? resources.sryu() : resources.shi();
-            case KING:
-                return resources.sou();
-            default:
-                throw new IllegalArgumentException();
-        }
+    public static ImageResource getPieceImage(final PieceType pieceType, boolean promoted, Style style) {
+        return getPieceImage(Piece.getPiece(pieceType, Player.BLACK, promoted), style);
     }
 }

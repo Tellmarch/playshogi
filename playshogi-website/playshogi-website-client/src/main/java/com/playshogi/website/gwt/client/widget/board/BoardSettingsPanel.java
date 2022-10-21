@@ -9,10 +9,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.playshogi.website.gwt.client.UserPreferences;
-import com.playshogi.website.gwt.client.events.kifu.ClearDecorationsEvent;
-import com.playshogi.website.gwt.client.events.kifu.CopyPositionEvent;
-import com.playshogi.website.gwt.client.events.kifu.CreateSVGDiagramEvent;
-import com.playshogi.website.gwt.client.events.kifu.FlipBoardEvent;
+import com.playshogi.website.gwt.client.events.kifu.*;
 import com.playshogi.website.gwt.client.events.user.ArrowModeSelectedEvent;
 import com.playshogi.website.gwt.client.events.user.NotationStyleSelectedEvent;
 import com.playshogi.website.gwt.client.events.user.PieceStyleSelectedEvent;
@@ -43,6 +40,7 @@ public class BoardSettingsPanel extends Composite {
 
         HtmlContentBuilder<HTMLDivElement> div = Elements.div();
         div.add(CheckBox.create("Flip Board").addChangeHandler(this::onFlipBoard));
+        div.add(CheckBox.create("Blind Mode").addChangeHandler(this::onBlindMode));
         SwitchButton pieces = SwitchButton.create("Pieces", "Traditional", "International");
         if (userPreferences.getPieceStyle() == PieceGraphics.Style.HIDETCHI) {
             pieces.check();
@@ -99,6 +97,11 @@ public class BoardSettingsPanel extends Composite {
     private void onFlipBoard(boolean inverted) {
         GWT.log("Flip board: " + inverted);
         eventBus.fireEvent(new FlipBoardEvent(inverted));
+    }
+
+    private void onBlindMode(boolean blind) {
+        GWT.log("Blind Mode: " + blind);
+        eventBus.fireEvent(new BlindModeEvent(blind));
     }
 
     private void setInternationalMoveNotation(final UserPreferences.NotationStyle notationStyle) {

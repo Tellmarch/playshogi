@@ -10,6 +10,10 @@ import com.playshogi.library.shogi.models.position.Square;
 // import java.io.BufferedWriter;
 // import java.io.FileWriter;
 // import java.io.IOException;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Optional;
 
 public class SVGConverter {
@@ -156,7 +160,8 @@ public class SVGConverter {
         }
 
         if(hand.length() == 1) {
-            hand.append(" なし");
+            //hand.append("なし");
+            hand.append("Nothing");
         }
 
         int x = MARGIN_LEFT + 9 * SQUARE_WIDTH + 10;
@@ -190,7 +195,7 @@ public class SVGConverter {
         }
 
         if(hand.length() == 1) {
-            hand.append(" なし");
+            hand.append("なし");
         }
 
         int x = - (MARGIN_LEFT - 10);
@@ -210,14 +215,14 @@ public class SVGConverter {
     }
 
 
-//     public static void main(String[] args) throws IOException {
-//         String svg = SVGConverter.toSVG(SfenConverter.fromSFEN("ln1gk2n1/1rs3g1+L/3pppsp1/p1p3p2/1p5P1/2P6/PPSPPPPs1" +
-//                 "/2GK4p/LN3G1NR w 2BLP "));
-// //        System.out.println(svg);
-
+     public static void main(String[] args) throws IOException {
+         String svg = SVGConverter.toSVG(SfenConverter.fromSFEN("ln1gk2n1/1rs3g1+L/3pppsp1/p1p3p2/1p5P1/2P6/PPSPPPPs1" +
+                 "/2GK4p/LN3G1NR w 2BLP "));
+         System.out.println(svg);
+//
 //         BufferedWriter writer = new BufferedWriter(new FileWriter("/home/jfortin/test.svg"));
 //         writer.write(svg);
 
 //         writer.close();
-//     }
+     }
 }
