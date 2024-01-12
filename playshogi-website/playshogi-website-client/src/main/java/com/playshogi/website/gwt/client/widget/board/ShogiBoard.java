@@ -735,7 +735,36 @@ public class ShogiBoard extends Composite implements ClickHandler {
     @EventHandler
     public void onCreateDiagramWiki(final CreateWikiDiagramEvent event) {
         // TODO figure out a way to put the position Wiki in clipboard
-        if (position != null) Window.alert(WikiConverter.toWikiDiagram(position, ""));
+        if (position == null) return;
+        final DialogBox dialogBox = createWikiDiagramDialogBox(WikiConverter.toWikiDiagram(position, ""));
+        dialogBox.center();
+        dialogBox.show();
+    }
+
+    private DialogBox createWikiDiagramDialogBox(final String diagram) {
+        final DialogBox dialogBox = new DialogBox();
+        dialogBox.ensureDebugId("cwDialogBox");
+        dialogBox.setText("Wiki diagram");
+        dialogBox.setGlassEnabled(true);
+
+        VerticalPanel dialogContents = new VerticalPanel();
+        dialogContents.setSpacing(4);
+        dialogBox.setWidget(dialogContents);
+
+        TextArea textArea = new TextArea();
+        textArea.setCharacterWidth(80);
+        textArea.setVisibleLines(15);
+        textArea.setText(diagram);
+
+        dialogContents.add(textArea);
+        dialogContents.setCellHorizontalAlignment(this, HasHorizontalAlignment.ALIGN_CENTER);
+
+        com.google.gwt.user.client.ui.Button closeButton = new com.google.gwt.user.client.ui.Button("Close", (ClickHandler) event -> dialogBox.hide());
+        dialogContents.add(closeButton);
+
+        dialogContents.setCellHorizontalAlignment(closeButton, HasHorizontalAlignment.ALIGN_RIGHT);
+
+        return dialogBox;
     }
 
     private SafeHtml getSVG(final ShogiPosition position) {
