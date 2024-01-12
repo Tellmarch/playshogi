@@ -91,6 +91,10 @@ public class BoardSettingsPanel extends Composite {
         div.add(Button.create(Icons.ALL.content_copy()).setContent("Create Diagram SVG")
                 .addClickListener(value -> eventBus.fireEvent(new CreateSVGDiagramEvent())).style().setMarginLeft("1em"));
 
+        div.add(Button.create(Icons.ALL.content_copy()).setContent("Copy Position WIKI")
+                .addClickListener(value -> eventBus.fireEvent(new CreateWikiDiagramEvent())).style().setMarginLeft("1em"));
+
+
         initWidget(new ElementWidget(div.element()));
     }
 

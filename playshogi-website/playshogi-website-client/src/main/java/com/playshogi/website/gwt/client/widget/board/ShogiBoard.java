@@ -18,6 +18,7 @@ import com.playshogi.library.shogi.models.decorations.BoardDecorations;
 import com.playshogi.library.shogi.models.decorations.Color;
 import com.playshogi.library.shogi.models.formats.sfen.SfenConverter;
 import com.playshogi.library.shogi.models.formats.svg.SVGConverter;
+import com.playshogi.library.shogi.models.formats.wiki.WikiConverter;
 import com.playshogi.library.shogi.models.moves.CaptureMove;
 import com.playshogi.library.shogi.models.moves.DropMove;
 import com.playshogi.library.shogi.models.moves.NormalMove;
@@ -729,6 +730,12 @@ public class ShogiBoard extends Composite implements ClickHandler {
                         () -> Button.create("Download").addClickListener(x -> Window.open(dlURL, "_blank", "")))
                 .open();
 
+    }
+
+    @EventHandler
+    public void onCreateDiagramWiki(final CreateWikiDiagramEvent event) {
+        // TODO figure out a way to put the position Wiki in clipboard
+        if (position != null) Window.alert(WikiConverter.toWikiDiagram(position, ""));
     }
 
     private SafeHtml getSVG(final ShogiPosition position) {
