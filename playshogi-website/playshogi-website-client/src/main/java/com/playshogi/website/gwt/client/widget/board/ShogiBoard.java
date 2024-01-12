@@ -736,7 +736,7 @@ public class ShogiBoard extends Composite implements ClickHandler {
     public void onCreateDiagramWiki(final CreateWikiDiagramEvent event) {
         // TODO figure out a way to put the position Wiki in clipboard
         if (position == null) return;
-        final DialogBox dialogBox = createWikiDiagramDialogBox(WikiConverter.toWikiDiagram(position, ""));
+        final DialogBox dialogBox = createWikiDiagramDialogBox(WikiConverter.toWikiDiagram(position, "", ""));
         dialogBox.center();
         dialogBox.show();
     }
