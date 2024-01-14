@@ -14,12 +14,10 @@ import com.playshogi.website.gwt.client.events.user.UserLoggedInEvent;
 import com.playshogi.website.gwt.client.place.GameCollectionPlace;
 import com.playshogi.website.gwt.client.ui.GameCollectionView;
 import com.playshogi.website.gwt.shared.models.GameCollectionDetailsAndGames;
-import com.playshogi.website.gwt.shared.models.GameDetails;
+import com.playshogi.website.gwt.shared.models.KifuSearchFilterDetails;
 import com.playshogi.website.gwt.shared.services.KifuService;
 import com.playshogi.website.gwt.shared.services.KifuServiceAsync;
 import org.dominokit.domino.ui.notifications.Notification;
-
-import java.util.Arrays;
 
 public class GameCollectionActivity extends MyAbstractActivity {
 
@@ -143,9 +141,29 @@ public class GameCollectionActivity extends MyAbstractActivity {
     public void onSearchKifus(final SearchKifusEvent event) {
         GWT.log("GameCollectionActivity Handling SearchKifusEvent");
 
-        eventBus.fireEvent(new ListCollectionGamesEvent(
-                Arrays.stream(games.getGames()).filter(x -> event.getPlayer().equals(x.getSente())).toArray(GameDetails[]::new),
-                games.getDetails()));
+
+        KifuSearchFilterDetails filterDetails = new KifuSearchFilterDetails();
+        filterDetails.setPartialPositionSearchSfen(event.getPartialPositionSfen());
+        if (event.getResult() != null) filterDetails.setGameResult(event.getResult().name());
+        filterDetails.setPlayerName(event.getPlayer());
+
+        GWT.log("Querying for collection games with filter");
+        kifuService.getGameSetKifuDetailsWithFilter(sessionInformation.getSessionId(), place.getCollectionId(),
+                filterDetails,
+
+                new AsyncCallback<GameCollectionDetailsAndGames>() {
+                    @Override
+                    public void onFailure(Throwable throwable) {
+                        GWT.log("GameCollectionActivity: error retrieving collection games with filter");
+                    }
+
+                    @Override
+                    public void onSuccess(GameCollectionDetailsAndGames result) {
+                        games = result;
+                        GWT.log("GameCollectionActivity: retrieved collection games with filter: " + result.getGames().length);
+                        eventBus.fireEvent(new ListCollectionGamesEvent(result.getGames(), result.getDetails()));
+                    }
+                });
     }
 
     private void refresh() {

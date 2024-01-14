@@ -21,11 +21,14 @@ public class SearchKifuForm {
     private Select<GameResult> gameResult;
     private SuggestBox<String> playerName;
     private EventBus eventBus;
+    private TextBox partialSearch;
 
     public HtmlContentBuilder<HTMLDivElement> getForm() {
         if (div != null) {
             return div;
         }
+
+        partialSearch = TextBox.create().setLabel("Search for partial position").setHelperText("SFEN");
 
         playerName = SuggestBox.create("Player:", playerNames)
                 .setHelperText("Type any letter and see suggestions");
@@ -39,7 +42,7 @@ public class SearchKifuForm {
                 .setSearchable(false)
                 .selectAt(0);
 
-        div = Elements.div().add(playerName).add(gameResult);
+        div = Elements.div().add(partialSearch).add(playerName).add(gameResult);
 
         return div;
     }
@@ -59,7 +62,8 @@ public class SearchKifuForm {
         closeButton.addClickListener(evt -> modal.close());
         Button searchButton = Button.create("SEARCH").linkify();
         searchButton.addClickListener(evt -> {
-            eventBus.fireEvent(new SearchKifusEvent(gameResult.getValue(), playerName.getValue()));
+            eventBus.fireEvent(new SearchKifusEvent(gameResult.getValue(), playerName.getValue(),
+                    partialSearch.getValue()));
             modal.close();
         });
         modal.appendFooterChild(searchButton);

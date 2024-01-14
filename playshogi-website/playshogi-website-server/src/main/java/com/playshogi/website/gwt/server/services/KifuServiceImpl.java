@@ -5,6 +5,9 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.playshogi.library.database.*;
 import com.playshogi.library.database.models.*;
 import com.playshogi.library.database.models.PersistentKifu.KifuType;
+import com.playshogi.library.database.search.KifuSearchFilter;
+import com.playshogi.library.database.search.KifuSearchManager;
+import com.playshogi.library.database.search.KifuSearchResult;
 import com.playshogi.library.shogi.engine.*;
 import com.playshogi.library.shogi.engine.insights.GameInsights;
 import com.playshogi.library.shogi.engine.insights.Mistake;
@@ -43,6 +46,8 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
     private final QueuedTsumeSolver queuedTsumeSolver = new QueuedTsumeSolver(EngineConfiguration.TSUME_ENGINE);
     private final TsumeEscapeSolver tsumeEscapeSolver = new TsumeEscapeSolver(queuedTsumeSolver);
     private final QueuedKifuAnalyzer queuedKifuAnalyzer = new QueuedKifuAnalyzer(EngineConfiguration.NORMAL_ENGINE);
+
+    private final KifuSearchManager kifuSearchManager = new KifuSearchManager();
 
     public KifuServiceImpl() {
         DbConnection dbConnection = new DbConnection();
@@ -225,6 +230,49 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
         result.setGames(games.stream().map(this::createGameDetails).toArray(GameDetails[]::new));
 
         return result;
+    }
+
+    @Override
+    public GameCollectionDetailsAndGames getGameSetKifuDetailsWithFilter(final String sessionId,
+                                                                         final String gameSetId,
+                                                                         final KifuSearchFilterDetails filterDetails) {
+        LOGGER.log(Level.INFO, "getGameSetKifuDetailsWithFilter:\n" + gameSetId + "\n" + filterDetails);
+
+        //TODO access control
+
+        LoginResult loginResult = authenticator.checkSession(sessionId);
+        if (loginResult == null || !loginResult.isLoggedIn() || loginResult.getUserId() != 2) {
+            throw new IllegalStateException("Only some logged in users can search for games");
+        }
+
+        PersistentGameSet gameSet = gameSetRepository.getGameSetById(Integer.parseInt(gameSetId));
+        if (gameSet == null) {
+            throw new IllegalArgumentException("Invalid gameSet ID");
+        }
+
+        List<PersistentGame> games = gameRepository.getGamesFromGameSet(Integer.parseInt(gameSetId));
+
+        List<KifuSearchResult> kifuSearchResults = kifuSearchManager.searchGames(createKifuSearchFilter(filterDetails));
+
+
+        GameCollectionDetailsAndGames result = new GameCollectionDetailsAndGames();
+        result.setDetails(getCollectionDetails(gameSet));
+        result.setGames(games.stream().filter(g -> matchesFilter(filterDetails, kifuSearchResults, g))
+                .map(this::createGameDetails).toArray(GameDetails[]::new));
+
+        return result;
+    }
+
+    private boolean matchesFilter(final KifuSearchFilterDetails filterDetails,
+                                  final List<KifuSearchResult> kifuSearchResults, PersistentGame game) {
+        String playerName = filterDetails.getPlayerName();
+        if (!Strings.isNullOrEmpty(playerName) && !game.getSenteName().startsWith(playerName) && !game.getSenteName().startsWith(playerName))
+            return false;
+        return kifuSearchResults.stream().anyMatch(r -> r.getKifu().getId() == game.getKifuId());
+    }
+
+    private KifuSearchFilter createKifuSearchFilter(final KifuSearchFilterDetails filterDetails) {
+        return new KifuSearchFilter(SfenConverter.fromSFEN(filterDetails.getPartialPositionSearchSfen()));
     }
 
     private GameDetails createGameDetails(final PersistentGame game) {

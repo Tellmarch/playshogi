@@ -5,12 +5,13 @@ import com.playshogi.library.shogi.models.record.GameResult;
 
 public class SearchKifusEvent extends GenericEvent {
     private final GameResult result;
-
     private final String player;
+    private final String partialPositionSfen;
 
-    public SearchKifusEvent(final GameResult result, String player) {
+    public SearchKifusEvent(final GameResult result, String player, String partialPositionSfen) {
         this.result = result;
         this.player = player;
+        this.partialPositionSfen = partialPositionSfen;
     }
 
     public GameResult getResult() {
@@ -19,5 +20,9 @@ public class SearchKifusEvent extends GenericEvent {
 
     public String getPlayer() {
         return player;
+    }
+
+    public String getPartialPositionSfen() {
+        return partialPositionSfen;
     }
 }
