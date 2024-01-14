@@ -100,13 +100,18 @@ public class GameRepository {
     }
 
     public List<PersistentGame> getGamesFromGameSet(final int gameSetId) {
+        return getGamesFromGameSet(gameSetId, false);
+    }
+
+    public List<PersistentGame> getGamesFromGameSet(final int gameSetId, final boolean reducedLogging) {
         ArrayList<PersistentGame> games = new ArrayList<>();
         Connection connection = dbConnection.getConnection();
         try (PreparedStatement preparedStatement = connection.prepareStatement(SELECT_GAMES_FROM_GAMESET)) {
             preparedStatement.setInt(1, gameSetId);
             ResultSet rs = preparedStatement.executeQuery();
             while (rs.next()) {
-                LOGGER.log(Level.INFO, "Found game with id: " + rs.getInt("game_id"));
+                if (!reducedLogging)
+                    LOGGER.log(Level.INFO, "Found game with id: " + rs.getInt("game_id"));
 
                 int kifuId = rs.getInt("kifu_id");
                 int gameId = rs.getInt("game_id");

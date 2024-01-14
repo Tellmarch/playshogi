@@ -77,12 +77,17 @@ public class KifuRepository {
     }
 
     public PersistentKifu getKifuById(final int kifuId) {
+        return getKifuById(kifuId, false);
+    }
+
+    public PersistentKifu getKifuById(final int kifuId, final boolean reducedLogging) {
         Connection connection = dbConnection.getConnection();
         try (PreparedStatement preparedStatement = connection.prepareStatement(SELECT_KIFU)) {
             preparedStatement.setInt(1, kifuId);
             ResultSet rs = preparedStatement.executeQuery();
             if (rs.next()) {
-                LOGGER.log(Level.INFO, "Found kifu: " + rs.getString("name") + " with id: " + rs.getInt("id"));
+                if (!reducedLogging)
+                    LOGGER.log(Level.INFO, "Found kifu: " + rs.getString("name") + " with id: " + rs.getInt("id"));
                 String name = rs.getString("name");
                 int authorId = rs.getInt("author_id");
                 String usfString = rs.getString("usf");
