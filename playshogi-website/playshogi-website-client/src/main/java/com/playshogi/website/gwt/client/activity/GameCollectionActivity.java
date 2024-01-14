@@ -8,23 +8,24 @@ import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.library.shogi.models.formats.usf.UsfFormat;
 import com.playshogi.website.gwt.client.SessionInformation;
-import com.playshogi.website.gwt.client.events.collections.ListCollectionGamesEvent;
-import com.playshogi.website.gwt.client.events.collections.RemoveGameFromCollectionEvent;
-import com.playshogi.website.gwt.client.events.collections.SaveCollectionDetailsResultEvent;
-import com.playshogi.website.gwt.client.events.collections.SaveGameCollectionDetailsEvent;
+import com.playshogi.website.gwt.client.events.collections.*;
 import com.playshogi.website.gwt.client.events.kifu.ImportGameRecordEvent;
 import com.playshogi.website.gwt.client.events.user.UserLoggedInEvent;
 import com.playshogi.website.gwt.client.place.GameCollectionPlace;
 import com.playshogi.website.gwt.client.ui.GameCollectionView;
 import com.playshogi.website.gwt.shared.models.GameCollectionDetailsAndGames;
+import com.playshogi.website.gwt.shared.models.GameDetails;
 import com.playshogi.website.gwt.shared.services.KifuService;
 import com.playshogi.website.gwt.shared.services.KifuServiceAsync;
 import org.dominokit.domino.ui.notifications.Notification;
+
+import java.util.Arrays;
 
 public class GameCollectionActivity extends MyAbstractActivity {
 
     private final KifuServiceAsync kifuService = GWT.create(KifuService.class);
     private EventBus eventBus;
+    private GameCollectionDetailsAndGames games;
 
     interface MyEventBinder extends EventBinder<GameCollectionActivity> {
     }
@@ -65,7 +66,8 @@ public class GameCollectionActivity extends MyAbstractActivity {
 
                     @Override
                     public void onSuccess(GameCollectionDetailsAndGames result) {
-                        GWT.log("GameCollectionActivity: retrieved collection games");
+                        games = result;
+                        GWT.log("GameCollectionActivity: retrieved collection games: " + result.getGames().length);
                         eventBus.fireEvent(new ListCollectionGamesEvent(result.getGames(), result.getDetails()));
                     }
                 });
@@ -135,6 +137,15 @@ public class GameCollectionActivity extends MyAbstractActivity {
                         refresh();
                     }
                 });
+    }
+
+    @EventHandler
+    public void onSearchKifus(final SearchKifusEvent event) {
+        GWT.log("GameCollectionActivity Handling SearchKifusEvent");
+
+        eventBus.fireEvent(new ListCollectionGamesEvent(
+                Arrays.stream(games.getGames()).filter(x -> event.getPlayer().equals(x.getSente())).toArray(GameDetails[]::new),
+                games.getDetails()));
     }
 
     private void refresh() {

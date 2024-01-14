@@ -27,5 +27,8 @@ public class GameSetRepositoryTest {
                 simpleDateFormat.format(GameSetRepository.parseDate("Aug 31, 2020 6:39:53 PM"))); // old SC24
         assertEquals("2013/07/19",
                 simpleDateFormat.format(GameSetRepository.parseDate("19/07/2013"))); // old date
+        assertEquals("1913/07/14",
+                simpleDateFormat.format(GameSetRepository.parseDate("1913/07/14"))); // old date
+
     }
 }
