@@ -40,6 +40,7 @@ public class SVGConverter {
         appendBoard(svg);
         appendPieces(position, svg);
 
+        // todo "all the remaining pieces in hand" for tsumeshogi
         appendBlackPiecesInHand(position, svg);
         appendWhitePiecesInHand(position, svg);
 
@@ -161,7 +162,7 @@ public class SVGConverter {
 
         if(hand.length() == 1) {
             //hand.append("なし");
-            hand.append("Nothing");
+            hand.append("-"); // nothing in hand
         }
 
         int x = MARGIN_LEFT + 9 * SQUARE_WIDTH + 10;
@@ -177,7 +178,7 @@ public class SVGConverter {
                     .append("</tspan></text>");
         }
 
-        svg.append("</g>\n"); // black hand
+        svg.append("</g>\n"); // end of the black-hand
     }
 
 
@@ -195,7 +196,8 @@ public class SVGConverter {
         }
 
         if(hand.length() == 1) {
-            hand.append("なし");
+            //hand.append("なし");
+            hand.append("-"); // nothing in hand
         }
 
         int x = - (MARGIN_LEFT - 10);
@@ -211,7 +213,7 @@ public class SVGConverter {
                     .append("</tspan></text>");
         }
 
-        svg.append("</g>\n"); // black hand
+        svg.append("</g>\n"); // end of the white-hand
     }
 
 
