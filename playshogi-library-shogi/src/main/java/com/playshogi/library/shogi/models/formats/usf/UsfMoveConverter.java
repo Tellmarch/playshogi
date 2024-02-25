@@ -13,7 +13,7 @@ public class UsfMoveConverter {
             "MATE", "REPT", "NMAT", "++++", "++..", "+...", "====", "-...", "--..", "----", "=88=", "+88-"};
 
     public static final SpecialMoveType[] specialTypes = {null, null, SpecialMoveType.SILENT, SpecialMoveType.RESIGN,
-            null,
+            SpecialMoveType.BREAK,
             SpecialMoveType.JISHOGI, SpecialMoveType.TIMEOUT, SpecialMoveType.ILLEGAL_MOVE, null,
             SpecialMoveType.CHECKMATE, SpecialMoveType.SENNICHITE, null, null, null, null, null, null, null, null,
             null, null};

@@ -14,9 +14,11 @@ import com.playshogi.website.gwt.client.place.KifuEditorPlace;
 import com.playshogi.website.gwt.client.place.OpeningsPlace;
 import com.playshogi.website.gwt.client.tables.GameTable;
 import com.playshogi.website.gwt.client.util.ElementWidget;
+import com.playshogi.website.gwt.client.widget.collections.SearchKifuForm;
 import com.playshogi.website.gwt.client.widget.collections.UploadKifusPopup;
 import com.playshogi.website.gwt.client.widget.kifu.ImportKifuPanel;
 import com.playshogi.website.gwt.shared.models.GameCollectionDetails;
+import com.playshogi.website.gwt.shared.models.GameDetails;
 import com.playshogi.website.gwt.shared.models.KifuDetails;
 import elemental2.dom.HTMLAnchorElement;
 import elemental2.dom.HTMLDivElement;
@@ -29,7 +31,9 @@ import org.jboss.elemento.HtmlContentBuilder;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 
 @Singleton
 public class GameCollectionView extends Composite {
@@ -44,12 +48,16 @@ public class GameCollectionView extends Composite {
     private final GameTable gameTable;
     private final ImportKifuPanel importKifuPanel = new ImportKifuPanel();
     private final UploadKifusPopup uploadKifusPopup = new UploadKifusPopup(false, false, true, false, false);
+
+    private final SearchKifuForm searchKifuForm = new SearchKifuForm();
     private final SessionInformation sessionInformation;
     private final AppPlaceHistoryMapper historyMapper;
     private final HtmlContentBuilder<HTMLAnchorElement> exploreLink;
     private final Button newKifuButton;
     private final Button addKifuButton;
     private final Button uploadKifuButton;
+
+    private final Button searchKifuButton;
 
     private EventBus eventBus;
     private GameCollectionDetails collectionDetails;
@@ -87,6 +95,11 @@ public class GameCollectionView extends Composite {
                 })
                 .style().setMarginRight("3em"));
 
+        searchKifuButton = Button.createPrimary(Icons.ALL.database_search_mdi()).setContent("Search Kifu(s)");
+        root.add(searchKifuButton
+                .addClickListener(evt -> searchKifuForm.showInPopup())
+                .style().setMarginRight("3em"));
+
         exploreLink = Elements.a("#");
         root.add(exploreLink.add(Button.createSuccess(Icons.ALL.pie_chart()).setContent("Explore Openings")));
 
@@ -105,6 +118,7 @@ public class GameCollectionView extends Composite {
         gameTable.activate(eventBus);
         importKifuPanel.activate(eventBus);
         uploadKifusPopup.activate(eventBus);
+        searchKifuForm.activate(eventBus);
     }
 
     @EventHandler
@@ -121,6 +135,14 @@ public class GameCollectionView extends Composite {
         String exploreHRef = "#" + historyMapper.getToken(new OpeningsPlace(OpeningsPlace.DEFAULT_SFEN,
                 collectionDetails.getId()));
         exploreLink.attr("href", exploreHRef);
+
+        HashSet<String> playerNames = new HashSet<>();
+        for (GameDetails detail : event.getDetails()) {
+            if (detail.getSente() != null) playerNames.add(detail.getSente());
+            if (detail.getGote() != null) playerNames.add(detail.getGote());
+        }
+
+        searchKifuForm.updatePlayerNames(new ArrayList<>(playerNames));
 
         if (isAuthor) {
             newKifuButton.show();

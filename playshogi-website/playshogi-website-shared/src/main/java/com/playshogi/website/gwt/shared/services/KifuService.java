@@ -15,6 +15,9 @@ public interface KifuService extends RemoteService {
 
     GameCollectionDetailsAndGames getGameSetKifuDetails(String sessionId, String gameSetId);
 
+    GameCollectionDetailsAndGames getGameSetKifuDetailsWithFilter(String sessionId, String gameSetId,
+                                                                  KifuSearchFilterDetails filterDetails);
+
     PositionDetails getPositionDetails(String sfen, String gameSetId);
 
     PositionEvaluationDetails analysePosition(String sessionId, String sfen);
