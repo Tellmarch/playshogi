@@ -2,10 +2,7 @@ package com.playshogi.website.gwt.client.widget.kifu;
 
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.user.client.ui.*;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
@@ -39,6 +36,8 @@ public class PositionEditingPanel extends Composite {
     public PositionEditingPanel() {
 
         FlowPanel flowPanel = new FlowPanel();
+
+        // flowPanel.add(new HTML("Mouse Wheel = rotate")); // todo add instruction to how to rotate pieces
 
         switchButton = SwitchButton.create();
         flowPanel.add(new ElementWidget(switchButton
