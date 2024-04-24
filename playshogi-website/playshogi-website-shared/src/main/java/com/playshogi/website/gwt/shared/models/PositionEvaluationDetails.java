@@ -7,6 +7,7 @@ public class PositionEvaluationDetails implements Serializable {
 
     private String sfen;
     private PrincipalVariationDetails[] principalVariationHistory; // Index 0 is oldest (least accurate) eval
+    private PrincipalVariationDetails[] topPrincipalVariations; // Index 0 is the best line
     private String bestMove;
     private String ponderMove;
     private TsumeAnalysisDetails tsumeAnalysis;
@@ -28,6 +29,14 @@ public class PositionEvaluationDetails implements Serializable {
 
     public void setPrincipalVariationHistory(PrincipalVariationDetails[] principalVariationHistory) {
         this.principalVariationHistory = principalVariationHistory;
+    }
+
+    public PrincipalVariationDetails[] getTopPrincipalVariations() {
+        return topPrincipalVariations;
+    }
+
+    public void setTopPrincipalVariations(final PrincipalVariationDetails[] topPrincipalVariations) {
+        this.topPrincipalVariations = topPrincipalVariations;
     }
 
     public String getBestMove() {
@@ -59,6 +68,7 @@ public class PositionEvaluationDetails implements Serializable {
         return "PositionEvaluationDetails{" +
                 "sfen='" + sfen + '\'' +
                 ", principalVariationHistory=" + Arrays.toString(principalVariationHistory) +
+                ", topPrincipalVariations=" + Arrays.toString(topPrincipalVariations) +
                 ", bestMove='" + bestMove + '\'' +
                 ", ponderMove='" + ponderMove + '\'' +
                 ", tsumeAnalysis=" + tsumeAnalysis +

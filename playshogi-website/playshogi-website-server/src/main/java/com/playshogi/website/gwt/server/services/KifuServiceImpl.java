@@ -45,7 +45,7 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
 
     private final QueuedTsumeSolver queuedTsumeSolver = new QueuedTsumeSolver(EngineConfiguration.TSUME_ENGINE);
     private final TsumeEscapeSolver tsumeEscapeSolver = new TsumeEscapeSolver(queuedTsumeSolver);
-    private final QueuedKifuAnalyzer queuedKifuAnalyzer = new QueuedKifuAnalyzer(EngineConfiguration.NORMAL_ENGINE);
+    private final QueuedKifuAnalyzer queuedKifuAnalyzer = new QueuedKifuAnalyzer(EngineConfiguration.INSIGHTS_ENGINE);
 
     private final KifuSearchManager kifuSearchManager = new KifuSearchManager();
 
@@ -421,6 +421,8 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
         details.setBestMove(evaluation.getBestMove());
         details.setPonderMove(evaluation.getPonderMove());
         details.setPrincipalVariationHistory(evaluation.getPrincipalVariationsHistory().stream().map(
+                this::convertPrincipalVariation).toArray(PrincipalVariationDetails[]::new));
+        details.setTopPrincipalVariations(evaluation.getMultiVariations().getVariations().stream().map(
                 this::convertPrincipalVariation).toArray(PrincipalVariationDetails[]::new));
         return details;
     }

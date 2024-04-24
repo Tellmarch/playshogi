@@ -250,13 +250,13 @@ public class PositionEvaluationDetailsPanel extends Composite {
 
     private void showEvaluation() {
         if (evaluation != null) {
-            PrincipalVariationDetails[] principalVariationHistory = evaluation.getPrincipalVariationHistory();
+            PrincipalVariationDetails[] topPrincipalVariations = evaluation.getTopPrincipalVariations();
             TsumeAnalysisDetails tsumeAnalysis = evaluation.getTsumeAnalysis();
-            if (principalVariationHistory != null) {
-                table.setRowCount(principalVariationHistory.length);
-                ArrayList<PrincipalVariationDetails> list = new ArrayList<>(principalVariationHistory.length);
-                for (int i = principalVariationHistory.length - 1; i >= 0; i--) {
-                    list.add(principalVariationHistory[i]);
+            if (topPrincipalVariations != null) {
+                table.setRowCount(topPrincipalVariations.length);
+                ArrayList<PrincipalVariationDetails> list = new ArrayList<>(topPrincipalVariations.length);
+                for (PrincipalVariationDetails topPrincipalVariation : topPrincipalVariations) {
+                    list.add(topPrincipalVariation);
                 }
                 table.setRowData(0, list);
             } else if (tsumeAnalysis != null) {

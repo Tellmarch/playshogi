@@ -12,7 +12,7 @@ public class EngineConfiguration {
             "MorePreciseMatePv value false"}, 1);
     public static final EngineConfiguration INSIGHTS_ENGINE = new EngineConfiguration("/home/jean/shogi/engines" +
             "/YaneuraOu/source/", "./YaneuraOu-by-gcc",
-            new String[]{"setoption name MultiPV value 3"}, 3);
+            new String[]{"setoption name MultiPV value 5"}, 5);
 
     private final File path;
     private final String command;

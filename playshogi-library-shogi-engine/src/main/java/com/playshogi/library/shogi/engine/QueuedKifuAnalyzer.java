@@ -36,9 +36,9 @@ public class QueuedKifuAnalyzer {
     private final USIConnector usiConnector;
     private volatile boolean shutdown = false;
 
-    private final Map<String, List<PositionEvaluation>> kifuEvaluations = new ConcurrentHashMap<>();
-    private final Map<String, GameInsights> insights = new ConcurrentHashMap<>();
-    private final Map<String, Status> kifuStatus = new ConcurrentHashMap<>();
+    private final Map<String, List<PositionEvaluation>> kifuEvaluations = new ConcurrentHashMap<>(); // key: kifu USF
+    private final Map<String, GameInsights> insights = new ConcurrentHashMap<>(); // key: kifu USF
+    private final Map<String, Status> kifuStatus = new ConcurrentHashMap<>(); // key: kifu USF
 
     public QueuedKifuAnalyzer(final EngineConfiguration engineConfiguration) {
         usiConnector = new USIConnector(engineConfiguration);
