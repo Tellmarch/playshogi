@@ -58,10 +58,18 @@ public class UsiMoveConverter {
         int length = moveStr.length();
 
         if (length < 4 || length > 5) {
-            if ("resign".equals(moveStr)) {
-                return "RSGN";
+            switch (moveStr) {
+                case "resign":
+                    return "RSGN";
+                case "rep_draw":
+                case "rep_inf":
+                case "rep_sup":
+                    return "REPT";
+                case "win":
+                    return "VICT";
+                default:
+                    throw new IllegalArgumentException("Illegal move string: " + moveStr);
             }
-            throw new IllegalArgumentException("Illegal move string: " + moveStr);
         }
 
         boolean promote = length == 5 && moveStr.charAt(4) == '+';
