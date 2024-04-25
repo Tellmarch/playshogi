@@ -64,6 +64,8 @@ public class UsiMoveConverter {
                 case "rep_draw":
                 case "rep_inf":
                 case "rep_sup":
+                case "rep_lose":
+                case "rep_win":
                     return "REPT";
                 case "win":
                     return "VICT";
