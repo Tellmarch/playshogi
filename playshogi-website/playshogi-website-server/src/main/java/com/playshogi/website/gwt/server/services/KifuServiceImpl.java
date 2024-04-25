@@ -359,11 +359,11 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
     private PositionEvaluationDetails analyseNormalPosition(final String sessionId, final String sfen) {
         LoginResult loginResult = authenticator.checkSession(sessionId);
         if (loginResult != null && loginResult.isLoggedIn()) {
-            USIConnector usiConnector = new USIConnector(EngineConfiguration.NORMAL_ENGINE);
+            USIConnector usiConnector = new USIConnector(EngineConfiguration.INSIGHTS_ENGINE);
             usiConnector.connect();
             PositionEvaluation evaluation = usiConnector.analysePosition(sfen, 5000);
             usiConnector.disconnect();
-            LOGGER.log(Level.INFO, "Position analysis: " + evaluation);
+            //LOGGER.log(Level.INFO, "Position analysis: " + evaluation);
 
             return convertPositionEvaluation(evaluation);
         } else {
@@ -407,7 +407,7 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
                 variationDetails.setPrincipalVariation(result.getTsumeVariationUsf());
                 variationDetails.setForcedMate(true);
                 variationDetails.setNumMovesBeforeMate(result.getTsumeNumMoves());
-                details.setPrincipalVariationHistory(new PrincipalVariationDetails[]{variationDetails});
+                details.setTopPrincipalVariations(new PrincipalVariationDetails[]{variationDetails});
             }
             details.setTsumeAnalysis(tsumeDetails);
             details.setSfen(sfen);
@@ -420,8 +420,6 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
         details.setSfen(evaluation.getSfen());
         details.setBestMove(evaluation.getBestMove());
         details.setPonderMove(evaluation.getPonderMove());
-        details.setPrincipalVariationHistory(evaluation.getPrincipalVariationsHistory().stream().map(
-                this::convertPrincipalVariation).toArray(PrincipalVariationDetails[]::new));
         details.setTopPrincipalVariations(evaluation.getMultiVariations().getVariations().stream().map(
                 this::convertPrincipalVariation).toArray(PrincipalVariationDetails[]::new));
         return details;

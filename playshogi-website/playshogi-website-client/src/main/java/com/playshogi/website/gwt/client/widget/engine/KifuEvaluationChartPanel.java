@@ -176,21 +176,22 @@ public class KifuEvaluationChartPanel extends Composite {
         boolean mate = false;
 
         for (int i = 0; i < positionEvaluationDetails.length; i++) {
-            PrincipalVariationDetails[] history = positionEvaluationDetails[i].getPrincipalVariationHistory();
-            if (history.length > 0) {
+            PrincipalVariationDetails[] topPrincipalVariations =
+                    positionEvaluationDetails[i].getTopPrincipalVariations();
+            if (topPrincipalVariations.length > 0) {
                 dataTable.setValue(i, 0, i);
-                PrincipalVariationDetails latest = history[history.length - 1];
+                PrincipalVariationDetails best = topPrincipalVariations[0];
 
-                int toolTipValue = i % 2 == 0 ? latest.getEvaluationCP() : -latest.getEvaluationCP();
+                int toolTipValue = i % 2 == 0 ? best.getEvaluationCP() : -best.getEvaluationCP();
                 int graphValue = Math.min(2000, Math.max(-2000, toolTipValue));
 
                 String toolTip = "Move " + i + "\n" + "Evaluation: " + toolTipValue;
                 String annotation = null;
 
-                if (latest.isForcedMate()) {
+                if (best.isForcedMate()) {
                     mate = true;
-                    graphValue = (latest.getNumMovesBeforeMate() <= 0) == (i % 2 == 0) ? -2000 : 2000;
-                    toolTip = "Move " + i + "\n" + "Mate in " + Math.abs(latest.getNumMovesBeforeMate());
+                    graphValue = (best.getNumMovesBeforeMate() <= 0) == (i % 2 == 0) ? -2000 : 2000;
+                    toolTip = "Move " + i + "\n" + "Mate in " + Math.abs(best.getNumMovesBeforeMate());
                 } else {
                     if (mate) {
                         annotation = "Missed mate";

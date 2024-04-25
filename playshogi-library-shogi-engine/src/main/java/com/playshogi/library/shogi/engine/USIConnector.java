@@ -27,7 +27,7 @@ public class USIConnector {
     private PrintWriter output;
     private boolean connected = false;
     private Process process;
-    private boolean logOutput = true;
+    private boolean logOutput = false;
 
     public USIConnector(final EngineConfiguration engineConfiguration) {
         this.engineConfiguration = engineConfiguration;
