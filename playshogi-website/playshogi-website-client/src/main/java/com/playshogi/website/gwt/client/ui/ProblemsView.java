@@ -8,11 +8,14 @@ import com.google.inject.Singleton;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
+import com.playshogi.library.shogi.models.Player;
 import com.playshogi.library.shogi.models.position.ShogiPosition;
 import com.playshogi.website.gwt.client.SessionInformation;
 import com.playshogi.website.gwt.client.controller.NavigationController;
 import com.playshogi.website.gwt.client.events.collections.ListCollectionProblemsEvent;
+import com.playshogi.website.gwt.client.events.gametree.GameTreeChangedEvent;
 import com.playshogi.website.gwt.client.events.gametree.PositionChangedEvent;
+import com.playshogi.website.gwt.client.events.kifu.FlipBoardEvent;
 import com.playshogi.website.gwt.client.events.puzzles.*;
 import com.playshogi.website.gwt.client.util.ElementWidget;
 import com.playshogi.website.gwt.client.widget.board.BoardButtons;
@@ -230,7 +233,7 @@ public class ProblemsView extends Composite {
 
     @EventHandler
     public void onPositionChanged(final PositionChangedEvent event) {
-        GWT.log("ViewKifuView: handle PositionChangedEvent");
+        GWT.log("ProblemsView: handle PositionChangedEvent");
 
         Optional<String> comment = navigationController.getGameNavigation().getCurrentComment();
         if (comment.isPresent()) {
@@ -242,4 +245,19 @@ public class ProblemsView extends Composite {
         }
     }
 
+    @EventHandler
+    public void onGameTreeChanged(final GameTreeChangedEvent gameTreeChangedEvent) {
+        GWT.log("ProblemsView : Handling game tree changed event - move " + gameTreeChangedEvent.getGoToMove());
+
+        if (gameTreeChangedEvent.getGameTree().getInitialPosition().getPlayerToMove() == Player.BLACK) {
+            shogiBoard.getBoardConfiguration().setPlayWhiteMoves(false);
+            shogiBoard.getBoardConfiguration().setPlayBlackMoves(true);
+            eventBus.fireEvent(new FlipBoardEvent(false));
+        } else {
+            shogiBoard.getBoardConfiguration().setPlayWhiteMoves(true);
+            shogiBoard.getBoardConfiguration().setPlayBlackMoves(false);
+            eventBus.fireEvent(new FlipBoardEvent(true));
+        }
+
+    }
 }

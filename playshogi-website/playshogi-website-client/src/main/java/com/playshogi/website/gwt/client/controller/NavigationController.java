@@ -4,7 +4,6 @@ import com.google.gwt.core.client.GWT;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
-import com.playshogi.library.shogi.models.Player;
 import com.playshogi.library.shogi.models.formats.usf.UsfMoveConverter;
 import com.playshogi.library.shogi.models.moves.ShogiMove;
 import com.playshogi.library.shogi.models.position.ReadOnlyShogiPosition;
@@ -27,7 +26,6 @@ public class NavigationController {
     private final String activityId;
     private final NavigatorConfiguration navigatorConfiguration;
     private final GameNavigation gameNavigation = new GameNavigation(new ShogiRulesEngine(), new GameTree());
-    private final ShogiRulesEngine shogiRulesEngine = new ShogiRulesEngine();
 
     private EventBus eventBus;
 
@@ -103,7 +101,8 @@ public class NavigationController {
             eventBus.fireEvent(new EndOfVariationReachedEvent(gameNavigation.getPosition(),
                     gameNavigation.getCurrentNode().isNew(), gameNavigation.getCurrentNode().isWrongAnswer()));
             fireNodeChanged();
-        } else if (gameNavigation.getPosition().getPlayerToMove() == Player.WHITE && navigatorConfiguration.isProblemMode()) {
+        } else if (navigatorConfiguration.isProblemMode() &&
+                gameNavigation.getPosition().getPlayerToMove() != gameNavigation.getGameTree().getInitialPosition().getPlayerToMove()) {
             gameNavigation.moveForward();
             if (gameNavigation.isEndOfVariation()) {
                 eventBus.fireEvent(new EndOfVariationReachedEvent(gameNavigation.getPosition(),
