@@ -46,6 +46,8 @@ public class GameInsightsAnalyser {
         GameNavigation gameNavigation = new GameNavigation(gameRecord.getGameTree());
 
         for (int moveCount = 1; moveCount < evaluations.size(); moveCount++) {
+            String previousMove = gameNavigation.getPreviousMove() != null ?
+                    gameNavigation.getPreviousMove().toString() : null;
             gameNavigation.moveForward();
             PositionEvaluation evaluation = evaluations.get(moveCount);
             String playedMove = gameNavigation.getPreviousMove().toString();
@@ -56,7 +58,7 @@ public class GameInsightsAnalyser {
                 if (cpLoss > 200) {
                     Mistake mistake = new Mistake(moveCount, previousEvaluation.getSfen(),
                             playedMove, previousEvaluation.getBestMove(),
-                            previousEvaluation.getScore(), evaluation.getScore());
+                            previousEvaluation.getScore(), evaluation.getScore(), previousEvaluation, previousMove);
                     if (gameNavigation.getPlayerToMove() == Player.BLACK) {
                         whiteMistakes.add(mistake);
                     } else {

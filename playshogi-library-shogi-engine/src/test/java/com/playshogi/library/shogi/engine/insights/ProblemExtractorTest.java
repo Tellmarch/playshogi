@@ -127,7 +127,7 @@ public class ProblemExtractorTest {
         ExtractedProblem problem = new ExtractedProblem(ExtractedProblem.ProblemType.WINNING_OR_LOSING, "lnS5l/k2+B5" +
                 "/pp5pp/2pp3g1/7s1/2PP4P/PPS1P4/3G1pP2/LN2K3L w RG2N2Prbgs2p", "r*2i 5i4h p*4g 4h4g 2i4I R*4h b*3f " +
                 "4g5f s*4g 5f6g 3f4e G*5f 4g5F 5g5f 4i4h 7f7e r*5i 6g7f 4e5d N*6e ", "6i5i", gameInformation);
-        String usf = ProblemExtractor.problemToUSF(problem);
+        String usf = ProblemExtractor.problemToUSFWithoutHeader(problem);
         assertEquals("^*lnS5l/k2+B5/pp5pp/2pp3g1/7s1/2PP4P/PPS1P4/3G1pP2/LN2K3L w " +
                 "RG2N2Prbgs2p:r*2i5i4hp*4g4h4g2i4IR*4hb*3f4g5fs*4g5f6g3f4eG*5f4g5F5g5f4i4h7f7er*5i6g7f4e5dN*6e\n" +
                 "BN:AAA aaa\n" +

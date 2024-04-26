@@ -8,7 +8,8 @@ public class ExtractedProblem {
         MATE_OR_BE_MATED,
         WINNING_OR_LOSING,
         WINNING_OR_BE_MATED,
-        ESCAPE_MATE
+        ESCAPE_MATE,
+        LEARN_FROM_MISTAKE
     }
 
     private final ProblemType type;

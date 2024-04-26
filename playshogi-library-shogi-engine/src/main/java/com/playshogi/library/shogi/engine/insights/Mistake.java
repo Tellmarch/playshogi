@@ -1,5 +1,6 @@
 package com.playshogi.library.shogi.engine.insights;
 
+import com.playshogi.library.shogi.engine.PositionEvaluation;
 import com.playshogi.library.shogi.models.position.PositionScore;
 
 public class Mistake {
@@ -13,16 +14,21 @@ public class Mistake {
     private final String computerMove;
     private final PositionScore scoreBeforeMove;
     private final PositionScore scoreAfterMove;
+    private final PositionEvaluation positionEvaluation;
+    private final String previousMove;
     private final Type type;
 
     public Mistake(final int moveCount, final String positionSfen, final String movePlayed, final String computerMove,
-                   final PositionScore scoreBeforeMove, final PositionScore scoreAfterMove) {
+                   final PositionScore scoreBeforeMove, final PositionScore scoreAfterMove,
+                   final PositionEvaluation positionEvaluation, final String previousMove) {
         this.moveCount = moveCount;
         this.positionSfen = positionSfen;
         this.movePlayed = movePlayed;
         this.computerMove = computerMove;
         this.scoreBeforeMove = scoreBeforeMove;
         this.scoreAfterMove = scoreAfterMove;
+        this.positionEvaluation = positionEvaluation;
+        this.previousMove = previousMove;
         this.type = computeType();
     }
 
@@ -75,6 +81,14 @@ public class Mistake {
 
     public Type getType() {
         return type;
+    }
+
+    public PositionEvaluation getPositionEvaluation() {
+        return positionEvaluation;
+    }
+
+    public String getPreviousMove() {
+        return previousMove;
     }
 
     @Override

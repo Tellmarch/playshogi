@@ -97,7 +97,8 @@ public class KifuRepository {
                 Date updateDate = rs.getDate("update_time");
                 GameRecord gameRecord = UsfFormat.INSTANCE.readSingle(usfString);
 
-                return new PersistentKifu(kifuId, name, gameRecord, creationDate, updateDate, kifuType, authorId);
+                return new PersistentKifu(kifuId, name, gameRecord, usfString, creationDate, updateDate, kifuType,
+                        authorId);
             } else {
                 LOGGER.log(Level.INFO, "Did not find kifu: " + kifuId);
                 return null;
@@ -122,7 +123,7 @@ public class KifuRepository {
                 Date creationDate = rs.getDate("create_time");
                 Date updateDate = rs.getDate("update_time");
 
-                kifus.add(new PersistentKifu(id, name, null, creationDate, updateDate, kifuType, userId));
+                kifus.add(new PersistentKifu(id, name, null, null, creationDate, updateDate, kifuType, userId));
             }
             LOGGER.log(Level.INFO, "Found " + kifus.size() + " kifus for user : " + userId);
             return kifus;
@@ -146,7 +147,7 @@ public class KifuRepository {
                 Date creationDate = rs.getDate("create_time");
                 Date updateDate = rs.getDate("update_time");
 
-                kifus.add(new PersistentKifu(id, name, null, creationDate, updateDate, kifuType, userId));
+                kifus.add(new PersistentKifu(id, name, null, null, creationDate, updateDate, kifuType, userId));
             }
             LOGGER.log(Level.INFO, "Found " + kifus.size() + " lesson kifus");
             return kifus;

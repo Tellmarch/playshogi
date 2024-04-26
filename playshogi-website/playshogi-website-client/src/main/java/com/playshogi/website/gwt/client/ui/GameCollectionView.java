@@ -12,6 +12,7 @@ import com.playshogi.website.gwt.client.events.collections.ListCollectionGamesEv
 import com.playshogi.website.gwt.client.mvp.AppPlaceHistoryMapper;
 import com.playshogi.website.gwt.client.place.KifuEditorPlace;
 import com.playshogi.website.gwt.client.place.OpeningsPlace;
+import com.playshogi.website.gwt.client.place.ProblemsPlace;
 import com.playshogi.website.gwt.client.tables.GameTable;
 import com.playshogi.website.gwt.client.util.ElementWidget;
 import com.playshogi.website.gwt.client.widget.collections.SearchKifuForm;
@@ -53,6 +54,7 @@ public class GameCollectionView extends Composite {
     private final SessionInformation sessionInformation;
     private final AppPlaceHistoryMapper historyMapper;
     private final HtmlContentBuilder<HTMLAnchorElement> exploreLink;
+    private final HtmlContentBuilder<HTMLAnchorElement> practiceLink;
     private final Button newKifuButton;
     private final Button addKifuButton;
     private final Button uploadKifuButton;
@@ -101,7 +103,10 @@ public class GameCollectionView extends Composite {
                 .style().setMarginRight("3em"));
 
         exploreLink = Elements.a("#");
-        root.add(exploreLink.add(Button.createSuccess(Icons.ALL.pie_chart()).setContent("Explore Openings")));
+        root.add(exploreLink.add(Button.createSuccess(Icons.ALL.pie_chart()).setContent("Explore Openings").style().setMarginRight("3em")));
+
+        practiceLink = Elements.a("#");
+        root.add(practiceLink.add(Button.createSuccess(Icons.ALL.puzzle_mdi()).setContent("Practice")));
 
         root.add(gameTable.getTable());
 
@@ -135,6 +140,9 @@ public class GameCollectionView extends Composite {
         String exploreHRef = "#" + historyMapper.getToken(new OpeningsPlace(OpeningsPlace.DEFAULT_SFEN,
                 collectionDetails.getId()));
         exploreLink.attr("href", exploreHRef);
+
+        String practiceHRef = "#" + historyMapper.getToken(new ProblemsPlace(collectionDetails.getId(), 0, true));
+        practiceLink.attr("href", practiceHRef);
 
         HashSet<String> playerNames = new HashSet<>();
         for (GameDetails detail : event.getDetails()) {

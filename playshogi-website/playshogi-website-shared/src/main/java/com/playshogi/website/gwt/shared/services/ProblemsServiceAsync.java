@@ -41,6 +41,9 @@ public interface ProblemsServiceAsync {
     void getProblemCollection(String sessionId, String collectionId, boolean includeHiddenProblems,
                               AsyncCallback<ProblemCollectionDetailsAndProblems> callback);
 
+    void getLearnFromMistakeProblemCollection(String sessionId, String gameCollectionId,
+                                              AsyncCallback<ProblemCollectionDetailsAndProblems> callback);
+
     void deleteProblemCollection(String sessionId, String problemSetId, boolean alsoDeleteKifus,
                                  AsyncCallback<Void> callback);
 

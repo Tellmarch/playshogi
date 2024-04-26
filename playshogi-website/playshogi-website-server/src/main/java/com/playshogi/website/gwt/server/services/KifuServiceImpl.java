@@ -21,6 +21,7 @@ import com.playshogi.library.shogi.models.record.GameRecord;
 import com.playshogi.library.shogi.models.record.KifuCollection;
 import com.playshogi.website.gwt.server.controllers.Authenticator;
 import com.playshogi.website.gwt.server.controllers.CollectionUploads;
+import com.playshogi.website.gwt.server.controllers.ProblemsCache;
 import com.playshogi.website.gwt.server.controllers.UsersCache;
 import com.playshogi.website.gwt.shared.models.*;
 import com.playshogi.website.gwt.shared.services.KifuService;
@@ -117,14 +118,12 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
     public String getKifuUsf(final String sessionId, final String kifuId) {
         LOGGER.log(Level.INFO, "querying kifu:\n" + kifuId);
 
-        GameRecord gameRecord = kifuRepository.getKifuById(Integer.parseInt(kifuId)).getKifu();
-        if (gameRecord == null) {
+        String kifuUsf = kifuRepository.getKifuById(Integer.parseInt(kifuId)).getKifuUsf();
+        if (kifuUsf == null) {
             LOGGER.log(Level.INFO, "invalid kifu id:\n" + kifuId);
             return null;
         } else {
-            String usf = UsfFormat.INSTANCE.write(gameRecord);
-            LOGGER.log(Level.INFO, "found kifu");
-            return usf;
+            return kifuUsf;
         }
     }
 
@@ -534,7 +533,11 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
         AnalysisRequestResult result = new AnalysisRequestResult();
         result.setEvaluationDetails(evaluation.stream().map(this::convertPositionEvaluation).toArray(PositionEvaluationDetails[]::new));
         result.setStatus(status == QueuedKifuAnalyzer.Status.IN_PROGRESS ? IN_PROGRESS : COMPLETED);
-        result.setGameInsightsDetails(convertGameInsights(queuedKifuAnalyzer.getInsights(kifuUsf)));
+        GameInsights insights = queuedKifuAnalyzer.getInsights(kifuUsf);
+        if (status == QueuedKifuAnalyzer.Status.COMPLETED) {
+            ProblemsCache.INSTANCE.extractProblemsFromInsights(kifuUsf, insights);
+        }
+        result.setGameInsightsDetails(convertGameInsights(insights));
         return result;
     }
 

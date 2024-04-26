@@ -89,7 +89,7 @@ public class ProblemExtractor {
         return problem;
     }
 
-    public static String problemToUSF(final ExtractedProblem problem) {
+    public static String problemToUSFWithoutHeader(final ExtractedProblem problem) {
         StringBuilder builder = new StringBuilder()
                 .append("^*")
                 .append(problem.getSfen())
@@ -106,9 +106,13 @@ public class ProblemExtractor {
     public static String problemsToUSF(final List<ExtractedProblem> problems) {
         StringBuilder result = new StringBuilder("USF:1.0\n");
         for (ExtractedProblem problem : problems) {
-            result.append(problemToUSF(problem)).append("\n");
+            result.append(problemToUSFWithoutHeader(problem)).append("\n");
         }
 
         return result.toString();
+    }
+
+    public static String problemToUSF(final ExtractedProblem problem) {
+        return "USF:1.0\n" + problemToUSFWithoutHeader(problem) + "\n";
     }
 }

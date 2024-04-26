@@ -47,6 +47,7 @@ public class ProblemsActivity extends MyAbstractActivity {
 
     private final String collectionId;
     private final String lessonId;
+    private final boolean practiceFromGameCollection;
 
     private int problemIndex;
     private ProblemCollectionDetails details;
@@ -64,6 +65,7 @@ public class ProblemsActivity extends MyAbstractActivity {
         this.problemIndex = place.getProblemIndex();
         this.sessionInformation = sessionInformation;
         this.problemController = new ProblemController(problemsView::getCurrentPosition, sessionInformation);
+        this.practiceFromGameCollection = place.isPracticeFromGameCollection();
     }
 
     @Override
@@ -80,54 +82,91 @@ public class ProblemsActivity extends MyAbstractActivity {
 
     private void loadCollection() {
         GWT.log("Querying for collection problems");
-        problemsService.getProblemCollection(sessionInformation.getSessionId(), collectionId, false,
-                new AsyncCallback<ProblemCollectionDetailsAndProblems>() {
-                    @Override
-                    public void onFailure(final Throwable throwable) {
-                        GWT.log("ProblemsActivity: error retrieving collection problems");
-                    }
+        if (practiceFromGameCollection) {
+            problemsService.getLearnFromMistakeProblemCollection(sessionInformation.getSessionId(), collectionId,
+                    new AsyncCallback<ProblemCollectionDetailsAndProblems>() {
+                        @Override
+                        public void onFailure(final Throwable throwable) {
+                            GWT.log("ProblemsActivity: error retrieving practice collection problems");
+                        }
 
-                    @Override
-                    public void onSuccess(final ProblemCollectionDetailsAndProblems result) {
-                        GWT.log("ProblemsActivity: retrieved collection problems");
-                        problems = result.getProblems();
-                        statuses = new ProblemStatus[problems.length];
-                        Arrays.fill(statuses, ProblemStatus.UNSOLVED);
-                        details = result.getDetails();
-                        loadProblem();
-                        eventBus.fireEvent(new ListCollectionProblemsEvent(result.getProblems(), result.getDetails()));
-                    }
-                });
+                        @Override
+                        public void onSuccess(final ProblemCollectionDetailsAndProblems result) {
+                            GWT.log("ProblemsActivity: retrieved practice collection problems: " + result);
+                            problems = result.getProblems();
+                            statuses = new ProblemStatus[problems.length];
+                            Arrays.fill(statuses, ProblemStatus.UNSOLVED);
+                            details = result.getDetails();
+                            loadProblem();
+                            eventBus.fireEvent(new ListCollectionProblemsEvent(result.getProblems(),
+                                    result.getDetails()));
+                        }
+                    });
+        } else {
+            problemsService.getProblemCollection(sessionInformation.getSessionId(), collectionId, false,
+                    new AsyncCallback<ProblemCollectionDetailsAndProblems>() {
+                        @Override
+                        public void onFailure(final Throwable throwable) {
+                            GWT.log("ProblemsActivity: error retrieving collection problems");
+                        }
+
+                        @Override
+                        public void onSuccess(final ProblemCollectionDetailsAndProblems result) {
+                            GWT.log("ProblemsActivity: retrieved collection problems");
+                            problems = result.getProblems();
+                            statuses = new ProblemStatus[problems.length];
+                            Arrays.fill(statuses, ProblemStatus.UNSOLVED);
+                            details = result.getDetails();
+                            loadProblem();
+                            eventBus.fireEvent(new ListCollectionProblemsEvent(result.getProblems(),
+                                    result.getDetails()));
+                        }
+                    });
+        }
     }
 
     private void loadProblem() {
         if (problemIndex >= problems.length) {
             return;
         }
+
         String id = problems[problemIndex].getKifuId();
 
-        kifuService.getKifuUsf(sessionInformation.getSessionId(), id,
-                new AsyncCallback<String>() {
-                    @Override
-                    public void onFailure(final Throwable throwable) {
-                        GWT.log("Remote called failed for problem request: " + id);
-                    }
-
-                    @Override
-                    public void onSuccess(final String usf) {
-                        GWT.log("Received problem USF: " + usf);
-                        GameRecord gameRecord = UsfFormat.INSTANCE.readSingle(usf);
-                        eventBus.fireEvent(new GameTreeChangedEvent(gameRecord.getGameTree()));
-                        eventBus.fireEvent(new GameInformationChangedEvent(gameRecord.getGameInformation()));
-                        if (collectionId != null) {
-                            History.newItem("Problems:" + new ProblemsPlace.Tokenizer().getToken(getPlace()), false);
-                            if (problemIndex < statuses.length) {
-                                statuses[problemIndex] = ProblemStatus.CURRENT;
-                                eventBus.fireEvent(new ProblemCollectionProgressEvent(problemIndex, statuses));
-                            }
+        if (id != null) {
+            kifuService.getKifuUsf(sessionInformation.getSessionId(), id,
+                    new AsyncCallback<String>() {
+                        @Override
+                        public void onFailure(final Throwable throwable) {
+                            GWT.log("Remote called failed for problem request: " + id);
                         }
-                    }
-                });
+
+                        @Override
+                        public void onSuccess(final String usf) {
+                            GWT.log("Received problem USF: " + usf);
+                            loadProblemFromUSF(usf);
+                        }
+                    });
+        } else if (problems[problemIndex].getUsf() != null) {
+            String usf = problems[problemIndex].getUsf();
+            loadProblemFromUSF(usf);
+        } else {
+            GWT.log("Cannot load problem, no id or usf");
+        }
+
+
+    }
+
+    private void loadProblemFromUSF(final String usf) {
+        GameRecord gameRecord = UsfFormat.INSTANCE.readSingle(usf);
+        eventBus.fireEvent(new GameTreeChangedEvent(gameRecord.getGameTree()));
+        eventBus.fireEvent(new GameInformationChangedEvent(gameRecord.getGameInformation()));
+        if (collectionId != null) {
+            History.newItem("Problems:" + new ProblemsPlace.Tokenizer().getToken(getPlace()), false);
+            if (problemIndex < statuses.length) {
+                statuses[problemIndex] = ProblemStatus.CURRENT;
+                eventBus.fireEvent(new ProblemCollectionProgressEvent(problemIndex, statuses));
+            }
+        }
     }
 
     private ProblemsPlace getPlace() {

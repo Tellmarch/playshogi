@@ -3,13 +3,12 @@ package com.playshogi.website.gwt.server.services;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.playshogi.library.database.*;
 import com.playshogi.library.database.models.*;
+import com.playshogi.library.shogi.engine.insights.ExtractedProblem;
+import com.playshogi.library.shogi.engine.insights.ProblemExtractor;
 import com.playshogi.library.shogi.models.formats.usf.UsfFormat;
 import com.playshogi.library.shogi.models.record.GameRecord;
 import com.playshogi.library.shogi.models.record.KifuCollection;
-import com.playshogi.website.gwt.server.controllers.Authenticator;
-import com.playshogi.website.gwt.server.controllers.CollectionUploads;
-import com.playshogi.website.gwt.server.controllers.RaceController;
-import com.playshogi.website.gwt.server.controllers.UsersCache;
+import com.playshogi.website.gwt.server.controllers.*;
 import com.playshogi.website.gwt.server.models.Race;
 import com.playshogi.website.gwt.server.models.User;
 import com.playshogi.website.gwt.shared.models.*;
@@ -126,7 +125,7 @@ public class ProblemsServiceImpl extends RemoteServiceServlet implements Problem
             return null;
         }
 
-        String usf = UsfFormat.INSTANCE.write(persistentKifu.getKifu());
+        String usf = persistentKifu.getKifuUsf();
         LOGGER.log(Level.INFO, "Sending problem:\n" + usf);
 
         return getProblemDetails(persistentProblem, usf);
@@ -293,7 +292,7 @@ public class ProblemsServiceImpl extends RemoteServiceServlet implements Problem
         KifuCollection collection = CollectionUploads.INSTANCE.getCollection(draftId);
 
         if (collection == null) {
-            throw new IllegalStateException("Invalid draft connection ID");
+            throw new IllegalStateException("Invalid draft collection ID");
         }
 
         PersistentProblemSet problemSet = problemSetRepository.getProblemSetById(Integer.parseInt(collectionId));
@@ -448,6 +447,42 @@ public class ProblemsServiceImpl extends RemoteServiceServlet implements Problem
         result.setProblems(problems.stream().map(this::getProblemDetails).toArray(ProblemDetails[]::new));
 
         return result;
+    }
+
+    @Override
+    public ProblemCollectionDetailsAndProblems getLearnFromMistakeProblemCollection(final String sessionId,
+                                                                                    final String gameCollectionId) {
+        LOGGER.log(Level.INFO, "getLearnFromMistakeProblemCollection");
+
+        LoginResult loginResult = authenticator.checkSession(sessionId);
+        if (loginResult == null || !loginResult.isLoggedIn()) {
+            throw new IllegalStateException("Only logged in users can use this feature");
+        }
+
+
+        List<ExtractedProblem> allExtractedProblems = new ArrayList<>();
+
+        List<PersistentGame> games = gameRepository.getGamesFromGameSet(Integer.parseInt(gameCollectionId));
+        for (PersistentGame game : games) {
+            PersistentKifu kifu = kifuRepository.getKifuById(game.getKifuId());
+            String onlyMovesUsf = UsfFormat.INSTANCE.write(kifu.getKifu().getGameTree());
+            allExtractedProblems.addAll(ProblemsCache.INSTANCE.getExtractedProblemsForKifu(onlyMovesUsf));
+        }
+
+        ProblemCollectionDetails details = new ProblemCollectionDetails("Learn from your mistakes!", "Learn from your" +
+                " mistakes!", "UNLISTED", 1, new String[0]);
+
+        ProblemDetails[] problemDetails =
+                allExtractedProblems.stream().map(this::fromExtractedProblem).toArray(ProblemDetails[]::new);
+
+
+        return new ProblemCollectionDetailsAndProblems(details, problemDetails);
+    }
+
+    private ProblemDetails fromExtractedProblem(final ExtractedProblem extractedProblem) {
+        ProblemDetails details = new ProblemDetails();
+        details.setUsf(ProblemExtractor.problemToUSF(extractedProblem));
+        return details;
     }
 
     @Override

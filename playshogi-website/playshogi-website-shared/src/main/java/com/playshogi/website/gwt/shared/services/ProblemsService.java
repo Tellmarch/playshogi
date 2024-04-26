@@ -38,6 +38,8 @@ public interface ProblemsService extends RemoteService {
     ProblemCollectionDetailsAndProblems getProblemCollection(String sessionId, String collectionId,
                                                              boolean includeHiddenProblems);
 
+    ProblemCollectionDetailsAndProblems getLearnFromMistakeProblemCollection(String sessionId, String gameCollectionId);
+
     void deleteProblemCollection(String sessionId, String problemSetId, boolean alsoDeleteKifus);
 
     void updateProblemCollectionDetails(String sessionId, ProblemCollectionDetails problemCollectionDetails);
