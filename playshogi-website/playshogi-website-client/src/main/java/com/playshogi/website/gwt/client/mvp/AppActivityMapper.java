@@ -74,6 +74,8 @@ public class AppActivityMapper implements ActivityMapper {
     AdminCollectionsView adminCollectionsView;
     @Inject
     ProblemsRaceView problemsRaceView;
+    @Inject
+    GameCollectionStatisticsView gameCollectionStatisticsView;
 
     @Override
     public Activity getActivity(final Place place) {
@@ -143,6 +145,9 @@ public class AppActivityMapper implements ActivityMapper {
                     sessionInformation);
         } else if (place instanceof ProblemsRacePlace) {
             return new ProblemsRaceActivity((ProblemsRacePlace) place, problemsRaceView, sessionInformation);
+        } else if (place instanceof GameCollectionStatisticsPlace) {
+            return new GameCollectionStatisticsActivity((GameCollectionStatisticsPlace) place,
+                    gameCollectionStatisticsView, sessionInformation);
         }
 
         return null;

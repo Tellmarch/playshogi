@@ -27,6 +27,8 @@ import com.playshogi.website.gwt.shared.models.*;
 import com.playshogi.website.gwt.shared.services.KifuService;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -227,6 +229,48 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
         GameCollectionDetailsAndGames result = new GameCollectionDetailsAndGames();
         result.setDetails(getCollectionDetails(gameSet));
         result.setGames(games.stream().map(this::createGameDetails).toArray(GameDetails[]::new));
+
+        return result;
+    }
+
+    @Override
+    public GameCollectionStatisticsDetails getGameSetStatistics(final String sessionId, final String gameSetId) {
+        LOGGER.log(Level.INFO, "getGameSetStatistics:\n" + gameSetId);
+
+        //TODO access control
+
+        PersistentGameSet gameSet = gameSetRepository.getGameSetById(Integer.parseInt(gameSetId));
+        if (gameSet == null) {
+            throw new IllegalArgumentException("Invalid gameSet ID");
+        }
+
+        List<PersistentGame> games = gameRepository.getGamesFromGameSet(Integer.parseInt(gameSetId));
+
+        GameCollectionStatisticsDetails result = new GameCollectionStatisticsDetails();
+        result.setDetails(getCollectionDetails(gameSet));
+
+        result.setRatingType(new String[]{"Shogi Club 24"});
+        List<Date> dates = new ArrayList<>();
+        List<Integer> ratings = new ArrayList<>();
+        for (PersistentGame game : games) {
+            Date date = game.getDatePlayed();
+            if (date == null) continue;
+            int rating = 0;
+            if (game.getSenteName() != null && game.getSenteName().startsWith("Merlin")) {
+                rating = Integer.parseInt(game.getSenteName().split("[\\(\\)]")[1]);
+            }
+            if (game.getGoteName() != null && game.getGoteName().startsWith("Merlin")) {
+                rating = Integer.parseInt(game.getGoteName().split("[\\(\\)]")[1]);
+            }
+            if (rating == 0) continue;
+
+            dates.add(date);
+            ratings.add(rating);
+        }
+
+        result.setRatingDates(dates.toArray(new Date[0]));
+        result.setRatingValues(new Integer[][]{ratings.toArray(new Integer[0])});
+
 
         return result;
     }

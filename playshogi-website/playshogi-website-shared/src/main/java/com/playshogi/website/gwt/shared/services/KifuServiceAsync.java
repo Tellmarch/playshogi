@@ -16,6 +16,9 @@ public interface KifuServiceAsync {
     void getGameSetKifuDetails(String sessionId, String gameSetId,
                                AsyncCallback<GameCollectionDetailsAndGames> callback);
 
+    void getGameSetStatistics(String sessionId, String gameSetId,
+                              AsyncCallback<GameCollectionStatisticsDetails> callback);
+
     void getGameSetKifuDetailsWithFilter(String sessionId, String gameSetId, KifuSearchFilterDetails filterDetails,
                                          AsyncCallback<GameCollectionDetailsAndGames> callback);
 

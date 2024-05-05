@@ -6,7 +6,9 @@ import com.google.gwt.user.client.ui.*;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
-import com.googlecode.gwt.charts.client.*;
+import com.googlecode.gwt.charts.client.ColumnType;
+import com.googlecode.gwt.charts.client.DataTable;
+import com.googlecode.gwt.charts.client.Selection;
 import com.googlecode.gwt.charts.client.corechart.LineChart;
 import com.googlecode.gwt.charts.client.corechart.LineChartOptions;
 import com.googlecode.gwt.charts.client.event.SelectEvent;
@@ -20,6 +22,7 @@ import com.playshogi.website.gwt.client.events.gametree.MoveSelectedEvent;
 import com.playshogi.website.gwt.client.events.gametree.PositionChangedEvent;
 import com.playshogi.website.gwt.client.events.kifu.KifuEvaluationEvent;
 import com.playshogi.website.gwt.client.events.kifu.RequestKifuEvaluationEvent;
+import com.playshogi.website.gwt.client.util.MyChartLoader;
 import com.playshogi.website.gwt.shared.models.*;
 
 public class KifuEvaluationChartPanel extends Composite {
@@ -71,8 +74,7 @@ public class KifuEvaluationChartPanel extends Composite {
     }
 
     private void initialize() {
-        ChartLoader chartLoader = new ChartLoader(ChartPackage.CORECHART);
-        chartLoader.loadApi(() -> {
+        MyChartLoader.INSTANCE.runWhenReady(() -> {
             chart = new LineChart();
             chart.addSelectHandler(new SelectHandler() {
                 @Override

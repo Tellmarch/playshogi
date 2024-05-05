@@ -10,6 +10,7 @@ import com.google.web.bindery.event.shared.binder.EventHandler;
 import com.playshogi.website.gwt.client.SessionInformation;
 import com.playshogi.website.gwt.client.events.collections.ListCollectionGamesEvent;
 import com.playshogi.website.gwt.client.mvp.AppPlaceHistoryMapper;
+import com.playshogi.website.gwt.client.place.GameCollectionStatisticsPlace;
 import com.playshogi.website.gwt.client.place.KifuEditorPlace;
 import com.playshogi.website.gwt.client.place.OpeningsPlace;
 import com.playshogi.website.gwt.client.place.ProblemsPlace;
@@ -55,6 +56,7 @@ public class GameCollectionView extends Composite {
     private final AppPlaceHistoryMapper historyMapper;
     private final HtmlContentBuilder<HTMLAnchorElement> exploreLink;
     private final HtmlContentBuilder<HTMLAnchorElement> practiceLink;
+    private final HtmlContentBuilder<HTMLAnchorElement> statisticsLink;
     private final Button newKifuButton;
     private final Button addKifuButton;
     private final Button uploadKifuButton;
@@ -106,7 +108,10 @@ public class GameCollectionView extends Composite {
         root.add(exploreLink.add(Button.createSuccess(Icons.ALL.pie_chart()).setContent("Explore Openings").style().setMarginRight("3em")));
 
         practiceLink = Elements.a("#");
-        root.add(practiceLink.add(Button.createSuccess(Icons.ALL.puzzle_mdi()).setContent("Practice")));
+        root.add(practiceLink.add(Button.createSuccess(Icons.ALL.puzzle_mdi()).setContent("Practice").style().setMarginRight("3em")));
+
+        statisticsLink = Elements.a("#");
+        root.add(statisticsLink.add(Button.createSuccess(Icons.ALL.chart_line_mdi()).setContent("Statistics")));
 
         root.add(gameTable.getTable());
 
@@ -143,6 +148,11 @@ public class GameCollectionView extends Composite {
 
         String practiceHRef = "#" + historyMapper.getToken(new ProblemsPlace(collectionDetails.getId(), 0, true));
         practiceLink.attr("href", practiceHRef);
+
+
+        String statisticsHRef =
+                "#" + historyMapper.getToken(new GameCollectionStatisticsPlace(collectionDetails.getId()));
+        statisticsLink.attr("href", statisticsHRef);
 
         HashSet<String> playerNames = new HashSet<>();
         for (GameDetails detail : event.getDetails()) {
