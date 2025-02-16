@@ -99,19 +99,23 @@ public class GameCollectionView extends Composite {
                 })
                 .style().setMarginRight("3em"));
 
+        //TODO: finish and enable feature
         searchKifuButton = Button.createPrimary(Icons.ALL.database_search_mdi()).setContent("Search Kifu(s)");
-        root.add(searchKifuButton
-                .addClickListener(evt -> searchKifuForm.showInPopup())
-                .style().setMarginRight("3em"));
+//        root.add(searchKifuButton
+//                .addClickListener(evt -> searchKifuForm.showInPopup())
+//                .style().setMarginRight("3em"));
 
         exploreLink = Elements.a("#");
         root.add(exploreLink.add(Button.createSuccess(Icons.ALL.pie_chart()).setContent("Explore Openings").style().setMarginRight("3em")));
 
+        //TODO: finish and enable feature
         practiceLink = Elements.a("#");
-        root.add(practiceLink.add(Button.createSuccess(Icons.ALL.puzzle_mdi()).setContent("Practice").style().setMarginRight("3em")));
+//        root.add(practiceLink.add(Button.createSuccess(Icons.ALL.puzzle_mdi()).setContent("Practice").style()
+//        .setMarginRight("3em")));
 
+        //TODO: finish and enable feature
         statisticsLink = Elements.a("#");
-        root.add(statisticsLink.add(Button.createSuccess(Icons.ALL.chart_line_mdi()).setContent("Statistics")));
+//        root.add(statisticsLink.add(Button.createSuccess(Icons.ALL.chart_line_mdi()).setContent("Statistics")));
 
         root.add(gameTable.getTable());
 

@@ -763,4 +763,12 @@ public class ProblemsServiceImpl extends RemoteServiceServlet implements Problem
                 Race.ProblemStatus.valueOf(status.name()));
 
     }
+
+    @Override
+    public void reportBadProblem(final String sessionId, final String kifuId, final String problemId,
+                                 final String collectionId, final String reason, final String comment) {
+        LOGGER.log(Level.INFO,
+                "reportBadProblem: " + kifuId + " - " + problemId + " - " + collectionId + " - " + reason + " - " + comment);
+        //TODO: something
+    }
 }
