@@ -96,6 +96,26 @@
         <url-pattern>/PlayShogiWebsite/computerServlet</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+        <servlet-name>kifuServiceServlet</servlet-name>
+        <servlet-class>com.playshogi.website.gwt.server.servlets.KifuServiceServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>kifuServiceServlet</servlet-name>
+        <url-pattern>/PlayShogiWebsite/kifuServiceServlet</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>loginServiceServlet</servlet-name>
+        <servlet-class>com.playshogi.website.gwt.server.servlets.LoginServiceServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>loginServiceServlet</servlet-name>
+        <url-pattern>/PlayShogiWebsite/loginServiceServlet</url-pattern>
+    </servlet-mapping>
+
     <!-- Default page to serve -->
     <welcome-file-list>
         <welcome-file>ShogiBoard.html</welcome-file>

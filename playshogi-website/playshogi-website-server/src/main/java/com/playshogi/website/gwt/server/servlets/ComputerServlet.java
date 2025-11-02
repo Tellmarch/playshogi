@@ -1,16 +1,18 @@
 package com.playshogi.website.gwt.server.servlets;
 
-import com.playshogi.library.shogi.models.formats.sfen.SfenConverter;
-import com.playshogi.library.shogi.models.formats.svg.SVGConverter;
-import com.playshogi.library.shogi.models.position.ShogiPosition;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonSyntaxException;
 import com.playshogi.library.shogi.engine.EngineConfiguration;
 import com.playshogi.library.shogi.engine.QueuedComputerPlay;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class ComputerServlet extends HttpServlet {
@@ -18,28 +20,18 @@ public class ComputerServlet extends HttpServlet {
     private static final Logger LOGGER = Logger.getLogger(ComputerServlet.class.getName());
     private final QueuedComputerPlay queuedComputerPlay = new QueuedComputerPlay(EngineConfiguration.NORMAL_ENGINE);
 
+    private final Gson gson = new Gson();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        // --- 1. Handle CORS (Cross-Origin Resource Sharing) ---
-        // This is crucial if your React app is on a different domain/port.
-        // Replace "http://localhost:3000" with the actual origin of your React app.
-        response.setHeader("Access-Control-Allow-Origin", "http://localhost:5173"); // Or "*" for development (less secure)
+        response.setHeader("Access-Control-Allow-Origin", "http://localhost:5173");
         response.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
         response.setHeader("Access-Control-Allow-Headers", "Content-Type");
-        response.setHeader("Access-Control-Max-Age", "86400"); // Cache preflight requests for 24 hours
+        response.setHeader("Access-Control-Max-Age", "86400");
 
-        // Handle preflight OPTIONS requests if needed (e.g., for POST requests with custom headers)
-        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
-            response.setStatus(HttpServletResponse.SC_OK);
-            return;
-        }
-
-        // --- 2. Set Content Type ---
-        response.setContentType("text/plain"); // Or "application/json" if you return JSON
+        response.setContentType("text/plain");
         response.setCharacterEncoding("UTF-8");
 
-        // --- 3. Get Request Parameters ---
         String sessionId = request.getParameter("sessionId");
         String sfen = request.getParameter("sfen");
 
@@ -53,23 +45,73 @@ public class ComputerServlet extends HttpServlet {
 
         PrintWriter out = response.getWriter();
         try {
-            // --- 4. Call your existing GWT RPC logic ---
-            // This is where you call the method from your MyShogiRpcServiceImpl
             String computerMove = queuedComputerPlay.playMove(sfen);
 
-            // --- 5. Write Response ---
-            // For simplicity, returning plain text. For complex data, consider JSON.
-            // If you return JSON: out.write("{\"move\": \"" + computerMove + "\"}");
             out.write(computerMove);
 
         } catch (Exception e) {
-            System.err.println("Error processing computer move request: " + e.getMessage());
-            e.printStackTrace();
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            LOGGER.log(Level.WARNING, "Error processing computer move request", e);
             out.write("Error retrieving computer move: " + e.getMessage());
         } finally {
             out.flush();
             out.close();
         }
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        response.setHeader("Access-Control-Allow-Origin", "http://localhost:5173");
+        response.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+        response.setHeader("Access-Control-Allow-Headers", "Content-Type");
+        response.setHeader("Access-Control-Max-Age", "86400");
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+
+        try (BufferedReader reader = request.getReader();
+             PrintWriter out = response.getWriter()) {
+
+            // Parse incoming JSON
+            JsonObject jsonRequest = gson.fromJson(reader, JsonObject.class);
+            if (jsonRequest == null || !jsonRequest.has("sessionId") || !jsonRequest.has("sfen")) {
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                JsonObject error = new JsonObject();
+                error.addProperty("error", "'sessionId' and 'sfen' fields are required.");
+                out.write(gson.toJson(error));
+                return;
+            }
+
+//            String sessionId = jsonRequest.get("sessionId").getAsString();
+            String sfen = jsonRequest.get("sfen").getAsString();
+
+            // Compute move
+            String computerMove = queuedComputerPlay.playMove(sfen);
+
+            // Build JSON response
+            JsonObject jsonResponse = new JsonObject();
+            jsonResponse.addProperty("move", computerMove);
+            out.write(gson.toJson(jsonResponse));
+
+        } catch (JsonSyntaxException e) {
+            LOGGER.log(Level.WARNING, "Invalid JSON in request", e);
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            JsonObject error = new JsonObject();
+            error.addProperty("error", "Invalid JSON format.");
+            response.getWriter().write(gson.toJson(error));
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error processing POST request", e);
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            JsonObject error = new JsonObject();
+            error.addProperty("error", "Internal server error: " + e.getMessage());
+            response.getWriter().write(gson.toJson(error));
+        }
+    }
+
+    @Override
+    protected void doOptions(HttpServletRequest request, HttpServletResponse response) {
+        response.setHeader("Access-Control-Allow-Origin", "http://localhost:5173");
+        response.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+        response.setHeader("Access-Control-Allow-Headers", "Content-Type");
+        response.setHeader("Access-Control-Max-Age", "86400");
+        response.setStatus(HttpServletResponse.SC_OK);
     }
 }
