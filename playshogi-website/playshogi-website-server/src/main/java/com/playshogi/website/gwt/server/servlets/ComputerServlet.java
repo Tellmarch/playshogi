@@ -24,11 +24,6 @@ public class ComputerServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        response.setHeader("Access-Control-Allow-Origin", "http://localhost:5173");
-        response.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-        response.setHeader("Access-Control-Allow-Headers", "Content-Type");
-        response.setHeader("Access-Control-Max-Age", "86400");
-
         response.setContentType("text/plain");
         response.setCharacterEncoding("UTF-8");
 
@@ -60,10 +55,6 @@ public class ComputerServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        response.setHeader("Access-Control-Allow-Origin", "http://localhost:5173");
-        response.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-        response.setHeader("Access-Control-Allow-Headers", "Content-Type");
-        response.setHeader("Access-Control-Max-Age", "86400");
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
 
@@ -104,14 +95,5 @@ public class ComputerServlet extends HttpServlet {
             error.addProperty("error", "Internal server error: " + e.getMessage());
             response.getWriter().write(gson.toJson(error));
         }
-    }
-
-    @Override
-    protected void doOptions(HttpServletRequest request, HttpServletResponse response) {
-        response.setHeader("Access-Control-Allow-Origin", "http://localhost:5173");
-        response.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-        response.setHeader("Access-Control-Allow-Headers", "Content-Type");
-        response.setHeader("Access-Control-Max-Age", "86400");
-        response.setStatus(HttpServletResponse.SC_OK);
     }
 }

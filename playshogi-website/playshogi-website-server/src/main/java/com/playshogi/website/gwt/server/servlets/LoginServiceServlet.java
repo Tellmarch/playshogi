@@ -19,10 +19,6 @@ public class LoginServiceServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws IOException {
-        resp.setHeader("Access-Control-Allow-Origin", "http://localhost:5173");
-        resp.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-        resp.setHeader("Access-Control-Allow-Headers", "Content-Type");
-        resp.setHeader("Access-Control-Max-Age", "86400");
 
         resp.setContentType("application/json; charset=UTF-8");
         Reader reader = req.getReader();
@@ -77,14 +73,5 @@ public class LoginServiceServlet extends HttpServlet {
             error.addProperty("error", e.getMessage());
             gson.toJson(error, resp.getWriter());
         }
-    }
-
-    @Override
-    protected void doOptions(HttpServletRequest req, HttpServletResponse resp) {
-        resp.setHeader("Access-Control-Allow-Origin", "http://localhost:5173");
-        resp.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-        resp.setHeader("Access-Control-Allow-Headers", "Content-Type");
-        resp.setHeader("Access-Control-Max-Age", "86400");
-        resp.setStatus(HttpServletResponse.SC_OK);
     }
 }
