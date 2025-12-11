@@ -20,7 +20,7 @@ Replace "password" by your sql root password
 
 # Setup database
 
-1. Copy the mysql/schema.sql file to the server, and import the schema with:
+1. !!! WILL DELETE CURRENT DATA Copy the mysql/schema.sql file to the server, and import the schema with:
 
         mysql -u root -p < schema.sql 
 
