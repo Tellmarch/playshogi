@@ -53,9 +53,6 @@ public class LessonRepository {
             "SELECT `prerequisite_lesson_id` FROM `playshogi`.`ps_campaign_lesson_prerequisite` " +
                     "WHERE `campaign_id` = ? AND `lesson_id` = ?;";
 
-    private static final String DELETE_CAMPAIGN_LESSON =
-            "DELETE FROM `playshogi`.`ps_campaign_lesson` WHERE `campaign_id` = ? AND `lesson_id` = ?;";
-
     private static final String SELECT_CAMPAIGN_LESSONS_WITH_DETAILS =
             "SELECT cl.lesson_id, cl.x, cl.y, cl.optional, cl.extra, cl.boss, cl.important, " +
                     "       l.title, l.difficulty " +
@@ -70,6 +67,10 @@ public class LessonRepository {
             "SELECT lesson_id, prerequisite_lesson_id " +
                     "FROM `playshogi`.`ps_campaign_lesson_prerequisite` " +
                     "WHERE campaign_id = ?;";
+
+
+    private static final String CHECK_CAMPAIGN_AUTHOR =
+            "SELECT 1 FROM `playshogi`.`ps_campaign` WHERE id = ? AND author_id = ?";
 
     private final DbConnection dbConnection;
 
@@ -256,7 +257,7 @@ public class LessonRepository {
         }
     }
 
-    public void addLessonToCampaign(PersistentCampaignLesson cLesson) {
+    public boolean addLessonToCampaign(PersistentCampaignLesson cLesson) {
         Connection connection = dbConnection.getConnection();
         try (PreparedStatement ps =
                      connection.prepareStatement(INSERT_CAMPAIGN_LESSON)) {
@@ -270,8 +271,10 @@ public class LessonRepository {
             ps.setBoolean(8, cLesson.isImportant());
 
             ps.executeUpdate();
+            return true;
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error adding lesson to campaign", e);
+            return false;
         }
     }
 
@@ -387,37 +390,81 @@ public class LessonRepository {
         return prereqs;
     }
 
-    public void deleteCampaignLesson(int campaignId, int lessonId) {
+    public boolean deleteCampaignLesson(int campaignId, int lessonId, int userId) {
         Connection connection = dbConnection.getConnection();
 
         try {
-            connection.setAutoCommit(false);
-
-            // 1. Delete prerequisites where this lesson is the dependent
-            try (PreparedStatement ps = connection.prepareStatement(DELETE_PREREQUISITES)) {
+            // ---------------------------------------------------------
+            // 0. Check author
+            // ---------------------------------------------------------
+            try (PreparedStatement ps = connection.prepareStatement(CHECK_CAMPAIGN_AUTHOR)) {
                 ps.setInt(1, campaignId);
-                ps.setInt(2, lessonId);
-                ps.executeUpdate();
+                ps.setInt(2, userId);
+                ResultSet rs = ps.executeQuery();
+
+                if (!rs.next()) {
+                    LOGGER.log(Level.INFO, "User " + userId +
+                            " is not the author of campaign " + campaignId);
+                    return false;
+                }
             }
 
-            // 2. Delete prerequisites where this lesson is a prerequisite to others
+            connection.setAutoCommit(false);
+
+            // ---------------------------------------------------------
+            // 1. Delete prerequisites where this lesson is dependent
+            // ---------------------------------------------------------
+            int removedDependent;
+            try (PreparedStatement ps = connection.prepareStatement(
+                    "DELETE FROM `playshogi`.`ps_campaign_lesson_prerequisite` " +
+                            "WHERE `campaign_id` = ? AND `lesson_id` = ?;"
+            )) {
+                ps.setInt(1, campaignId);
+                ps.setInt(2, lessonId);
+                removedDependent = ps.executeUpdate();
+            }
+
+            // ---------------------------------------------------------
+            // 2. Delete prerequisites where this lesson is *a prerequisite*
+            // ---------------------------------------------------------
+            int removedAsPrereq;
             try (PreparedStatement ps = connection.prepareStatement(
                     "DELETE FROM `playshogi`.`ps_campaign_lesson_prerequisite` " +
                             "WHERE `campaign_id` = ? AND `prerequisite_lesson_id` = ?;"
             )) {
                 ps.setInt(1, campaignId);
                 ps.setInt(2, lessonId);
-                ps.executeUpdate();
+                removedAsPrereq = ps.executeUpdate();
             }
 
+            // ---------------------------------------------------------
             // 3. Delete campaign lesson entry
-            try (PreparedStatement ps = connection.prepareStatement(DELETE_CAMPAIGN_LESSON)) {
+            // ---------------------------------------------------------
+            int removedLesson;
+            try (PreparedStatement ps = connection.prepareStatement(
+                    "DELETE FROM `playshogi`.`ps_campaign_lesson` " +
+                            "WHERE `campaign_id` = ? AND `lesson_id` = ?;"
+            )) {
                 ps.setInt(1, campaignId);
                 ps.setInt(2, lessonId);
-                ps.executeUpdate();
+                removedLesson = ps.executeUpdate();
+            }
+
+            // If lesson row wasn't removed → lesson not in campaign
+            if (removedLesson == 0) {
+                connection.rollback();
+                LOGGER.log(Level.INFO, "Lesson " + lessonId +
+                        " was not found in campaign " + campaignId);
+                return false;
             }
 
             connection.commit();
+
+            LOGGER.log(Level.INFO, "Deleted lesson " + lessonId +
+                    " from campaign " + campaignId +
+                    " (" + removedDependent + " prereqs, " +
+                    removedAsPrereq + " dependents removed)");
+            return true;
 
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error deleting campaign lesson", e);
@@ -426,6 +473,8 @@ public class LessonRepository {
             } catch (SQLException ex) {
                 LOGGER.log(Level.SEVERE, "Rollback failed", ex);
             }
+            return false;
+
         } finally {
             try {
                 connection.setAutoCommit(true);
@@ -439,8 +488,8 @@ public class LessonRepository {
         Connection connection = dbConnection.getConnection();
 
         // --- Step 0: Load campaign metadata ---
-        String title = null;
-        String description = null;
+        String title;
+        String description;
 
         try (PreparedStatement ps = connection.prepareStatement(SELECT_CAMPAIGN_INFO)) {
             ps.setInt(1, campaignId);
