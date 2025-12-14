@@ -5,6 +5,7 @@ import com.google.gwt.thirdparty.guava.common.base.Strings;
 import com.playshogi.library.database.DbConnection;
 import com.playshogi.library.database.LessonRepository;
 import com.playshogi.library.database.models.CampaignGraph;
+import com.playshogi.library.database.models.CampaignLessonNode;
 import com.playshogi.library.database.models.PersistentCampaignLesson;
 import com.playshogi.library.database.models.PersistentLesson;
 import com.playshogi.website.gwt.server.controllers.Authenticator;
@@ -92,11 +93,34 @@ public class LessonServiceImpl {
         }
     }
 
+    public void updateCampaignNode(final String sessionId, final String campaignId, final CampaignLessonNode node) {
+        LOGGER.log(Level.INFO, "updateCampaignNode: " + node);
+
+        LoginResult loginResult = authenticator.checkSession(sessionId);
+        if (loginResult == null || !loginResult.isLoggedIn()) {
+            throw new IllegalStateException("Only logged in users can delete a lesson in campaign");
+        }
+
+        if (!lessonRepository.updateCampaignLesson(getPersistentCampaignLesson(Integer.parseInt(campaignId), node))) {
+            throw new IllegalArgumentException("Could not update the lesson in campaign");
+        }
+
+        lessonRepository.updateLessonPrerequisites(Integer.parseInt(campaignId), Integer.parseInt(node.getLessonId()),
+                node.getPrerequisites().stream().map(Integer::parseInt).collect(Collectors.toList()));
+    }
+
     public void setPrerequisites(final String sessionId, final String campaignId, final String lessonId,
                                  List<String> prereqs) {
         //TODO auth
         lessonRepository.updateLessonPrerequisites(Integer.parseInt(campaignId), Integer.parseInt(lessonId),
                 prereqs.stream().map(Integer::parseInt).collect(Collectors.toList()));
+    }
+
+
+    private PersistentCampaignLesson getPersistentCampaignLesson(int campaignId, final CampaignLessonNode node) {
+        return new PersistentCampaignLesson(campaignId, Integer.parseInt(node.getLessonId()), node.getX(),
+                node.getY(), false, false, false,
+                false);
     }
 
     private LessonDetails getLessonDetails(final PersistentLesson lesson) {

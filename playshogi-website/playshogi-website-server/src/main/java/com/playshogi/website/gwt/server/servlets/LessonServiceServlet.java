@@ -3,6 +3,7 @@ package com.playshogi.website.gwt.server.servlets;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.playshogi.library.database.models.CampaignLessonNode;
 import com.playshogi.website.gwt.server.services.LessonServiceImpl;
 import com.playshogi.website.gwt.shared.models.LessonDetails;
 
@@ -91,6 +92,15 @@ public class LessonServiceServlet extends HttpServlet {
                             sessionId,
                             json.get("campaignId").getAsString(),
                             json.get("lessonId").getAsString()
+                    );
+                    result = "OK";
+                    break;
+
+                case "updateCampaignNode":
+                    lessonService.updateCampaignNode(
+                            sessionId,
+                            json.get("campaignId").getAsString(),
+                            gson.fromJson(json.get("node"), CampaignLessonNode.class)
                     );
                     result = "OK";
                     break;

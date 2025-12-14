@@ -278,7 +278,7 @@ public class LessonRepository {
         }
     }
 
-    public void updateCampaignLesson(PersistentCampaignLesson cLesson) {
+    public boolean updateCampaignLesson(PersistentCampaignLesson cLesson) {
         Connection connection = dbConnection.getConnection();
         try (PreparedStatement ps =
                      connection.prepareStatement(UPDATE_CAMPAIGN_LESSON)) {
@@ -292,9 +292,17 @@ public class LessonRepository {
             ps.setInt(7, cLesson.getCampaignId());
             ps.setInt(8, cLesson.getLessonId());
 
-            ps.executeUpdate();
+            int rs = ps.executeUpdate();
+            if (rs == 1) {
+                LOGGER.log(Level.INFO, "updated campaign lesson: " + cLesson);
+                return true;
+            } else {
+                LOGGER.log(Level.INFO, "Did not find campaign lesson: " + cLesson);
+                return false;
+            }
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error updating campaign lesson", e);
+            return false;
         }
     }
 
