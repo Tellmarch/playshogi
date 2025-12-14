@@ -3,15 +3,15 @@ package com.playshogi.library.database.models;
 import java.util.List;
 
 public class CampaignLessonNode {
-    private final int id;
+    private final String id;
     private final String title;
     private final int x;
     private final int y;
     private final Integer difficulty;
-    private final List<Integer> prerequisites;
+    private final List<String> prerequisites;
 
-    public CampaignLessonNode(int id, String title, int x, int y,
-                              Integer difficulty, List<Integer> prerequisites) {
+    public CampaignLessonNode(String id, String title, int x, int y,
+                              Integer difficulty, List<String> prerequisites) {
         this.id = id;
         this.title = title;
         this.x = x;
@@ -20,7 +20,7 @@ public class CampaignLessonNode {
         this.prerequisites = prerequisites;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
@@ -40,7 +40,7 @@ public class CampaignLessonNode {
         return difficulty;
     }
 
-    public List<Integer> getPrerequisites() {
+    public List<String> getPrerequisites() {
         return prerequisites;
     }
 

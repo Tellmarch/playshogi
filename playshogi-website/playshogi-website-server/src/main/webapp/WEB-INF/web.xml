@@ -116,6 +116,17 @@
         <url-pattern>/PlayShogiWebsite/loginServiceServlet</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+        <servlet-name>lessonServiceServlet</servlet-name>
+        <servlet-class>com.playshogi.website.gwt.server.servlets.LessonServiceServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>lessonServiceServlet</servlet-name>
+        <url-pattern>/PlayShogiWebsite/lessonServiceServlet</url-pattern>
+    </servlet-mapping>
+
+
     <!-- Default page to serve -->
     <welcome-file-list>
         <welcome-file>ShogiBoard.html</welcome-file>

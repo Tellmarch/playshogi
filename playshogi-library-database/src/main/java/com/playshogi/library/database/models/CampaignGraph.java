@@ -4,19 +4,19 @@ import java.util.List;
 
 public class CampaignGraph {
 
-    private final int campaignId;
+    private final String campaignId;
     private final String title;
     private final String description;
     private final List<CampaignLessonNode> nodes;
 
-    public CampaignGraph(int campaignId, String title, String description, List<CampaignLessonNode> nodes) {
+    public CampaignGraph(String campaignId, String title, String description, List<CampaignLessonNode> nodes) {
         this.campaignId = campaignId;
         this.title = title;
         this.description = description;
         this.nodes = nodes;
     }
 
-    public int getCampaignId() {
+    public String getCampaignId() {
         return campaignId;
     }
 

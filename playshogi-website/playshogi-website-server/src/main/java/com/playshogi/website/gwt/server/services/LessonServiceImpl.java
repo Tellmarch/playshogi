@@ -15,6 +15,7 @@ import com.playshogi.website.gwt.shared.models.LoginResult;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 public class LessonServiceImpl {
 
@@ -26,16 +27,22 @@ public class LessonServiceImpl {
     // Campaign graph
     // -------------------------
 
-    public CampaignGraph getCampaign(final String sessionId, int campaignId) {
-        return lessonRepository.getFullCampaignGraph(campaignId);
+    public CampaignGraph getCampaign(final String sessionId, final String campaignId) {
+        LOGGER.log(Level.INFO, "getCampaign: " + campaignId);
+        return lessonRepository.getFullCampaignGraph(Integer.parseInt(campaignId));
     }
 
     // -------------------------
     // Lesson CRUD
     // -------------------------
 
-    public List<PersistentLesson> getAllLessons(final String sessionId) {
-        return lessonRepository.getAllLessons();
+    public LessonDetails[] getAllLessons(final String sessionId) {
+        LOGGER.log(Level.INFO, "getAllLessons");
+
+        authenticator.validateAdminSession(sessionId);
+
+        List<PersistentLesson> allVisibleLessons = lessonRepository.getAllLessons();
+        return allVisibleLessons.stream().map(this::getLessonDetails).toArray(LessonDetails[]::new);
     }
 
     public int createLesson(final String sessionId, final LessonDetails lesson) {
@@ -54,7 +61,8 @@ public class LessonServiceImpl {
     // Modify campaign graph
     // -------------------------
 
-    public boolean addLessonToCampaign(final String sessionId, int campaignId, int lessonId, int x, int y) {
+    public void addLessonToCampaign(final String sessionId, final String campaignId, final String lessonId, int x,
+                                    int y) {
         LOGGER.log(Level.INFO, "addLessonToCampaign: " + campaignId + ":" + lessonId);
 
         LoginResult loginResult = authenticator.checkSession(sessionId);
@@ -63,11 +71,14 @@ public class LessonServiceImpl {
         }
         //TODO: auth
 
-        return lessonRepository.addLessonToCampaign(new PersistentCampaignLesson(campaignId, lessonId, x, y, false,
-                false, false, false));
+        if (!lessonRepository.addLessonToCampaign(new PersistentCampaignLesson(Integer.parseInt(campaignId),
+                Integer.parseInt(lessonId), x, y, false,
+                false, false, false))) {
+            throw new IllegalStateException("Failed to add the lesson to the campaign");
+        }
     }
 
-    public void deleteCampaignLesson(final String sessionId, int campaignId, int lessonId) {
+    public void deleteCampaignLesson(final String sessionId, final String campaignId, final String lessonId) {
         LOGGER.log(Level.INFO, "deleteCampaignLesson: " + campaignId + ":" + lessonId);
 
         LoginResult loginResult = authenticator.checkSession(sessionId);
@@ -75,14 +86,36 @@ public class LessonServiceImpl {
             throw new IllegalStateException("Only logged in users can delete a lesson in campaign");
         }
 
-        if (!lessonRepository.deleteCampaignLesson(campaignId, lessonId, loginResult.getUserId())) {
+        if (!lessonRepository.deleteCampaignLesson(Integer.parseInt(campaignId), Integer.parseInt(lessonId),
+                loginResult.getUserId())) {
             throw new IllegalArgumentException("Could not delete the lesson in campaign");
         }
     }
 
-    public void setPrerequisites(final String sessionId, int campaignId, int lessonId, List<Integer> prereqs) {
+    public void setPrerequisites(final String sessionId, final String campaignId, final String lessonId,
+                                 List<String> prereqs) {
         //TODO auth
-        lessonRepository.updateLessonPrerequisites(campaignId, lessonId, prereqs);
+        lessonRepository.updateLessonPrerequisites(Integer.parseInt(campaignId), Integer.parseInt(lessonId),
+                prereqs.stream().map(Integer::parseInt).collect(Collectors.toList()));
+    }
+
+    private LessonDetails getLessonDetails(final PersistentLesson lesson) {
+        LessonDetails details = new LessonDetails();
+        details.setLessonId(String.valueOf(lesson.getId()));
+        details.setIndex(lesson.getIndex());
+        details.setTitle(lesson.getTitle());
+        details.setDescription(lesson.getDescription());
+        details.setKifuId(lesson.getKifuId() == null ? null : String.valueOf(lesson.getKifuId()));
+        details.setProblemCollectionId(lesson.getProblemCollectionId() == null ? null :
+                String.valueOf(lesson.getProblemCollectionId()));
+        details.setDifficulty(lesson.getDifficulty());
+        details.setTags(lesson.getTags());
+        details.setPreviewSfen(lesson.getPreviewSfen());
+        details.setHidden(lesson.isHidden());
+        details.setLikes(lesson.getLikes());
+        details.setAuthor(lesson.getAuthorId() == null ? null : UsersCache.INSTANCE.getUserName(lesson.getAuthorId()));
+        details.setParentLessonId(lesson.getParentId() == null ? null : String.valueOf(lesson.getParentId()));
+        return details;
     }
 
     private PersistentLesson getPersistentLesson(final LessonDetails details) {

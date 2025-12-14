@@ -534,7 +534,7 @@ public class LessonRepository {
         }
 
         // --- Step 2: Load ALL prerequisites (one query!) ---
-        Map<Integer, List<Integer>> prereqMap = new HashMap<>();
+        Map<Integer, List<String>> prereqMap = new HashMap<>();
 
         try (PreparedStatement ps = connection.prepareStatement(SELECT_ALL_PREREQUISITES_FOR_CAMPAIGN)) {
             ps.setInt(1, campaignId);
@@ -546,7 +546,7 @@ public class LessonRepository {
 
                 prereqMap
                         .computeIfAbsent(lessonId, k -> new ArrayList<>())
-                        .add(prereqId);
+                        .add(String.valueOf(prereqId));
             }
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error retrieving prerequisites", e);
@@ -557,10 +557,10 @@ public class LessonRepository {
         List<CampaignLessonNode> nodes = new ArrayList<>();
 
         for (LessonTmp tmp : lessonList) {
-            List<Integer> prereqs = prereqMap.getOrDefault(tmp.id, new ArrayList<>());
+            List<String> prereqs = prereqMap.getOrDefault(tmp.id, new ArrayList<>());
 
             nodes.add(new CampaignLessonNode(
-                    tmp.id,
+                    String.valueOf(tmp.id),
                     tmp.title,
                     tmp.x,
                     tmp.y,
@@ -569,7 +569,7 @@ public class LessonRepository {
             ));
         }
 
-        return new CampaignGraph(campaignId, title, description, nodes);
+        return new CampaignGraph(String.valueOf(campaignId), title, description, nodes);
     }
 
 }

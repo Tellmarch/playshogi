@@ -12,8 +12,14 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import static com.playshogi.website.gwt.server.servlets.Utils.getAsStringOrNull;
 
 public class LessonServiceServlet extends HttpServlet {
+
+    private static final Logger LOGGER = Logger.getLogger(LessonServiceServlet.class.getName());
 
     private final LessonServiceImpl lessonService = new LessonServiceImpl();
     private final Gson gson = new Gson();
@@ -27,6 +33,9 @@ public class LessonServiceServlet extends HttpServlet {
         JsonObject json = JsonParser.parseReader(reader).getAsJsonObject();
 
         String action = json.get("action").getAsString();
+        String sessionId = getAsStringOrNull(json, "sessionId");
+
+        LOGGER.log(Level.INFO, "LessonServiceServlet call: " + action);
         Object result;
 
         try {
@@ -37,8 +46,8 @@ public class LessonServiceServlet extends HttpServlet {
                 // -------------------------
                 case "getCampaign":
                     result = lessonService.getCampaign(
-                            json.get("sessionId").getAsString(),
-                            json.get("campaignId").getAsInt()
+                            sessionId,
+                            json.get("campaignId").getAsString()
                     );
                     break;
 
@@ -47,18 +56,18 @@ public class LessonServiceServlet extends HttpServlet {
                 // -------------------------
 
                 case "getAllLessons":
-                    result = lessonService.getAllLessons(json.get("sessionId").getAsString());
+                    result = lessonService.getAllLessons(sessionId);
                     break;
 
                 case "saveLesson":
                     result = lessonService.createLesson(
-                            json.get("sessionId").getAsString(),
+                            sessionId,
                             gson.fromJson(json.get("lesson"), LessonDetails.class));
                     break;
 
                 case "updateLesson":
                     lessonService.updateLesson(
-                            json.get("sessionId").getAsString(),
+                            sessionId,
                             gson.fromJson(json.get("lesson"), LessonDetails.class));
                     result = "OK";
                     break;
@@ -67,30 +76,31 @@ public class LessonServiceServlet extends HttpServlet {
                 // Modify campaign graph
                 // -------------------------
                 case "addLessonToCampaign":
-                    result = lessonService.addLessonToCampaign(
-                            json.get("sessionId").getAsString(),
-                            json.get("campaignId").getAsInt(),
-                            json.get("lessonId").getAsInt(),
+                    lessonService.addLessonToCampaign(
+                            sessionId,
+                            json.get("campaignId").getAsString(),
+                            json.get("lessonId").getAsString(),
                             json.get("x").getAsInt(),
                             json.get("y").getAsInt()
                     );
+                    result = "OK";
                     break;
 
                 case "deleteCampaignLesson":
                     lessonService.deleteCampaignLesson(
-                            json.get("sessionId").getAsString(),
-                            json.get("campaignId").getAsInt(),
-                            json.get("lessonId").getAsInt()
+                            sessionId,
+                            json.get("campaignId").getAsString(),
+                            json.get("lessonId").getAsString()
                     );
                     result = "OK";
                     break;
 
                 case "setPrerequisites":
                     lessonService.setPrerequisites(
-                            json.get("sessionId").getAsString(),
-                            json.get("campaignId").getAsInt(),
-                            json.get("lessonId").getAsInt(),
-                            Arrays.asList(gson.fromJson(json.get("prerequisites"), Integer[].class))
+                            sessionId,
+                            json.get("campaignId").getAsString(),
+                            json.get("lessonId").getAsString(),
+                            Arrays.asList(gson.fromJson(json.get("prerequisites"), String[].class))
                     );
                     result = "OK";
                     break;
@@ -104,6 +114,7 @@ public class LessonServiceServlet extends HttpServlet {
             gson.toJson(result, resp.getWriter());
 
         } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error handling lesson servlet call", e);
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             JsonObject error = new JsonObject();
             error.addProperty("error", e.getMessage());
