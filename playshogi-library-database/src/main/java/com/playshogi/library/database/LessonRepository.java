@@ -580,4 +580,274 @@ public class LessonRepository {
         return new CampaignGraph(String.valueOf(campaignId), title, description, nodes);
     }
 
+    private static final String INSERT_CHAPTER =
+            "INSERT INTO ps_lesson_chapter (lesson_id, kifu_id, type, title, chapter_number, orientation, hidden) " +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?)";
+
+    public boolean addChapter(final int lessonId, final int kifuId, final int type,
+                              final String title, final int chapterNumber,
+                              final int orientation, final boolean hidden) {
+
+        Connection connection = dbConnection.getConnection();
+        try (PreparedStatement preparedStatement = connection.prepareStatement(INSERT_CHAPTER)) {
+
+            preparedStatement.setInt(1, lessonId);
+            preparedStatement.setInt(2, kifuId);
+            preparedStatement.setByte(3, (byte) type); // type is TINYINT
+            preparedStatement.setString(4, title);
+            preparedStatement.setInt(5, chapterNumber);
+            preparedStatement.setByte(6, (byte) orientation); // orientation is TINYINT
+            preparedStatement.setBoolean(7, hidden); // hidden is TINYINT(1) / BOOLEAN
+
+            int rs = preparedStatement.executeUpdate();
+            if (rs == 1) {
+                LOGGER.log(Level.INFO, "Added chapter " + chapterNumber + " to lesson: " + lessonId);
+                return true;
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error adding new chapter to lesson " + lessonId, e);
+            return false;
+        }
+        return false;
+    }
+
+    // Updates all fields except the lesson_id (which should not change) and the chapter_id.
+// It joins with ps_lessons to verify the userId is the author.
+    private static final String UPDATE_CHAPTER =
+            "UPDATE ps_lesson_chapter c " +
+                    "JOIN ps_lessons l ON c.lesson_id = l.id " +
+                    "SET c.kifu_id = ?, c.type = ?, c.title = ?, c.chapter_number = ?, " +
+                    "    c.orientation = ?, c.hidden = ? " +
+                    "WHERE c.chapter_id = ? AND l.author_id = ?";
+
+    public boolean updateChapter(final int chapterId, final int userId, final int newKifuId,
+                                 final int newType, final String newTitle, final int newChapterNumber,
+                                 final int newOrientation, final boolean newHidden) {
+
+        Connection connection = dbConnection.getConnection();
+        try (PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_CHAPTER)) {
+
+            // SET values (1 through 6)
+            preparedStatement.setInt(1, newKifuId);
+            preparedStatement.setByte(2, (byte) newType);
+            preparedStatement.setString(3, newTitle);
+            preparedStatement.setInt(4, newChapterNumber);
+            preparedStatement.setByte(5, (byte) newOrientation);
+            preparedStatement.setBoolean(6, newHidden);
+
+            // WHERE clause values (7 and 8)
+            preparedStatement.setInt(7, chapterId);
+            preparedStatement.setInt(8, userId); // Verified against the lesson author
+
+            int rs = preparedStatement.executeUpdate();
+            if (rs == 1) {
+                LOGGER.log(Level.INFO, "Updated chapter: " + chapterId);
+                return true;
+            } else {
+                LOGGER.log(Level.INFO, "Did not find chapter: " + chapterId + " for authorized user " + userId);
+                return false;
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error updating chapter " + chapterId + " in db", e);
+            return false;
+        }
+    }
+
+    // Deletes the chapter, joining ps_lessons to verify the userId is the author.
+    private static final String DELETE_CHAPTER =
+            "DELETE c FROM ps_lesson_chapter c " +
+                    "JOIN ps_lessons l ON c.lesson_id = l.id " +
+                    "WHERE c.chapter_id = ? AND l.author_id = ?";
+
+    public boolean deleteChapter(final int chapterId, final int userId) {
+        Connection connection = dbConnection.getConnection();
+        try (PreparedStatement preparedStatement = connection.prepareStatement(DELETE_CHAPTER)) {
+
+            preparedStatement.setInt(1, chapterId);
+            preparedStatement.setInt(2, userId); // Verified against the lesson author
+
+            int rs = preparedStatement.executeUpdate();
+            if (rs == 1) {
+                LOGGER.log(Level.INFO, "Deleted chapter: " + chapterId);
+                return true;
+            } else {
+                LOGGER.log(Level.INFO, "Did not find chapter: " + chapterId + " for authorized user " + userId);
+                return false;
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error deleting chapter " + chapterId + " from db", e);
+            return false;
+        }
+    }
+
+    private static final String CHECK_LESSON_AUTHOR =
+            "SELECT 1 FROM ps_lessons WHERE id = ? AND author_id = ?";
+
+    public boolean isLessonAuthor(final int lessonId, final int userId) {
+        Connection connection = dbConnection.getConnection();
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(CHECK_LESSON_AUTHOR)) {
+
+            preparedStatement.setInt(1, lessonId);
+            preparedStatement.setInt(2, userId);
+
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    return true;
+                }
+            }
+
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE,
+                    "Error checking authorship for lesson " + lessonId + " by user " + userId, e);
+            return false;
+        }
+
+        LOGGER.log(Level.INFO, "User {0} is NOT the author of lesson {1}.", new Object[]{userId, lessonId});
+        return false;
+    }
+
+    private static final String FIND_CHAPTERS_BY_LESSON_ID =
+            "SELECT c.chapter_id, c.lesson_id, c.kifu_id, c.type, c.title, c.chapter_number, c.orientation, c.hidden," +
+                    " k.usf " +
+                    "FROM ps_lesson_chapter c " +
+                    "INNER JOIN ps_kifu k ON c.kifu_id = k.id " + // Join to ps_kifu
+                    "WHERE c.lesson_id = ? " +
+                    "ORDER BY c.chapter_number ASC";
+
+    public List<LessonChapterDto> listLessonChapters(final int lessonId) {
+        List<LessonChapterDto> chapters = new ArrayList<>();
+        Connection connection = dbConnection.getConnection();
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(FIND_CHAPTERS_BY_LESSON_ID)) {
+
+            preparedStatement.setInt(1, lessonId);
+
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+
+                while (resultSet.next()) {
+                    LessonChapterDto chapter = new LessonChapterDto();
+                    chapter.setChapterId(String.valueOf(resultSet.getInt("chapter_id")));
+                    chapter.setLessonId(String.valueOf(resultSet.getInt("lesson_id")));
+                    chapter.setKifuId(String.valueOf(resultSet.getInt("kifu_id")));
+                    chapter.setType(resultSet.getByte("type"));
+                    chapter.setTitle(resultSet.getString("title"));
+                    chapter.setChapterNumber(resultSet.getInt("chapter_number"));
+                    chapter.setOrientation(resultSet.getByte("orientation"));
+                    chapter.setHidden(resultSet.getBoolean("hidden"));
+                    chapter.setKifuUsf(resultSet.getString("usf"));
+
+                    chapters.add(chapter);
+                }
+            }
+
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error retrieving chapters for lesson " + lessonId, e);
+            return chapters;
+        }
+
+        LOGGER.log(Level.FINE, "Retrieved {0} chapters for lesson {1}.", new Object[]{chapters.size(), lessonId});
+        return chapters;
+    }
+
+    public boolean swapChapterOrder(final int chapterId1, final int chapterId2, final int userId) {
+        Connection connection = dbConnection.getConnection();
+
+        // SQL to fetch current numbers and ensure they belong to the same lesson
+        final String SELECT_CHAPTERS =
+                "SELECT c.chapter_id, c.lesson_id, c.chapter_number " +
+                        "FROM ps_lesson_chapter c " +
+                        "JOIN ps_lessons l ON c.lesson_id = l.id " +
+                        "WHERE c.chapter_id IN (?, ?) AND l.author_id = ?";
+
+        // SQL to update a single chapter number
+        final String UPDATE_NUMBER =
+                "UPDATE ps_lesson_chapter SET chapter_number = ? WHERE chapter_id = ?";
+
+        try {
+            // --- 1. Auto-commit off for Transaction ---
+            connection.setAutoCommit(false);
+
+            // --- 2. Verify Authorization and Fetch Current Numbers ---
+            Map<Integer, Integer> chapterMap = new HashMap<>(); // Key: chapterId, Value: chapterNumber
+            int lessonId = -1;
+
+            try (PreparedStatement selectStmt = connection.prepareStatement(SELECT_CHAPTERS)) {
+                selectStmt.setInt(1, chapterId1);
+                selectStmt.setInt(2, chapterId2);
+                selectStmt.setInt(3, userId);
+
+                try (ResultSet rs = selectStmt.executeQuery()) {
+                    while (rs.next()) {
+                        int currentChapterId = rs.getInt("chapter_id");
+                        int currentLessonId = rs.getInt("lesson_id");
+
+                        // Sanity check: Ensure both chapters belong to the same lesson (critical for a swap)
+                        if (lessonId == -1) {
+                            lessonId = currentLessonId;
+                        } else if (lessonId != currentLessonId) {
+                            throw new SQLException("Cannot swap chapters from different lessons.");
+                        }
+
+                        chapterMap.put(currentChapterId, rs.getInt("chapter_number"));
+                    }
+                }
+            }
+
+            // Check if exactly two unique, authorized chapters were found
+            if (chapterMap.size() != 2) {
+                throw new SQLException("Failed to find both chapters or authorization failed.");
+            }
+
+            // Extract the two numbers
+            int num1 = chapterMap.get(chapterId1);
+            int num2 = chapterMap.get(chapterId2);
+
+            // Check if the numbers are already the same (nothing to do)
+            if (num1 == num2) {
+                connection.rollback();
+                LOGGER.log(Level.INFO, "Chapters {0} and {1} already have the same chapter number {2}.",
+                        new Object[]{chapterId1, chapterId2, num1});
+                return true;
+            }
+
+            // --- 3. Perform the Swap (Two Updates) ---
+
+            // Update Chapter 1 to Number 2
+            try (PreparedStatement updateStmt = connection.prepareStatement(UPDATE_NUMBER)) {
+                updateStmt.setInt(1, num2);
+                updateStmt.setInt(2, chapterId1);
+                updateStmt.executeUpdate();
+            }
+
+            // Update Chapter 2 to Number 1
+            try (PreparedStatement updateStmt = connection.prepareStatement(UPDATE_NUMBER)) {
+                updateStmt.setInt(1, num1);
+                updateStmt.setInt(2, chapterId2);
+                updateStmt.executeUpdate();
+            }
+
+            // --- 4. Commit Transaction ---
+            connection.commit();
+            LOGGER.log(Level.INFO, "Swapped chapter numbers for {0} (was {1}) and {2} (was {3}).",
+                    new Object[]{chapterId1, num1, chapterId2, num2});
+            return true;
+
+        } catch (SQLException e) {
+            try {
+                connection.rollback();
+                LOGGER.log(Level.WARNING, "Transaction rolled back due to error during chapter swap.", e);
+            } catch (SQLException rollbackEx) {
+                LOGGER.log(Level.SEVERE, "Rollback failed.", rollbackEx);
+            }
+            return false;
+        } finally {
+            try {
+                connection.setAutoCommit(true); // Restore default
+            } catch (SQLException e) {
+                LOGGER.log(Level.SEVERE, "Failed to restore auto-commit.", e);
+            }
+        }
+    }
+
 }

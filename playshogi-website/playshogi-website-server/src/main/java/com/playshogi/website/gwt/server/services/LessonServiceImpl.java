@@ -3,11 +3,10 @@ package com.playshogi.website.gwt.server.services;
 
 import com.google.gwt.thirdparty.guava.common.base.Strings;
 import com.playshogi.library.database.DbConnection;
+import com.playshogi.library.database.KifuRepository;
 import com.playshogi.library.database.LessonRepository;
-import com.playshogi.library.database.models.CampaignGraph;
-import com.playshogi.library.database.models.CampaignLessonNode;
-import com.playshogi.library.database.models.PersistentCampaignLesson;
-import com.playshogi.library.database.models.PersistentLesson;
+import com.playshogi.library.database.models.*;
+import com.playshogi.library.shogi.models.record.GameRecord;
 import com.playshogi.website.gwt.server.controllers.Authenticator;
 import com.playshogi.website.gwt.server.controllers.UsersCache;
 import com.playshogi.website.gwt.shared.models.LessonDetails;
@@ -21,7 +20,9 @@ import java.util.stream.Collectors;
 public class LessonServiceImpl {
 
     private static final Logger LOGGER = Logger.getLogger(LessonServiceImpl.class.getName());
-    private final LessonRepository lessonRepository = new LessonRepository(new DbConnection());
+    private final DbConnection dbConnection = new DbConnection();
+    private final LessonRepository lessonRepository = new LessonRepository(dbConnection);
+    private final KifuRepository kifuRepository = new KifuRepository(dbConnection);
     private final Authenticator authenticator = Authenticator.INSTANCE;
 
     // -------------------------
@@ -116,6 +117,143 @@ public class LessonServiceImpl {
                 prereqs.stream().map(Integer::parseInt).collect(Collectors.toList()));
     }
 
+    public void addChapter(final String sessionId, final LessonChapterDto chapterDto) {
+        LOGGER.log(Level.INFO, "addChapter for lesson: " + chapterDto.getLessonId());
+
+        LoginResult loginResult = authenticator.checkSession(sessionId);
+        if (loginResult == null || !loginResult.isLoggedIn()) {
+            throw new IllegalStateException("Only logged in users can add a chapter");
+        }
+
+        // Authorization Check: Check if the current user is the author of the lesson
+        if (!lessonRepository.isLessonAuthor(Integer.parseInt(chapterDto.getLessonId()), loginResult.getUserId())) {
+            throw new IllegalStateException("User " + loginResult.getUserId() + " is not authorized to modify lesson "
+                    + chapterDto.getLessonId());
+        }
+
+        String name = "Lesson " + chapterDto.getLessonId() + " Chapter " + chapterDto.getTitle();
+        String truncatedName = name.length() <= 255 ? name : name.substring(0, 255);
+        int kifuId = kifuRepository.saveKifu(new GameRecord(), truncatedName, loginResult.getUserId(),
+                PersistentKifu.KifuType.LESSON);
+
+        if (!lessonRepository.addChapter(
+                Integer.parseInt(chapterDto.getLessonId()),
+                kifuId,
+                chapterDto.getType(),
+                chapterDto.getTitle(),
+                chapterDto.getChapterNumber(),
+                chapterDto.getOrientation(),
+                chapterDto.isHidden())) {
+
+            throw new IllegalArgumentException("Could not add the chapter to lesson " + chapterDto.getLessonId() + "." +
+                    " Check for duplicate chapter number.");
+        }
+    }
+
+    public void modifyChapter(final String sessionId, final LessonChapterDto chapterDto) {
+        LOGGER.log(Level.INFO, "modifyChapter: " + chapterDto.getChapterId());
+
+        LoginResult loginResult = authenticator.checkSession(sessionId);
+        if (loginResult == null || !loginResult.isLoggedIn()) {
+            throw new IllegalStateException("Only logged in users can modify a chapter");
+        }
+
+        int chapterId = Integer.parseInt(chapterDto.getChapterId());
+        int userId = loginResult.getUserId();
+
+        // The lessonRepository.updateChapter method already performs the authorization check
+        // (by joining ps_lesson_chapter and ps_lessons using userId).
+
+        if (!lessonRepository.updateChapter(
+                chapterId,
+                userId, // Passed for authorization check within the repository
+                Integer.parseInt(chapterDto.getKifuId()),
+                chapterDto.getType(),
+                chapterDto.getTitle(),
+                chapterDto.getChapterNumber(),
+                chapterDto.getOrientation(),
+                chapterDto.isHidden())) {
+
+            // This exception covers both "Not authorized" and "Chapter ID not found/Duplicate chapter number"
+            throw new IllegalArgumentException("Could not update chapter " + chapterId + ". Verify authorization or " +
+                    "check for duplicate chapter number.");
+        }
+    }
+
+    public void deleteChapter(final String sessionId, final String chapterId) {
+        LOGGER.log(Level.INFO, "deleteChapter: " + chapterId);
+
+        LoginResult loginResult = authenticator.checkSession(sessionId);
+        if (loginResult == null || !loginResult.isLoggedIn()) {
+            throw new IllegalStateException("Only logged in users can delete a chapter");
+        }
+
+        int userId = loginResult.getUserId();
+
+        // The lessonRepository.deleteChapter method performs the authorization check
+        // (by joining ps_lesson_chapter and ps_lessons using userId).
+
+        if (!lessonRepository.deleteChapter(Integer.parseInt(chapterId), userId)) {
+
+            // This exception covers both "Not authorized" and "Chapter ID not found"
+            throw new IllegalArgumentException("Could not delete chapter " + chapterId + ". Verify authorization.");
+        }
+    }
+
+    //TODO: public vs hidden chapters
+    public List<LessonChapterDto> getChaptersForLesson(final String sessionId, final String lessonIdString) {
+
+        LoginResult loginResult = authenticator.checkSession(sessionId);
+
+        try {
+            int lessonId = Integer.parseInt(lessonIdString);
+
+            List<LessonChapterDto> chapters = lessonRepository.listLessonChapters(lessonId);
+
+            if (loginResult == null || !loginResult.isAdmin()) {
+                chapters = chapters.stream()
+                        .filter(c -> !c.isHidden())
+                        .collect(Collectors.toList());
+            }
+
+            return chapters;
+
+        } catch (NumberFormatException e) {
+            LOGGER.log(Level.WARNING, "Invalid lesson ID format: " + lessonIdString);
+            throw new IllegalArgumentException("Invalid lesson ID format.");
+        }
+    }
+
+    public void swapChapterOrder(final String sessionId, final String chapterIdString1, final String chapterIdString2) {
+        LOGGER.log(Level.INFO, "swapChapterOrder between {0} and {1}", new Object[]{chapterIdString1,
+                chapterIdString2});
+
+        LoginResult loginResult = authenticator.checkSession(sessionId);
+        if (loginResult == null || !loginResult.isLoggedIn()) {
+            throw new IllegalStateException("Only logged in users can swap chapters.");
+        }
+
+        try {
+            int chapterId1 = Integer.parseInt(chapterIdString1);
+            int chapterId2 = Integer.parseInt(chapterIdString2);
+            int userId = loginResult.getUserId();
+
+            if (chapterId1 == chapterId2) {
+                // Cannot swap a chapter with itself
+                throw new IllegalArgumentException("Chapter IDs must be different for a swap.");
+            }
+
+            // The repository method performs authorization check, same-lesson check, and the swap within a transaction.
+            if (!lessonRepository.swapChapterOrder(chapterId1, chapterId2, userId)) {
+                throw new IllegalArgumentException("Could not swap chapters. Verify that both chapter IDs exist, " +
+                        "belong to the same lesson, and the user is the lesson author.");
+            }
+
+        } catch (NumberFormatException e) {
+            LOGGER.log(Level.WARNING, "Invalid chapter ID format.");
+            throw new IllegalArgumentException("Invalid chapter ID format.");
+        }
+    }
 
     private PersistentCampaignLesson getPersistentCampaignLesson(int campaignId, final CampaignLessonNode node) {
         return new PersistentCampaignLesson(campaignId, Integer.parseInt(node.getLessonId()), node.getX(),

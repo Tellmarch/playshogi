@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.playshogi.library.database.models.CampaignLessonNode;
+import com.playshogi.library.database.models.LessonChapterDto;
 import com.playshogi.website.gwt.server.services.LessonServiceImpl;
 import com.playshogi.website.gwt.shared.models.LessonDetails;
 
@@ -112,6 +113,44 @@ public class LessonServiceServlet extends HttpServlet {
                             json.get("lessonId").getAsString(),
                             Arrays.asList(gson.fromJson(json.get("prerequisites"), String[].class))
                     );
+                    result = "OK";
+                    break;
+
+                case "addChapter":
+                    // Get the LessonChapterDTO from the 'chapter' field in the incoming JSON
+                    LessonChapterDto chapterToAdd = gson.fromJson(json.get("chapter"),
+                            LessonChapterDto.class);
+                    lessonService.addChapter(sessionId, chapterToAdd);
+                    result = "OK";
+                    break;
+
+                case "modifyChapter":
+                    // Get the LessonChapterDTO from the 'chapter' field
+                    LessonChapterDto chapterToModify = gson.fromJson(json.get("chapter"),
+                            LessonChapterDto.class);
+                    lessonService.modifyChapter(sessionId, chapterToModify);
+                    result = "OK";
+                    break;
+
+                case "deleteChapter":
+                    // Get the chapter ID as a string from the 'chapterId' field
+                    String chapterIdToDelete = json.get("chapterId").getAsString();
+                    lessonService.deleteChapter(sessionId, chapterIdToDelete);
+                    result = "OK";
+                    break;
+
+                case "getChaptersForLesson":
+                    // Get the lesson ID as a string from the 'lessonId' field
+                    String lessonIdToFetch = json.get("lessonId").getAsString();
+                    // The service method returns a List<LessonChapter> object
+                    result = lessonService.getChaptersForLesson(sessionId, lessonIdToFetch);
+                    break;
+
+                case "swapChapterOrder":
+                    // Get the two chapter IDs to swap
+                    String chapterId1 = json.get("chapterId1").getAsString();
+                    String chapterId2 = json.get("chapterId2").getAsString();
+                    lessonService.swapChapterOrder(sessionId, chapterId1, chapterId2);
                     result = "OK";
                     break;
 
