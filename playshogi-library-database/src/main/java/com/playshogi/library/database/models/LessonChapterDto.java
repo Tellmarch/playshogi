@@ -7,7 +7,6 @@ public class LessonChapterDto {
     private String kifuUsf;
     private int type;
     private String title;
-    private int chapterNumber;
     private int orientation;
     private boolean hidden;
 
@@ -16,7 +15,7 @@ public class LessonChapterDto {
     }
 
     public LessonChapterDto(final String chapterId, final String lessonId, final String kifuId, final String kifuUsf,
-                            final int type, final String title, final int chapterNumber, final int orientation,
+                            final int type, final String title, final int orientation,
                             final boolean hidden) {
         this.chapterId = chapterId;
         this.lessonId = lessonId;
@@ -24,7 +23,6 @@ public class LessonChapterDto {
         this.kifuUsf = kifuUsf;
         this.type = type;
         this.title = title;
-        this.chapterNumber = chapterNumber;
         this.orientation = orientation;
         this.hidden = hidden;
     }
@@ -77,14 +75,6 @@ public class LessonChapterDto {
         this.title = title;
     }
 
-    public int getChapterNumber() {
-        return chapterNumber;
-    }
-
-    public void setChapterNumber(final int chapterNumber) {
-        this.chapterNumber = chapterNumber;
-    }
-
     public int getOrientation() {
         return orientation;
     }
@@ -110,7 +100,6 @@ public class LessonChapterDto {
                 ", kifuUsf='" + kifuUsf + '\'' +
                 ", type=" + type +
                 ", title='" + title + '\'' +
-                ", chapterNumber=" + chapterNumber +
                 ", orientation=" + orientation +
                 ", hidden=" + hidden +
                 '}';

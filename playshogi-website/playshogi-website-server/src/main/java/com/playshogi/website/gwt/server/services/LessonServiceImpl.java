@@ -50,13 +50,27 @@ public class LessonServiceImpl {
     public int createLesson(final String sessionId, final LessonDetails lesson) {
         LOGGER.log(Level.INFO, "createLesson: " + lesson);
 
+        LoginResult loginResult = authenticator.checkSession(sessionId);
+        if (loginResult == null || !loginResult.isLoggedIn()) {
+            throw new IllegalStateException("Only logged in users can create a lesson");
+        }
+
         authenticator.validateAdminSession(sessionId);
 
-        return lessonRepository.saveLesson(getPersistentLesson(lesson));
+        return lessonRepository.saveLesson(getPersistentLesson(loginResult.getUserId(), lesson));
     }
 
     public void updateLesson(final String sessionId, final LessonDetails lesson) {
-        lessonRepository.updateLesson(getPersistentLesson(lesson));
+        LOGGER.log(Level.INFO, "updateLesson: " + lesson);
+
+        LoginResult loginResult = authenticator.checkSession(sessionId);
+        if (loginResult == null || !loginResult.isLoggedIn()) {
+            throw new IllegalStateException("Only logged in users can update a lesson");
+        }
+
+        authenticator.validateAdminSession(sessionId);
+
+        lessonRepository.updateLesson(getPersistentLesson(loginResult.getUserId(), lesson));
     }
 
     // -------------------------
@@ -141,7 +155,6 @@ public class LessonServiceImpl {
                 kifuId,
                 chapterDto.getType(),
                 chapterDto.getTitle(),
-                chapterDto.getChapterNumber(),
                 chapterDto.getOrientation(),
                 chapterDto.isHidden())) {
 
@@ -170,7 +183,6 @@ public class LessonServiceImpl {
                 Integer.parseInt(chapterDto.getKifuId()),
                 chapterDto.getType(),
                 chapterDto.getTitle(),
-                chapterDto.getChapterNumber(),
                 chapterDto.getOrientation(),
                 chapterDto.isHidden())) {
 
@@ -280,7 +292,7 @@ public class LessonServiceImpl {
         return details;
     }
 
-    private PersistentLesson getPersistentLesson(final LessonDetails details) {
+    private PersistentLesson getPersistentLesson(final int userId, final LessonDetails details) {
         return new PersistentLesson(
                 Strings.isNullOrEmpty(details.getLessonId()) ? 0 : Integer.parseInt(details.getLessonId()),
                 Strings.isNullOrEmpty(details.getKifuId()) ? null : Integer.parseInt(details.getKifuId()),
@@ -294,7 +306,7 @@ public class LessonServiceImpl {
                 details.getPreviewSfen(),
                 details.getDifficulty(),
                 details.getLikes(),
-                UsersCache.INSTANCE.getUserId(details.getAuthor()),
+                userId,
                 details.isHidden(),
                 null,
                 null,

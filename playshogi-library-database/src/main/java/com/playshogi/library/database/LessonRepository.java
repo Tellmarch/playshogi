@@ -581,12 +581,13 @@ public class LessonRepository {
     }
 
     private static final String INSERT_CHAPTER =
-            "INSERT INTO ps_lesson_chapter (lesson_id, kifu_id, type, title, chapter_number, orientation, hidden) " +
-                    "VALUES (?, ?, ?, ?, ?, ?, ?)";
+            "INSERT INTO ps_lesson_chapter " +
+                    "(lesson_id, kifu_id, type, title, chapter_number, orientation, hidden) " +
+                    "SELECT ?, ?, ?, ?, COALESCE(MAX(chapter_number), 0) + 1, ?, ? " +
+                    "FROM ps_lesson_chapter WHERE lesson_id = ?";
 
     public boolean addChapter(final int lessonId, final int kifuId, final int type,
-                              final String title, final int chapterNumber,
-                              final int orientation, final boolean hidden) {
+                              final String title, final int orientation, final boolean hidden) {
 
         Connection connection = dbConnection.getConnection();
         try (PreparedStatement preparedStatement = connection.prepareStatement(INSERT_CHAPTER)) {
@@ -595,13 +596,13 @@ public class LessonRepository {
             preparedStatement.setInt(2, kifuId);
             preparedStatement.setByte(3, (byte) type); // type is TINYINT
             preparedStatement.setString(4, title);
-            preparedStatement.setInt(5, chapterNumber);
-            preparedStatement.setByte(6, (byte) orientation); // orientation is TINYINT
-            preparedStatement.setBoolean(7, hidden); // hidden is TINYINT(1) / BOOLEAN
+            preparedStatement.setByte(5, (byte) orientation); // orientation is TINYINT
+            preparedStatement.setBoolean(6, hidden); // hidden is TINYINT(1) / BOOLEAN
+            preparedStatement.setInt(7, lessonId);
 
             int rs = preparedStatement.executeUpdate();
             if (rs == 1) {
-                LOGGER.log(Level.INFO, "Added chapter " + chapterNumber + " to lesson: " + lessonId);
+                LOGGER.log(Level.INFO, "Added chapter " + kifuId + " to lesson: " + lessonId);
                 return true;
             }
         } catch (SQLException e) {
@@ -616,12 +617,12 @@ public class LessonRepository {
     private static final String UPDATE_CHAPTER =
             "UPDATE ps_lesson_chapter c " +
                     "JOIN ps_lessons l ON c.lesson_id = l.id " +
-                    "SET c.kifu_id = ?, c.type = ?, c.title = ?, c.chapter_number = ?, " +
+                    "SET c.kifu_id = ?, c.type = ?, c.title = ?, " +
                     "    c.orientation = ?, c.hidden = ? " +
                     "WHERE c.chapter_id = ? AND l.author_id = ?";
 
     public boolean updateChapter(final int chapterId, final int userId, final int newKifuId,
-                                 final int newType, final String newTitle, final int newChapterNumber,
+                                 final int newType, final String newTitle,
                                  final int newOrientation, final boolean newHidden) {
 
         Connection connection = dbConnection.getConnection();
@@ -631,7 +632,6 @@ public class LessonRepository {
             preparedStatement.setInt(1, newKifuId);
             preparedStatement.setByte(2, (byte) newType);
             preparedStatement.setString(3, newTitle);
-            preparedStatement.setInt(4, newChapterNumber);
             preparedStatement.setByte(5, (byte) newOrientation);
             preparedStatement.setBoolean(6, newHidden);
 
@@ -732,7 +732,6 @@ public class LessonRepository {
                     chapter.setKifuId(String.valueOf(resultSet.getInt("kifu_id")));
                     chapter.setType(resultSet.getByte("type"));
                     chapter.setTitle(resultSet.getString("title"));
-                    chapter.setChapterNumber(resultSet.getInt("chapter_number"));
                     chapter.setOrientation(resultSet.getByte("orientation"));
                     chapter.setHidden(resultSet.getBoolean("hidden"));
                     chapter.setKifuUsf(resultSet.getString("usf"));
