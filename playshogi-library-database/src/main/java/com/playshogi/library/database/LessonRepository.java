@@ -628,16 +628,16 @@ public class LessonRepository {
         Connection connection = dbConnection.getConnection();
         try (PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_CHAPTER)) {
 
-            // SET values (1 through 6)
+            // SET values (1 through 5)
             preparedStatement.setInt(1, newKifuId);
             preparedStatement.setByte(2, (byte) newType);
             preparedStatement.setString(3, newTitle);
-            preparedStatement.setByte(5, (byte) newOrientation);
-            preparedStatement.setBoolean(6, newHidden);
+            preparedStatement.setByte(4, (byte) newOrientation);
+            preparedStatement.setBoolean(5, newHidden);
 
-            // WHERE clause values (7 and 8)
-            preparedStatement.setInt(7, chapterId);
-            preparedStatement.setInt(8, userId); // Verified against the lesson author
+            // WHERE clause values (6 and 7)
+            preparedStatement.setInt(6, chapterId);
+            preparedStatement.setInt(7, userId); // Verified against the lesson author
 
             int rs = preparedStatement.executeUpdate();
             if (rs == 1) {
