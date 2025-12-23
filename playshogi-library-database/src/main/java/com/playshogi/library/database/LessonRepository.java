@@ -19,6 +19,7 @@ public class LessonRepository {
                     "LEFT JOIN (SELECT * FROM `playshogi`.`ps_userlessonsprogress` WHERE user_id = ?) p " +
                     "ON (id = lesson_id) WHERE hidden = 0;";
     private static final String SELECT_ALL_LESSONS = "SELECT * FROM `playshogi`.`ps_lessons`;";
+    private static final String SELECT_LESSON = "SELECT * FROM `playshogi`.`ps_lessons` WHERE id = ?;";
     private static final String INSERT_LESSON = "INSERT INTO `playshogi`.`ps_lessons` (`kifu_id`, `parent_id`, " +
             "`title`, `description`, `tags`, `preview_sfen`, `difficulty`, `author_id`, `hidden`, " +
             "`type`, `index`, `problemset_id`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
@@ -76,6 +77,43 @@ public class LessonRepository {
 
     public LessonRepository(final DbConnection dbConnection) {
         this.dbConnection = dbConnection;
+    }
+
+    public PersistentLesson getLesson(final int lessonId) {
+        List<PersistentLesson> result = new ArrayList<>();
+        Connection connection = dbConnection.getConnection();
+        try (PreparedStatement preparedStatement = connection.prepareStatement(SELECT_LESSON)) {
+            preparedStatement.setInt(1, lessonId);
+            ResultSet rs = preparedStatement.executeQuery();
+            if (rs.next()) {
+                int id = rs.getInt("id");
+                Integer kifuId = SqlUtils.getInteger(rs, "kifu_id");
+                Integer problemCollectionId = SqlUtils.getInteger(rs, "problemset_id");
+                Integer parentId = SqlUtils.getInteger(rs, "parent_id");
+                String title = rs.getString("title");
+                String description = rs.getString("description");
+                String tags = rs.getString("tags");
+                String previewSfen = rs.getString("preview_sfen");
+                Integer difficulty = SqlUtils.getInteger(rs, "difficulty");
+                int likes = rs.getInt("likes");
+                Integer authorId = SqlUtils.getInteger(rs, "author_id");
+                boolean hidden = rs.getBoolean("hidden");
+                Date creationDate = rs.getDate("create_time");
+                Date updateDate = rs.getDate("update_time");
+                PersistentLesson.LessonType type = PersistentLesson.LessonType.fromDbInt(rs.getInt("type"));
+                int index = rs.getInt("index");
+
+                return new PersistentLesson(id, kifuId, problemCollectionId, parentId, title, description,
+                        tags == null ? null : tags.split(","), previewSfen,
+                        difficulty, likes, authorId, hidden, creationDate, updateDate, type, index);
+            } else {
+                LOGGER.log(Level.INFO, "Did not find lesson: " + lessonId);
+                return null;
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error retrieving visible lessons in db", e);
+        }
+        return null;
     }
 
     public List<PersistentLesson> getAllVisibleLessons() {

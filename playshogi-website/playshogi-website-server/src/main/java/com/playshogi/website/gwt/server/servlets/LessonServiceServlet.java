@@ -57,6 +57,10 @@ public class LessonServiceServlet extends HttpServlet {
                 // Lesson CRUD
                 // -------------------------
 
+                case "getLesson":
+                    result = lessonService.getLesson(sessionId, json.get("lessonId").getAsString());
+                    break;
+
                 case "getAllLessons":
                     result = lessonService.getAllLessons(sessionId);
                     break;

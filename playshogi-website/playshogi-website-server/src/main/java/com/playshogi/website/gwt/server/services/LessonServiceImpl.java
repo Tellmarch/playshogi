@@ -38,13 +38,25 @@ public class LessonServiceImpl {
     // Lesson CRUD
     // -------------------------
 
+
+    public LessonDetails getLesson(final String sessionId, final String lessonId) {
+        LOGGER.log(Level.INFO, "getLesson " + lessonId);
+
+        PersistentLesson lesson = lessonRepository.getLesson(Integer.parseInt(lessonId));
+        if (lesson == null) {
+            throw new IllegalArgumentException("Could not find lesson");
+        }
+
+        return getLessonDetails(lesson);
+    }
+
     public LessonDetails[] getAllLessons(final String sessionId) {
         LOGGER.log(Level.INFO, "getAllLessons");
 
         authenticator.validateAdminSession(sessionId);
 
-        List<PersistentLesson> allVisibleLessons = lessonRepository.getAllLessons();
-        return allVisibleLessons.stream().map(this::getLessonDetails).toArray(LessonDetails[]::new);
+        List<PersistentLesson> allLessons = lessonRepository.getAllLessons();
+        return allLessons.stream().map(this::getLessonDetails).toArray(LessonDetails[]::new);
     }
 
     public int createLesson(final String sessionId, final LessonDetails lesson) {
