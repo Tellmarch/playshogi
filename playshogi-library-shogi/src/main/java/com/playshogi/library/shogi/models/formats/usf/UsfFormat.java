@@ -80,7 +80,7 @@ public enum UsfFormat implements GameRecordFormat {
 
     private static String cleanUpUsf(final String usf) {
         String result = usf;
-        while (result.endsWith(".\n")) {
+        while (result.endsWith("\n.\n")) {
             result = result.substring(0, result.length() - 2);
         }
         return result;
