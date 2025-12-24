@@ -80,7 +80,6 @@ public class LessonRepository {
     }
 
     public PersistentLesson getLesson(final int lessonId) {
-        List<PersistentLesson> result = new ArrayList<>();
         Connection connection = dbConnection.getConnection();
         try (PreparedStatement preparedStatement = connection.prepareStatement(SELECT_LESSON)) {
             preparedStatement.setInt(1, lessonId);
@@ -848,19 +847,28 @@ public class LessonRepository {
                 return true;
             }
 
-            // --- 3. Perform the Swap (Two Updates) ---
+            // --- 3. Perform the Swap (Three-Step Shuffle) ---
 
-            // Update Chapter 1 to Number 2
+            final int TEMP_NUMBER = 0;
+
+            // Step A: Move Chapter 1 to Temp
             try (PreparedStatement updateStmt = connection.prepareStatement(UPDATE_NUMBER)) {
-                updateStmt.setInt(1, num2);
+                updateStmt.setInt(1, TEMP_NUMBER);
                 updateStmt.setInt(2, chapterId1);
                 updateStmt.executeUpdate();
             }
 
-            // Update Chapter 2 to Number 1
+            // Step B: Move Chapter 2 to Number 1
             try (PreparedStatement updateStmt = connection.prepareStatement(UPDATE_NUMBER)) {
                 updateStmt.setInt(1, num1);
                 updateStmt.setInt(2, chapterId2);
+                updateStmt.executeUpdate();
+            }
+
+            // Step C: Move Chapter 1 (currently Temp) to Number 2
+            try (PreparedStatement updateStmt = connection.prepareStatement(UPDATE_NUMBER)) {
+                updateStmt.setInt(1, num2);
+                updateStmt.setInt(2, chapterId1);
                 updateStmt.executeUpdate();
             }
 
