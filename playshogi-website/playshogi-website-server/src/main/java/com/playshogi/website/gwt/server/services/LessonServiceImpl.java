@@ -31,7 +31,11 @@ public class LessonServiceImpl {
 
     public CampaignGraph getCampaign(final String sessionId, final String campaignId) {
         LOGGER.log(Level.INFO, "getCampaign: " + campaignId);
-        return lessonRepository.getFullCampaignGraph(Integer.parseInt(campaignId));
+
+        LoginResult loginResult = authenticator.checkSession(sessionId);
+
+        return lessonRepository.getFullCampaignGraph(Integer.parseInt(campaignId), loginResult == null ? 0 :
+                loginResult.getUserId());
     }
 
     // -------------------------

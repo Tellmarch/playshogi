@@ -55,11 +55,14 @@ public class LessonRepository {
             "SELECT `prerequisite_lesson_id` FROM `playshogi`.`ps_campaign_lesson_prerequisite` " +
                     "WHERE `campaign_id` = ? AND `lesson_id` = ?;";
 
-    private static final String SELECT_CAMPAIGN_LESSONS_WITH_DETAILS =
-            "SELECT cl.lesson_id, cl.x, cl.y, cl.optional, cl.extra, cl.boss, cl.important, " +
-                    "       l.title, l.difficulty " +
+    private static final String SELECT_CAMPAIGN_LESSONS_WITH_PROGRESS =
+            "SELECT cl.lesson_id, cl.x, cl.y, cl.optional, cl.extra, cl.boss, cl.important, cl.draft, " +
+                    "       l.title, l.difficulty, " +
+                    "       IFNULL(ulp.complete, 0) AS complete, IFNULL(ulp.percentage, 0) AS percentage " +
                     "FROM `playshogi`.`ps_campaign_lesson` cl " +
                     "JOIN `playshogi`.`ps_lessons` l ON cl.lesson_id = l.id " +
+                    "LEFT JOIN `playshogi`.`ps_userlessonsprogress` ulp " +
+                    "       ON cl.lesson_id = ulp.lesson_id AND ulp.user_id = ? " +
                     "WHERE cl.campaign_id = ?;";
 
     private static final String SELECT_CAMPAIGN_INFO =
@@ -529,7 +532,7 @@ public class LessonRepository {
         }
     }
 
-    public CampaignGraph getFullCampaignGraph(int campaignId) {
+    public CampaignGraph getFullCampaignGraph(int campaignId, int userId) {
 
         Connection connection = dbConnection.getConnection();
 
@@ -553,33 +556,40 @@ public class LessonRepository {
             return null;
         }
 
-        // --- Step 1: Load campaign lessons ---
-        class LessonTmp {
-            int id, x, y;
-            String title;
-            Integer difficulty;
-        }
-        List<LessonTmp> lessonList = new ArrayList<>();
+        // --- Step 1: Load campaign lessons (Now with User Progress) ---
+        List<CampaignLessonNode> nodeList = new ArrayList<>();
+        Map<String, CampaignLessonNode> nodeLookup = new HashMap<>();
 
-        try (PreparedStatement ps = connection.prepareStatement(SELECT_CAMPAIGN_LESSONS_WITH_DETAILS)) {
-            ps.setInt(1, campaignId);
+        try (PreparedStatement ps = connection.prepareStatement(SELECT_CAMPAIGN_LESSONS_WITH_PROGRESS)) {
+            ps.setInt(1, userId);       // Set the user ID for the LEFT JOIN
+            ps.setInt(2, campaignId);   // Set the campaign ID
             ResultSet rs = ps.executeQuery();
 
             while (rs.next()) {
-                LessonTmp tmp = new LessonTmp();
-                tmp.id = rs.getInt("lesson_id");
-                tmp.x = rs.getInt("x");
-                tmp.y = rs.getInt("y");
-                tmp.title = rs.getString("title");
-                tmp.difficulty = SqlUtils.getInteger(rs, "difficulty");
-                lessonList.add(tmp);
+                CampaignLessonNode node = new CampaignLessonNode();
+                String lessonId = String.valueOf(rs.getInt("lesson_id"));
+                node.setLessonId(lessonId);
+                node.setX(rs.getInt("x"));
+                node.setY(rs.getInt("y"));
+                node.setTitle(rs.getString("title"));
+                node.setDifficulty(SqlUtils.getInteger(rs, "difficulty"));
+                node.setDraft(rs.getBoolean("draft"));
+                node.setImportant(rs.getBoolean("important"));
+                node.setOptional(rs.getBoolean("optional"));
+                node.setExtra(rs.getBoolean("extra"));
+                node.setBoss(rs.getBoolean("boss"));
+                node.setCompleted(rs.getBoolean("complete"));
+                node.setSkipped(node.isCompleted() && rs.getInt("percentage") < 100);
+
+                nodeList.add(node);
+                nodeLookup.put(lessonId, node);
             }
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error retrieving campaign lessons", e);
             return null;
         }
 
-        // --- Step 2: Load ALL prerequisites (one query!) ---
+        // --- Step 2: Load ALL prerequisites ---
         Map<Integer, List<String>> prereqMap = new HashMap<>();
 
         try (PreparedStatement ps = connection.prepareStatement(SELECT_ALL_PREREQUISITES_FOR_CAMPAIGN)) {
@@ -600,22 +610,25 @@ public class LessonRepository {
         }
 
         // --- Step 3: Build final graph ---
-        List<CampaignLessonNode> nodes = new ArrayList<>();
+        for (CampaignLessonNode node : nodeList) {
+            List<String> prereqs = prereqMap.getOrDefault(Integer.parseInt(node.getLessonId()), new ArrayList<>());
+            node.setPrerequisites(prereqs);
 
-        for (LessonTmp tmp : lessonList) {
-            List<String> prereqs = prereqMap.getOrDefault(tmp.id, new ArrayList<>());
+            // Logic: Set locked to true if ANY prerequisite is neither complete nor skipped
+            boolean isLocked = false;
+            for (String prereqId : prereqs) {
+                CampaignLessonNode prereqNode = nodeLookup.get(prereqId);
 
-            nodes.add(new CampaignLessonNode(
-                    String.valueOf(tmp.id),
-                    tmp.title,
-                    tmp.x,
-                    tmp.y,
-                    tmp.difficulty,
-                    prereqs
-            ));
+                // If the prerequisite exists and is NOT finished, lock this node
+                if (prereqNode != null && !prereqNode.isCompleted() && !prereqNode.isSkipped()) {
+                    isLocked = true;
+                    break;
+                }
+            }
+            node.setLocked(isLocked);
         }
 
-        return new CampaignGraph(String.valueOf(campaignId), title, description, nodes);
+        return new CampaignGraph(String.valueOf(campaignId), title, description, nodeList);
     }
 
     private static final String INSERT_CHAPTER =
