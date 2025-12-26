@@ -13,11 +13,12 @@ import static com.playshogi.library.database.SqlUtils.setInteger;
 public class LessonRepository {
     private static final Logger LOGGER = Logger.getLogger(LessonRepository.class.getName());
 
-    private static final String SELECT_VISIBLE_LESSONS = "SELECT * FROM `playshogi`.`ps_lessons` WHERE hidden = 0;";
+    private static final String SELECT_VISIBLE_LESSONS = "SELECT * FROM `playshogi`.`ps_lessons` WHERE hidden = 0 and" +
+            " old_campaign = 1;";
     private static final String SELECT_VISIBLE_LESSONS_WITH_USER_PROGRESS =
-            "SELECT * FROM `playshogi`.`ps_lessons`" +
+            "SELECT * FROM `playshogi`.`ps_lessons` " +
                     "LEFT JOIN (SELECT * FROM `playshogi`.`ps_userlessonsprogress` WHERE user_id = ?) p " +
-                    "ON (id = lesson_id) WHERE hidden = 0;";
+                    "ON (id = lesson_id) WHERE hidden = 0 and old_campaign = 1;";
     private static final String SELECT_ALL_LESSONS = "SELECT * FROM `playshogi`.`ps_lessons`;";
     private static final String SELECT_LESSON = "SELECT * FROM `playshogi`.`ps_lessons` WHERE id = ?;";
     private static final String INSERT_LESSON = "INSERT INTO `playshogi`.`ps_lessons` (`kifu_id`, `parent_id`, " +
