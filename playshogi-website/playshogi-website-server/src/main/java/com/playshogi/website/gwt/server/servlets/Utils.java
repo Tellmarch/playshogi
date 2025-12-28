@@ -8,4 +8,10 @@ public class Utils {
                 ? json.get(member).getAsString()
                 : null;
     }
+
+    public static Integer getAsIntegerOrNull(JsonObject json, String member) {
+        return json.has(member) && !json.get(member).isJsonNull()
+                ? json.get(member).getAsInt()
+                : null;
+    }
 }

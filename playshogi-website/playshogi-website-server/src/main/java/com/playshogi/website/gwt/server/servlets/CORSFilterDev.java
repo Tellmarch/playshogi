@@ -18,9 +18,15 @@ public class CORSFilterDev implements Filter {
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse resp = (HttpServletResponse) response;
 
-        resp.setHeader("Access-Control-Allow-Origin", "http://localhost:5173");
+        String origin = req.getHeader("Origin");
+        if (origin != null) {
+            resp.setHeader("Access-Control-Allow-Origin", origin);
+        }
+
+        resp.setHeader("Vary", "Origin");
         resp.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
         resp.setHeader("Access-Control-Allow-Headers", "Content-Type");
+        resp.setHeader("Access-Control-Allow-Credentials", "true");
         resp.setHeader("Access-Control-Max-Age", "86400");
 
         if ("OPTIONS".equalsIgnoreCase(req.getMethod())) {
@@ -28,7 +34,6 @@ public class CORSFilterDev implements Filter {
             return;
         }
 
-        // For all other HTTP methods, continue normally
         chain.doFilter(request, response);
     }
 

@@ -6,6 +6,7 @@ import com.google.gson.JsonParser;
 import com.playshogi.library.database.models.CampaignLessonNode;
 import com.playshogi.library.database.models.LessonChapterDto;
 import com.playshogi.website.gwt.server.services.LessonServiceImpl;
+import com.playshogi.website.gwt.server.services.UserServiceImpl;
 import com.playshogi.website.gwt.shared.models.LessonDetails;
 
 import javax.servlet.http.HttpServlet;
@@ -17,6 +18,7 @@ import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static com.playshogi.website.gwt.server.servlets.Utils.getAsIntegerOrNull;
 import static com.playshogi.website.gwt.server.servlets.Utils.getAsStringOrNull;
 
 public class LessonServiceServlet extends HttpServlet {
@@ -24,6 +26,7 @@ public class LessonServiceServlet extends HttpServlet {
     private static final Logger LOGGER = Logger.getLogger(LessonServiceServlet.class.getName());
 
     private final LessonServiceImpl lessonService = new LessonServiceImpl();
+    private final UserServiceImpl userService = new UserServiceImpl();
     private final Gson gson = new Gson();
 
     @Override
@@ -155,6 +158,16 @@ public class LessonServiceServlet extends HttpServlet {
                     String chapterId1 = json.get("chapterId1").getAsString();
                     String chapterId2 = json.get("chapterId2").getAsString();
                     lessonService.swapChapterOrder(sessionId, chapterId1, chapterId2);
+                    result = "OK";
+                    break;
+
+                case "saveLessonProgress":
+                    String lessonId = json.get("lessonId").getAsString();
+                    int timeMs = json.get("timeMs").getAsInt();
+                    boolean complete = json.get("complete").getAsBoolean();
+                    int percentage = json.get("percentage").getAsInt();
+                    Integer rating = getAsIntegerOrNull(json, "rating");
+                    userService.saveLessonProgress(sessionId, lessonId, timeMs, complete, percentage, rating);
                     result = "OK";
                     break;
 
