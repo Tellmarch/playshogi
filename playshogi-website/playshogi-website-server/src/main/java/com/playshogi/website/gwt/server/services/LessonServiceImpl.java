@@ -46,7 +46,11 @@ public class LessonServiceImpl {
     public LessonDetails getLesson(final String sessionId, final String lessonId) {
         LOGGER.log(Level.INFO, "getLesson " + lessonId);
 
-        PersistentLesson lesson = lessonRepository.getLesson(Integer.parseInt(lessonId));
+        LoginResult loginResult = authenticator.checkSession(sessionId);
+
+        PersistentLessonWithUserProgress lesson =
+                lessonRepository.getLessonWithUserProgress(Integer.parseInt(lessonId), loginResult == null ? 0 :
+                        loginResult.getUserId());
         if (lesson == null) {
             throw new IllegalArgumentException("Could not find lesson");
         }
@@ -306,6 +310,12 @@ public class LessonServiceImpl {
         details.setAuthor(lesson.getAuthorId() == null ? null : UsersCache.INSTANCE.getUserName(lesson.getAuthorId()));
         details.setParentLessonId(lesson.getParentId() == null ? null : String.valueOf(lesson.getParentId()));
         return details;
+    }
+
+    private LessonDetails getLessonDetails(final PersistentLessonWithUserProgress lesson) {
+        LessonDetails lessonDetails = getLessonDetails(lesson.getPersistentLesson());
+        lessonDetails.setCompleted(lesson.getPersistentUserLessonProgress().getComplete());
+        return lessonDetails;
     }
 
     private PersistentLesson getPersistentLesson(final int userId, final LessonDetails details) {

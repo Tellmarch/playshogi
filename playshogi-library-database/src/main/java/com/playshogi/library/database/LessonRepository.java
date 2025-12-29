@@ -21,6 +21,12 @@ public class LessonRepository {
                     "ON (id = lesson_id) WHERE hidden = 0 and old_campaign = 1;";
     private static final String SELECT_ALL_LESSONS = "SELECT * FROM `playshogi`.`ps_lessons`;";
     private static final String SELECT_LESSON = "SELECT * FROM `playshogi`.`ps_lessons` WHERE id = ?;";
+
+    private static final String SELECT_LESSON_WITH_USER_PROGRESS =
+            "SELECT * FROM `playshogi`.`ps_lessons` " +
+                    "LEFT JOIN (SELECT * FROM `playshogi`.`ps_userlessonsprogress` WHERE user_id = ?) p " +
+                    "ON (id = lesson_id) WHERE id = ?;";
+
     private static final String INSERT_LESSON = "INSERT INTO `playshogi`.`ps_lessons` (`kifu_id`, `parent_id`, " +
             "`title`, `description`, `tags`, `preview_sfen`, `difficulty`, `author_id`, `hidden`, " +
             "`type`, `index`, `problemset_id`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
@@ -115,6 +121,57 @@ public class LessonRepository {
             }
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error retrieving visible lessons in db", e);
+        }
+        return null;
+    }
+
+    public PersistentLessonWithUserProgress getLessonWithUserProgress(final int lessonId, final int userId) {
+        Connection connection = dbConnection.getConnection();
+        try (PreparedStatement preparedStatement = connection.prepareStatement(SELECT_LESSON_WITH_USER_PROGRESS)) {
+            preparedStatement.setInt(1, userId);
+            preparedStatement.setInt(2, lessonId);
+
+            ResultSet rs = preparedStatement.executeQuery();
+            if (rs.next()) {
+                // 1. Map Lesson Data
+                int id = rs.getInt("id");
+                Integer kifuId = SqlUtils.getInteger(rs, "kifu_id");
+                Integer problemCollectionId = SqlUtils.getInteger(rs, "problemset_id");
+                Integer parentId = SqlUtils.getInteger(rs, "parent_id");
+                String title = rs.getString("title");
+                String description = rs.getString("description");
+                String tags = rs.getString("tags");
+                String previewSfen = rs.getString("preview_sfen");
+                Integer difficulty = SqlUtils.getInteger(rs, "difficulty");
+                int likes = rs.getInt("likes");
+                Integer authorId = SqlUtils.getInteger(rs, "author_id");
+                boolean hidden = rs.getBoolean("hidden");
+                Date creationDate = rs.getDate("create_time");
+                Date updateDate = rs.getDate("update_time");
+                PersistentLesson.LessonType type = PersistentLesson.LessonType.fromDbInt(rs.getInt("type"));
+                int index = rs.getInt("index");
+
+                PersistentLesson lesson = new PersistentLesson(id, kifuId, problemCollectionId, parentId, title,
+                        description, tags == null ? null : tags.split(","), previewSfen,
+                        difficulty, likes, authorId, hidden, creationDate, updateDate, type, index);
+
+                // 2. Map Progress Data
+                Date timeViewed = rs.getDate("time_viewed");
+                Integer timeSpentMs = SqlUtils.getInteger(rs, "time_spent_ms");
+                boolean complete = rs.getBoolean("complete");
+                int percentage = rs.getInt("percentage");
+                Integer rating = SqlUtils.getInteger(rs, "rating");
+
+                PersistentUserLessonProgress progress = new PersistentUserLessonProgress(
+                        userId, id, timeViewed, timeSpentMs, complete, percentage, rating);
+
+                return new PersistentLessonWithUserProgress(lesson, progress);
+            } else {
+                LOGGER.log(Level.INFO, "Did not find lesson with progress for ID: " + lessonId);
+                return null;
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error retrieving lesson with user progress from db", e);
         }
         return null;
     }
