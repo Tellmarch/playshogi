@@ -18,7 +18,12 @@ public class CORSFilterProd implements Filter {
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse resp = (HttpServletResponse) response;
 
-        resp.setHeader("Access-Control-Allow-Origin", "https://playshogi.com");
+        String origin = req.getHeader("Origin");
+
+        if (origin != null && (origin.equals("https://playshogi.com") || origin.equals("https://new.playshogi.com"))) {
+            resp.setHeader("Access-Control-Allow-Origin", origin);
+        }
+
         resp.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
         resp.setHeader("Access-Control-Allow-Headers", "Content-Type");
         resp.setHeader("Access-Control-Max-Age", "86400");
