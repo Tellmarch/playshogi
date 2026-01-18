@@ -126,6 +126,15 @@
         <url-pattern>/PlayShogiWebsite/lessonServiceServlet</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+        <servlet-name>problemsServiceServlet</servlet-name>
+        <servlet-class>com.playshogi.website.gwt.server.servlets.ProblemsServiceServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>problemsServiceServlet</servlet-name>
+        <url-pattern>/PlayShogiWebsite/problemsServiceServlet</url-pattern>
+    </servlet-mapping>
 
     <!-- Default page to serve -->
     <welcome-file-list>
