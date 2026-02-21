@@ -815,6 +815,30 @@ public class LessonRepository {
         return false;
     }
 
+    public boolean isCampaignAuthor(final int campaignId, final int userId) {
+        Connection connection = dbConnection.getConnection();
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(CHECK_CAMPAIGN_AUTHOR)) {
+
+            preparedStatement.setInt(1, campaignId);
+            preparedStatement.setInt(2, userId);
+
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    return true;
+                }
+            }
+
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE,
+                    "Error checking authorship for campaign " + campaignId + " by user " + userId, e);
+            return false;
+        }
+
+        LOGGER.log(Level.INFO, "User {0} is NOT the author of campaign {1}.", new Object[]{userId, campaignId});
+        return false;
+    }
+
     private static final String FIND_CHAPTERS_BY_LESSON_ID =
             "SELECT c.chapter_id, c.lesson_id, c.kifu_id, c.type, c.title, c.chapter_number, c.orientation, c.hidden," +
                     " k.usf " +

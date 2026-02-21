@@ -105,7 +105,12 @@ public class LessonServiceImpl {
         if (loginResult == null || !loginResult.isLoggedIn()) {
             throw new IllegalStateException("Only logged in users can add a lesson in campaign");
         }
-        //TODO: auth
+
+        // Authorization Check: Check if the current user is the author of the campaign
+        if (!lessonRepository.isCampaignAuthor(Integer.parseInt(campaignId), loginResult.getUserId())) {
+            throw new IllegalStateException("User " + loginResult.getUserId() + " is not authorized to modify campaign "
+                    + campaignId);
+        }
 
         if (!lessonRepository.addLessonToCampaign(new PersistentCampaignLesson(Integer.parseInt(campaignId),
                 Integer.parseInt(lessonId), x, y, false,
@@ -133,7 +138,13 @@ public class LessonServiceImpl {
 
         LoginResult loginResult = authenticator.checkSession(sessionId);
         if (loginResult == null || !loginResult.isLoggedIn()) {
-            throw new IllegalStateException("Only logged in users can delete a lesson in campaign");
+            throw new IllegalStateException("Only logged in users can update a lesson in campaign");
+        }
+
+        // Authorization Check: Check if the current user is the author of the campaign
+        if (!lessonRepository.isCampaignAuthor(Integer.parseInt(campaignId), loginResult.getUserId())) {
+            throw new IllegalStateException("User " + loginResult.getUserId() + " is not authorized to modify campaign "
+                    + campaignId);
         }
 
         if (!lessonRepository.updateCampaignLesson(getPersistentCampaignLesson(Integer.parseInt(campaignId), node))) {
@@ -146,7 +157,19 @@ public class LessonServiceImpl {
 
     public void setPrerequisites(final String sessionId, final String campaignId, final String lessonId,
                                  List<String> prereqs) {
-        //TODO auth
+        LOGGER.log(Level.INFO, "setPrerequisites: " + campaignId);
+
+        LoginResult loginResult = authenticator.checkSession(sessionId);
+        if (loginResult == null || !loginResult.isLoggedIn()) {
+            throw new IllegalStateException("Only logged in users can update a lesson in campaign");
+        }
+
+        // Authorization Check: Check if the current user is the author of the campaign
+        if (!lessonRepository.isCampaignAuthor(Integer.parseInt(campaignId), loginResult.getUserId())) {
+            throw new IllegalStateException("User " + loginResult.getUserId() + " is not authorized to modify campaign "
+                    + campaignId);
+        }
+
         lessonRepository.updateLessonPrerequisites(Integer.parseInt(campaignId), Integer.parseInt(lessonId),
                 prereqs.stream().map(Integer::parseInt).collect(Collectors.toList()));
     }
