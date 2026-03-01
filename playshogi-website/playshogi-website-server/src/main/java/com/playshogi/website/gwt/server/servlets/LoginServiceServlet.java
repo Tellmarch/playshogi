@@ -10,9 +10,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.Reader;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class LoginServiceServlet extends HttpServlet {
 
+    private static final Logger LOGGER = Logger.getLogger(LoginServiceServlet.class.getName());
     private final LoginServiceImpl loginService = new LoginServiceImpl();
     private final Gson gson = new Gson();
 
@@ -68,6 +71,7 @@ public class LoginServiceServlet extends HttpServlet {
             gson.toJson(result, resp.getWriter());
 
         } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error executing the method", e);
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             JsonObject error = new JsonObject();
             error.addProperty("error", e.getMessage());

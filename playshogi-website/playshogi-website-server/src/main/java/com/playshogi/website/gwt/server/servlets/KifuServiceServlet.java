@@ -14,9 +14,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.Reader;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class KifuServiceServlet extends HttpServlet {
 
+    private static final Logger LOGGER = Logger.getLogger(KifuServiceServlet.class.getName());
     private final KifuServiceImpl kifuService = new KifuServiceImpl();
     private final Gson gson = new Gson();
 
@@ -271,6 +274,7 @@ public class KifuServiceServlet extends HttpServlet {
             gson.toJson(result, resp.getWriter());
 
         } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error executing the method", e);
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             JsonObject error = new JsonObject();
             error.addProperty("error", e.getMessage());
