@@ -14,9 +14,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.Reader;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class ProblemsServiceServlet extends HttpServlet {
 
+    private static final Logger LOGGER = Logger.getLogger(ProblemsServiceServlet.class.getName());
     private final ProblemsService problemsService = new ProblemsServiceImpl();
     private final Gson gson = new Gson();
 
@@ -28,6 +31,8 @@ public class ProblemsServiceServlet extends HttpServlet {
             JsonObject json = JsonParser.parseReader(reader).getAsJsonObject();
             String action = json.get("action").getAsString();
             Object result;
+
+            String sessionId = Utils.getAsStringOrNull(json, "sessionId");
 
             switch (action) {
                 // --- Problem Fetching ---
@@ -50,7 +55,7 @@ public class ProblemsServiceServlet extends HttpServlet {
                 // --- Stats & High Scores ---
                 case "saveUserProblemAttempt":
                     problemsService.saveUserProblemAttempt(
-                            json.get("sessionId").getAsString(),
+                            sessionId,
                             json.get("problemId").getAsString(),
                             json.get("success").getAsBoolean(),
                             json.get("timeMs").getAsInt()
@@ -72,7 +77,7 @@ public class ProblemsServiceServlet extends HttpServlet {
 
                 case "saveCollectionTime":
                     problemsService.saveCollectionTime(
-                            json.get("sessionId").getAsString(),
+                            sessionId,
                             json.get("collectionId").getAsString(),
                             json.get("timeMs").getAsInt(),
                             json.get("complete").getAsBoolean(),
@@ -82,13 +87,13 @@ public class ProblemsServiceServlet extends HttpServlet {
                     break;
 
                 case "getProblemStatisticsDetails":
-                    result = problemsService.getProblemStatisticsDetails(json.get("sessionId").getAsString());
+                    result = problemsService.getProblemStatisticsDetails(sessionId);
                     break;
 
                 // --- Collection Management ---
                 case "saveProblemsCollection":
                     result = problemsService.saveProblemsCollection(
-                            json.get("sessionId").getAsString(),
+                            sessionId,
                             json.get("draftId").getAsString(),
                             gson.fromJson(json.get("details"), ProblemCollectionDetails.class)
                     );
@@ -96,7 +101,7 @@ public class ProblemsServiceServlet extends HttpServlet {
 
                 case "addDraftToProblemCollection":
                     problemsService.addDraftToProblemCollection(
-                            json.get("sessionId").getAsString(),
+                            sessionId,
                             json.get("draftId").getAsString(),
                             json.get("collectionId").getAsString()
                     );
@@ -104,23 +109,23 @@ public class ProblemsServiceServlet extends HttpServlet {
                     break;
 
                 case "getAllProblemCollections":
-                    result = problemsService.getAllProblemCollections(json.get("sessionId").getAsString());
+                    result = problemsService.getAllProblemCollections(sessionId);
                     break;
 
                 case "getPublicProblemCollections":
-                    result = problemsService.getPublicProblemCollections(json.get("sessionId").getAsString());
+                    result = problemsService.getPublicProblemCollections(sessionId);
                     break;
 
                 case "getUserProblemCollections":
                     result = problemsService.getUserProblemCollections(
-                            json.get("sessionId").getAsString(),
+                            sessionId,
                             json.get("userName").getAsString()
                     );
                     break;
 
                 case "getProblemCollection":
                     result = problemsService.getProblemCollection(
-                            json.get("sessionId").getAsString(),
+                            sessionId,
                             json.get("collectionId").getAsString(),
                             json.get("includeHiddenProblems").getAsBoolean()
                     );
@@ -128,14 +133,14 @@ public class ProblemsServiceServlet extends HttpServlet {
 
                 case "getLearnFromMistakeProblemCollection":
                     result = problemsService.getLearnFromMistakeProblemCollection(
-                            json.get("sessionId").getAsString(),
+                            sessionId,
                             json.get("gameCollectionId").getAsString()
                     );
                     break;
 
                 case "deleteProblemCollection":
                     problemsService.deleteProblemCollection(
-                            json.get("sessionId").getAsString(),
+                            sessionId,
                             json.get("problemSetId").getAsString(),
                             json.get("alsoDeleteKifus").getAsBoolean()
                     );
@@ -144,7 +149,7 @@ public class ProblemsServiceServlet extends HttpServlet {
 
                 case "updateProblemCollectionDetails":
                     problemsService.updateProblemCollectionDetails(
-                            json.get("sessionId").getAsString(),
+                            sessionId,
                             gson.fromJson(json.get("problemCollectionDetails"), ProblemCollectionDetails.class)
                     );
                     result = "OK";
@@ -152,7 +157,7 @@ public class ProblemsServiceServlet extends HttpServlet {
 
                 case "updateProblemCollectionDetailsAdmin":
                     problemsService.updateProblemCollectionDetailsAdmin(
-                            json.get("sessionId").getAsString(),
+                            sessionId,
                             gson.fromJson(json.get("problemCollectionDetails"), ProblemCollectionDetails.class)
                     );
                     result = "OK";
@@ -160,7 +165,7 @@ public class ProblemsServiceServlet extends HttpServlet {
 
                 case "createProblemCollection":
                     problemsService.createProblemCollection(
-                            json.get("sessionId").getAsString(),
+                            sessionId,
                             gson.fromJson(json.get("details"), ProblemCollectionDetails.class)
                     );
                     result = "OK";
@@ -168,7 +173,7 @@ public class ProblemsServiceServlet extends HttpServlet {
 
                 case "saveProblemAndAddToCollection":
                     problemsService.saveProblemAndAddToCollection(
-                            json.get("sessionId").getAsString(),
+                            sessionId,
                             json.get("usf").getAsString(),
                             json.get("collectionId").getAsString()
                     );
@@ -177,7 +182,7 @@ public class ProblemsServiceServlet extends HttpServlet {
 
                 case "removeProblemFromCollection":
                     problemsService.removeProblemFromCollection(
-                            json.get("sessionId").getAsString(),
+                            sessionId,
                             json.get("problemId").getAsString(),
                             json.get("collectionId").getAsString()
                     );
@@ -186,7 +191,7 @@ public class ProblemsServiceServlet extends HttpServlet {
 
                 case "addExistingKifuToProblemCollection":
                     problemsService.addExistingKifuToProblemCollection(
-                            json.get("sessionId").getAsString(),
+                            sessionId,
                             json.get("kifuId").getAsString(),
                             json.get("collectionId").getAsString()
                     );
@@ -195,7 +200,7 @@ public class ProblemsServiceServlet extends HttpServlet {
 
                 case "swapProblemsInCollection":
                     problemsService.swapProblemsInCollection(
-                            json.get("sessionId").getAsString(),
+                            sessionId,
                             json.get("collectionId").getAsString(),
                             json.get("firstProblemId").getAsString(),
                             json.get("secondProblemId").getAsString()
@@ -206,21 +211,21 @@ public class ProblemsServiceServlet extends HttpServlet {
                 // --- Logic / Admin Tasks ---
                 case "convertGameCollection":
                     problemsService.convertGameCollection(
-                            json.get("sessionId").getAsString(),
+                            sessionId,
                             json.get("gameCollectionId").getAsString()
                     );
                     result = "OK";
                     break;
 
                 case "createCollectionsByDifficulty":
-                    problemsService.createCollectionsByDifficulty(json.get("sessionId").getAsString());
+                    problemsService.createCollectionsByDifficulty(sessionId);
                     result = "OK";
                     break;
 
                 // --- Race System ---
                 case "createRace":
                     result = problemsService.createRace(
-                            json.get("sessionId").getAsString(),
+                            sessionId,
                             json.get("collectionId").getAsString(),
                             RaceDetails.RaceType.valueOf(json.get("raceType").getAsString())
                     );
@@ -228,37 +233,37 @@ public class ProblemsServiceServlet extends HttpServlet {
 
                 case "getRaceDetails":
                     result = problemsService.getRaceDetails(
-                            json.get("sessionId").getAsString(),
+                            sessionId,
                             json.get("raceId").getAsString()
                     );
                     break;
 
                 case "waitForRaceUpdate":
                     result = problemsService.waitForRaceUpdate(
-                            json.get("sessionId").getAsString(),
+                            sessionId,
                             json.get("raceId").getAsString()
                     );
                     break;
 
                 case "joinRace":
-                    problemsService.joinRace(json.get("sessionId").getAsString(), json.get("raceId").getAsString());
+                    problemsService.joinRace(sessionId, json.get("raceId").getAsString());
                     result = "OK";
                     break;
 
                 case "withdrawFromRace":
-                    problemsService.withdrawFromRace(json.get("sessionId").getAsString(),
+                    problemsService.withdrawFromRace(sessionId,
                             json.get("raceId").getAsString());
                     result = "OK";
                     break;
 
                 case "startRace":
-                    problemsService.startRace(json.get("sessionId").getAsString(), json.get("raceId").getAsString());
+                    problemsService.startRace(sessionId, json.get("raceId").getAsString());
                     result = "OK";
                     break;
 
                 case "reportUserProgressInRace":
                     problemsService.reportUserProgressInRace(
-                            json.get("sessionId").getAsString(),
+                            sessionId,
                             json.get("raceId").getAsString(),
                             json.get("problemId").getAsString(),
                             RaceDetails.ProblemStatus.valueOf(json.get("status").getAsString())
@@ -268,7 +273,7 @@ public class ProblemsServiceServlet extends HttpServlet {
 
                 case "reportBadProblem":
                     problemsService.reportBadProblem(
-                            json.get("sessionId").getAsString(),
+                            sessionId,
                             json.get("kifuId").getAsString(),
                             json.get("problemId").getAsString(),
                             json.get("collectionId").getAsString(),
@@ -288,6 +293,7 @@ public class ProblemsServiceServlet extends HttpServlet {
             gson.toJson(result, resp.getWriter());
 
         } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error executing the method", e);
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             JsonObject error = new JsonObject();
             error.addProperty("error", e.getMessage());

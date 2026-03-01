@@ -32,11 +32,12 @@ public class KifuServiceServlet extends HttpServlet {
         Object result;
 
         try {
+            String sessionId = Utils.getAsStringOrNull(json, "sessionId");
             switch (action) {
 
                 case "saveKifu":
                     result = kifuService.saveKifu(
-                            json.get("sessionId").getAsString(),
+                            sessionId,
                             json.get("kifuUsf").getAsString(),
                             json.get("name").getAsString(),
                             gson.fromJson(json.get("type"), KifuDetails.KifuType.class)
@@ -45,7 +46,7 @@ public class KifuServiceServlet extends HttpServlet {
 
                 case "saveGameAndAddToCollection":
                     kifuService.saveGameAndAddToCollection(
-                            json.get("sessionId").getAsString(),
+                            sessionId,
                             json.get("kifuUsf").getAsString(),
                             json.get("collectionId").getAsString()
                     );
@@ -54,28 +55,28 @@ public class KifuServiceServlet extends HttpServlet {
 
                 case "getKifuUsf":
                     result = kifuService.getKifuUsf(
-                            json.get("sessionId").getAsString(),
+                            sessionId,
                             json.get("kifuId").getAsString()
                     );
                     break;
 
                 case "getGameSetKifuDetails":
                     result = kifuService.getGameSetKifuDetails(
-                            json.get("sessionId").getAsString(),
+                            sessionId,
                             json.get("gameSetId").getAsString()
                     );
                     break;
 
                 case "getGameSetStatistics":
                     result = kifuService.getGameSetStatistics(
-                            json.get("sessionId").getAsString(),
+                            sessionId,
                             json.get("gameSetId").getAsString()
                     );
                     break;
 
                 case "getGameSetKifuDetailsWithFilter":
                     result = kifuService.getGameSetKifuDetailsWithFilter(
-                            json.get("sessionId").getAsString(),
+                            sessionId,
                             json.get("gameSetId").getAsString(),
                             gson.fromJson(json.get("filterDetails"), KifuSearchFilterDetails.class)
                     );
@@ -90,43 +91,43 @@ public class KifuServiceServlet extends HttpServlet {
 
                 case "analysePosition":
                     result = kifuService.analysePosition(
-                            json.get("sessionId").getAsString(),
+                            sessionId,
                             json.get("sfen").getAsString()
                     );
                     break;
 
                 case "requestKifuAnalysis":
                     result = kifuService.requestKifuAnalysis(
-                            json.get("sessionId").getAsString(),
+                            sessionId,
                             json.get("kifuUsf").getAsString()
                     );
                     break;
 
                 case "getKifuAnalysisResults":
                     result = kifuService.getKifuAnalysisResults(
-                            json.get("sessionId").getAsString(),
+                            sessionId,
                             json.get("kifuUsf").getAsString()
                     );
                     break;
 
                 case "getAllGameCollections":
-                    result = kifuService.getAllGameCollections(json.get("sessionId").getAsString());
+                    result = kifuService.getAllGameCollections(sessionId);
                     break;
 
                 case "getPublicGameCollections":
-                    result = kifuService.getPublicGameCollections(json.get("sessionId").getAsString());
+                    result = kifuService.getPublicGameCollections(sessionId);
                     break;
 
                 case "getUserGameCollections":
                     result = kifuService.getUserGameCollections(
-                            json.get("sessionId").getAsString(),
+                            sessionId,
                             json.get("userName").getAsString()
                     );
                     break;
 
                 case "saveGameCollection":
                     result = kifuService.saveGameCollection(
-                            json.get("sessionId").getAsString(),
+                            sessionId,
                             json.get("draftId").getAsString(),
                             gson.fromJson(json.get("gameCollectionDetails"), GameCollectionDetails.class)
                     );
@@ -134,7 +135,7 @@ public class KifuServiceServlet extends HttpServlet {
 
                 case "addDraftToGameCollection":
                     kifuService.addDraftToGameCollection(
-                            json.get("sessionId").getAsString(),
+                            sessionId,
                             json.get("draftId").getAsString(),
                             json.get("collectionId").getAsString()
                     );
@@ -143,7 +144,7 @@ public class KifuServiceServlet extends HttpServlet {
 
                 case "saveDraftCollectionKifus":
                     kifuService.saveDraftCollectionKifus(
-                            json.get("sessionId").getAsString(),
+                            sessionId,
                             json.get("draftId").getAsString()
                     );
                     result = "OK";
@@ -151,7 +152,7 @@ public class KifuServiceServlet extends HttpServlet {
 
                 case "updateGameCollectionDetails":
                     kifuService.updateGameCollectionDetails(
-                            json.get("sessionId").getAsString(),
+                            sessionId,
                             gson.fromJson(json.get("gameCollectionDetails"), GameCollectionDetails.class)
                     );
                     result = "OK";
@@ -159,7 +160,7 @@ public class KifuServiceServlet extends HttpServlet {
 
                 case "updateGameCollectionDetailsAdmin":
                     kifuService.updateGameCollectionDetailsAdmin(
-                            json.get("sessionId").getAsString(),
+                            sessionId,
                             gson.fromJson(json.get("gameCollectionDetails"), GameCollectionDetails.class)
                     );
                     result = "OK";
@@ -167,7 +168,7 @@ public class KifuServiceServlet extends HttpServlet {
 
                 case "createGameCollection":
                     kifuService.createGameCollection(
-                            json.get("sessionId").getAsString(),
+                            sessionId,
                             gson.fromJson(json.get("gameCollectionDetails"), GameCollectionDetails.class)
                     );
                     result = "OK";
@@ -175,7 +176,7 @@ public class KifuServiceServlet extends HttpServlet {
 
                 case "deleteGameCollection":
                     kifuService.deleteGameCollection(
-                            json.get("sessionId").getAsString(),
+                            sessionId,
                             json.get("gameSetId").getAsString()
                     );
                     result = "OK";
@@ -183,7 +184,7 @@ public class KifuServiceServlet extends HttpServlet {
 
                 case "removeGameFromCollection":
                     kifuService.removeGameFromCollection(
-                            json.get("sessionId").getAsString(),
+                            sessionId,
                             json.get("gameId").getAsString(),
                             json.get("gameSetId").getAsString()
                     );
@@ -192,21 +193,21 @@ public class KifuServiceServlet extends HttpServlet {
 
                 case "getLessonKifus":
                     result = kifuService.getLessonKifus(
-                            json.get("sessionId").getAsString(),
+                            sessionId,
                             json.get("userName").getAsString()
                     );
                     break;
 
                 case "getUserKifus":
                     result = kifuService.getUserKifus(
-                            json.get("sessionId").getAsString(),
+                            sessionId,
                             json.get("userName").getAsString()
                     );
                     break;
 
                 case "deleteKifu":
                     kifuService.deleteKifu(
-                            json.get("sessionId").getAsString(),
+                            sessionId,
                             json.get("kifuId").getAsString()
                     );
                     result = "OK";
@@ -214,7 +215,7 @@ public class KifuServiceServlet extends HttpServlet {
 
                 case "addExistingKifuToCollection":
                     kifuService.addExistingKifuToCollection(
-                            json.get("sessionId").getAsString(),
+                            sessionId,
                             json.get("kifuId").getAsString(),
                             json.get("collectionId").getAsString()
                     );
@@ -222,16 +223,16 @@ public class KifuServiceServlet extends HttpServlet {
                     break;
 
                 case "getAllLessons":
-                    result = kifuService.getAllLessons(json.get("sessionId").getAsString());
+                    result = kifuService.getAllLessons(sessionId);
                     break;
 
                 case "getAllPublicLessons":
-                    result = kifuService.getAllPublicLessons(json.get("sessionId").getAsString());
+                    result = kifuService.getAllPublicLessons(sessionId);
                     break;
 
                 case "createLesson":
                     kifuService.createLesson(
-                            json.get("sessionId").getAsString(),
+                            sessionId,
                             gson.fromJson(json.get("lesson"), LessonDetails.class)
                     );
                     result = "OK";
@@ -239,7 +240,7 @@ public class KifuServiceServlet extends HttpServlet {
 
                 case "updateLesson":
                     kifuService.updateLesson(
-                            json.get("sessionId").getAsString(),
+                            sessionId,
                             gson.fromJson(json.get("lesson"), LessonDetails.class)
                     );
                     result = "OK";
@@ -247,7 +248,7 @@ public class KifuServiceServlet extends HttpServlet {
 
                 case "updateKifuUsf":
                     kifuService.updateKifuUsf(
-                            json.get("sessionId").getAsString(),
+                            sessionId,
                             json.get("kifuId").getAsString(),
                             json.get("kifuUsf").getAsString()
                     );
@@ -256,7 +257,7 @@ public class KifuServiceServlet extends HttpServlet {
 
                 case "getTournament":
                     result = kifuService.getTournament(
-                            json.get("sessionId").getAsString(),
+                            sessionId,
                             json.get("tournamentID").getAsString()
                     );
                     break;
