@@ -13,6 +13,8 @@ public class EngineConfiguration {
     public static final EngineConfiguration INSIGHTS_ENGINE = new EngineConfiguration("/home/jean/shogi/engines" +
             "/YaneuraOu/source/", "./YaneuraOu-by-gcc",
             new String[]{"setoption name MultiPV value 5"}, 5);
+    public static final EngineConfiguration BEGINNER_ENGINE = new EngineConfiguration("/home/jean/shogi/engines" +
+            "/LesserKai/", "./Lesserkai", new String[]{}, 1);
 
     private final File path;
     private final String command;

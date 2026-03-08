@@ -2,98 +2,71 @@ package com.playshogi.website.gwt.server.servlets;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonSyntaxException;
-import com.playshogi.library.shogi.engine.EngineConfiguration;
-import com.playshogi.library.shogi.engine.QueuedComputerPlay;
+import com.google.gson.JsonParser;
+import com.playshogi.website.gwt.server.services.ComputerServiceImpl;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.Reader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import static com.playshogi.website.gwt.server.servlets.Utils.getAsStringOrNull;
 
 public class ComputerServlet extends HttpServlet {
 
     private static final Logger LOGGER = Logger.getLogger(ComputerServlet.class.getName());
-    private final QueuedComputerPlay queuedComputerPlay = new QueuedComputerPlay(EngineConfiguration.NORMAL_ENGINE);
 
+    private final ComputerServiceImpl computerService = new ComputerServiceImpl();
     private final Gson gson = new Gson();
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        response.setContentType("text/plain");
-        response.setCharacterEncoding("UTF-8");
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+            throws IOException {
 
-        String sessionId = request.getParameter("sessionId");
-        String sfen = request.getParameter("sfen");
+        resp.setContentType("application/json; charset=UTF-8");
+        Reader reader = req.getReader();
+        JsonObject json = JsonParser.parseReader(reader).getAsJsonObject();
 
-        if (sessionId == null || sfen == null || sessionId.isEmpty() || sfen.isEmpty()) {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            PrintWriter out = response.getWriter();
-            out.write("Error: 'sessionId' and 'sfen' parameters are required.");
-            out.flush();
-            return;
-        }
+        String action = json.get("action").getAsString();
+        String sessionId = getAsStringOrNull(json, "sessionId");
 
-        PrintWriter out = response.getWriter();
+        LOGGER.log(Level.INFO, "ComputerServiceServlet call: " + action);
+        Object result;
+
         try {
-            String computerMove = queuedComputerPlay.playMove(sfen);
+            switch (action) {
 
-            out.write(computerMove);
+                case "getComputerMove":
+                    result = computerService.getComputerMove(
+                            sessionId,
+                            json.get("sfen").getAsString()
+                    );
+                    break;
 
-        } catch (Exception e) {
-            LOGGER.log(Level.WARNING, "Error processing computer move request", e);
-            out.write("Error retrieving computer move: " + e.getMessage());
-        } finally {
-            out.flush();
-            out.close();
-        }
-    }
+                case "getBeginnerComputerMove":
+                    result = computerService.getBeginnerComputerMove(
+                            sessionId,
+                            json.get("sfen").getAsString()
+                    );
+                    break;
 
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-
-        try (BufferedReader reader = request.getReader();
-             PrintWriter out = response.getWriter()) {
-
-            // Parse incoming JSON
-            JsonObject jsonRequest = gson.fromJson(reader, JsonObject.class);
-            if (jsonRequest == null || !jsonRequest.has("sessionId") || !jsonRequest.has("sfen")) {
-                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                JsonObject error = new JsonObject();
-                error.addProperty("error", "'sessionId' and 'sfen' fields are required.");
-                out.write(gson.toJson(error));
-                return;
+                default:
+                    resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    gson.toJson("Unknown action: " + action, resp.getWriter());
+                    return;
             }
 
-//            String sessionId = jsonRequest.get("sessionId").getAsString();
-            String sfen = jsonRequest.get("sfen").getAsString();
+            gson.toJson(result, resp.getWriter());
 
-            // Compute move
-            String computerMove = queuedComputerPlay.playMove(sfen);
-
-            // Build JSON response
-            JsonObject jsonResponse = new JsonObject();
-            jsonResponse.addProperty("move", computerMove);
-            out.write(gson.toJson(jsonResponse));
-
-        } catch (JsonSyntaxException e) {
-            LOGGER.log(Level.WARNING, "Invalid JSON in request", e);
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            JsonObject error = new JsonObject();
-            error.addProperty("error", "Invalid JSON format.");
-            response.getWriter().write(gson.toJson(error));
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Error processing POST request", e);
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            LOGGER.log(Level.SEVERE, "Error handling computer service servlet call", e);
+            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             JsonObject error = new JsonObject();
-            error.addProperty("error", "Internal server error: " + e.getMessage());
-            response.getWriter().write(gson.toJson(error));
+            error.addProperty("error", e.getMessage());
+            gson.toJson(error, resp.getWriter());
         }
     }
 }

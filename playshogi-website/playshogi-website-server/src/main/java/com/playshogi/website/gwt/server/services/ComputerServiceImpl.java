@@ -13,10 +13,18 @@ public class ComputerServiceImpl extends RemoteServiceServlet implements Compute
     private static final Logger LOGGER = Logger.getLogger(ComputerServiceImpl.class.getName());
 
     private final QueuedComputerPlay queuedComputerPlay = new QueuedComputerPlay(EngineConfiguration.NORMAL_ENGINE);
+    private final QueuedComputerPlay queuedBeginnerComputerPlay =
+            new QueuedComputerPlay(EngineConfiguration.BEGINNER_ENGINE);
 
     @Override
     public String getComputerMove(final String sessionId, final String sfen) {
         LOGGER.log(Level.INFO, "Requesting computer move:\n" + sfen);
         return queuedComputerPlay.playMove(sfen);
+    }
+
+    @Override
+    public String getBeginnerComputerMove(final String sessionId, final String sfen) {
+        LOGGER.log(Level.INFO, "Requesting beginner computer move:\n" + sfen);
+        return queuedBeginnerComputerPlay.playMove(sfen);
     }
 }

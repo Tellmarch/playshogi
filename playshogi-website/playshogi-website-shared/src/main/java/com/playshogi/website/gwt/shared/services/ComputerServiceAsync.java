@@ -6,4 +6,6 @@ public interface ComputerServiceAsync {
 
     void getComputerMove(String sessionId, String sfen, AsyncCallback<String> callback);
 
+    void getBeginnerComputerMove(String sessionId, String sfen, AsyncCallback<String> callback);
+
 }

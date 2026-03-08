@@ -8,4 +8,6 @@ public interface ComputerService extends RemoteService {
 
     String getComputerMove(String sessionId, String sfen);
 
+    String getBeginnerComputerMove(String sessionId, String sfen);
+
 }
