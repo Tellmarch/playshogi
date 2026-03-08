@@ -94,7 +94,12 @@ public class UsiEvaluationReader {
                     if ("cp".equals(type)) {
                         principalVariation.setScore(PositionScore.fromScore(Integer.parseInt(split[++i])));
                     } else if ("mate".equals(type)) {
-                        principalVariation.setScore(PositionScore.mateIn(Integer.parseInt(split[++i])));
+                        try {
+                            int n = Integer.parseInt(split[++i]);
+                            principalVariation.setScore(PositionScore.mateIn(n));
+                        } catch (Exception e) {
+                            principalVariation.setScore(PositionScore.mateIn(0));
+                        }
                     } else {
                         throw new IllegalArgumentException("Could not parse line: " + line);
                     }
