@@ -190,4 +190,22 @@ public class SfenConverter {
         char playerChar = sfen.charAt(sfen.indexOf(" ") + 1);
         return playerChar == 'b' ? BLACK : Player.WHITE;
     }
+
+    public static String stripMoveCount(String sfen) {
+        if (sfen == null || sfen.isEmpty()) {
+            return sfen;
+        }
+
+        // Split by one or more whitespace characters
+        String[] parts = sfen.trim().split("\\s+");
+
+        // Standard SFEN with move count has 4 parts: [Board] [Side] [Hand] [Count]
+        // We only want the first 3 parts.
+        if (parts.length >= 3) {
+            return String.join(" ", parts[0], parts[1], parts[2]);
+        }
+
+        // If the SFEN is malformed or shorter than expected, return as is
+        return sfen;
+    }
 }

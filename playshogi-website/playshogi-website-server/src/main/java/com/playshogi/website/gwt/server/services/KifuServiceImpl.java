@@ -309,7 +309,7 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
     private boolean matchesFilter(final KifuSearchFilterDetails filterDetails,
                                   final List<KifuSearchResult> kifuSearchResults, PersistentGame game) {
         String playerName = filterDetails.getPlayerName();
-        if (!Strings.isNullOrEmpty(playerName) && !game.getSenteName().startsWith(playerName) && !game.getSenteName().startsWith(playerName))
+        if (!Strings.isNullOrEmpty(playerName) && !game.getSenteName().startsWith(playerName) && !game.getGoteName().startsWith(playerName))
             return false;
         return kifuSearchResults.stream().anyMatch(r -> r.getKifu().getId() == game.getKifuId());
     }
@@ -338,7 +338,7 @@ public class KifuServiceImpl extends RemoteServiceServlet implements KifuService
             // TODO validate permissions
 
             int gameSetIdInt = Integer.parseInt(gameSetId);
-            int positionId = positionRepository.getPositionIdBySfen(sfen);
+            int positionId = positionRepository.getPositionIdBySfen(SfenConverter.stripMoveCount(sfen));
 
             if (positionId == -1) {
                 LOGGER.log(Level.INFO, "position not in database: \n" + sfen);
